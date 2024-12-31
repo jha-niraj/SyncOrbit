@@ -12,7 +12,7 @@ export default function HeroSection() {
             <ContainerScroll
                 titleComponent={
                     <div className="text-center space-y-4">
-                        <ShinyButton className="w-[65%] mx-auto">
+                        <ShinyButton className="w-[47%] mx-auto">
                             <p className="text-small font-medium">
                                 Work on your ideas, leave the technicalities to us.
                             </p>
