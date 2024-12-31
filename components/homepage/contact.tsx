@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { ArrowRight } from 'lucide-react'
 import { RainbowButton } from '@/components/ui/rainbow-button'
 
 export default function ContactSection() {

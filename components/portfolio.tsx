@@ -1,6 +1,5 @@
 "use client"
 
-import { Card, CardContent } from "@/components/ui/card";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import p1 from "./_images/p1.jpg";
@@ -9,23 +8,23 @@ import p3 from "./_images/p3.jpg";
 import p4 from "./_images/p4.jpg";
 import p5 from "./_images/p5.jpg";
 
-const portfolioItems = [
-    {
-        title: 'Travel Vlog Editing',
-        image: 'https://images.unsplash.com/photo-1527856263669-12c3a0af2aa6?auto=format&fit=crop&w=800&q=80',
-        category: 'Video Editing',
-    },
-    {
-        title: 'Tech Review Thumbnail',
-        image: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=800&q=80',
-        category: 'Thumbnail Design',
-    },
-    {
-        title: 'E-commerce Website',
-        image: 'https://images.unsplash.com/photo-1523474253046-8cd2748b5fd2?auto=format&fit=crop&w=800&q=80',
-        category: 'Web Development',
-    },
-];
+// const portfolioItems = [
+//     {
+//         title: 'Travel Vlog Editing',
+//         image: 'https://images.unsplash.com/photo-1527856263669-12c3a0af2aa6?auto=format&fit=crop&w=800&q=80',
+//         category: 'Video Editing',
+//     },
+//     {
+//         title: 'Tech Review Thumbnail',
+//         image: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=800&q=80',
+//         category: 'Thumbnail Design',
+//     },
+//     {
+//         title: 'E-commerce Website',
+//         image: 'https://images.unsplash.com/photo-1523474253046-8cd2748b5fd2?auto=format&fit=crop&w=800&q=80',
+//         category: 'Web Development',
+//     },
+// ];
 
 export default function Portfolio() {
     return (

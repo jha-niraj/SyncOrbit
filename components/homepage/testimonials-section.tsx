@@ -1,10 +1,5 @@
 "use client"
 
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { useState } from "react";
-import Image from "next/image";
 import { AnimatedTestimonials } from "../ui/animated-testimonials";
 
 const testimonials = [
@@ -41,15 +36,6 @@ const testimonials = [
 ];
 
 export function TestimonialsSection() {
-    const [currentIndex, setCurrentIndex] = useState(0)
-
-    const next = () => {
-        setCurrentIndex((current) => (current + 1) % testimonials.length)
-    }
-
-    const previous = () => {
-        setCurrentIndex((current) => (current - 1 + testimonials.length) % testimonials.length)
-    }
 
     return (
         <div className="flex w-full flex-col items-center justify-center overflow-hidden rounded-lg">

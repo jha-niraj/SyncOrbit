@@ -1,8 +1,7 @@
 "use client"
 
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Calendar } from 'lucide-react';
-import Image from 'next/image';
+import { Calendar } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { RainbowButton } from '@/components/ui/rainbow-button';
 import ShinyButton from '@/components/ui/shiny-button';

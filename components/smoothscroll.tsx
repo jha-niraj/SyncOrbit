@@ -7,7 +7,7 @@ interface LenisProps {
     children: React.ReactNode
 }
 function SmoothScroll({ children }: LenisProps) {
-    const lenis = useLenis(({ scroll }) => {
+    const lenis = useLenis(({ }) => {
         // called every scroll
     })
 
