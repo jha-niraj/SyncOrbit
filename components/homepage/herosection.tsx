@@ -4,7 +4,6 @@ import agencyImage from "@/components/_images/theagency.jpeg";
 import { ContainerScroll } from "../ui/container-scroll-animation";
 import { RainbowButton } from "../ui/rainbow-button";
 import { ArrowRight, Calendar } from "lucide-react";
-import ShinyButton from "../ui/shiny-button";
 
 export default function HeroSection() {
     return (
@@ -12,32 +11,29 @@ export default function HeroSection() {
             <ContainerScroll
                 titleComponent={
                     <div className="text-center space-y-4">
-                        <ShinyButton className="w-[47%] mx-auto">
-                            <p className="text-small font-medium">
-                                Work on your ideas, leave the technicalities to us.
-                            </p>
-                        </ShinyButton>
-                        <h1 className="text-4xl md:text-6xl font-bold tracking-tighter">
-                            Life Feels Empty Without{" "}
-                            <span className="bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text text-transparent">
-                                Beautiful Design
-                            </span>
+                        <h1 className="text-3xl md:text-5xl font-semibold tracking-wider space-x-2">
+                            Transform your IDEAS into
+                        </h1>
+                        <h1 className="text-4xl md:text-6xl font-bold tracking-wider">
+                            DIGITAL REALITY
                         </h1>
                         <p className="text-gray-500 md:text-xl/relaxed mx-auto max-w-[700px]">
-                            We create and design applications, websites & other digital products with professionalism
+                            Harnesses the power of digital presence to transform your business into actionable insights, propelling you to new heights of success
                         </p>
-                        <RainbowButton>
-                            <div className="flex gap-4 items-center justify-center">
-                                <div className="flex items-center justify-center gap-2">
-                                    <Calendar />
-                                    Book a Call
+                        <div className="flex items-center justify-center w-full gap-6">
+                            <Button size="lg" variant="outline">
+                                Budget Estimator
+                            </Button>
+                            <RainbowButton className="group">
+                                <div className="flex gap-4 items-center justify-center">
+                                    <div className="flex items-center justify-center gap-2">
+                                        <Calendar className="" />
+                                        Book a Call
+                                    </div>
+                                    <ArrowRight className="relative transition-transform duration-300 group-hover:translate-x-3" size={24} />
                                 </div>
-                                <ArrowRight className="ml-2 hover:left-2" size={24} />
-                            </div>
-                        </RainbowButton>
-                        <Button size="lg" variant="outline">
-                            View Our Work
-                        </Button>
+                            </RainbowButton>
+                        </div>
                     </div>
                 }
             >
