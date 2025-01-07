@@ -1,64 +1,65 @@
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import Image from "next/image"
+import { CardBody, CardContainer, CardItem } from "@/components/ui/3d-card";
+import { ArrowRight } from 'lucide-react';
+import Image from "next/image";
+import Link from "next/link";
+import { projectData } from "./projectdata";
 
-export function ProjectsSection() {
-    const projects = [
-        {
-            title: "AI 3D Design Concept",
-            description: "All connected with 3D design to solve problems with",
-            image: "/placeholder.svg?height=400&width=300",
-        },
-        {
-            title: "Digital Marketing Dashboard",
-            description: "Analytics and tracking solution",
-            image: "/placeholder.svg?height=400&width=300",
-        },
-        {
-            title: "Creative Design Portfolio",
-            description: "Showcase of creative works",
-            image: "/placeholder.svg?height=400&width=300",
-        },
-        {
-            title: "Mobile App Design",
-            description: "User-friendly interface design",
-            image: "/placeholder.svg?height=400&width=300",
-        },
-    ]
-
+export default function ProjectSection() {
     return (
-        <section className="container py-24 space-y-8">
-            <div className="flex justify-between items-center">
-                <div>
-                    <h2 className="text-3xl font-bold">Projects We have</h2>
-                    <p className="text-blue-600">Completed</p>
+        <section className="py-12">
+            <div className="mx-auto px-4">
+                <h2 className="text-3xl font-bold text-center mb-6 dark:text-white">Projects that we have delivered till date</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    {
+                        projectData.map((project) => (
+                            <CardContainer key={project.id} className="inter-var">
+                                <CardBody className="relative group/card dark:hover:shadow-2xl dark:hover:shadow-emerald-500/[0.1] dark:bg-black dark:border-white/[0.2] border-black/[0.1] w-full h-[300px] rounded-xl border">
+                                    <CardItem
+                                        translateZ="50"
+                                        className="w-full h-full absolute inset-0 rounded-xl overflow-hidden"
+                                    >
+                                        <Image
+                                            src={project.image}
+                                            alt={project.title}
+                                            layout="fill"
+                                            objectFit="cover"
+                                            className="group-hover/card:scale-110 transition-transform duration-300"
+                                        />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-black/0 group-hover/card:bg-black/60 transition-all duration-300" />
+                                    </CardItem>
+                                    <div className="relative z-10 h-full flex flex-col justify-end">
+                                        <div className="transform transition-all duration-300 group-hover/card:translate-y-8 group-hover/card:opacity-0">
+                                            <CardItem
+                                                translateZ="60"
+                                                className="text-xl pl-4 pb-2 font-bold text-white"
+                                            >
+                                                {project.title}
+                                            </CardItem>
+                                            <CardItem
+                                                as="p"
+                                                translateZ="70"
+                                                className="text-white/80 pl-4 pb-2 text-sm mt-2"
+                                            >
+                                                {project.description}
+                                            </CardItem>
+                                        </div>
+                                        <CardItem
+                                            translateZ="100"
+                                            as={Link}
+                                            href={project.link}
+                                            className="px-4 py-2 rounded-xl bg-white text-black text-sm font-small flex items-center justify-center gap-2 absolute bottom-4 left-5 opacity-0 transform translate-y-4 group-hover/card:translate-y-0 group-hover/card:opacity-100 transition-all duration-300"
+                                        >
+                                            <ArrowRight className="w-4 h-4" />
+                                            View Project
+                                        </CardItem>
+                                    </div>
+                                </CardBody>
+                            </CardContainer>
+                        ))
+                    }
                 </div>
-                <div className="flex gap-4">
-                    <Button variant="outline">View More Project</Button>
-                    <Button>View All Work</Button>
-                </div>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                {projects.map((project, index) => (
-                    <Card key={index} className="group overflow-hidden">
-                        <CardContent className="p-0">
-                            <div className="relative h-[300px] overflow-hidden">
-                                <Image
-                                    src={project.image}
-                                    alt={project.title}
-                                    fill
-                                    className="object-cover transition-transform duration-300 group-hover:scale-110"
-                                />
-                            </div>
-                            <div className="p-4">
-                                <h3 className="font-semibold">{project.title}</h3>
-                                <p className="text-sm text-gray-500">{project.description}</p>
-                            </div>
-                        </CardContent>
-                    </Card>
-                ))}
             </div>
         </section>
-    )
+    );
 }
 
