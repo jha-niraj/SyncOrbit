@@ -3,11 +3,11 @@ import { Compass, Rocket, Puzzle, Code2, HeartHandshake, Shield, Sparkles, Brain
 export default function WhyUs() {
     return (
         <section className="px-4 py-16 md:py-24">
-            <div className="container mx-auto">
+            <div className="mx-auto">
                 <h2 className="text-4xl md:text-5xl font-bold text-center mb-16">
                     Wondering <span className="text-red-500">why select</span> us?
                 </h2>
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12 max-w-6xl mx-auto">
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12 max-w-7xl mx-auto">
                     <div className="group space-y-4 p-6 transition-all duration-300 hover:bg-white/10 shadow-lg hover:shadow-2xl rounded-2xl">
                         <Compass className="w-8 h-8 text-red-500 group-hover:rotate-45 transition-transform duration-300" />
                         <h3 className="text-xl font-semibold text-black dark:text-white">

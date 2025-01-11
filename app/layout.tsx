@@ -33,8 +33,7 @@ export default function RootLayout({
 					enableSystem
 					disableTransitionOnChange
 				>
-					<main className="relative max-w-7xl mx-auto dark:bg-black bg-white dark:bg-grid-white/[0.2] bg-grid-black/[0.2]">
-						<div className="absolute pointer-events-none inset-0 flex items-center justify-center dark:bg-black bg-white [mask-image:radial-gradient(ellipse_at_center,transparent_20%,black)]"></div>
+					<main className="max-w-7xl mx-auto">
 						<Navbar />
 						{children}
 						<Footer />
