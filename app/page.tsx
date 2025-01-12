@@ -5,7 +5,7 @@ import HeroSection from "@/components/homepage/herosection";
 import ServicesSection from "@/components/homepage/services-section";
 import ProjectsSection from "@/components/homepage/projects-section";
 import { TestimonialsSection } from "@/components/homepage/testimonials-section";
-import { LocationsSection } from "@/components/homepage/locations-section";
+// import { LocationsSection } from "@/components/homepage/locations-section";
 import { Approach } from "@/components/homepage/approach";
 import WhyUs from "@/components/homepage/whyus";
 import PricingSection from "@/components/homepage/pricing-section";
@@ -14,12 +14,12 @@ import FaqsAccrodian from "@/components/homepage/faqs";
 export default function ServicesPage() {
     return (
         <SmoothScroll>
-            <main className="relative max-w-7xl mx-auto p-6 md:p-0">
+            <main className="relative w-full mx-auto">
                 <HeroSection />
                 <ServicesSection />
                 <ProjectsSection />
                 <Approach />
-                <LocationsSection />
+                {/* <LocationsSection /> */}
                 <WhyUs />
                 <TestimonialsSection />
                 <PricingSection />

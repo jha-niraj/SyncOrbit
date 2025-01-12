@@ -44,13 +44,14 @@ const FaqsAccrodian = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.4 }}
-            className="w-full mx-auto mt-20 mb-16"
+            className="max-w-7xl mx-auto mt-20 mb-16"
+            id="faqs"
         >
             <div className="flex flex-col lg:flex-row gap-10 w-full justify-around">
                 <div className="flex flex-col gap-4 w-full lg:w-1/3">
                     <Badge className="w-14">FAQ&apos;s</Badge>
                     <h1 className="font-medium text-4xl">What would you like to know about Our Agency?</h1>
-                    <Button className="flex gap-2"><MessageCircle /> Talk to us</Button>
+                    <Button className="flex gap-2 max-w-32"><MessageCircle /> Talk to us</Button>
                 </div>
                 <div className="w-full lg:w-2/3">
                     <Accordion type="multiple" className="gap-3 rounded-lg flex flex-col">

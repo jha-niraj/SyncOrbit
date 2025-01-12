@@ -3,7 +3,7 @@ import Image from "next/image"
 
 export function LocationsSection() {
     return (
-        <section className="container py-24 space-y-8">
+        <section className="max-w-7xl mx-auto py-24 space-y-8">
             <div>
                 <h2 className="text-3xl font-bold">We are Serving</h2>
                 <p className="text-blue-600">in Various Countries</p>

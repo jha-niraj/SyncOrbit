@@ -6,9 +6,9 @@ import { projectData } from "./projectdata";
 
 export default function ProjectSection() {
     return (
-        <section className="py-12">
-            <div className="mx-auto px-4">
-                <h2 className="text-3xl font-bold text-center mb-6 dark:text-white">Projects that we have delivered till date</h2>
+        <section id="projects" className="py-12 bg-gradient-90deg-black-to-gray w-full">
+            <div className="px-4 max-w-7xl mx-auto">
+                <h2 className="text-3xl font-semibold text-center mb-4 text-white">Projects that we have delivered till date</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     {
                         projectData.map((project) => (
@@ -58,6 +58,9 @@ export default function ProjectSection() {
                         ))
                     }
                 </div>
+                <button className="max-w-xl mx-auto flex items-center rounded-lg px-4 py-2 text-md border-2 border-black bg-white hover:bg-white text-black hover:text-black shadow-[0px_6px_0px_0px_rgba(1,1,1,1)] hover:shadow-none hover:translate-y-2 transition-all duration-200">
+                    View more projects
+                </button>
             </div>
         </section>
     );

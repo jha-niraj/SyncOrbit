@@ -11,13 +11,13 @@ export default function PricingSection() {
     }
 
     return (
-        <section className=" px-4 py-16 md:py-24">
-            <div className="container mx-auto">
+        <section id="pricing" className="bg-gradient-90deg-black-to-gray w-full px-4 py-16 md:py-24">
+            <div className="max-w-7xl mx-auto">
                 <div className="text-center mb-16">
-                    <h2 className="text-4xl md:text-5xl font-bold mb-4">
+                    <h2 className="text-4xl md:text-5xl text-white font-bold mb-4">
                         Crystal Clear <span className="text-red-500">Pricing</span>
                     </h2>
-                    <p className="text-gray-600 max-w-2xl mx-auto">
+                    <p className="text-white max-w-2xl mx-auto">
                         Choose the perfect plan that suits your needs. All prices include unlimited updates and premium support.
                     </p>
                 </div>

@@ -38,7 +38,7 @@ const testimonials = [
 export function TestimonialsSection() {
 
     return (
-        <div className="flex w-full flex-col items-center justify-center overflow-hidden rounded-lg">
+        <div className="py-12 flex max-w-7xl mx-auto flex-col items-center justify-center overflow-hidden rounded-lg">
 			<h2 className="text-3xl font-bold text-center">What Our Client&apos;s Say</h2>
 			<AnimatedTestimonials testimonials={testimonials} />
 		</div>

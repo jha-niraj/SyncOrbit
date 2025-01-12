@@ -23,7 +23,7 @@ const services = [
 
 export default function ServicesSection() {
     return (
-        <section className="py-36 w-full mx-auto">
+        <section className="py-20 max-w-7xl mx-auto">
             <div className="px-4 md:px-6">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
