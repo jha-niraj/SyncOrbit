@@ -22,7 +22,6 @@ export default function ProjectSection() {
                                             src={project.image}
                                             alt={project.title}
                                             layout="fill"
-                                            objectFit="cover"
                                             className="group-hover/card:scale-110 transition-transform duration-300"
                                         />
                                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-black/0 group-hover/card:bg-black/60 transition-all duration-300" />
@@ -47,6 +46,7 @@ export default function ProjectSection() {
                                             translateZ="100"
                                             as={Link}
                                             href={project.link}
+                                            target="_blank"
                                             className="px-4 py-2 rounded-xl bg-white text-black text-sm font-small flex items-center justify-center gap-2 absolute bottom-4 left-5 opacity-0 transform translate-y-4 group-hover/card:translate-y-0 group-hover/card:opacity-100 transition-all duration-300"
                                         >
                                             <ArrowRight className="w-4 h-4" />
@@ -65,4 +65,3 @@ export default function ProjectSection() {
         </section>
     );
 }
-

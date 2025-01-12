@@ -13,7 +13,7 @@ const spaceGrotesk = Space_Grotesk({
 })
 
 export const metadata: Metadata = {
-	title: "The Coder'z",
+	title: "Nexus",
 	description: "You think we'll deliver",
 };
 

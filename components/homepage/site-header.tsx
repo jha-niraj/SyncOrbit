@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { Sheet, SheetContent } from "../ui/sheet";
 import Image from "next/image";
-import mainWebLogo from "@/components/_images/WhatsApp Image 2024-10-09 at 19.48.26.jpeg";
+import mainLogo from "@/components/_images/nexuslogo.png";
 import { Menu } from "lucide-react";
 
 export default function Navbar() {
@@ -37,7 +37,7 @@ export default function Navbar() {
             <div className="max-w-6xl mx-auto flex items-center justify-between h-16">
                 <Link href="/" className="flex items-center space-x-2">
                     <Image
-                        src={mainWebLogo}
+                        src={mainLogo}
                         alt="MainLogo"
                         height={40}
                         width={40}
