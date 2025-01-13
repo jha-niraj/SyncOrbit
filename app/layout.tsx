@@ -5,7 +5,6 @@ import Navbar from "@/components/homepage/site-header";
 import { ThemeProvider } from "@/components/theme-providers";
 import Footer from "@/components/homepage/footer";
 import { Toaster } from "@/components/ui/toaster";
-import Head from "next/head";
 
 const spaceGrotesk = Space_Grotesk({
 	subsets: ['latin'],
