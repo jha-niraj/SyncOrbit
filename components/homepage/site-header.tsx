@@ -3,15 +3,34 @@
 import { Button } from "../ui/button";
 import Link from "next/link";
 // import { useTheme } from "next-themes";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Sheet, SheetContent } from "../ui/sheet";
 import Image from "next/image";
 import mainLogo from "@/components/_images/nexuslogo.png";
 import { Menu } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { useRouter } from "next/navigation";
+
+const dropdownData = [
+    {
+        title: "Budget Estimator",
+        link: "budgetestimator",
+        status: "live"
+    },
+    {
+        title: "Nexus Invoices",
+        link: "#",
+        status:"coming"
+    }
+]
 
 export default function Navbar() {
     const [sheetOpen, setSheetOpen] = useState<boolean>(false);
     const [scrolled, setScrolled] = useState(false);
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const dropdownRef = useRef<HTMLDivElement>(null);
+    const { toast } = useToast();
+    const router = useRouter();
 
     useEffect(() => {
         const handleScroll = () => {
@@ -28,6 +47,18 @@ export default function Navbar() {
             window.removeEventListener('scroll', handleScroll);
         };
     }, []);
+
+    const handleProducts = (link: string, status: string) => {
+        console.log(`${link}`);
+        if(status === "live") {
+            router.push(`${link}`);
+        } else {
+            toast({
+                title: "Coming Soon",
+                description: "We are currently working on it, it will live soon..."
+            })
+        }   
+    }
 
     return (
         <nav className={`fixed top-0 w-full z-50 text-white transition-all duration-300 ${scrolled
@@ -64,6 +95,42 @@ export default function Navbar() {
                     <Link href="#" className="text-sm hover:scale-110 transition-all duration-300">
                         Blog
                     </Link>
+                    <div
+                        ref={dropdownRef}
+                        className="relative"
+                        onMouseEnter={() => setIsDropdownOpen(true)}
+                        onMouseLeave={() => setIsDropdownOpen(false)}
+                    >
+                        <button className="hover:scale-110 transition-all duration-300">
+                            Products
+                        </button>
+                        {
+                            isDropdownOpen && (
+                                <>
+                                    <div className="absolute top-full left-0 h-4 w-full" />
+                                    <div className="absolute top-[calc(100%+16px)] left-0 w-48 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                                        <div className="py-1">
+                                            {
+                                                dropdownData.map((data, index) => {
+                                                    return (
+                                                        <button 
+                                                            key={index}  
+                                                            onClick={() => handleProducts(data.link, data.status)}
+                                                            className="block px-4 py-2 hover:bg-gray-100"
+                                                        >
+                                                            <div className="flex flex-col">
+                                                                <span className="font-medium text-gray-900">{data.title}</span>
+                                                            </div>
+                                                        </button>
+                                                    )
+                                                })
+                                            }
+                                        </div>
+                                    </div>
+                                </>
+                            )
+                        }
+                    </div>
                 </div>
                 <div className="flex items-center justify-center space-x-4">
                     {/* <div className="flex items-center justify-center">

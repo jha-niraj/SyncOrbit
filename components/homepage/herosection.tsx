@@ -1,8 +1,8 @@
 import { motion } from "framer-motion";
 import { RainbowButton } from "../ui/rainbow-button";
 import CalBtn from "@/app/providers/cal-btn";
-import { PeopleService } from "./poepleserve";
 import MorphingText from "../ui/morphing-text";
+import Link from "next/link";
 
 const texts = ["Affordable", "Beautiful", "Scalable", "Reliable", "Shaping"];
 
@@ -45,20 +45,21 @@ export default function HeroSection() {
                         transition={{ duration: 1, delay: 0.9 }}
                         className="flex flex-col md:flex-row items-center justify-center w-full gap-6"
                     >
-                        <motion.button
-                            whileHover={{ scale: 1.05, boxShadow: "4px 4px 0px rgba(0,0,0,0.2)" }}
-                            transition={{ duration: 0.3 }}
-                            className="px-4 py-2 rounded-md border border-black bg-white text-black text-sm hover:shadow-[4px_4px_0px_0px_rgba(0,0,0)] transition duration-200"
-                        >
-                            Budget Estimator
-                        </motion.button>
+                        <Link href="/budgetestimator">
+                            <motion.button
+                                whileHover={{ scale: 1.05, boxShadow: "4px 4px 0px rgba(0,0,0,0.2)" }}
+                                transition={{ duration: 0.3 }}
+                                className="px-4 py-2 rounded-md border border-black bg-white text-black text-sm hover:shadow-[4px_4px_0px_0px_rgba(0,0,0)] transition duration-200"
+                            >
+                                Budget Estimator
+                            </motion.button>
+                        </Link>
                         <RainbowButton>
                             <CalBtn classNames="" label="Book a call Now" />
                         </RainbowButton>
                     </motion.div>
                 </motion.div>
             </motion.div>
-            <PeopleService />
         </main>
     );
 }

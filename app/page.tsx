@@ -10,6 +10,7 @@ import { Approach } from "@/components/homepage/approach";
 import WhyUs from "@/components/homepage/whyus";
 // import PricingSection from "@/components/homepage/pricing-section";
 import FaqsAccrodian from "@/components/homepage/faqs";
+import { PeopleService } from "@/components/homepage/poepleserve";
 
 export default function ServicesPage() {
     return (
@@ -22,6 +23,7 @@ export default function ServicesPage() {
                 {/* <LocationsSection /> */}
                 <WhyUs />
                 <TestimonialsSection />
+                <PeopleService />
                 {/* <PricingSection /> */}
                 <FaqsAccrodian />
             </main>

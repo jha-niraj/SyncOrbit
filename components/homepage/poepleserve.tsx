@@ -1,26 +1,23 @@
 import { cn } from "@/lib/utils";
 import Marquee from "../ui/marquee";
-import ShineBorder from "../ui/shine-border";
 import Image from "next/image";
 
-const service = [
-    {
-        name: "Website Development",
-        location: "",
-        img: "https://imgs.search.brave.com/wENFW3F9ShMe934oX5sYornMfePsrEXGkQ3LEdgaWag/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly90NC5m/dGNkbi5uZXQvanBn/LzAzLzAxLzYzLzA1/LzM2MF9GXzMwMTYz/MDU5Ml9GdkpPSVc5/WkR6UEtnUnl3cWls/Z0VvcXJYdDJxZG93/aS5qcGc"
-    },
-    {
-        name: "Web Designing",
-        location: "",
-        img: "https://imgs.search.brave.com/wENFW3F9ShMe934oX5sYornMfePsrEXGkQ3LEdgaWag/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly90NC5m/dGNkbi5uZXQvanBn/LzAzLzAxLzYzLzA1/LzM2MF9GXzMwMTYz/MDU5Ml9GdkpPSVc5/WkR6UEtnUnl3cWls/Z0VvcXJYdDJxZG93/aS5qcGc"
-    },
-    {
-        name: "Video Editing",
-        location: "",
-        img: "https://imgs.search.brave.com/wENFW3F9ShMe934oX5sYornMfePsrEXGkQ3LEdgaWag/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly90NC5m/dGNkbi5uZXQvanBn/LzAzLzAxLzYzLzA1/LzM2MF9GXzMwMTYz/MDU5Ml9GdkpPSVc5/WkR6UEtnUnl3cWls/Z0VvcXJYdDJxZG93/aS5qcGc"
-    }
-]
 const reviews = [
+    {
+        name: "Jack",
+        location: "New York, USA",
+        img: "https://img.freepik.com/free-photo/confident-sassy-young-bearded-gay-man-pink-t-shirt-shirt-hold-hand-waist-pointing-upper-left-corner-smiling-suggest-friends-visit-party-nearby_176420-37053.jpg?semt=ais_hybrid",
+    },
+    {
+        name: "Jill",
+        location: "London, UK",
+        img: "https://img.freepik.com/free-photo/confident-sassy-young-bearded-gay-man-pink-t-shirt-shirt-hold-hand-waist-pointing-upper-left-corner-smiling-suggest-friends-visit-party-nearby_176420-37053.jpg?semt=ais_hybrid",
+    },
+    {
+        name: "John",
+        location: "Sydney, Australia",
+        img: "https://img.freepik.com/free-photo/confident-sassy-young-bearded-gay-man-pink-t-shirt-shirt-hold-hand-waist-pointing-upper-left-corner-smiling-suggest-friends-visit-party-nearby_176420-37053.jpg?semt=ais_hybrid",
+    },
     {
         name: "Jack",
         location: "New York, USA",
@@ -38,8 +35,8 @@ const reviews = [
     }
 ];
 
-const firstRow = service.slice(0, service.length);
-const secondRow = reviews.slice(0, reviews.length);
+const firstRow = reviews.slice(0, reviews.length / 2);
+const secondRow = reviews.slice(reviews.length / 2);
 
 const ReviewCard = ({
     img,
@@ -53,7 +50,7 @@ const ReviewCard = ({
     return (
         <figure
             className={cn(
-                "relative w-64 cursor-pointer overflow-hidden rounded-xl border p-4 flex items-center gap-4",
+                "relative w-64 cursor-pointer overflow-hidden rounded-xl border p-2 flex items-center gap-4",
                 // light styles
                 "border-gray-950/[.1] bg-gray-950/[.01] hover:bg-gray-950/[.05]",
                 // dark styles
@@ -62,16 +59,16 @@ const ReviewCard = ({
         >
             <Image
                 className="rounded-full"
-                width="48"
-                height="48"
+                width="150"
+                height="150"
                 alt={`${name}'s avatar`}
                 src={img}
             />
             <div className="flex flex-col">
-                <figcaption className="text-sm font-medium text-white ">
+                <figcaption className="text-sm font-medium text-black ">
                     {name}
                 </figcaption>
-                <p className="text-xs font-medium text-white">{location}</p>
+                <p className="text-xs font-medium text-black">{location}</p>
             </div>
         </figure>
     );
@@ -79,27 +76,23 @@ const ReviewCard = ({
 
 export function PeopleService() {
     return (
-        <div className="relative max-w-6xl mx-auto flex h-[200px] w-full flex-col items-center justify-center overflow-hidden rounded-lg md:shadow-xl">
-            <Marquee pauseOnHover className="[--duration:20s]">
+        <div className="relative max-w-7xl mx-auto flex h-[350px] w-full flex-col items-center justify-center overflow-hidden rounded-lg">
+            <Marquee pauseOnHover className="[--duration:15s]">
                 {
                     firstRow.map((review) => (
-                        <ShineBorder key={review.name}>
-                            <ReviewCard {...review} />
-                        </ShineBorder>
+                        <ReviewCard key={review.name} {...review} />
                     ))
                 }
             </Marquee>
-            <Marquee reverse pauseOnHover className="[--duration:20s]">
+            <Marquee reverse pauseOnHover className="[--duration:15s]">
                 {
                     secondRow.map((review) => (
-                        <ShineBorder key={review.name}>
-                            <ReviewCard {...review} />
-                        </ShineBorder>
+                        <ReviewCard key={review.name}  {...review} />
                     ))
                 }
             </Marquee>
-            {/* <div className="pointer-events-none absolute inset-y-0 left-0 w-1/3 bg-gradient-to-r from-white dark:from-background"></div>
-            <div className="pointer-events-none absolute inset-y-0 right-0 w-1/3 bg-gradient-to-l from-white dark:from-background"></div> */}
+            <div className="pointer-events-none absolute inset-y-0 left-0 w-1/3 bg-gradient-to-r from-white dark:from-background"></div>
+            <div className="pointer-events-none absolute inset-y-0 right-0 w-1/3 bg-gradient-to-l from-white dark:from-background"></div>
         </div>
     );
 }
