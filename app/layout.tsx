@@ -5,6 +5,7 @@ import Navbar from "@/components/homepage/site-header";
 import { ThemeProvider } from "@/components/theme-providers";
 import Footer from "@/components/homepage/footer";
 import { Toaster } from "@/components/ui/toaster";
+import Head from "next/head";
 
 const spaceGrotesk = Space_Grotesk({
 	subsets: ['latin'],
@@ -16,6 +17,9 @@ const spaceGrotesk = Space_Grotesk({
 export const metadata: Metadata = {
 	title: "Nexus",
 	description: "You think we'll deliver",
+	icons: {
+        icon: "/nexuslogo.png",
+    },
 };
 
 export default function RootLayout({
