@@ -8,7 +8,7 @@ import { TestimonialsSection } from "@/components/homepage/testimonials-section"
 // import { LocationsSection } from "@/components/homepage/locations-section";
 import { Approach } from "@/components/homepage/approach";
 import WhyUs from "@/components/homepage/whyus";
-import PricingSection from "@/components/homepage/pricing-section";
+// import PricingSection from "@/components/homepage/pricing-section";
 import FaqsAccrodian from "@/components/homepage/faqs";
 
 export default function ServicesPage() {
@@ -22,7 +22,7 @@ export default function ServicesPage() {
                 {/* <LocationsSection /> */}
                 <WhyUs />
                 <TestimonialsSection />
-                <PricingSection />
+                {/* <PricingSection /> */}
                 <FaqsAccrodian />
             </main>
         </SmoothScroll>
