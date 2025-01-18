@@ -89,9 +89,9 @@ export default function Navbar() {
                     <Link href="#faqs" className="text-sm hover:scale-110 transition-all duration-300">
                         Faq&apos;s
                     </Link>
-                    <Link href="#pricing" className="text-sm hover:scale-110 transition-all duration-300">
+                    {/* <Link href="#pricing" className="text-sm hover:scale-110 transition-all duration-300">
                         Pricing
-                    </Link>
+                    </Link> */}
                     <Link href="#" className="text-sm hover:scale-110 transition-all duration-300">
                         Blog
                     </Link>
