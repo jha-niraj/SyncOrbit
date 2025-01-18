@@ -11,6 +11,7 @@ import WhyUs from "@/components/homepage/whyus";
 // import PricingSection from "@/components/homepage/pricing-section";
 import FaqsAccrodian from "@/components/homepage/faqs";
 import { PeopleService } from "@/components/homepage/poepleserve";
+import ContactForm from "@/components/homepage/contactsection";
 
 export default function ServicesPage() {
     return (
@@ -26,6 +27,7 @@ export default function ServicesPage() {
                 <PeopleService />
                 {/* <PricingSection /> */}
                 <FaqsAccrodian />
+                <ContactForm />
             </main>
         </SmoothScroll>
     )
