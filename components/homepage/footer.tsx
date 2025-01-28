@@ -3,7 +3,7 @@ import Link from 'next/link'
 
 export default function Footer() {
     return (
-        <footer className="w-full bg-black border-t border-white/10 rounded-tl-2xl rounded-tr-2xl text-gray-400">
+        <footer className="w-full bg-black border-t border-white/10 rounded-tl-2xl rounded-tr-2xl text-gray-300">
             <div className="max-w-7xl mx-auto px-4 py-6">
                 <div className="w-full flex justify-between">
                     <div className="flex flex-col">
@@ -24,10 +24,10 @@ export default function Footer() {
                         </div>
                     </div>
                     <div className="grid grid-cols-2 md:flex flex-col md:flex-row items-center gap-2 md:gap-16">
-                        <Link href="#" className="hover:text-white transition-colors">About</Link>
-                        <Link href="#" className="hover:text-white transition-colors">Blog</Link>
-                        <Link href="#" className="hover:text-white transition-colors">Careers</Link>
-                        <Link href="#" className="hover:text-white transition-colors">Contact</Link>
+                        <Link href="#" className="hover:text-white hover:scale-110 transition-all duration-300">About</Link>
+                        <Link href="#" className="hover:text-white hover:scale-110 transition-all duration-300">Blog</Link>
+                        <Link href="#" className="hover:text-white hover:scale-110 transition-all duration-300">Careers</Link>
+                        <Link href="#" className="hover:text-white hover:scale-110 transition-all duration-300">Contact</Link>
                     </div>
                 </div>
                 <div className="mt-6 border-t border-white/10 flex flex-col md:flex-row justify-between items-center">

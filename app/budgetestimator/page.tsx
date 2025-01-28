@@ -30,16 +30,16 @@ export default function BudgetEstimatorPage() {
                                 </button>
                                 <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
                                     {
-                                    [
-                                        { icon: DollarSign, text: "Accurate Pricing" },
-                                        { icon: Clock, text: "Quick Turnaround" },
-                                        { icon: PieChart, text: "Detailed Breakdown" }
-                                    ].map((feature, index) => (
-                                        <div key={index} className="flex items-center justify-center lg:justify-start">
-                                            <feature.icon className="w-6 h-6 text-white mr-2" />
-                                            <span className="text-gray-300 font-medium">{feature.text}</span>
-                                        </div>
-                                    ))}
+                                        [
+                                            { icon: DollarSign, text: "Accurate Pricing" },
+                                            { icon: Clock, text: "Quick Turnaround" },
+                                            { icon: PieChart, text: "Detailed Breakdown" }
+                                        ].map((feature, index) => (
+                                            <div key={index} className="flex items-center justify-center lg:justify-start">
+                                                <feature.icon className="w-6 h-6 text-white mr-2" />
+                                                <span className="text-gray-300 font-medium">{feature.text}</span>
+                                            </div>
+                                        ))}
                                 </div>
                             </div>
                             <div className="lg:w-1/2 h-full relative w-full flex items-center justify-center">
@@ -60,7 +60,6 @@ export default function BudgetEstimatorPage() {
                     <ArrowRight className="w-8 h-8 text-blue-600 transform rotate-90" />
                 </div>
             </div>
-
             <section id="estimator-form" className="py-24 bg-white">
                 <div className="container mx-auto px-4">
                     <BudgetEstimatorForm />

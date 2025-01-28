@@ -18,9 +18,9 @@ const dropdownData = [
         status: "live"
     },
     {
-        title: "Nexus Invoices",
-        link: "#",
-        status:"coming"
+        title: "NexInvoice",
+        link: "/nexinvoice",
+        status:"live"
     }
 ]
 
@@ -116,7 +116,7 @@ export default function Navbar() {
                                                         <button 
                                                             key={index}  
                                                             onClick={() => handleProducts(data.link, data.status)}
-                                                            className="block px-4 py-2 hover:bg-gray-100"
+                                                            className="w-full flex items-start px-4 py-2 hover:bg-gray-100"
                                                         >
                                                             <div className="flex flex-col">
                                                                 <span className="font-medium text-gray-900">{data.title}</span>
