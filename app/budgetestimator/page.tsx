@@ -5,6 +5,8 @@ import { ArrowRight, DollarSign, Clock, PieChart } from 'lucide-react'
 import BudgetEstimatorForm from './_components/bugdetestimateform';
 import budgetEstimateImg from "@/components/_images/budgetestimator.jpeg";
 
+export const runtime = "edge";
+
 export default function BudgetEstimatorPage() {
     const budgetEstimatorImg = budgetEstimateImg;
 

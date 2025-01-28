@@ -13,6 +13,8 @@ import FaqsAccrodian from "@/components/homepage/faqs";
 import { PeopleService } from "@/components/homepage/poepleserve";
 import ContactForm from "@/components/homepage/contactsection";
 
+export const runtime = "edge";
+
 export default function ServicesPage() {
     return (
         <SmoothScroll>

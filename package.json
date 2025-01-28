@@ -8,7 +8,7 @@
 		"build": "prisma generate && next build",
 		"start": "next start",
 		"lint": "next lint",
-		"pages:build": "npx @cloudflare/next-on-pages"
+		"pages:build": "npm install --force && npx @cloudflare/next-on-pages"
 	},
 	"dependencies": {
 		"@calcom/embed-react": "^1.5.2",
@@ -48,6 +48,7 @@
 		}
 	},
 	"devDependencies": {
+		"@cloudflare/next-on-pages": "^1.13.7",
 		"@eslint/eslintrc": "^3",
 		"@types/node": "^20",
 		"@types/react": "^19",
