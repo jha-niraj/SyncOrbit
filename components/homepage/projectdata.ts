@@ -1,5 +1,6 @@
 import thecoderz from "@/components/_images/thecoderz.png";
 import logistics from "@/components/_images/logistics.png";
+import mpsolutions from "../../public/" 
 
 export const projectData = [
     {
@@ -7,7 +8,7 @@ export const projectData = [
         title: "The Coder'z",
         description: "One stop platform for knowledge and support for computer science studetns",
         image: thecoderz,
-        link: "https://thecoderz.tech"
+        link: "https://thecoderz.in.net"
     },
     {
         id: 2,
@@ -20,8 +21,8 @@ export const projectData = [
         id: 3,
         title: "M.P. Solutions",
         description: "A central place to look for all the medicine that you need at one place",
-        image: "https://images.unsplash.com/photo-1593508512255-86ab42a8e620?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2078&q=80",
-        link: "#"
+        image: "",
+        link: "https://mpsolutions.vercel.app/"
     }
 ];
 
