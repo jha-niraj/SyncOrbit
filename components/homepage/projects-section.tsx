@@ -21,7 +21,6 @@ export default function ProjectSection() {
                                         <Image
                                             src={project.image}
                                             alt={project.title}
-                                            layout="fill"
                                             className="group-hover/card:scale-110 transition-transform duration-300"
                                         />
                                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-black/0 group-hover/card:bg-black/60 transition-all duration-300" />

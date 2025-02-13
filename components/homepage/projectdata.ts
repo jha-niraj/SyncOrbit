@@ -1,6 +1,6 @@
 import thecoderz from "@/components/_images/thecoderz.png";
 import logistics from "@/components/_images/logistics.png";
-import mpsolutions from "../../public/" 
+import mpsolutions from "../../public/mpsolutions.png";
 
 export const projectData = [
     {
@@ -21,7 +21,7 @@ export const projectData = [
         id: 3,
         title: "M.P. Solutions",
         description: "A central place to look for all the medicine that you need at one place",
-        image: "",
+        image: mpsolutions,
         link: "https://mpsolutions.vercel.app/"
     }
 ];
