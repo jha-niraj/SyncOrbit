@@ -14,10 +14,10 @@ const spaceGrotesk = Space_Grotesk({
 })
 
 export const metadata: Metadata = {
-	title: "Nexus",
+	title: "VayuLabs",
 	description: "You think we'll deliver",
 	icons: {
-        icon: "/nexuslogo.png",
+        icon: "/vayulabs.png",
     },
 };
 

@@ -108,10 +108,10 @@ export function EmailInvoice({
 							<div className="flex items-center gap-3 mb-2">
 								<Receipt className="h-8 w-8 text-primary" />
 								<h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-primary/60 text-transparent bg-clip-text">
-									NEXUS
+									VayuLabs
 								</h1>
 							</div>
-							<p className="text-gray-500 mt-1 font-medium">Invoice #NEX-2025-001</p>
+							<p className="text-gray-500 mt-1 font-medium">Invoice #VL-2025-001</p>
 						</div>
 						<div className="text-right">
 							<input type="file" ref={fileInputRef} onChange={handleLogoUpload} className="hidden" accept="image/*" />

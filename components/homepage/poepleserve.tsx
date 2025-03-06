@@ -77,14 +77,14 @@ const ReviewCard = ({
 export function PeopleService() {
     return (
         <div className="relative max-w-7xl mx-auto flex h-[350px] w-full flex-col items-center justify-center overflow-hidden rounded-lg">
-            <Marquee pauseOnHover className="[--duration:15s]">
+            <Marquee reverse pauseOnHover className="[--duration:15s]">
                 {
                     firstRow.map((review) => (
                         <ReviewCard key={review.name} {...review} />
                     ))
                 }
             </Marquee>
-            <Marquee reverse pauseOnHover className="[--duration:15s]">
+            <Marquee pauseOnHover className="[--duration:15s]">
                 {
                     secondRow.map((review) => (
                         <ReviewCard key={review.name}  {...review} />

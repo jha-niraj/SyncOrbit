@@ -11,10 +11,10 @@ const spaceGrotesk = Space_Grotesk({
 })
 
 export const metadata: Metadata = {
-	title: "Nexus",
+	title: "VayuLabs",
 	description: "You think we'll deliver",
 	icons: {
-        icon: "/nexuslogo.png",
+        icon: "/vayulabs.png",
     },
 };
 
@@ -26,7 +26,7 @@ export default function RootLayout({
 	return (
 		<html lang="en">
 			<head>
-				<link rel="icon" href="/nexuslogo.ico" />
+				<link rel="icon" href="/vayulabs.ico" />
 			</head>
 			<body
 				className={spaceGrotesk.className} style={{ scrollBehavior: "smooth" }}

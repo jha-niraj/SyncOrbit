@@ -57,20 +57,22 @@ export default function WhyUs() {
                     What Makes Us <span className="text-red-400">Stand Out</span>?
                 </h2>
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12 max-w-7xl mx-auto">
-                    {cards.map((card, index) => (
-                        <motion.div
-                            key={index}
-                            className="group space-y-4 p-6 transition-all duration-300 hover:bg-white/10 shadow-lg hover:shadow-2xl rounded-2xl"
-                            initial={animations[index].initial}
-                            whileInView={animations[index].whileInView}
-                            viewport={{ once: true, amount: 0.3 }}
-                            transition={{ duration: 0.5, ease: "easeOut" }}
-                        >
-                            {card.icon}
-                            <h3 className="text-xl font-semibold text-white">{card.title}</h3>
-                            <p className="text-white leading-relaxed">{card.description}</p>
-                        </motion.div>
-                    ))}
+                    {
+                        cards.map((card, index) => (
+                            <motion.div
+                                key={index}
+                                className="group space-y-4 p-6 transition-all duration-300 hover:bg-white/10 shadow-lg hover:shadow-2xl rounded-2xl"
+                                initial={animations[index].initial}
+                                whileInView={animations[index].whileInView}
+                                viewport={{ once: true, amount: 0.3 }}
+                                transition={{ duration: 0.5, ease: "easeOut" }}
+                            >
+                                {card.icon}
+                                <h3 className="text-xl font-semibold text-white">{card.title}</h3>
+                                <p className="text-white leading-relaxed">{card.description}</p>
+                            </motion.div>
+                        ))
+                    }
                 </div>
             </div>
         </section>

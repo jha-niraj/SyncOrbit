@@ -4,9 +4,9 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function sendInvoiceEmail(recipientEmail: string, invoiceImage: string, invoiceNumber: string) {
     const { data, error } = await resend.emails.send({
-        from: 'Nexus Works <invoices@nexusworks.com>',
+        from: 'VayuLabs <invoices@vayulabs.in>',
         to: [recipientEmail],
-        subject: `Your Invoice #${invoiceNumber} from Nexus Works`,
+        subject: `Your Invoice #${invoiceNumber} from Vayu Labs`,
         html: getEmailTemplate(invoiceNumber),
         attachments: [
             {
@@ -31,7 +31,7 @@ function getEmailTemplate(invoiceNumber: string) {
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Invoice from Nexus Works</title>
+        <title>Invoice from Vayu Labs Works</title>
         <style>
             body {
                 font-family: Arial, sans-serif;
@@ -63,18 +63,18 @@ function getEmailTemplate(invoiceNumber: string) {
     </head>
     <body>
         <div class="header">
-            <h1>Invoice from Nexus Works</h1>
+            <h1>Invoice from Vayu Labs</h1>
         </div>
         <div class="content">
             <h2>Dear Valued Customer,</h2>
-            <p>Thank you for choosing Nexus Works. We hope you're satisfied with our services.</p>
+            <p>Thank you for choosing Vayu Labs Works. We hope you're satisfied with our services.</p>
             <p>Please find attached your invoice #${invoiceNumber}.</p>
             <p>If you have any questions or concerns regarding this invoice, please don't hesitate to contact our support team.</p>
             <p>We appreciate your business and look forward to serving you in the future.</p>
-            <p>Best regards,<br>The Nexus Works Team</p>
+            <p>Best regards,<br>The Vayu Labs Works Team</p>
         </div>
         <div class="footer">
-            <p>© 2023 Nexus Works. All rights reserved.</p>
+            <p>© 2023 Vayu Labs Works. All rights reserved.</p>
             <p>123 Business Street, Tech City, TC 12345</p>
         </div>
     </body>

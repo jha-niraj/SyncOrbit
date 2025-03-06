@@ -2,11 +2,9 @@
 
 import { Button } from "../ui/button";
 import Link from "next/link";
-// import { useTheme } from "next-themes";
 import { useState, useEffect, useRef } from "react";
 import { Sheet, SheetContent } from "../ui/sheet";
 import Image from "next/image";
-import mainLogo from "@/components/_images/nexuslogo.png";
 import { Menu } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
@@ -68,13 +66,13 @@ export default function Navbar() {
             <div className="max-w-6xl mx-auto flex items-center justify-between h-16">
                 <Link href="/" className="flex items-center space-x-2">
                     <Image
-                        src={mainLogo}
+                        src="/vayulabs.png"
                         alt="MainLogo"
                         height={40}
                         width={40}
                         className="rounded-sm"
                     />
-                    <h1 className="text-xl font-semibold">Nexus</h1>
+                    <h1 className="text-xl font-semibold">VayuLabs</h1>
                 </Link>
                 <div className="hidden md:flex items-center space-x-6">
                     <Link href="#whyus" className="text-sm hover:scale-110 transition-all duration-300">
@@ -147,8 +145,8 @@ export default function Navbar() {
                             )
                         }
                     </div> */}
-                    <Link href="https://cal.com/nexusofficial/15min" target="_blank">
-                        <Button variant="outline" className="w-full hidden md:flex rounded-2xl px-4 py-4 text-md bg-white hover:bg-white text-black hover:shadow-[0px_6px_0px_0px_rgba(0,0,0,1)] shadow-none hover:translate-y-1 transition-all duration-200">
+                    <Link href="https://cal.com/vayu-labs/15min" target="_blank">
+                        <Button variant="outline" className="w-full hidden md:flex hover:scale-105 rounded-lg px-4 py-4 text-md bg-white hover:bg-white text-black hover:shadow-[0px_6px_0px_0px_rgba(0,0,0,1)] shadow-none transition-all duration-200">
                             Book a 15 min call
                         </Button>
                     </Link>
