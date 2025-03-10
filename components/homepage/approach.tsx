@@ -13,7 +13,7 @@ const data = [
                 </p>
                 <div className="grid grid-cols-1">
                     <Image
-                        src={approachImg}
+                        src="/delivery.jpg"
                         alt="Discovery phase illustration"
                         width={500}
                         height={500}
@@ -32,7 +32,7 @@ const data = [
                 </p>
                 <div className="grid grid-cols-1">
                     <Image
-                        src={approachImg}
+                        src="/prototype.jpg"
                         alt="Prototype development illustration"
                         width={500}
                         height={500}
@@ -51,7 +51,7 @@ const data = [
                 </p>
                 <div className="grid grid-cols-1">
                     <Image
-                        src={approachImg}
+                        src="/teamdevelopment.jpg"
                         alt="Development process illustration"
                         width={500}
                         height={500}
@@ -70,7 +70,7 @@ const data = [
                 </p>
                 <div className="grid grid-cols-1">
                     <Image
-                        src={approachImg}
+                        src="/thumbsup.jpg"
                         alt="Project delivery illustration"
                         width={500}
                         height={500}

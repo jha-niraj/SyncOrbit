@@ -9,7 +9,7 @@ export default function Footer() {
                     <div className="flex flex-col">
                         <div className="flex items-center space-x-2 mb-3">
                             <Diamond className="h-6 w-6" />
-                            <span className="text-xl font-semibold text-white">VayuLabs</span>
+                            <span className="text-xl font-semibold text-white">Shunya Tech</span>
                         </div>
                         <div className="flex space-x-8">
                             <Link href="#" className="hover:text-white transition-colors">
@@ -32,7 +32,7 @@ export default function Footer() {
                 </div>
                 <div className="mt-6 border-t border-white/10 flex flex-col md:flex-row justify-between items-center">
                     <p className="text-sm mb-4 md:mb-0">
-                        © {new Date().getFullYear()} VayuLabs. All rights reserved.
+                        © {new Date().getFullYear()} Shunya Tech. All rights reserved.
                     </p>
                     <div className="flex items-center justify-center space-x-6 text-sm">
                         <Link href="#" className="hover:text-white text-center transition-colors">

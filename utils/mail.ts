@@ -4,9 +4,9 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function sendInvoiceEmail(recipientEmail: string, invoiceImage: string, invoiceNumber: string) {
     const { data, error } = await resend.emails.send({
-        from: 'VayuLabs <invoices@vayulabs.in>',
+        from: 'Shunya Tech <invoices@shunyatech.in>',
         to: [recipientEmail],
-        subject: `Your Invoice #${invoiceNumber} from Vayu Labs`,
+        subject: `Your Invoice #${invoiceNumber} from Shunya Tech`,
         html: getEmailTemplate(invoiceNumber),
         attachments: [
             {
@@ -31,7 +31,7 @@ function getEmailTemplate(invoiceNumber: string) {
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Invoice from Vayu Labs Works</title>
+        <title>Invoice from Shunya Tech</title>
         <style>
             body {
                 font-family: Arial, sans-serif;
@@ -63,18 +63,18 @@ function getEmailTemplate(invoiceNumber: string) {
     </head>
     <body>
         <div class="header">
-            <h1>Invoice from Vayu Labs</h1>
+            <h1>Invoice from Shunya Tech</h1>
         </div>
         <div class="content">
             <h2>Dear Valued Customer,</h2>
-            <p>Thank you for choosing Vayu Labs Works. We hope you're satisfied with our services.</p>
+            <p>Thank you for choosing Shunya Tech Works. We hope you're satisfied with our services.</p>
             <p>Please find attached your invoice #${invoiceNumber}.</p>
             <p>If you have any questions or concerns regarding this invoice, please don't hesitate to contact our support team.</p>
             <p>We appreciate your business and look forward to serving you in the future.</p>
-            <p>Best regards,<br>The Vayu Labs Works Team</p>
+            <p>Best regards,<br>The Shunya Tech Works Team</p>
         </div>
         <div class="footer">
-            <p>© 2023 Vayu Labs Works. All rights reserved.</p>
+            <p>© 2023 Shunya Tech Works. All rights reserved.</p>
             <p>123 Business Street, Tech City, TC 12345</p>
         </div>
     </body>

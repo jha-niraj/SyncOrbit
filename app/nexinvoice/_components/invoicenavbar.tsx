@@ -20,13 +20,13 @@ export function InvoiceNavbar({
             <div className="max-w-4xl mx-auto flex justify-between items-center">
                 <div className="flex items-center space-x-4">
                     <Image
-                        src="/vayulabs.png"
-                        alt="VayuLabs Logo"
+                        src="shunyatech.png"
+                        alt="Shunya Tech Logo"
                         width={40}
                         height={40}
                         className="rounded-lg"
                     />
-                    <h1 className="text-2xl font-bold text-primary">VayuLabs Invoice</h1>
+                    <h1 className="text-2xl font-bold text-primary">ShunyaTech Invoice</h1>
                 </div>
                 <div className="flex items-center space-x-4">
                     <Tabs

@@ -64,15 +64,15 @@ export default function Navbar() {
             : 'bg-transparent'
             }`}>
             <div className="max-w-6xl mx-auto flex items-center justify-between h-16">
-                <Link href="/" className="flex items-center space-x-2">
+                <Link href="/" className="flex items-center">
                     <Image
-                        src="/vayulabs.png"
+                        src="/shunyatech.png"
                         alt="MainLogo"
-                        height={40}
-                        width={40}
+                        height={60}
+                        width={60}
                         className="rounded-sm"
                     />
-                    <h1 className="text-xl font-semibold">VayuLabs</h1>
+                    <h1 className="text-xl font-semibold">Shunya Tech</h1>
                 </Link>
                 <div className="hidden md:flex items-center space-x-6">
                     <Link href="#whyus" className="text-sm hover:scale-110 transition-all duration-300">
