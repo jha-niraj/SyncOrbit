@@ -12,6 +12,7 @@ import WhyUs from "@/components/homepage/whyus";
 import FaqsAccrodian from "@/components/homepage/faqs";
 import { PeopleService } from "@/components/homepage/poepleserve";
 import ContactForm from "@/components/homepage/contactsection";
+import AboutUsSection from "@/components/homepage/aboutussection";
 
 export const runtime = "edge";
 
@@ -22,6 +23,7 @@ export default function ServicesPage() {
                 <HeroSection />
                 <ServicesSection />
                 <ProjectsSection />
+                <AboutUsSection />
                 <Approach />
                 {/* <LocationsSection /> */}
                 <WhyUs />

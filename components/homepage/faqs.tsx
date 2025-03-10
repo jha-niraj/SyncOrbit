@@ -6,6 +6,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { MessageCircle } from "lucide-react";
+import Link from "next/link";
 
 const data = [
     {
@@ -51,7 +52,11 @@ const FaqsAccrodian = () => {
                 <div className="flex flex-col gap-4 w-full lg:w-1/3">
                     <Badge className="w-14">FAQ&apos;s</Badge>
                     <h1 className="font-medium text-4xl">What would you like to know about Our Agency?</h1>
-                    <Button className="flex gap-2 max-w-32"><MessageCircle /> Talk to us</Button>
+                    <Button className="flex gap-2 max-w-32">
+                        <Link href="mailto:shunyatechofficial@gmail.com" className="flex gap-3">
+                            <MessageCircle /> Talk to us
+                        </Link>
+                    </Button>
                 </div>
                 <div className="w-full lg:w-2/3">
                     <Accordion type="multiple" className="gap-3 rounded-lg flex flex-col">

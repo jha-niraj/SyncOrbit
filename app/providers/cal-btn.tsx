@@ -14,15 +14,15 @@ export default function CalBtn({ label = "Click", classNames = "" }: CalBtnProps
     useEffect(() => {
         (async function () {
             const cal = await getCalApi({
-                namespace: "vayu-labs",
+                namespace: "shunyatech",
             });
             cal("ui", { hideEventTypeDetails: false, layout: "month_view" });
         })();
     }, []);
     return (
         <div
-            data-cal-namespace="vayu-labs"
-            data-cal-link="vayu-labs/30min"
+            data-cal-namespace="shunyatech"
+            data-cal-link="shunyatech/30min"
             data-cal-config='{"layout":"month_view"}'
             className={cn("", classNames)}
         >

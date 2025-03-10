@@ -2,33 +2,41 @@
 
 import { Button } from "../ui/button";
 import Link from "next/link";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { Sheet, SheetContent } from "../ui/sheet";
 import Image from "next/image";
-import { Menu } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
-import { useRouter } from "next/navigation";
+import { ArrowRight, FileText, Menu, Route } from "lucide-react";
+// import { useToast } from "@/hooks/use-toast";
+// import { useRouter } from "next/navigation";
+import { motion } from "framer-motion";
+import { Card } from "../ui/card";
 
-const dropdownData = [
+interface ResourceItem {
+    icon: React.ElementType
+    title: string
+    description: string
+    href: string
+}
+const resources: ResourceItem[] = [
     {
-        title: "Budget Estimator",
-        link: "budgetestimator",
-        status: "live"
+        icon: FileText,
+        title: "Products",
+        description: "Our own products",
+        href: "/resources"
     },
     {
-        title: "NexInvoice",
-        link: "/nexinvoice",
-        status:"live"
+        icon: Route,
+        title: "Client Projects",
+        description: "Projects that we built for clients",
+        href: "/pathways"
     }
 ]
-
 export default function Navbar() {
     const [sheetOpen, setSheetOpen] = useState<boolean>(false);
     const [scrolled, setScrolled] = useState(false);
-    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-    const dropdownRef = useRef<HTMLDivElement>(null);
-    const { toast } = useToast();
-    const router = useRouter();
+    // const { toast } = useToast();
+    // const router = useRouter();
+    const [dropdownActive, setDropdownActive] = useState<boolean>(false);
 
     useEffect(() => {
         const handleScroll = () => {
@@ -46,24 +54,26 @@ export default function Navbar() {
         };
     }, []);
 
-    const handleProducts = (link: string, status: string) => {
-        console.log(`${link}`);
-        if(status === "live") {
-            router.push(`${link}`);
-        } else {
-            toast({
-                title: "Coming Soon",
-                description: "We are currently working on it, it will live soon..."
-            })
-        }   
+    const container = {
+        hidden: { opacity: 0 },
+        show: {
+            opacity: 1,
+            transition: {
+                staggerChildren: 0.1
+            }
+        }
+    }
+    const item = {
+        hidden: { opacity: 0, x: -20 },
+        show: { opacity: 1, x: 0 }
     }
 
     return (
-        <nav className={`fixed top-0 w-full z-50 text-white transition-all duration-300 ${scrolled
+        <nav className={`fixed top-0 w-full z-50 text-black transition-all duration-300 ${scrolled
             ? 'bg-black/30 backdrop-blur-md'
             : 'bg-transparent'
             }`}>
-            <div className="max-w-6xl mx-auto flex items-center justify-between h-16">
+            <div className="max-w-7xl mx-auto flex items-center justify-between h-16">
                 <Link href="/" className="flex items-center">
                     <Image
                         src="/shunyatech.png"
@@ -74,61 +84,80 @@ export default function Navbar() {
                     />
                     <h1 className="text-xl font-semibold">Shunya Tech</h1>
                 </Link>
-                <div className="hidden md:flex items-center space-x-6">
-                    <Link href="#whyus" className="text-sm hover:scale-110 transition-all duration-300">
-                        WhyUs
-                    </Link>
-                    <Link href="#projects" className="text-sm hover:scale-110 transition-all duration-300">
-                        Projects
-                    </Link>
-                    <Link href="#approach" className="text-sm hover:scale-110 transition-all duration-300">
-                        Approach
-                    </Link>
-                    <Link href="#faqs" className="text-sm hover:scale-110 transition-all duration-300">
-                        Faq&apos;s
-                    </Link>
-                    {/* <Link href="#pricing" className="text-sm hover:scale-110 transition-all duration-300">
-                        Pricing
-                    </Link> */}
-                    <Link href="#" className="text-sm hover:scale-110 transition-all duration-300">
-                        Blog
-                    </Link>
+                <div className="hidden md:flex items-center space-x-8">
                     <div
-                        ref={dropdownRef}
                         className="relative"
-                        onMouseEnter={() => setIsDropdownOpen(true)}
-                        onMouseLeave={() => setIsDropdownOpen(false)}
+                        onMouseEnter={() => setDropdownActive(true)}
+                        onMouseLeave={() => setDropdownActive(false)}
                     >
-                        <button className="hover:scale-110 transition-all duration-300">
+                        <button
+                            className="flex items-center justify-center gap-3 rounded-md text-md font-medium transition duration-200"
+                        >
                             Products
                         </button>
                         {
-                            isDropdownOpen && (
-                                <>
-                                    <div className="absolute top-full left-0 h-4 w-full" />
-                                    <div className="absolute top-[calc(100%+16px)] left-0 w-48 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                                        <div className="py-1">
-                                            {
-                                                dropdownData.map((data, index) => {
-                                                    return (
-                                                        <button 
-                                                            key={index}  
-                                                            onClick={() => handleProducts(data.link, data.status)}
-                                                            className="w-full flex items-start px-4 py-2 hover:bg-gray-100"
-                                                        >
-                                                            <div className="flex flex-col">
-                                                                <span className="font-medium text-gray-900">{data.title}</span>
+                            dropdownActive && (
+                                <motion.div
+                                    onMouseEnter={() => setDropdownActive(true)}
+                                    onMouseLeave={() => setDropdownActive(false)}
+                                    variants={container}
+                                    initial="hidden"
+                                    animate="show"
+                                    className="absolute top-full left-0 w-[420px] min-w-max z-50 shadow-lg rounded-lg z-100"
+                                >
+                                    <div className="absolute top-full left-0 w-full max-w-md pt-2 space-y-1 z-50">
+                                        {
+                                            resources.map((resource, index) => (
+                                                <motion.div
+                                                    key={index}
+                                                    variants={item}
+                                                    className="w-full bg-black dark:bg-white rounded-2xl"
+                                                    onClick={() => setDropdownActive(false)}
+                                                >
+                                                    <Link
+                                                        href={resource.href}
+                                                        target={`${resource.title === "Sessions" || resource.title === "VicharSpace" ? "_blank" : ""}`}
+                                                        className="group relative overflow-hidden cursor-pointer border-none shadow-sm transition-all hover:shadow-md h-full"
+                                                    >
+                                                        <Card className="flex text-black dark:text-white flex-row items-center justify-center gap-4 p-4 h-full">
+                                                            <div className="rounded-lg">
+                                                                <resource.icon className="h-5 w-5" />
                                                             </div>
-                                                        </button>
-                                                    )
-                                                })
-                                            }
-                                        </div>
+                                                            <div className="flex-1">
+                                                                <h3 className="font-semibold">
+                                                                    {resource.title}
+                                                                </h3>
+                                                                <p className="text-xs">
+                                                                    {resource.description}
+                                                                </p>
+                                                            </div>
+                                                            <ArrowRight className="h-5 w-5 transform opacity-0 transition-all group-hover:translate-x-1 group-hover:opacity-100" />
+                                                            <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-primary/5 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
+                                                        </Card>
+                                                    </Link>
+                                                </motion.div>
+                                            ))
+                                        }
                                     </div>
-                                </>
+                                </motion.div>
                             )
                         }
                     </div>
+                    <Link href="#whyus" className="text-md font-medium hover:scale-110 transition-all duration-300">
+                        WhyUs
+                    </Link>
+                    <Link href="#approach" className="text-md font-medium hover:scale-110 transition-all duration-300">
+                        Approach
+                    </Link>
+                    <Link href="#faqs" className="text-md font-medium hover:scale-110 transition-all duration-300">
+                        Faq&apos;s
+                    </Link>
+                    <Link href="#pricing" className="text-md font-medium hover:scale-110 transition-all duration-300">
+                        Pricing
+                    </Link>
+                    <Link href="#" className="text-md font-medium hover:scale-110 transition-all duration-300">
+                        Blog
+                    </Link>
                 </div>
                 <div className="flex items-center justify-center space-x-4">
                     {/* <div className="flex items-center justify-center">
@@ -145,13 +174,13 @@ export default function Navbar() {
                             )
                         }
                     </div> */}
-                    <Link href="https://cal.com/vayu-labs/15min" target="_blank">
+                    <Link href="https://cal.com/shunyatech/15min" target="_blank">
                         <Button variant="outline" className="w-full hidden md:flex hover:scale-105 rounded-lg px-4 py-4 text-md bg-white hover:bg-white text-black hover:shadow-[0px_6px_0px_0px_rgba(0,0,0,1)] shadow-none transition-all duration-200">
                             Book a 15 min call
                         </Button>
                     </Link>
                     <Button onClick={() => setSheetOpen(true)} variant="ghost" size="icon" className="md:hidden">
-                        <Menu className="h-6 w-6" />
+                        <Menu className="h-12 w-12" />
                         <span className="sr-only">Toggle menu</span>
                     </Button>
                 </div>

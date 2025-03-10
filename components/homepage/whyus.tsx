@@ -2,14 +2,6 @@ import { motion } from "framer-motion";
 import { Palette, Code, Laptop, Clock, Film, Handshake } from "lucide-react";
 
 export default function WhyUs() {
-    const animations = [
-        { initial: { x: -50, opacity: 0 }, whileInView: { x: 0, opacity: 1 } }, // Left
-        { initial: { y: -50, opacity: 0 }, whileInView: { y: 0, opacity: 1 } }, // Top
-        { initial: { x: 50, opacity: 0 }, whileInView: { x: 0, opacity: 1 } },  // Right
-        { initial: { x: -50, opacity: 0 }, whileInView: { x: 0, opacity: 1 } }, // Left
-        { initial: { y: 50, opacity: 0 }, whileInView: { y: 0, opacity: 1 } },  // Bottom
-        { initial: { x: 50, opacity: 0 }, whileInView: { x: 0, opacity: 1 } },  // Right
-    ];
 
     const cards = [
         {
@@ -62,8 +54,8 @@ export default function WhyUs() {
                             <motion.div
                                 key={index}
                                 className="group space-y-4 p-6 transition-all duration-300 hover:bg-white/10 shadow-lg hover:shadow-2xl rounded-2xl"
-                                initial={animations[index].initial}
-                                whileInView={animations[index].whileInView}
+                                initial={{ opacity: 0, y: -50 }}
+                                whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true, amount: 0.3 }}
                                 transition={{ duration: 0.5, ease: "easeOut" }}
                             >
