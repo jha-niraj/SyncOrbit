@@ -1,7 +1,6 @@
 import Image from "next/image";
 import React from "react";
 import { Timeline } from "@/components/ui/timeline";
-import approachImg from "@/components/_images/approach.jpeg";
 
 const data = [
     {

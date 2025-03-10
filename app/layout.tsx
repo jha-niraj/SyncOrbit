@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 	title: "Shunya Tech",
 	description: "You think we'll deliver",
 	icons: {
-        icon: "/Shunya Tech.pnginvoi",
+        icon: "/shunyatech.png",
     },
 };
 
@@ -26,6 +26,7 @@ export default function RootLayout({
 	return (
 		<html lang="en">
 			<head>
+				<title>ShunyaTech</title>
 				<link rel="icon" href="/shunyatech.ico" />
 			</head>
 			<body

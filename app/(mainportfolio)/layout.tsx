@@ -6,10 +6,10 @@ import Footer from "@/components/homepage/footer";
 import { Toaster } from "@/components/ui/toaster";
 
 export const metadata: Metadata = {
-	title: "VayuLabs",
+	title: "ShunyaTech",
 	description: "You think we'll deliver",
 	icons: {
-		icon: "/vayulabs.png",
+		icon: "/shunyatech.png",
 	},
 };
 
