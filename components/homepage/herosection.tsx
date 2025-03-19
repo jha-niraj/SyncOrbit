@@ -14,20 +14,20 @@ const texts = ["Affordable", "Beautiful", "Scalable", "Reliable", "Shaping"];
 
 export default function HeroSection() {
     return (
-        <main className="relative w-full h-screen bg-gradient-to-br from-background to-muted flex flex-col items-center justify-center py-36">
+        <main className="relative w-full min-h-screen bg-black text-white flex flex-col items-center justify-center py-36">
             <div className="absolute inset-0 bg-grid-pattern opacity-5 pointer-events-none"></div>
             <div className="max-w-7xl mx-auto h-full px-4 md:px-6 relative">
                 <div className="flex w-full h-full flex-col gap-8 lg:flex-row lg:gap-12 items-center">
                     <div className="flex w-full flex-col items-center md:items-start justify-between space-y-4 flex-1">
                         <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-primary text-primary-foreground hover:bg-primary/80 w-fit">
-                            Premium Digital Agency
+                            Product Based Agency
                         </div>
                         <div className="space-y-2">
                             <motion.h1
                                 initial={{ scale: 0.9, opacity: 0 }}
                                 animate={{ scale: 1, opacity: 1 }}
                                 transition={{ duration: 1, ease: "easeOut" }}
-                                className="text-2xl md:text-4xl text-center md:text-left font-medium bg-gradient-to-b from-black via-gray-900 to-gray-800 bg-clip-text text-transparent space-x-2"
+                                className="text-2xl md:text-4xl text-center md:text-left font-medium bg-gradient-to-b from-white via-gray-200 to-gray-100 bg-clip-text text-transparent space-x-2"
                             >
                                 Your Vision, Our Expertise
                             </motion.h1>
@@ -38,26 +38,36 @@ export default function HeroSection() {
                                 transition={{ duration: 1, ease: "easeOut" }}
                                 className="text-3xl text-center md:text-left font-bold tracking-tighter sm:text-5xl xl:text-6xl/none"
                             >
-                                Where <span className="text-primary">Services</span> Meet{" "}
-                                <span className="text-primary">Innovation</span>
+                                Where <span className="text-green-600">Services</span> Meet{" "}
+                                <span className="text-orange-500">Innovation</span>
                             </motion.h1>
-                            <p className="max-w-[600px] text-center md:text-left text-muted-foreground md:text-xl">
+                            <motion.p
+                                initial={{ scale: 0.9, opacity: 0 }}
+                                animate={{ scale: 1, opacity: 1 }}
+                                transition={{ duration: 1, ease: "easeOut" }}
+                                className="max-w-[600px] text-center md:text-left text-gray-300 md:text-xl"
+                            >
                                 ShunyaTech operates on a dual model: delivering premium client services at affordable prices while
                                 building innovative products that solve real-world problems.
-                            </p>
+                            </motion.p>
                         </div>
-                        <div className="flex flex-col md:flex-row items-center md:items-start justify-center gap-2">
+                        <motion.div
+                            initial={{ scale: 0.9, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            transition={{ duration: 1, ease: "easeOut" }}
+                            className="flex flex-col md:flex-row items-center md:items-start justify-center gap-2 text-black"
+                        >
                             <RainbowButton className="group">
                                 <CalBtn classNames="" label="Book a call Now" />
                                 <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
                             </RainbowButton>
                             <Button asChild variant="outline" size="lg" className="group">
-                                <Link href="#products">
+                                <Link href="#products" className="">
                                     Discover Our Products
                                     <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
                                 </Link>
                             </Button>
-                        </div>
+                        </motion.div>
                     </div>
                     <div className="flex-1 h-full relative">
                         <div className="relative h-full z-10 bg-white dark:bg-gray-950 rounded-2xl shadow-xl overflow-hidden border border-muted">

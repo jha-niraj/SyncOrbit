@@ -17,18 +17,32 @@ interface ResourceItem {
     description: string
     href: string
 }
+const tools: ResourceItem[] = [
+    {
+        icon: FileText,
+        title: "Budget Estimator",
+        description: "Estimate budget of your products",
+        href: "/budgetestimator"
+    },
+    {
+        icon: Route,
+        title: "NexInvoice",
+        description: "NextGen Invoice",
+        href: "/nexinvoice"
+    }
+]
 const resources: ResourceItem[] = [
     {
         icon: FileText,
         title: "Products",
         description: "Our own products",
-        href: "/resources"
+        href: "/products"
     },
     {
         icon: Route,
         title: "Client Projects",
         description: "Projects that we built for clients",
-        href: "/pathways"
+        href: "/clientprojects"
     }
 ]
 export default function Navbar() {
@@ -37,6 +51,7 @@ export default function Navbar() {
     // const { toast } = useToast();
     // const router = useRouter();
     const [dropdownActive, setDropdownActive] = useState<boolean>(false);
+    const [toolsDropdownActive, setToolsDropdownActive] = useState<boolean>(false);
 
     useEffect(() => {
         const handleScroll = () => {
@@ -69,7 +84,7 @@ export default function Navbar() {
     }
 
     return (
-        <nav className={`fixed top-0 w-full z-50 text-black transition-all duration-300 ${scrolled
+        <nav className={`fixed top-0 w-full z-50 text-white transition-all duration-300 ${scrolled
             ? 'bg-black/30 backdrop-blur-md'
             : 'bg-transparent'
             }`}>
@@ -129,6 +144,64 @@ export default function Navbar() {
                                                                 </h3>
                                                                 <p className="text-xs">
                                                                     {resource.description}
+                                                                </p>
+                                                            </div>
+                                                            <ArrowRight className="h-5 w-5 transform opacity-0 transition-all group-hover:translate-x-1 group-hover:opacity-100" />
+                                                            <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-primary/5 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
+                                                        </Card>
+                                                    </Link>
+                                                </motion.div>
+                                            ))
+                                        }
+                                    </div>
+                                </motion.div>
+                            )
+                        }
+                    </div>
+                    <div
+                        className="relative"
+                        onMouseEnter={() => setToolsDropdownActive(true)}
+                        onMouseLeave={() => setToolsDropdownActive(false)}
+                    >
+                        <button
+                            className="flex items-center justify-center gap-3 rounded-md text-md font-medium transition duration-200"
+                        >
+                            Tools
+                        </button>
+                        {
+                            toolsDropdownActive && (
+                                <motion.div
+                                    onMouseEnter={() => setToolsDropdownActive(true)}
+                                    onMouseLeave={() => setToolsDropdownActive(false)}
+                                    variants={container}
+                                    initial="hidden"
+                                    animate="show"
+                                    className="absolute top-full left-0 w-[420px] min-w-max z-50 shadow-lg rounded-lg z-100"
+                                >
+                                    <div className="absolute top-full left-0 w-full max-w-md pt-2 space-y-1 z-50">
+                                        {
+                                            tools.map((tool, index) => (
+                                                <motion.div
+                                                    key={index}
+                                                    variants={item}
+                                                    className="w-full bg-black dark:bg-white rounded-2xl"
+                                                    onClick={() => setToolsDropdownActive(false)}
+                                                >
+                                                    <Link
+                                                        href={tool.href}
+                                                        target={`${tool.title === "Sessions" || tool.title === "VicharSpace" ? "_blank" : ""}`}
+                                                        className="group relative overflow-hidden cursor-pointer border-none shadow-sm transition-all hover:shadow-md h-full"
+                                                    >
+                                                        <Card className="flex text-black dark:text-white flex-row items-center justify-center gap-4 p-4 h-full">
+                                                            <div className="rounded-lg">
+                                                                <tool.icon className="h-5 w-5" />
+                                                            </div>
+                                                            <div className="flex-1">
+                                                                <h3 className="font-semibold">
+                                                                    {tool.title}
+                                                                </h3>
+                                                                <p className="text-xs">
+                                                                    {tool.description}
                                                                 </p>
                                                             </div>
                                                             <ArrowRight className="h-5 w-5 transform opacity-0 transition-all group-hover:translate-x-1 group-hover:opacity-100" />

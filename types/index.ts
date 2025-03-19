@@ -28,3 +28,28 @@ export interface InvoiceData {
     clientSignature: string | null
     companySignature: string | null
 }
+
+// Budget Estimator Types and Interfaces:
+export type EstimateDetail = {
+    description: string
+    cost: number
+}
+export type EstimateResult = {
+    projectName: string
+    projectType: string
+    complexity: string
+    timeline: string
+    additionalRequirements?: string[]
+    customRequirements?: string[]
+    projectGoals?: string[]
+    targetAudience?: string
+    teamSize?: string
+    budgetRange?: string
+    totalCost: number
+    breakdown: {
+        [key: string]: number
+    }
+    details?: {
+        [key: string]: EstimateDetail[]
+    }
+}
