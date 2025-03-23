@@ -12,7 +12,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 
-// Sample data for startup submissions
 const STARTUP_SUBMISSIONS = [
     {
         id: "ecotrack",
@@ -135,10 +134,6 @@ const STARTUP_SUBMISSIONS = [
         traction: "2 school pilots with 500+ students, showing 22% improvement in test scores after 3 months of use.",
         businessModel:
             "B2B SaaS model charging schools ₹300 per student per year, with additional parent portal access at ₹999/year.",
-    },
-    {
-        id: "securechain",
-        name: "  with additional parent portal access at ₹999/year.",
     },
     {
         id: "securechain",
@@ -273,77 +268,78 @@ export default function DiscoverPage() {
                         </div>
                     </div>
                 </div>
-
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {filteredStartups.map((startup) => (
-                        <Card
-                            key={startup.id}
-                            className="cursor-pointer transition-all duration-300 hover:shadow-md"
-                            onClick={() => handleStartupClick(startup)}
-                        >
-                            <CardContent className="p-6">
-                                <div className="flex items-center gap-3 mb-4">
-                                    <Image
-                                        src={startup.logo || "/placeholder.svg"}
-                                        alt={startup.name}
-                                        width={50}
-                                        height={50}
-                                        className="rounded-full"
-                                    />
-                                    <div>
-                                        <h3 className="text-xl font-bold">{startup.name}</h3>
-                                        <p className="text-sm text-muted-foreground">{startup.founder}</p>
+                    {
+                        filteredStartups.map((startup) => (
+                            <Card
+                                key={startup.id}
+                                className="cursor-pointer transition-all duration-300 hover:shadow-md"
+                                onClick={() => handleStartupClick(startup)}
+                            >
+                                <CardContent className="p-6">
+                                    <div className="flex items-center gap-3 mb-4">
+                                        <Image
+                                            src={startup.logo || "/placeholder.svg"}
+                                            alt={startup.name}
+                                            width={50}
+                                            height={50}
+                                            className="rounded-full"
+                                        />
+                                        <div>
+                                            <h3 className="text-xl font-bold">{startup.name}</h3>
+                                            <p className="text-sm text-muted-foreground">{startup.founder}</p>
+                                        </div>
                                     </div>
-                                </div>
-                                <p className="text-muted-foreground mb-4">{startup.summary}</p>
-                                <div className="flex flex-wrap gap-2 mb-4">
-                                    <Badge variant="outline">{startup.industry}</Badge>
-                                    <Badge
-                                        variant="secondary"
-                                        className={
-                                            startup.stage === "Scaling Up"
-                                                ? "bg-green-100 text-green-800"
-                                                : startup.stage === "MVP"
-                                                    ? "bg-blue-100 text-blue-800"
-                                                    : startup.stage === "Prototype Ready"
-                                                        ? "bg-yellow-100 text-yellow-800"
-                                                        : "bg-gray-100 text-gray-800"
-                                        }
-                                    >
-                                        {startup.stage}
-                                    </Badge>
-                                </div>
-                            </CardContent>
-                            <CardFooter className="px-6 py-4 bg-muted/50 flex justify-between">
-                                <div className="flex items-center text-sm">
-                                    <Users className="h-4 w-4 mr-1" />
-                                    <span>{startup.advisorsInterested} Advisors Interested</span>
-                                </div>
-                                <Link href={`/startups/${startup.id}`}>
-                                    <Button variant="ghost" size="sm">
-                                        View Details
-                                    </Button>
-                                </Link>
-                            </CardFooter>
-                        </Card>
-                    ))}
+                                    <p className="text-muted-foreground mb-4">{startup.summary}</p>
+                                    <div className="flex flex-wrap gap-2 mb-4">
+                                        <Badge variant="outline">{startup.industry}</Badge>
+                                        <Badge
+                                            variant="secondary"
+                                            className={
+                                                startup.stage === "Scaling Up"
+                                                    ? "bg-green-100 text-green-800"
+                                                    : startup.stage === "MVP"
+                                                        ? "bg-blue-100 text-blue-800"
+                                                        : startup.stage === "Prototype Ready"
+                                                            ? "bg-yellow-100 text-yellow-800"
+                                                            : "bg-gray-100 text-gray-800"
+                                            }
+                                        >
+                                            {startup.stage}
+                                        </Badge>
+                                    </div>
+                                </CardContent>
+                                <CardFooter className="px-6 py-4 bg-muted/50 flex justify-between">
+                                    <div className="flex items-center text-sm">
+                                        <Users className="h-4 w-4 mr-1" />
+                                        <span>{startup.advisorsInterested} Advisors Interested</span>
+                                    </div>
+                                    <Link href={`/startups/${startup.id}`}>
+                                        <Button variant="ghost" size="sm">
+                                            View Details
+                                        </Button>
+                                    </Link>
+                                </CardFooter>
+                            </Card>
+                        ))
+                    }
                 </div>
-
-                {filteredStartups.length === 0 && (
-                    <div className="text-center py-12">
-                        <p className="text-muted-foreground mb-4">No startups match your search criteria</p>
-                        <Button
-                            onClick={() => {
-                                setSearchTerm("")
-                                setIndustryFilter("")
-                                setStageFilter("")
-                            }}
-                        >
-                            Clear Filters
-                        </Button>
-                    </div>
-                )}
-
+                {
+                    filteredStartups.length === 0 && (
+                        <div className="text-center py-12">
+                            <p className="text-muted-foreground mb-4">No startups match your search criteria</p>
+                            <Button
+                                onClick={() => {
+                                    setSearchTerm("")
+                                    setIndustryFilter("")
+                                    setStageFilter("")
+                                }}
+                            >
+                                Clear Filters
+                            </Button>
+                        </div>
+                    )
+                }
                 <div className="mt-16 text-center">
                     <h2 className="text-2xl font-bold mb-6">Have a Startup Idea?</h2>
                     <Link href="/submit">
@@ -353,68 +349,68 @@ export default function DiscoverPage() {
                         </Button>
                     </Link>
                 </div>
-
                 <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                    {selectedStartup && (
-                        <DialogContent className="max-w-3xl">
-                            <DialogHeader>
-                                <DialogTitle className="text-2xl">{selectedStartup.name}</DialogTitle>
-                                <DialogDescription className="text-base mt-2">{selectedStartup.summary}</DialogDescription>
-                            </DialogHeader>
-                            <div className="flex flex-wrap gap-2 mb-4">
-                                <Badge variant="outline">{selectedStartup.industry}</Badge>
-                                <Badge
-                                    variant="secondary"
-                                    className={
-                                        selectedStartup.stage === "Scaling Up"
-                                            ? "bg-green-100 text-green-800"
-                                            : selectedStartup.stage === "MVP"
-                                                ? "bg-blue-100 text-blue-800"
-                                                : selectedStartup.stage === "Prototype Ready"
-                                                    ? "bg-yellow-100 text-yellow-800"
-                                                    : "bg-gray-100 text-gray-800"
-                                    }
-                                >
-                                    {selectedStartup.stage}
-                                </Badge>
-                            </div>
-                            <div className="space-y-4">
-                                <p>{selectedStartup.description}</p>
-                                <div className="grid grid-cols-2 gap-4 text-sm">
-                                    <div>
-                                        <span className="font-medium">Founded:</span> {selectedStartup.foundedYear}
+                    {
+                        selectedStartup && (
+                            <DialogContent className="max-w-3xl">
+                                <DialogHeader>
+                                    <DialogTitle className="text-2xl">{selectedStartup.name}</DialogTitle>
+                                    <DialogDescription className="text-base mt-2">{selectedStartup.summary}</DialogDescription>
+                                </DialogHeader>
+                                <div className="flex flex-wrap gap-2 mb-4">
+                                    <Badge variant="outline">{selectedStartup.industry}</Badge>
+                                    <Badge
+                                        variant="secondary"
+                                        className={
+                                            selectedStartup.stage === "Scaling Up"
+                                                ? "bg-green-100 text-green-800"
+                                                : selectedStartup.stage === "MVP"
+                                                    ? "bg-blue-100 text-blue-800"
+                                                    : selectedStartup.stage === "Prototype Ready"
+                                                        ? "bg-yellow-100 text-yellow-800"
+                                                        : "bg-gray-100 text-gray-800"
+                                        }
+                                    >
+                                        {selectedStartup.stage}
+                                    </Badge>
+                                </div>
+                                <div className="space-y-4">
+                                    <p>{selectedStartup.description}</p>
+                                    <div className="grid grid-cols-2 gap-4 text-sm">
+                                        <div>
+                                            <span className="font-medium">Founded:</span> {selectedStartup.foundedYear}
+                                        </div>
+                                        <div>
+                                            <span className="font-medium">Location:</span> {selectedStartup.location}
+                                        </div>
+                                        <div>
+                                            <span className="font-medium">Team Size:</span> {selectedStartup.teamSize}
+                                        </div>
+                                        <div>
+                                            <span className="font-medium">Funding:</span> {selectedStartup.funding}
+                                        </div>
                                     </div>
-                                    <div>
-                                        <span className="font-medium">Location:</span> {selectedStartup.location}
-                                    </div>
-                                    <div>
-                                        <span className="font-medium">Team Size:</span> {selectedStartup.teamSize}
-                                    </div>
-                                    <div>
-                                        <span className="font-medium">Funding:</span> {selectedStartup.funding}
+                                    <div className="flex items-center text-sm">
+                                        <Users className="h-4 w-4 mr-1" />
+                                        <span>{selectedStartup.advisorsInterested} Advisors Interested</span>
                                     </div>
                                 </div>
-                                <div className="flex items-center text-sm">
-                                    <Users className="h-4 w-4 mr-1" />
-                                    <span>{selectedStartup.advisorsInterested} Advisors Interested</span>
-                                </div>
-                            </div>
-                            <div className="flex justify-end gap-4 mt-4">
-                                <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
-                                    Close
-                                </Button>
-                                <Link href={`/startups/${selectedStartup.id}`}>
-                                    <Button>
-                                        <ExternalLink className="mr-2 h-4 w-4" />
-                                        View Full Details
+                                <div className="flex justify-end gap-4 mt-4">
+                                    <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
+                                        Close
                                     </Button>
-                                </Link>
-                            </div>
-                        </DialogContent>
-                    )}
+                                    <Link href={`/startups/${selectedStartup.id}`}>
+                                        <Button>
+                                            <ExternalLink className="mr-2 h-4 w-4" />
+                                            View Full Details
+                                        </Button>
+                                    </Link>
+                                </div>
+                            </DialogContent>
+                        )
+                    }
                 </Dialog>
             </div>
         </div>
     )
 }
-

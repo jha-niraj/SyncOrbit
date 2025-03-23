@@ -58,7 +58,7 @@ export default function PricingPage() {
                     <div className="text-center mb-12">
                         <h2 className="text-3xl font-bold mb-4">Why Our Approach Is Different</h2>
                         <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                            We believe student entrepreneurs shouldn't have to break the bank to get started
+                            We believe student entrepreneurs shouldn&apos;t have to break the bank to get started
                         </p>
                     </div>
 
@@ -126,7 +126,7 @@ export default function PricingPage() {
                                 </li>
                                 <li className="flex items-start">
                                     <X className="h-5 w-5 text-red-500 mt-0.5 mr-3 flex-shrink-0" />
-                                    <p className="text-gray-600">One-size-fits-all pricing that doesn't account for varying needs</p>
+                                    <p className="text-gray-600">One-size-fits-all pricing that doesn&apos;t account for varying needs</p>
                                 </li>
                                 <li className="flex items-start">
                                     <X className="h-5 w-5 text-red-500 mt-0.5 mr-3 flex-shrink-0" />
@@ -213,7 +213,7 @@ export default function PricingPage() {
                                         </div>
 
                                         <div className="space-y-4">
-                                            <h4 className="font-semibold text-sm text-gray-500 uppercase tracking-wider">What's Included</h4>
+                                            <h4 className="font-semibold text-sm text-gray-500 uppercase tracking-wider">What&apos;s Included</h4>
                                             <ul className="space-y-3">
                                                 {[
                                                     "Bi-weekly 1:1 mentorship sessions",
@@ -262,7 +262,7 @@ export default function PricingPage() {
                                         </div>
 
                                         <div className="space-y-4">
-                                            <h4 className="font-semibold text-sm text-gray-500 uppercase tracking-wider">What's Included</h4>
+                                            <h4 className="font-semibold text-sm text-gray-500 uppercase tracking-wider">What&apos;s Included</h4>
                                             <ul className="space-y-3">
                                                 {[
                                                     "Weekly 1:1 mentorship sessions",
@@ -315,7 +315,7 @@ export default function PricingPage() {
                                         </div>
 
                                         <div className="space-y-4">
-                                            <h4 className="font-semibold text-sm text-gray-500 uppercase tracking-wider">What's Included</h4>
+                                            <h4 className="font-semibold text-sm text-gray-500 uppercase tracking-wider">What&apos;s Included</h4>
                                             <ul className="space-y-3">
                                                 {[
                                                     "Weekly technical consultation",
@@ -368,7 +368,7 @@ export default function PricingPage() {
                                         </div>
 
                                         <div className="space-y-4">
-                                            <h4 className="font-semibold text-sm text-gray-500 uppercase tracking-wider">What's Included</h4>
+                                            <h4 className="font-semibold text-sm text-gray-500 uppercase tracking-wider">What&apos;s Included</h4>
                                             <ul className="space-y-3">
                                                 {[
                                                     "Full MVP development",
@@ -407,7 +407,7 @@ export default function PricingPage() {
                     <div className="text-center mb-12">
                         <h2 className="text-3xl font-bold mb-4">Detailed Plan Comparison</h2>
                         <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                            Compare our plans to find the perfect fit for your startup's needs
+                            Compare our plans to find the perfect fit for your startup&apos;s needs
                         </p>
                     </div>
 
@@ -524,7 +524,7 @@ export default function PricingPage() {
                         <div>
                             <h2 className="text-3xl font-bold mb-6">Need a Custom Solution?</h2>
                             <p className="text-lg text-gray-600 mb-8">
-                                We understand that every startup is unique. If our standard plans don't fit your specific needs, we're
+                                We understand that every startup is unique. If our standard plans don&apos;t fit your specific needs, we&apos;re
                                 happy to create a custom package tailored to your requirements and budget.
                             </p>
                             <div className="space-y-4">
@@ -586,7 +586,7 @@ export default function PricingPage() {
                                     </div>
                                     <div>
                                         <p className="text-sm font-medium">
-                                            "They created a custom plan that perfectly fit my needs and budget as a student entrepreneur."
+                                            &quot;They created a custom plan that perfectly fit my needs and budget as a student entrepreneur.&quot;
                                         </p>
                                         <p className="text-xs text-gray-500 mt-2">— Rahul M., Engineering Student</p>
                                     </div>

@@ -4,7 +4,7 @@ import Image from "next/image";
 
 export default function AboutUsSection() {
     return (
-        <section id="about" className="w-full h-full py-12 md:py-24 lg:py-32 bg-muted">
+        <section id="about" className="w-full h-full py-12 md:py-24 lg:py-32 bg-muted px-4">
             <div className="max-w-7xl mx-auto h-full px-4 md:px-6">
                 <div className="flex gap-10 flex-col md:flex-row h-full lg:gap-16 items-center">
                     <div className="space-y-4 h-full flex items-center md:items-start justify-center flex-col">
@@ -12,36 +12,44 @@ export default function AboutUsSection() {
                             About Us
                         </div>
                         <h2 className="text-3xl font-bold text-center md:text-left tracking-tighter md:text-4xl/tight">
-                            We&apos;re More Than Just an Agency
+                            We&apos;re Not Your Average Tech Nerds
                         </h2>
                         <p className="text-muted-foreground md:text-xl/relaxed text-center md:text-left">
-                            Founded with a vision to provide premium digital solutions at affordable prices, we&apos;ve grown into a
-                            team of passionate experts dedicated to helping businesses succeed online.
+                            We&apos;re a bunch of caffeinated code wizards and design ninjas who decided to band together and save the digital world, one pixel at a time. Oh, and we also build pretty cool products.
                         </p>
-                        <div className="space-y-2">
-                            <h3 className="text-xl font-bold">Our Mission</h3>
-                            <p className="text-muted-foreground">
-                                To deliver exceptional digital services and innovative products that help businesses grow and thrive
-                                in the digital landscape.
+                        <div className="space-y-2 flex flex-col items-center">
+                            <h3 className="text-xl font-bold">Our Not-So-Secret Mission</h3>
+                            <p className="text-muted-foreground text-center md:text-left">
+                                To create digital solutions so good, they&apos;ll make your competitors wish they&apos;d chosen a different career path. We&apos;re here to turn your &quot;meh&quot; into &quot;wow&quot; without breaking the bank.
                             </p>
                         </div>
-                        <div className="space-y-2">
-                            <h3 className="text-xl font-bold">Our Approach</h3>
-                            <p className="text-muted-foreground">
-                                We combine creativity, technical expertise, and strategic thinking to deliver solutions that not
-                                only look great but also drive results.
+                        <div className="space-y-2 flex flex-col items-center">
+                            <h3 className="text-xl font-bold">Our Slightly Unorthodox Approach</h3>
+                            <p className="text-muted-foreground text-center md:text-left">
+                                We mix one part creativity, two parts tech savvy, and a dash of strategic genius. Shake well, and voilà! Solutions that not only look fabulous but actually work. Imagine that!
                             </p>
                         </div>
-                        <Button asChild size="lg" className="mt-4">
-                            <Link href="/careers">Work With Us</Link>
-                        </Button>
+                        <div className="space-y-2 flex flex-col items-center">
+                            <h3 className="text-xl font-bold">Why We&apos;re Awesome</h3>
+                            <p className="text-muted-foreground text-center md:text-left">
+                                We&apos;re a product-based agency that tackles real-world issues faster than you can say &quot;digital transformation.&quot; We serve clients like a five-star restaurant, but with prices that won&apos;t make your wallet cry.
+                            </p>
+                        </div>
+                        <div className="flex space-x-4 mt-4">
+                            <Button asChild size="lg">
+                                <Link href="/careers">Join Our Circus</Link>
+                            </Button>
+                            <Button asChild size="lg" variant="outline">
+                                <Link href="/team">Meet the Misfits</Link>
+                            </Button>
+                        </div>
                     </div>
                     <div className="hidden md:block bg-black rounded-md h-full">
                         <Image
                             src="/shunyatech.png"
                             width={600}
                             height={600}
-                            alt="About Us"
+                            alt="Our Totally Normal Team"
                             className="mx-auto aspect-square h-full overflow-hidden rounded-xl object-cover"
                         />
                     </div>

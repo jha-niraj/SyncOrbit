@@ -69,14 +69,14 @@ export default function ProjectSection() {
                                         <span className="text-sm">Community Support</span>
                                     </div>
                                 </div>
-                                <div className="w-full flex gap-4">
-                                    <Button asChild className="w-full group">
+                                <div className="flex flex-col sm:flex-row gap-2 sm:gap-4">
+                                    <Button asChild className="group">
                                         <Link href="https://www.thecoderz.in.net/" target="_blank">
                                             Explore Platform
                                             <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
                                         </Link>
                                     </Button>
-                                    <Button asChild className="w-full group">
+                                    <Button asChild className="group">
                                         <Link href="/products/thecoderz">
                                             Case Study
                                             <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
@@ -128,7 +128,7 @@ export default function ProjectSection() {
                                         <span className="text-sm">Marketing Tools</span>
                                     </div>
                                 </div>
-                                <div className="w-full flex gap-4">
+                                <div className="flex flex-col sm:flex-row gap-2 sm:gap-4">
                                     <Button asChild className="w-full group">
                                         <Link href="https://www.eventeye.in/" target="_blank">
                                             Explore Platform
@@ -210,7 +210,7 @@ export default function ProjectSection() {
                                         <span className="text-sm">Analytics Dashboard</span>
                                     </div>
                                 </div>
-                                <div className="w-full flex gap-4">
+                                <div className="flex flex-col sm:flex-row gap-2 sm:gap-4">
                                     <Button asChild className="w-full group">
                                         <Link href="https://logistics-website-atju.onrender.com/" target="_blank">
                                             Explore Platform
@@ -269,7 +269,7 @@ export default function ProjectSection() {
                                         <span className="text-sm">Reporting & Analytics</span>
                                     </div>
                                 </div>
-                                <div className="w-full flex gap-4">
+                                <div className="flex flex-col sm:flex-row gap-2 sm:gap-4">
                                     <Button asChild className="w-full group">
                                         <Link href="https://mpsolutions.vercel.app/" target="_blank">
                                             Explore Platform

@@ -344,7 +344,6 @@ export default function StartupDetailPage() {
                         Back to Discover
                     </Link>
                 </div>
-
                 <div className="grid md:grid-cols-3 gap-8">
                     <div className="md:col-span-2">
                         <div className="bg-white rounded-xl shadow-sm p-8 mb-8">
@@ -378,45 +377,39 @@ export default function StartupDetailPage() {
                                     </div>
                                 </div>
                             </div>
-
                             <Tabs defaultValue="overview">
                                 <TabsList className="mb-4">
                                     <TabsTrigger value="overview">Overview</TabsTrigger>
                                     <TabsTrigger value="team">Team</TabsTrigger>
                                     <TabsTrigger value="milestones">Milestones</TabsTrigger>
                                 </TabsList>
-
                                 <TabsContent value="overview" className="space-y-6">
                                     <div>
                                         <h2 className="text-xl font-bold mb-3">Description</h2>
                                         <p className="text-muted-foreground">{startup.description}</p>
                                     </div>
-
                                     <div>
                                         <h2 className="text-xl font-bold mb-3">Problem</h2>
                                         <p className="text-muted-foreground">{startup.problem}</p>
                                     </div>
-
                                     <div>
                                         <h2 className="text-xl font-bold mb-3">Solution</h2>
                                         <p className="text-muted-foreground">{startup.solution}</p>
                                     </div>
-
                                     <div>
                                         <h2 className="text-xl font-bold mb-3">Traction</h2>
                                         <p className="text-muted-foreground">{startup.traction}</p>
                                     </div>
-
                                     <div>
                                         <h2 className="text-xl font-bold mb-3">Business Model</h2>
                                         <p className="text-muted-foreground">{startup.businessModel}</p>
                                     </div>
                                 </TabsContent>
-
                                 <TabsContent value="team" className="space-y-6">
                                     <h2 className="text-xl font-bold mb-4">Team Members</h2>
                                     <div className="grid gap-4">
-                                        {startup.team?.map((member, index) => (
+                                        {
+                                        startup.team?.map((member, index) => (
                                             <div key={index} className="flex items-start gap-4 p-4 border rounded-lg">
                                                 <div className="bg-muted rounded-full p-3">
                                                     <Users className="h-6 w-6" />
@@ -427,14 +420,15 @@ export default function StartupDetailPage() {
                                                     <p className="text-sm">{member.bio}</p>
                                                 </div>
                                             </div>
-                                        ))}
+                                        ))
+                                        }
                                     </div>
                                 </TabsContent>
-
                                 <TabsContent value="milestones" className="space-y-6">
                                     <h2 className="text-xl font-bold mb-4">Company Milestones</h2>
                                     <div className="relative border-l border-muted pl-6 ml-3 space-y-6">
-                                        {startup.milestones?.map((milestone, index) => (
+                                        {
+                                        startup.milestones?.map((milestone, index) => (
                                             <div key={index} className="relative">
                                                 <div className="absolute -left-9 mt-1.5 h-4 w-4 rounded-full bg-primary"></div>
                                                 <div>
@@ -442,13 +436,13 @@ export default function StartupDetailPage() {
                                                     <h3 className="font-medium">{milestone.title}</h3>
                                                 </div>
                                             </div>
-                                        ))}
+                                        ))
+                                        }
                                     </div>
                                 </TabsContent>
                             </Tabs>
                         </div>
                     </div>
-
                     <div>
                         <Card className="mb-6">
                             <CardHeader>
@@ -490,7 +484,8 @@ export default function StartupDetailPage() {
                                         <p>{startup.funding}</p>
                                     </div>
                                 </div>
-                                {startup.website && (
+                                {
+                                startup.website && (
                                     <div className="flex items-center gap-2">
                                         <Globe className="h-4 w-4 text-muted-foreground" />
                                         <div>
@@ -500,16 +495,17 @@ export default function StartupDetailPage() {
                                             </a>
                                         </div>
                                     </div>
-                                )}
+                                )
+                                }
                             </CardContent>
                         </Card>
-
                         <Card>
                             <CardHeader>
                                 <CardTitle>Contact Information</CardTitle>
                             </CardHeader>
                             <CardContent className="space-y-4">
-                                {startup.contact?.email && (
+                                {
+                                startup.contact?.email && (
                                     <div className="flex items-center gap-2">
                                         <Mail className="h-4 w-4 text-muted-foreground" />
                                         <div>
@@ -519,8 +515,10 @@ export default function StartupDetailPage() {
                                             </a>
                                         </div>
                                     </div>
-                                )}
-                                {startup.contact?.phone && (
+                                )
+                                }
+                                {
+                                startup.contact?.phone && (
                                     <div className="flex items-center gap-2">
                                         <Phone className="h-4 w-4 text-muted-foreground" />
                                         <div>
@@ -530,10 +528,10 @@ export default function StartupDetailPage() {
                                             </a>
                                         </div>
                                     </div>
-                                )}
+                                )
+                                }
                             </CardContent>
                         </Card>
-
                         <div className="mt-6">
                             <Button className="w-full">Connect with Founder</Button>
                         </div>

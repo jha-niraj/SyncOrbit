@@ -10,6 +10,7 @@ import { ArrowRight, FileText, Menu, Route } from "lucide-react";
 // import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Card } from "../ui/card";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../ui/accordion";
 
 interface ResourceItem {
     icon: React.ElementType
@@ -82,6 +83,9 @@ export default function Navbar() {
         hidden: { opacity: 0, x: -20 },
         show: { opacity: 1, x: 0 }
     }
+    const handleLinkClick = () => {
+        setSheetOpen(false);
+    };
 
     return (
         <nav className={`fixed top-0 w-full z-50 text-white transition-all duration-300 ${scrolled
@@ -225,7 +229,7 @@ export default function Navbar() {
                     <Link href="#faqs" className="text-md font-medium hover:scale-110 transition-all duration-300">
                         Faq&apos;s
                     </Link>
-                    <Link href="#pricing" className="text-md font-medium hover:scale-110 transition-all duration-300">
+                    <Link href="#pricingsection" className="text-md font-medium hover:scale-110 transition-all duration-300">
                         Pricing
                     </Link>
                     <Link href="#" className="text-md font-medium hover:scale-110 transition-all duration-300">
@@ -252,27 +256,65 @@ export default function Navbar() {
                             Book a 15 min call
                         </Button>
                     </Link>
-                    <Button onClick={() => setSheetOpen(true)} variant="ghost" size="icon" className="md:hidden">
-                        <Menu className="h-12 w-12" />
+                    <Button onClick={() => setSheetOpen(true)} variant="ghost" className="md:hidden">
+                        <Menu size={40} />
                         <span className="sr-only">Toggle menu</span>
                     </Button>
                 </div>
             </div>
-            <Sheet open={sheetOpen} onOpenChange={() => setSheetOpen(false)}>
+            <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
                 <SheetContent>
-                    <nav className="flex flex-col gap-4">
-                        <Link href="#" className="text-lg hover:text-gray-600 transition-colors">
+                    <nav className="flex flex-col gap-6">
+                        <Link href="/" className="text-xl font-semibold hover:text-gray-600 transition-colors" onClick={handleLinkClick}>
                             Home
                         </Link>
-                        <Link href="project-section" className="text-lg hover:text-gray-600 transition-colors">
-                            Projects
+                        <Accordion type="single" collapsible className="w-full">
+                            <AccordionItem value="products">
+                                <AccordionTrigger>Products</AccordionTrigger>
+                                <AccordionContent>
+                                    {resources.map((resource, index) => (
+                                        <Link key={index} href={resource.href} className="block py-2 text-md hover:text-gray-600 transition-colors" onClick={handleLinkClick}>
+                                            {resource.title}
+                                        </Link>
+                                    ))}
+                                </AccordionContent>
+                            </AccordionItem>
+                            <AccordionItem value="tools">
+                                <AccordionTrigger>Tools</AccordionTrigger>
+                                <AccordionContent>
+                                    {tools.map((tool, index) => (
+                                        <Link key={index} href={tool.href} className="block py-2 text-md hover:text-gray-600 transition-colors" onClick={handleLinkClick}>
+                                            {tool.title}
+                                        </Link>
+                                    ))}
+                                </AccordionContent>
+                            </AccordionItem>
+                        </Accordion>
+                        <Link href="#whyus" className="text-xl hover:text-gray-600 transition-colors" onClick={handleLinkClick}>
+                            Why Us
                         </Link>
-                        <Link href="#" className="text-lg hover:text-gray-600 transition-colors">
-                            About us
+                        <Link href="#approach" className="text-xl hover:text-gray-600 transition-colors" onClick={handleLinkClick}>
+                            Approach
                         </Link>
-                        <Link href="#" className="text-lg hover:text-gray-600 transition-colors">
+                        <Link href="#faqs" className="text-xl hover:text-gray-600 transition-colors" onClick={handleLinkClick}>
+                            FAQ&apos;s
+                        </Link>
+                        <Link href="#pricingsection" className="text-xl hover:text-gray-600 transition-colors" onClick={handleLinkClick}>
+                            Pricing
+                        </Link>
+                        <Link href="#" className="text-xl hover:text-gray-600 transition-colors" onClick={handleLinkClick}>
                             Blog
                         </Link>
+                        <div className="space-y-4 mt-4">
+                            <Button asChild variant="outline" className="w-full" onClick={handleLinkClick}>
+                                <Link href="/accelerator">Join the Accelerator</Link>
+                            </Button>
+                            <Button asChild variant="default" className="w-full" onClick={handleLinkClick}>
+                                <Link href="https://cal.com/shunyatech/15min" target="_blank">
+                                    Book a 15 min call
+                                </Link>
+                            </Button>
+                        </div>
                     </nav>
                 </SheetContent>
             </Sheet>

@@ -251,7 +251,7 @@ export default function BudgetEstimator({ initialProjectType = "" }: BudgetEstim
     }
 
     // Handle form field changes
-    const handleChange = (field: string, value: any) => {
+    const handleChange = (field: string, value: string | number | boolean) => {
         setFormData((prev) => ({
             ...prev,
             [field]: value,
@@ -385,14 +385,14 @@ export default function BudgetEstimator({ initialProjectType = "" }: BudgetEstim
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
                 <div className="lg:col-span-5">
                     <Card className="bg-white border-gray-200 shadow-md">
-                        <CardHeader>
-                            <CardTitle className="text-gray-900">Project Details</CardTitle>
-                            <CardDescription className="text-gray-600">
-                                Fill in the details below to get your budget estimate
-                            </CardDescription>
+                        <Tabs value={activeSection} onValueChange={setActiveSection} className="w-full">
+                            <CardHeader>
+                                <CardTitle className="text-gray-900">Project Details</CardTitle>
+                                <CardDescription className="text-gray-600">
+                                    Fill in the details below to get your budget estimate
+                                </CardDescription>
 
-                            <div className="mt-4">
-                                <Tabs value={activeSection} onValueChange={setActiveSection} className="w-full">
+                                <div className="mt-4">
                                     <TabsList className="grid grid-cols-3 mb-4">
                                         <TabsTrigger
                                             value="basic"
@@ -413,7 +413,6 @@ export default function BudgetEstimator({ initialProjectType = "" }: BudgetEstim
                                             Advanced
                                         </TabsTrigger>
                                     </TabsList>
-                                </Tabs>
                             </div>
                         </CardHeader>
                         <CardContent>
@@ -795,6 +794,7 @@ export default function BudgetEstimator({ initialProjectType = "" }: BudgetEstim
                                 </div>
                             </form>
                         </CardContent>
+                        </Tabs>
                     </Card>
                 </div>
                 <div className="lg:col-span-7">

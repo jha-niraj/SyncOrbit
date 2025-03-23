@@ -140,7 +140,14 @@ export default function BudgetBreakdown({ estimate }: BudgetBreakdownProps) {
                                         <Progress
                                             value={(value / estimate.totalCost) * 100}
                                             className="h-2 bg-gray-100"
-                                            indicatorClassName={`bg-[${COLORS[index % COLORS.length]}]`}
+                                            indicatorClassName="bg-transparent" // Override the default bg-primary
+                                            style={{
+                                                "--indicator-color": COLORS[index % COLORS.length]
+                                            } as React.CSSProperties}
+                                            // Add this prop to the Progress component
+                                            indicatorStyle={{
+                                                backgroundColor: COLORS[index % COLORS.length]
+                                            }}
                                         />
                                     </div>
                                 ))

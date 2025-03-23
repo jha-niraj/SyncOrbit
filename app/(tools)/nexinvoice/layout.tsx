@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import "../globals.css";
 import { ThemeProvider } from "@/components/theme-providers";
 import { Toaster } from "@/components/ui/toaster";
 import InvoiceFooter from "./_components/invoicefooter";

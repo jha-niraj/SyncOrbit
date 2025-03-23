@@ -198,11 +198,11 @@ export default function HomePage() {
                             <div className="inline-flex items-center px-3 py-1 rounded-full bg-teal-100 text-teal-800 text-sm font-medium mb-4">
                                 About ShunyaTech Accelerator
                             </div>
-                            <h2 className="text-3xl font-bold mb-6">Why We're Different</h2>
+                            <h2 className="text-3xl font-bold mb-6">Why We&apos;re Different</h2>
                             <div className="space-y-4 text-gray-600">
                                 <p>
                                     ShunyaTech Accelerator was born from a simple observation: traditional accelerators are often too
-                                    expensive for students and don't provide the practical, hands-on experience founders need.
+                                    expensive for students and don&apos;t provide the practical, hands-on experience founders need.
                                 </p>
                                 <p>
                                     As a company that builds and manages our own products while serving clients, we have the expertise and
@@ -282,13 +282,13 @@ export default function HomePage() {
                                 <li className="flex items-start">
                                     <X className="h-5 w-5 text-red-500 mt-0.5 mr-3 flex-shrink-0" />
                                     <p className="text-gray-600">
-                                        Excessive handholding that doesn't prepare founders for real-world challenges
+                                        Excessive handholding that doesn&apos;t prepare founders for real-world challenges
                                     </p>
                                 </li>
                                 <li className="flex items-start">
                                     <X className="h-5 w-5 text-red-500 mt-0.5 mr-3 flex-shrink-0" />
                                     <p className="text-gray-600">
-                                        One-size-fits-all programs that don't address your specific technical or marketing needs
+                                        One-size-fits-all programs that don&apos;t address your specific technical or marketing needs
                                     </p>
                                 </li>
                                 <li className="flex items-start">

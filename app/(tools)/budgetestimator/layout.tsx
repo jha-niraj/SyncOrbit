@@ -1,17 +1,9 @@
 import type { Metadata } from "next";
-// import { Space_Grotesk } from "next/font/google";
-import "../globals.css";
 import Navbar from "@/components/homepage/site-header";
 import { ThemeProvider } from "@/components/theme-providers";
 import Footer from "@/components/homepage/footer";
 import { Toaster } from "@/components/ui/toaster";
-
-// const spaceGrotesk = Space_Grotesk({
-// 	subsets: ['latin'],
-// 	weight: ['300', '400', '500', '600', '700'],
-// 	display: 'swap',
-// 	variable: '--font-space-grotesk',
-// })
+import { Suspense } from "react";
 
 export const metadata: Metadata = {
 	title: "Budget Estimator",
@@ -33,12 +25,14 @@ export default function RootLayout({
 			enableSystem
 			disableTransitionOnChange
 		>
-			<main className="w-full mx-auto">
-				<Navbar />
-				{children}
-				<Footer />
-				<Toaster />
-			</main>
+			<Suspense fallback={<div>Loading...</div>}>
+				<main className="w-full mx-auto bg-black">
+					<Navbar />
+					{children}
+					<Footer />
+					<Toaster />
+				</main>
+			</Suspense>
 		</ThemeProvider>
 	);
 }
