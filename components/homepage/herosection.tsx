@@ -2,9 +2,9 @@ import { motion } from "framer-motion";
 import { RainbowButton } from "../ui/rainbow-button";
 import CalBtn from "@/app/providers/cal-btn";
 import MorphingText from "../ui/morphing-text";
-import { Button } from "../ui/button";
+// import { Button } from "../ui/button";
 import { ArrowRight } from "lucide-react";
-import Link from "next/link";
+// import Link from "next/link";
 
 const texts = ["Innovative", "Transparent", "Scalable", "Impactful", "ShunyaTech"];
 
@@ -45,12 +45,12 @@ export default function HeroSection() {
                         transition={{ duration: 1.4, ease: "easeOut" }}
                         className="flex flex-col sm:flex-row gap-4 mt-8"
                     >
-                        <Button variant="outline" size="lg" className="group text-black border-white hover:bg-white hover:text-black">
+                        {/* <Button variant="outline" size="lg" className="group text-black border-white hover:bg-white hover:text-black">
                             <Link href="/accelerator" className="flex items-center">
                                 Join the Accelerator
                                 <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
                             </Link>
-                        </Button>
+                        </Button> */}
                         <RainbowButton className="group">
                             <CalBtn classNames="" label="Book a Call" />
                             <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />

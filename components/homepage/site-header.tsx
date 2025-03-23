@@ -272,21 +272,25 @@ export default function Navbar() {
                             <AccordionItem value="products">
                                 <AccordionTrigger>Products</AccordionTrigger>
                                 <AccordionContent>
-                                    {resources.map((resource, index) => (
+                                    {
+                                    resources.map((resource, index) => (
                                         <Link key={index} href={resource.href} className="block py-2 text-md hover:text-gray-600 transition-colors" onClick={handleLinkClick}>
                                             {resource.title}
                                         </Link>
-                                    ))}
+                                    ))
+                                    }
                                 </AccordionContent>
                             </AccordionItem>
                             <AccordionItem value="tools">
                                 <AccordionTrigger>Tools</AccordionTrigger>
                                 <AccordionContent>
-                                    {tools.map((tool, index) => (
+                                    {
+                                    tools.map((tool, index) => (
                                         <Link key={index} href={tool.href} className="block py-2 text-md hover:text-gray-600 transition-colors" onClick={handleLinkClick}>
                                             {tool.title}
                                         </Link>
-                                    ))}
+                                    ))
+                                    }
                                 </AccordionContent>
                             </AccordionItem>
                         </Accordion>
@@ -306,9 +310,9 @@ export default function Navbar() {
                             Blog
                         </Link>
                         <div className="space-y-4 mt-4">
-                            <Button asChild variant="outline" className="w-full" onClick={handleLinkClick}>
+                            {/* <Button asChild variant="outline" className="w-full" onClick={handleLinkClick}>
                                 <Link href="/accelerator">Join the Accelerator</Link>
-                            </Button>
+                            </Button> */}
                             <Button asChild variant="default" className="w-full" onClick={handleLinkClick}>
                                 <Link href="https://cal.com/shunyatech/15min" target="_blank">
                                     Book a 15 min call
