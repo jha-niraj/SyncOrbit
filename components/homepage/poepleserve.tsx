@@ -69,7 +69,7 @@ const CompanyCard = ({
 
 export function PeopleService() {
     return (
-        <div className="relative max-w-7xl mx-auto flex h-[350px] w-full flex-col items-center justify-center overflow-hidden rounded-lg">
+        <div className="relative max-w-7xl mx-auto flex h-[400px] py-10 w-full flex-col items-center justify-center overflow-hidden rounded-lg">
             <Marquee reverse pauseOnHover className="[--duration:15s]">
                 {
                     firstRow.map((company) => (

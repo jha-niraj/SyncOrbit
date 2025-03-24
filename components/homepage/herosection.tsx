@@ -6,7 +6,7 @@ import MorphingText from "../ui/morphing-text";
 import { ArrowRight } from "lucide-react";
 // import Link from "next/link";
 
-const texts = ["Innovative", "Transparent", "Scalable", "Impactful", "ShunyaTech"];
+const texts = ["Innovative", "Transparent", "Scalable", "Impactful"];
 
 export default function HeroSection() {
     return (
