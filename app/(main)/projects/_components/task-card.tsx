@@ -125,27 +125,27 @@ export function TaskCard({ task, onStatusChange, onTaskUpdate, developers = [] }
                 </CardContent>
                 <CardFooter className="p-4 pt-0 flex justify-between items-center">
                     {
-                    task.assignee ? (
-                        <TooltipProvider>
-                            <Tooltip>
-                                <TooltipTrigger asChild>
-                                    <div className="flex items-center gap-2">
-                                        <Avatar className="h-6 w-6">
-                                            <AvatarImage src={task.assignee.avatar || "/placeholder-user.jpg"} />
-                                            <AvatarFallback>{task.assignee.name.charAt(0)}</AvatarFallback>
-                                        </Avatar>
-                                        <span className="text-xs">{task.assignee.name}</span>
-                                    </div>
-                                </TooltipTrigger>
-                                <TooltipContent>Assigned to {task.assignee.name}</TooltipContent>
-                            </Tooltip>
-                        </TooltipProvider>
-                    ) : (
-                        <div className="flex items-center gap-2 text-muted-foreground">
-                            <User className="h-4 w-4" />
-                            <span className="text-xs">Unassigned</span>
-                        </div>
-                    )
+                        task.assignee ? (
+                            <TooltipProvider>
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                        <div className="flex items-center gap-2">
+                                            <Avatar className="h-6 w-6">
+                                                <AvatarImage src={task.assignee.avatar || "/placeholder-user.jpg"} />
+                                                <AvatarFallback>{task.assignee.name.charAt(0)}</AvatarFallback>
+                                            </Avatar>
+                                            <span className="text-xs">{task.assignee.name}</span>
+                                        </div>
+                                    </TooltipTrigger>
+                                    <TooltipContent>Assigned to {task.assignee.name}</TooltipContent>
+                                </Tooltip>
+                            </TooltipProvider>
+                        ) : (
+                            <div className="flex items-center gap-2 text-muted-foreground">
+                                <User className="h-4 w-4" />
+                                <span className="text-xs">Unassigned</span>
+                            </div>
+                        )
                     }
                     <Dialog open={isEditing} onOpenChange={setIsEditing}>
                         <DialogTrigger asChild>
@@ -228,11 +228,11 @@ export function TaskCard({ task, onStatusChange, onTaskUpdate, developers = [] }
                                         </SelectTrigger>
                                         <SelectContent>
                                             {
-                                            developers.map((dev) => (
-                                                <SelectItem key={dev.id} value={dev.id}>
-                                                    {dev.name}
-                                                </SelectItem>
-                                            ))
+                                                developers.map((dev) => (
+                                                    <SelectItem key={dev.id} value={dev.id}>
+                                                        {dev.name}
+                                                    </SelectItem>
+                                                ))
                                             }
                                         </SelectContent>
                                     </Select>
@@ -265,29 +265,30 @@ export function TaskCard({ task, onStatusChange, onTaskUpdate, developers = [] }
                         </DialogContent>
                     </Dialog>
                     {
-                    task.status !== "completed" && (
-                        <TooltipProvider>
-                            <Tooltip>
-                                <TooltipTrigger asChild>
-                                    <Button
-                                        variant="ghost"
-                                        size="icon"
-                                        className="h-8 w-8"
-                                        onClick={() => {
-                                            const nextStatus = {
-                                                yetToStart: "inProgress",
-                                                inProgress: "completed",
-                                            }[task.status] as Task["status"]
-                                            handleStatusChange(nextStatus)
-                                        }}
-                                    >
-                                        <MoveRight className="h-4 w-4" />
-                                    </Button>
-                                </TooltipTrigger>
-                                <TooltipContent>Move to next status</TooltipContent>
-                            </Tooltip>
-                        </TooltipProvider>
-                    )
+                        task.status !== "completed" && (
+                            <TooltipProvider>
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                        <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            className="h-8 w-8"
+                                            onClick={() => {
+                                                const nextStatus = {
+                                                    yetToStart: "inProgress",
+                                                    inProgress: "completed",
+                                                    completed: "completed",
+                                                }[task.status] as Task["status"]
+                                                handleStatusChange(nextStatus)
+                                            }}
+                                        >
+                                            <MoveRight className="h-4 w-4" />
+                                        </Button>
+                                    </TooltipTrigger>
+                                    <TooltipContent>Move to next status</TooltipContent>
+                                </Tooltip>
+                            </TooltipProvider>
+                        )
                     }
                 </CardFooter>
             </Card>

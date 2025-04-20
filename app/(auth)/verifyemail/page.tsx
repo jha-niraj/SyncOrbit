@@ -1,10 +1,12 @@
 "use client"
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import axios from 'axios';
-import { Loader, CheckCircle, XCircle, AlertTriangle } from 'lucide-react';
+import { Loader, CheckCircle, XCircle, AlertTriangle, ArrowRight, Mail, RefreshCw } from 'lucide-react';
 import Image from 'next/image';
+import Link from 'next/link';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const VerifyPage = () => {
     const searchParams = useSearchParams();
@@ -59,19 +61,82 @@ const VerifyPage = () => {
         router.push("/signin");
     };
 
+    useEffect(() => {
+        if (token && status === 'idle') {
+            verifyToken();
+        }
+    }, [token]);
+
     return (
-        <div className="h-screen bg-gray-50 flex flex-col items-center justify-center p-4">
-            <div className="w-full max-w-md bg-white rounded-xl shadow-lg overflow-hidden">
+        <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-black flex flex-col items-center justify-center p-4 relative overflow-hidden">
+            <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                <div className="absolute top-1/4 left-1/4 w-64 h-64 rounded-full bg-primary/5 blur-3xl"></div>
+                <div className="absolute bottom-1/4 right-1/4 w-64 h-64 rounded-full bg-primary/5 blur-3xl"></div>
+                <motion.div 
+                    className="absolute top-1/3 right-1/3 w-32 h-32 rounded-full bg-primary/10 blur-xl"
+                    animate={{ 
+                        y: [0, 20, 0],
+                        opacity: [0.5, 0.8, 0.5]
+                    }}
+                    transition={{
+                        duration: 5,
+                        repeat: Infinity,
+                        repeatType: "reverse"
+                    }}
+                />
+                <motion.div 
+                    className="absolute bottom-1/3 left-1/3 w-32 h-32 rounded-full bg-primary/10 blur-xl"
+                    animate={{ 
+                        y: [0, -20, 0],
+                        opacity: [0.5, 0.8, 0.5]
+                    }}
+                    transition={{
+                        duration: 5,
+                        repeat: Infinity,
+                        repeatType: "reverse",
+                        delay: 1
+                    }}
+                />
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(99,102,241,0.08)_1px,transparent_1px)] bg-[length:20px_20px] opacity-40"></div>
+            </div>
+
+            <motion.div 
+                className="w-full max-w-md bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden border border-gray-200 dark:border-gray-700 relative z-10"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+            >
                 <div className="p-8">
-                    <div className="flex justify-center">
-                        <div className="w-16 h-16 flex items-center justify-center rounded-full">
-                            {status === 'loading' && <Loader className="h-12 w-12 text-blue-500 animate-spin" />}
-                            {status === 'success' && <CheckCircle className="h-16 w-16 text-green-500" />}
-                            {status === 'error' && <XCircle className="h-16 w-16 text-red-500" />}
-                            {status === 'missing' && <AlertTriangle className="h-16 w-16 text-amber-500" />}
-                            {status === 'idle' && <AlertTriangle className="h-16 w-16 text-blue-500" />}
-                        </div>
-                    </div>
+                    <AnimatePresence mode="wait">
+                        <motion.div 
+                            key={status}
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.9 }}
+                            transition={{ duration: 0.3 }}
+                            className="flex justify-center"
+                        >
+                            <div className="w-20 h-20 flex items-center justify-center rounded-full">
+                                {status === 'loading' && (
+                                    <div className="relative">
+                                        <Loader className="h-12 w-12 text-blue-500 animate-spin" />
+                                    </div>
+                                )}
+                                {status === 'success' && (
+                                    <CheckCircle className="h-16 w-16 text-green-500" />
+                                )}
+                                {status === 'error' && (
+                                    <XCircle className="h-16 w-16 text-red-500" />
+                                )}
+                                {status === 'missing' && (
+                                    <AlertTriangle className="h-16 w-16 text-amber-500" />
+                                )}
+                                {status === 'idle' && (
+                                    <AlertTriangle className="h-16 w-16 text-blue-500" />
+                                )}
+                            </div>
+                        </motion.div>
+                    </AnimatePresence>
                     <h2 className="mt-6 text-center text-2xl font-semibold text-gray-900">
                         {status === 'loading' && 'Email Verification'}
                         {status === 'success' && 'Verification Successful'}
@@ -124,18 +189,18 @@ const VerifyPage = () => {
                         <p>Need help? <a href="mailto:business@eventeye.in" className="font-medium text-blue-600 hover:text-blue-500">Contact Support</a></p>
                     </div>
                 </div>
-            </div>
+            </motion.div>
             <div className="mt-8 flex items-center justify-center">
                 <div className="max-w-md text-center">
                     <Image
-                        src="/logo/logo.png"
+                        src="/shunyatech-2.png"
                         alt="EventEye Logo"
-                        className="h-8 mb-2 mx-auto"
+                        className="h-16 w-24 mb-2 mx-auto bg-transparent"
                         height={30}
                         width={30}
                     />
                     <p className="text-xs text-gray-500">
-                        &copy; {new Date().getFullYear()} EventEye. All rights reserved.
+                        &copy; {new Date().getFullYear()} ShunyaTech. All rights reserved.
                     </p>
                 </div>
             </div>
