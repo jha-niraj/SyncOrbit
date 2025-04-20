@@ -1,3 +1,11 @@
+// Request body:
+export interface RequestBody {
+    name: string;
+    email: string;
+    password: string;
+    referralCode: string;
+}
+
 // Invoice Page Types:
 export interface InvoiceItem {
     description: string

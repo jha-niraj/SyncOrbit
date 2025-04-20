@@ -10,7 +10,7 @@ const texts = ["Innovative", "Transparent", "Scalable", "Impactful"];
 
 export default function HeroSection() {
     return (
-        <main className="relative w-full min-h-screen bg-black text-white flex items-center justify-center py-24">
+        <main className="relative w-full min-h-screen bg-black text-white flex items-center justify-center py-28">
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,#333_1px,transparent_1px)] bg-[length:20px_20px] opacity-10 pointer-events-none"></div>
             <div className="max-w-5xl mx-auto px-4 md:px-6 text-center relative z-10">
                 <div className="flex flex-col items-center justify-center gap-6">
@@ -25,7 +25,6 @@ export default function HeroSection() {
                     >
                         Building <span className="text-green-600">Products</span>, Not Just Promises
                     </motion.h1>
-
                     <div className="w-full flex justify-center">
                         <MorphingText
                             texts={texts}

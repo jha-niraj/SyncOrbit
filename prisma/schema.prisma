@@ -13,9 +13,115 @@ datasource db {
     url      = env("DATABASE_URL")
 }
 
+enum Role {
+    CLIENT
+    DEVELOPER
+    PRODUCTMANAGER
+    ADMIN
+}
+
+enum Currency {
+    USD
+    INR
+}
+
+enum TaskStatus {
+    YET_TO_START
+    IN_PROGRESS
+    COMPLETED
+}
+
+model User {
+    id             String  @id @default(uuid())
+    name           String
+    email          String  @unique
+    emailVerified  Boolean @default(false)
+    image          String?
+    hashedPassword String?
+    role           Role    @default(CLIENT)
+
+    bio    String?
+    skills String?
+    teamId String?
+    team   Team?   @relation("TeamMembers", fields: [teamId], references: [id])
+
+    verifyToken       String?
+    verifyTokenExpiry DateTime?
+    resetToken        String?
+    restTokenExpiry   DateTime?
+    createdAt         DateTime   @default(now())
+    updatedAt         DateTime   @updatedAt
+    
+    // Relations
+    clientProjects    Project[]  @relation("ClientProjects")
+    managedProjects   Project[]  @relation("ProductManager")
+    assignedTasks     Task[]     @relation("AssignedDeveloper")
+    feedbacks         Feedback[]
+    Team              Team?      @relation("TeamLead")
+    Project           Project?   @relation(fields: [projectId], references: [id])
+    projectId         String?
+}
+
+model Team {
+    id               String   @id @default(uuid())
+    name             String
+    productManagerId String   @unique
+    productManager   User     @relation("TeamLead", fields: [productManagerId], references: [id])
+    members          User[]   @relation("TeamMembers")
+    createdAt        DateTime @default(now())
+    updatedAt        DateTime @updatedAt
+}
+
+model Project {
+    id               String   @id @default(uuid())
+    title            String
+    description      String?
+    logo             String?
+    duration         Int
+    price            Float
+    currency         Currency @default(USD)
+    clientId         String
+    client           User     @relation("ClientProjects", fields: [clientId], references: [id])
+    productManagerId String
+    productManager   User     @relation("ProductManager", fields: [productManagerId], references: [id])
+    createdAt        DateTime @default(now())
+    updatedAt        DateTime @updatedAt
+
+    // Relations
+    tasks      Task[]
+    developers User[]
+    Feedback   Feedback[]
+}
+
+model Task {
+    id                  String     @id @default(uuid())
+    title               String
+    description         String?
+    duration            Int?
+    status              TaskStatus @default(YET_TO_START)
+    projectId           String
+    project             Project    @relation(fields: [projectId], references: [id])
+    assignedDeveloperId String?
+    assignedDeveloper   User?      @relation("AssignedDeveloper", fields: [assignedDeveloperId], references: [id])
+    createdAt           DateTime   @default(now())
+    updatedAt           DateTime   @updatedAt
+}
+
+model Feedback {
+    id          String   @id @default(uuid())
+    title       String
+    description String?
+    userId      String
+    user        User     @relation(fields: [userId], references: [id])
+    projectId   String
+    project     Project  @relation(fields: [projectId], references: [id])
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+}
+
 model Contact {
     id          String   @id @default(cuid())
-    inquiryType String 
+    inquiryType String
     name        String
     email       String
     message     String   @db.Text
