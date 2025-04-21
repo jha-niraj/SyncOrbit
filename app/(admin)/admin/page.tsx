@@ -95,34 +95,34 @@ export default function AdminDashboard() {
                                 </TableHeader>
                                 <TableBody>
                                     {
-                                    users.map((user) => (
-                                        <TableRow key={user.id}>
-                                            <TableCell className="font-medium">{user.name}</TableCell>
-                                            <TableCell>{user.email}</TableCell>
-                                            <TableCell>{user.role}</TableCell>
-                                            <TableCell>
-                                                <div className="flex items-center gap-2">
-                                                    <Select defaultValue={user.role}>
-                                                        <SelectTrigger className="w-[180px]">
-                                                            <SelectValue placeholder="Select role" />
-                                                        </SelectTrigger>
-                                                        <SelectContent>
-                                                            <SelectItem value="CLIENT">CLIENT</SelectItem>
-                                                            <SelectItem value="DEVELOPER">DEVELOPER</SelectItem>
-                                                            <SelectItem value="PRODUCT_MANAGER">PRODUCT_MANAGER</SelectItem>
-                                                            <SelectItem value="ADMIN">ADMIN</SelectItem>
-                                                        </SelectContent>
-                                                    </Select>
-                                                    <Button size="sm">Update Role</Button>
-                                                </div>
-                                            </TableCell>
-                                        </TableRow>
-                                    ))
+                                        users.map((user) => (
+                                            <TableRow key={user.id}>
+                                                <TableCell className="font-medium">{user.name}</TableCell>
+                                                <TableCell>{user.email}</TableCell>
+                                                <TableCell>{user.role}</TableCell>
+                                                <TableCell>
+                                                    <div className="flex items-center gap-2">
+                                                        <Select defaultValue={user.role}>
+                                                            <SelectTrigger className="w-[180px]">
+                                                                <SelectValue placeholder="Select role" />
+                                                            </SelectTrigger>
+                                                            <SelectContent>
+                                                                <SelectItem value="CLIENT">CLIENT</SelectItem>
+                                                                <SelectItem value="DEVELOPER">DEVELOPER</SelectItem>
+                                                                <SelectItem value="PRODUCT_MANAGER">PRODUCT_MANAGER</SelectItem>
+                                                                <SelectItem value="ADMIN">ADMIN</SelectItem>
+                                                            </SelectContent>
+                                                        </Select>
+                                                        <Button size="sm">Update Role</Button>
+                                                    </div>
+                                                </TableCell>
+                                            </TableRow>
+                                        ))
                                     }
                                 </TableBody>
                             </Table>
                         </div>
-                        <p className="text-xs text-muted-foreground mt-2">Absolute power... but don't get carried away.</p>
+                        <p className="text-xs text-muted-foreground mt-2">Absolute power... but don&apos;t get carried away.</p>
                     </CardContent>
                 </Card>
                 <h2 className="text-xl font-semibold mb-4">Audit Logs</h2>
@@ -143,18 +143,18 @@ export default function AdminDashboard() {
                                 </TableHeader>
                                 <TableBody>
                                     {
-                                    auditLogs.map((log) => (
-                                        <TableRow key={log.id}>
-                                            <TableCell className="font-medium">
-                                                <div className="flex items-center">
-                                                    <ShieldAlert className="h-4 w-4 mr-2 text-muted-foreground" />
-                                                    {log.action}
-                                                </div>
-                                            </TableCell>
-                                            <TableCell>{log.user}</TableCell>
-                                            <TableCell>{new Date(log.timestamp).toLocaleString()}</TableCell>
-                                        </TableRow>
-                                    ))
+                                        auditLogs.map((log) => (
+                                            <TableRow key={log.id}>
+                                                <TableCell className="font-medium">
+                                                    <div className="flex items-center">
+                                                        <ShieldAlert className="h-4 w-4 mr-2 text-muted-foreground" />
+                                                        {log.action}
+                                                    </div>
+                                                </TableCell>
+                                                <TableCell>{log.user}</TableCell>
+                                                <TableCell>{new Date(log.timestamp).toLocaleString()}</TableCell>
+                                            </TableRow>
+                                        ))
                                     }
                                 </TableBody>
                             </Table>

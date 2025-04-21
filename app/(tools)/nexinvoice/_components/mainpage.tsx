@@ -82,8 +82,9 @@ export default function MainPageInvoice() {
 
                 const result = await response.json();
                 alert(result.message || "The invoice has been sent via email.");
-            } catch (error) {
-                console.error('Error:', error);
+            } catch (err) {
+                const error = err as Error;
+                console.log('Error:', error);
                 alert(`Failed to send email: ${error}`);
             } finally {
                 setIsLoading(false);

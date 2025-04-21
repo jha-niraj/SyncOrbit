@@ -3,7 +3,6 @@
 import type React from "react";
 import { useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { motion } from "framer-motion";
 import { Loader2, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -29,8 +28,9 @@ export default function SignIn() {
                 toast("Email not registered");
                 router.push("/register");
             }
-        } catch (err: any) {
-            console.error("Google sign-in error: " + err);
+        } catch (err) {
+            const error = err as Error;
+            console.log("Google sign-in error: " + error);
         } finally {
             setGoogleSignIn(false);
         }
@@ -40,19 +40,29 @@ export default function SignIn() {
         e.preventDefault();
         setIsSubmitting(true);
 
-        const response = await signIn("credentials", {
-            email, password,
-            redirect: false
-        })
+        try {
+            const response = await signIn("credentials", {
+                email, password,
+                redirect: false
+            })
 
-        if (response?.error) {
-            toast.error(response?.error);
+            console.log("Auth response:", response);
+
+            if (response?.error) {
+                toast.error("Invalid email or password. Please try again.");
+            } else if (response?.ok) {
+                toast.success("Logged in Successfully");
+                router.push("/dashboard");
+            }
+        } catch (err) {
+            const error = err as Error;
+            if (error.message === "No user found") {
+                toast.error("We couldn't find an account with that email");
+            }
+            console.log("Error occurred: ", err);
+            toast.error("An unexpected error occurred. Please try again later.");
+        } finally {
             setIsSubmitting(false);
-        }
-        if (response?.ok && !response?.error) {
-            setIsSubmitting(false);
-            toast("Logged in Successfully");
-            router.push("/dashboard");
         }
     };
 
@@ -278,7 +288,7 @@ export default function SignIn() {
             <footer className="py-6 px-8 border-t border-muted-foreground/10 mt-auto">
                 <div className="container flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
                     <p className="text-xs text-muted-foreground">
-                        © 2023 ShunyaTech. All rights reserved.
+                        © 2025 ShunyaTech. All rights reserved.
                     </p>
                 </div>
             </footer>

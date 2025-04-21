@@ -10,7 +10,7 @@ const texts = ["Innovative", "Transparent", "Scalable", "Impactful"];
 
 export default function HeroSection() {
     return (
-        <main className="relative w-full min-h-screen bg-black text-white flex items-center justify-center py-28">
+        <main className="relative w-full min-h-screen text-black dark:text-white flex items-center justify-center py-28">
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,#333_1px,transparent_1px)] bg-[length:20px_20px] opacity-10 pointer-events-none"></div>
             <div className="max-w-5xl mx-auto px-4 md:px-6 text-center relative z-10">
                 <div className="flex flex-col items-center justify-center gap-6">
@@ -21,7 +21,7 @@ export default function HeroSection() {
                         initial={{ scale: 0.9, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
                         transition={{ duration: 1, ease: "easeOut" }}
-                        className="text-4xl md:text-6xl font-bold tracking-tight bg-gradient-to-b from-white to-gray-300 bg-clip-text text-transparent"
+                        className="text-4xl md:text-6xl font-bold tracking-tight bg-gradient-to-b from-black to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent"
                     >
                         Building <span className="text-green-600">Products</span>, Not Just Promises
                     </motion.h1>
@@ -34,7 +34,7 @@ export default function HeroSection() {
                         initial={{ scale: 0.9, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
                         transition={{ duration: 1.2, ease: "easeOut" }}
-                        className="max-w-2xl text-gray-300 md:text-xl"
+                        className="max-w-2xl text-gray-800 dark:text-gray-300 md:text-xl"
                     >
                         At ShunyaTech, we craft our own badass products while delivering client solutions that don&apos;t cost an arm, a leg, and your soul. Transparent pricing, real results—because overcharging is so last decade.
                     </motion.p>
@@ -42,7 +42,7 @@ export default function HeroSection() {
                         initial={{ scale: 0.9, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
                         transition={{ duration: 1.4, ease: "easeOut" }}
-                        className="flex flex-col sm:flex-row gap-4 mt-8"
+                        className="flex flex-col sm:flex-row gap-4 mt-4"
                     >
                         {/* <Button variant="outline" size="lg" className="group text-black border-white hover:bg-white hover:text-black">
                             <Link href="/accelerator" className="flex items-center">

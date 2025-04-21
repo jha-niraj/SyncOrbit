@@ -243,8 +243,9 @@ export default function BudgetEstimator({ initialProjectType = "" }: BudgetEstim
             }
 
             setEstimateResult(result)
-        } catch (error) {
-            console.error("Error generating estimate:", error)
+        } catch (err) {
+            const error = err as Error;
+            console.log("Error generating estimate:", error)
         } finally {
             setIsLoading(false)
         }

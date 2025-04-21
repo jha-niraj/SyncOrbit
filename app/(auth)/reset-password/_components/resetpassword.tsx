@@ -1,6 +1,6 @@
 'use client';
 
-import { FormEvent, useState } from 'react';
+import { FormEvent, JSX, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -37,8 +37,9 @@ const ResetPassword = (): JSX.Element => {
             } else {
                 toast('Error resetting password');
             }
-        } catch (err: any) {
-            console.error("Error resetting password:", err);
+        } catch (err) {
+            const error = err as Error;
+            console.log("Error resetting password:", error);
             toast('Error resetting password');
         } finally {
             setIsResettingPassword(false);

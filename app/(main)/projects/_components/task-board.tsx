@@ -18,8 +18,8 @@ interface TaskBoardProps {
     initialTasks?: Task[]
     developers?: Developer[]
 }
-
 export function TaskBoard({ projectId, initialTasks = [], developers = [] }: TaskBoardProps) {
+    console.log(projectId);
     const [tasks, setTasks] = useState<Task[]>(initialTasks)
     const [isAddingTask, setIsAddingTask] = useState(false)
     const [newTask, setNewTask] = useState<Partial<Task>>({

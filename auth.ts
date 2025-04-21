@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { PrismaAdapter } from "@next-auth/prisma-adapter"
 import NextAuth from "next-auth";
 import { Role } from '@prisma/client';
+import bcrypt from "bcrypt";
 
 export const { auth, handlers, signIn, signOut } = NextAuth({
     adapter: PrismaAdapter(prisma),
@@ -36,7 +37,10 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
                         return null;
                     }
 
-                    const isPasswordValid = credentials.password === user.hashedPassword;
+                    const isPasswordValid = await bcrypt.compare(
+                        credentials.password as string,
+                        user.hashedPassword
+                    );
 
                     if (!isPasswordValid) {
                         return null;
@@ -49,9 +53,9 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
                         image: user.image,
                         role: user.role,
                     };
-                } catch (error) {
-                    console.error("Authorization error:", error);
-                    throw new Error(error instanceof Error ? error.message : "Authentication failed");
+                } catch (err) {
+                    console.log("Authorization error:", err);
+                    return null;
                 }
             }
         }),
@@ -96,15 +100,6 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
                     return true;
                 }
 
-                await prisma.user.create({
-                    data: {
-                        email: profile?.email as string,
-                        name: profile?.name as string,
-                        emailVerified: true,
-
-                    }
-                })
-
                 return true;
             }
             return true;
@@ -135,4 +130,5 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
             },
         },
     },
+    debug: true
 })

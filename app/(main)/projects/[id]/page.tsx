@@ -14,6 +14,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Task } from "../_components/task-card"
 import { TaskBoard } from "../_components/task-board"
+import Image from "next/image"
 
 const project = {
     id: 1,
@@ -155,10 +156,12 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
                                 <div>
                                     <div className="flex items-center gap-3 mb-2">
                                         <div className="h-12 w-12 rounded-md overflow-hidden">
-                                            <img
+                                            <Image
                                                 src={project.logo || "/placeholder.svg"}
                                                 alt={`${project.title} logo`}
                                                 className="h-full w-full object-cover"
+                                                height={30}
+                                                width={30}
                                             />
                                         </div>
                                         <div>
@@ -204,10 +207,12 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
                             <CardContent className="space-y-4">
                                 <div className="flex items-center gap-3">
                                     <div className="h-16 w-16 rounded-md overflow-hidden">
-                                        <img
+                                        <Image
                                             src={project.client.logo || "/placeholder.svg"}
                                             alt={`${project.client.name} logo`}
                                             className="h-full w-full object-cover"
+                                            height={30}
+                                            width={30}
                                         />
                                     </div>
                                     <div>
@@ -283,7 +288,7 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
                         <DialogContent className="sm:max-w-[425px]">
                             <DialogHeader>
                                 <DialogTitle>Add Feedback</DialogTitle>
-                                <DialogDescription>Your feedback is welcome... as long as it's positive.</DialogDescription>
+                                <DialogDescription>Your feedback is welcome... as long as it&apos;s positive.</DialogDescription>
                             </DialogHeader>
                             <div className="grid gap-4 py-4">
                                 <div className="grid gap-2">

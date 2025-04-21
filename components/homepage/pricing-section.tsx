@@ -148,7 +148,7 @@ export default function PricingPage() {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-b from-black to-zinc-900 text-white">
+        <div id="pricingsection" className="min-h-screen bg-gradient-to-b from-black to-zinc-900 text-white">
             <div className="container mx-auto px-4 py-16">
                 <div className="text-center mb-16">
                     <div className="inline-block px-3 py-1 mb-4 text-xs font-semibold tracking-wider uppercase border border-white/20 rounded-full bg-white/5 backdrop-blur-sm">
@@ -170,8 +170,21 @@ export default function PricingPage() {
                                 id="currency-toggle"
                                 checked={isUSD}
                                 onCheckedChange={setIsUSD}
-                                className="data-[state=checked]:bg-white data-[state=checked]:text-black"
+                                className="
+                                    data-[state=checked]:bg-white
+                                    data-[state=unchecked]:bg-gray-600
+                                    dark:data-[state=checked]:bg-white
+                                    dark:data-[state=unchecked]:bg-gray-500
+                                    data-[state=checked]:text-black
+                                    data-[state=unchecked]:text-white
+                                    border
+                                    border-gray-300
+                                    dark:border-gray-600
+                                    rounded-full
+                                    transition-colors
+                                "
                             />
+
                             <Label htmlFor="currency-toggle" className="text-zinc-400">
                                 USD
                             </Label>
@@ -330,7 +343,7 @@ function StandardPricingCard({
                 </div>
                 <div className="space-y-4">
                     <h4 className="text-sm uppercase tracking-wider text-zinc-500">Features</h4>
-                    <ul className="space-y-4">
+                    <ul className="space-y-4 grid grid-cols-2 md:grid-cols-2">
                         {
                             tierData.features.map((feature, index) => (
                                 <FeatureItem key={index} icon={feature.icon} text={feature.text} />

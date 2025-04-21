@@ -70,13 +70,13 @@ export default function ProjectSection() {
                                     </div>
                                 </div>
                                 <div className="flex flex-col sm:flex-row gap-2 sm:gap-4">
-                                    <Button asChild className="group">
+                                    <Button asChild className="w-full group">
                                         <Link href="https://www.thecoderz.in.net/" target="_blank">
                                             Explore Platform
                                             <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
                                         </Link>
                                     </Button>
-                                    <Button asChild className="group">
+                                    <Button asChild className="w-full group">
                                         <Link href="/products/thecoderz">
                                             Case Study
                                             <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />

@@ -32,13 +32,13 @@ enum TaskStatus {
 }
 
 model User {
-    id             String  @id @default(uuid())
+    id             String   @id @default(uuid())
     name           String
-    email          String  @unique
-    emailVerified  Boolean @default(false)
-    image          String?
+    email          String   @unique
+    emailVerified  Boolean? @default(false)
+    image          String?  @default("https://tse4.mm.bing.net/th?id=OIP.-BS8Y2nH1k93GJiitUVBCAHaHa&pid=Api&P=0")
     hashedPassword String?
-    role           Role    @default(CLIENT)
+    role           Role     @default(CLIENT)
 
     bio    String?
     skills String?
@@ -49,17 +49,18 @@ model User {
     verifyTokenExpiry DateTime?
     resetToken        String?
     restTokenExpiry   DateTime?
-    createdAt         DateTime   @default(now())
-    updatedAt         DateTime   @updatedAt
-    
+    createdAt         DateTime  @default(now())
+    updatedAt         DateTime  @updatedAt
+
     // Relations
-    clientProjects    Project[]  @relation("ClientProjects")
-    managedProjects   Project[]  @relation("ProductManager")
-    assignedTasks     Task[]     @relation("AssignedDeveloper")
-    feedbacks         Feedback[]
-    Team              Team?      @relation("TeamLead")
-    Project           Project?   @relation(fields: [projectId], references: [id])
-    projectId         String?
+    clientProjects  Project[]  @relation("ClientProjects")
+    managedProjects Project[]  @relation("ProductManager")
+    assignedTasks   Task[]     @relation("AssignedDeveloper")
+    feedbacks       Feedback[]
+    Team            Team?      @relation("TeamLead")
+    Project         Project?   @relation(fields: [projectId], references: [id])
+    projectId       String?
+    Account         Account[]
 }
 
 model Team {
@@ -129,4 +130,27 @@ model Contact {
     updatedAt   DateTime @updatedAt
 
     @@index([email])
+}
+
+model Account {
+    id                String  @id @default(uuid())
+    userId            String
+    type              String
+    provider          String
+    providerAccountId String
+    refresh_token     String?
+    access_token      String?
+    expires_at        Int?
+    token_type        String?
+    scope             String?
+    id_token          String?
+    session_state     String?
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@unique([provider, providerAccountId])
+    @@map("accounts")
 }

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "../globals.css";
-import Navbar from "@/components/homepage/site-header";
+import Navbar from "@/components/homepage/navbar";
 import { ThemeProvider } from "@/components/theme-providers";
 import Footer from "@/components/homepage/footer";
 import { Toaster } from "@/components/ui/toaster";

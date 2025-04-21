@@ -1,11 +1,10 @@
 "use client"
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import axios from 'axios';
-import { Loader, CheckCircle, XCircle, AlertTriangle, ArrowRight, Mail, RefreshCw } from 'lucide-react';
+import { Loader, CheckCircle, XCircle, AlertTriangle } from 'lucide-react';
 import Image from 'next/image';
-import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const VerifyPage = () => {
@@ -15,7 +14,7 @@ const VerifyPage = () => {
     const [message, setMessage] = useState('Click the button below to verify your email address.');
     const router = useRouter();
 
-    const verifyToken = async () => {
+    const verifyToken = useCallback(async() => {
         if (!token) {
             setStatus('missing');
             setMessage('Verification token is missing.');
@@ -53,9 +52,9 @@ const VerifyPage = () => {
             } else {
                 setMessage('An unexpected error occurred. Please try again or contact support.');
             }
-            console.error('Verification error:', error);
+            console.log('Verification error:', error);
         }
-    };
+    }, [token]);
 
     const handleSignIn = () => {
         router.push("/signin");
@@ -65,7 +64,7 @@ const VerifyPage = () => {
         if (token && status === 'idle') {
             verifyToken();
         }
-    }, [token]);
+    }, [token, status, verifyToken]);
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-black flex flex-col items-center justify-center p-4 relative overflow-hidden">

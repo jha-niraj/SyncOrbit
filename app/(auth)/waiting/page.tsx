@@ -2,12 +2,11 @@
 
 import { toast } from '@/hooks/use-toast';
 import axios from 'axios';
-import { Loader, Mail, ArrowRight, CheckCircle, HelpCircle, FolderSync, Check } from 'lucide-react';
+import { Loader, Mail, FolderSync, Check } from 'lucide-react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 
 export default function VerifyEmail() {
     const searchParams = useSearchParams();
@@ -48,8 +47,9 @@ export default function VerifyEmail() {
                     variant: "destructive"
                 });
             }
-        } catch (error) {
-            console.error('Error resending email:', error);
+        } catch (err) {
+            const error = err as Error;
+            console.log('Error resending email:', error);
             toast({
                 title: 'An error occurred while resending the email',
                 variant: "destructive"
@@ -72,8 +72,9 @@ export default function VerifyEmail() {
                 title: 'Account verified! Redirecting to dashboard...'
             });
             router.push("/dashboard");
-        } catch (err: unknown) {
-            console.error('Verification error:', err);
+        } catch (err) {
+            const error = err as Error;
+            console.log('Verification error:', error);
             toast({
                 title: 'Error while verifying account',
                 variant: 'destructive'
@@ -172,7 +173,7 @@ export default function VerifyEmail() {
                             animate={{ opacity: 1 }}
                             transition={{ delay: 0.3, duration: 0.5 }}
                         >
-                            We've sent a verification email to your inbox!
+                            We&apos;ve sent a verification email to your inbox!
                         </motion.p>
                         
                         <motion.p 
@@ -217,15 +218,14 @@ export default function VerifyEmail() {
                                         :
                                         <>
                                             <Check className="mr-2" />
-                                            I've Verified My Account
+                                            I&apos;ve Verified My Account
                                         </>
                                 }
                             </button>
                         </div>
-                        
                         <div className="mt-8 text-center">
                             <p className="text-sm text-gray-600">
-                                Didn't receive the email?{' '}
+                                Didn&apos;t receive the email?{' '}
                                 <Link href="#" className="text-blue-500 hover:underline">
                                     Check our FAQ
                                 </Link>

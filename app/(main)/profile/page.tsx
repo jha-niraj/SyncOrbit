@@ -23,21 +23,7 @@ export default function ProfilePage() {
     }
 
     return (
-        <div className="flex min-h-screen flex-col">
-            <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-                <div className="container flex h-14 items-center justify-between">
-                    <Link href="/" className="flex items-center space-x-2">
-                        <span className="font-bold">Project Management System</span>
-                    </Link>
-                    <div className="flex items-center space-x-4">
-                        <Link href="/dashboard/developer">
-                            <Button variant="ghost" size="sm">
-                                Back to Dashboard
-                            </Button>
-                        </Link>
-                    </div>
-                </div>
-            </header>
+        <div className="flex min-h-screen flex-col py-16">
             <main className="flex-1 container py-6">
                 <div className="max-w-4xl mx-auto">
                     <div className="flex flex-col md:flex-row gap-6 mb-8">

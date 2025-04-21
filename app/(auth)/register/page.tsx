@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Loader2, ArrowRight, Check, ChevronRight } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -27,7 +27,8 @@ export default function SignUp() {
             setGoogleSignUp(true);
             await signIn('google', { callbackUrl: '/dashboard' });
         } catch (err) {
-            console.error('Google sign-in error:', err);
+            const error = err as Error;
+            console.log('Google sign-in error:', error);
             setGoogleSignUp(false);
         }
     };
@@ -52,7 +53,7 @@ export default function SignUp() {
                 });
 
                 if (result?.error) {
-                    console.error("Sign in error:", result.error);
+                    console.log("Sign in error:", result.error);
                     toast("Authentication failed", {
                         description: result.error,
                     });
@@ -63,19 +64,16 @@ export default function SignUp() {
                     router.push("/dashboard");
                 }
             }
-        } catch (error: any) {
-            if (error.response) {
-                // The server responded with a status code outside the 2xx range
+        } catch (error) {
+            if (axios.isAxiosError(error) && error.response) {
                 const errorMessage = error.response.data.message || "An error occurred during registration";
                 toast.error(errorMessage);
-            } else if (error.request) {
-                // The request was made but no response was received
+            } else if (axios.isAxiosError(error) && error.request) {
                 toast.error("No response from server. Please try again.");
             } else {
-                // Something happened in setting up the request
                 toast.error("Error setting up the request. Please try again.");
             }
-            console.error("Registration error:", error);
+            console.log("Registration error:", error);
         } finally {
             setIsSubmitting(false);
         }

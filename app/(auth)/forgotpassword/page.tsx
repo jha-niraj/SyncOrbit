@@ -11,7 +11,7 @@ export default function ForgotPassword() {
     const [ email, setEmail ] = useState<string>("");
     const [ sending, setIsSending ] = useState<boolean>(false);
 
-    const handleSubmit = async (e: any) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setIsSending(true);
 
@@ -22,8 +22,9 @@ export default function ForgotPassword() {
             } else {
                 toast('Error sending password reset link.');
             }
-        } catch (err: any) {
-            console.error("Error sending password reset email:", err);
+        } catch (err) {
+            const error = err as Error;
+            console.log("Error sending password reset email:", error);
             toast('Error sending password reset link.');
         } finally {
             setIsSending(false);

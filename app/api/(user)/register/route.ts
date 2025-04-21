@@ -9,7 +9,7 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 export async function POST(request: NextRequest) {
     try {
         const body: RequestBody = await request.json();
-        const { name, email, password, referralCode } = body;
+        const { name, email, password } = body;
 
         if (!name || !email || !password) {
             return NextResponse.json(
@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
             }
         })
 
-        const verifyUrl = `${process.env.NEXTAUTH_URL}/verify?token=${verifyToken}`
+        // const verifyUrl = `${process.env.NEXTAUTH_URL}/verify?token=${verifyToken}`
 
         // console.log("Starting sening email");
         // await resend.emails.send({
@@ -234,7 +234,8 @@ export async function POST(request: NextRequest) {
             },
             { status: 200 }
         );
-    } catch (err: any) {
+    } catch (error) {
+        const err = error as Error;
         console.log(err.message);
         return NextResponse.json({ error: err.message }, { status: 500 });
     }

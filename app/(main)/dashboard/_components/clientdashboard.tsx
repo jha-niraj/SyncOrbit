@@ -197,7 +197,7 @@ export default function ClientDashboard() {
                         <DialogContent className="sm:max-w-[425px]">
                             <DialogHeader>
                                 <DialogTitle>Add Feedback</DialogTitle>
-                                <DialogDescription>We value your opinion... unless it's about weekend deadlines.</DialogDescription>
+                                <DialogDescription>We value your opinion... unless it&apos;s about weekend deadlines.</DialogDescription>
                             </DialogHeader>
                             <div className="grid gap-4 py-4">
                                 <div className="grid gap-2">

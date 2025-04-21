@@ -14,8 +14,9 @@ export async function POST(req: NextRequest) {
         const data = await sendInvoiceEmail(recipientEmail, invoiceImage, invoiceNumber);
 
         return NextResponse.json({ message: 'Email sent successfully', data }, { status: 200 });
-    } catch (error) {
-        console.error('Server error:', error);
+    } catch (err) {
+        const error = err as Error;
+        console.log('Server error:', error);
         return NextResponse.json({ message: 'Server error', error: error }, { status: 500 });
     }
 }
