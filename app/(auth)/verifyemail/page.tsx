@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import axios from 'axios';
 import { Loader, CheckCircle, XCircle, AlertTriangle } from 'lucide-react';
@@ -207,4 +207,10 @@ const VerifyPage = () => {
     );
 };
 
-export default VerifyPage;
+export default function VerifyPageLayout() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <VerifyPage />
+        </Suspense>
+    )
+}

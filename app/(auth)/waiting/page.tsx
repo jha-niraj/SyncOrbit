@@ -5,10 +5,10 @@ import axios from 'axios';
 import { Loader, Mail, FolderSync, Check } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { motion } from 'framer-motion';
 
-export default function VerifyEmail() {
+function WaitingPage() {
     const searchParams = useSearchParams();
     const email = searchParams.get("email");
     const [canResend, setCanResend] = useState(false);
@@ -236,4 +236,12 @@ export default function VerifyEmail() {
             </div>
         </div>
     );
+}
+
+export default function WaitingPageLayout() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <WaitingPage />
+        </Suspense>
+    )
 }

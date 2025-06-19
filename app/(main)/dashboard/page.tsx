@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+// import { motion, AnimatePresence } from "framer-motion";
 import { Separator } from "@/components/ui/separator";
 // import Link from "next/link";
 import { useSession } from "next-auth/react";
@@ -54,18 +54,6 @@ const Dashboard = () => {
                     </div>
                 </div>
                 <Separator className="my-3" />
-                <AnimatePresence mode="wait">
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -20 }}
-                        transition={{ duration: 0.3 }}
-                    >
-                        {
-                            session?.user?.role === "CLIENT" ? <UserDashboard /> : <CreatorDashboard />
-                        }
-                    </motion.div>
-                </AnimatePresence>
             </div>
         </div>
     );

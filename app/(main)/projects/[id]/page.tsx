@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { use, useState } from "react"
 import { motion } from "framer-motion"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -133,7 +133,8 @@ const feedbacks = [
         date: "2023-09-22T10:15:00",
     },
 ]
-export default function ProjectDetails({ params }: { params: { id: string } }) {
+export default function ProjectDetails({ params }: { params: Promise<{ id: string }> }) {
+    const { id } = use(params)
     const [newFeedback, setNewFeedback] = useState({ title: "", description: "" })
 
     const handleAddFeedback = () => {
@@ -274,7 +275,7 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
                     </motion.div>
                 </div>
                 <div className="mb-8">
-                    <TaskBoard projectId={params.id} initialTasks={initialTasks} developers={project.team.developers} />
+                    <TaskBoard projectId={id} initialTasks={initialTasks} developers={project.team.developers} />
                 </div>
                 <h2 className="text-xl font-semibold mb-4">Feedback</h2>
                 <div className="flex flex-col sm:flex-row gap-4 mb-8">

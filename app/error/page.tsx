@@ -4,8 +4,9 @@ import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { AlertCircle, ArrowLeft, AlertTriangle, XCircle, Info } from 'lucide-react';
+import { Suspense } from 'react';
 
-export default function AuthError() {
+function AuthError() {
 	const search = useSearchParams();
 	const error = search.get("error");
 
@@ -87,4 +88,12 @@ export default function AuthError() {
 			</motion.div>
 		</div>
 	);
+}
+
+export default function AuthErrorLayout() {
+	return (
+		<Suspense fallback={<div>Loading...</div>}>
+			<AuthError />
+		</Suspense>
+	)
 }
