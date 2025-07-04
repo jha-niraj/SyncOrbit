@@ -51,24 +51,26 @@ export default function AboutUsSection() {
                             ShunyaTech is a leading technology solutions provider, dedicated to helping businesses thrive in the digital age through innovative software solutions and expert consulting.
                         </p>
                         <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-6">
-                            {features.map((feature) => (
-                                <motion.div
-                                    key={feature.name}
-                                    initial={{ opacity: 0, y: 10 }}
-                                    whileInView={{ opacity: 1, y: 0 }}
-                                    viewport={{ once: true }}
-                                    transition={{ duration: 0.5 }}
-                                    className="relative bg-white/50 dark:bg-black/50 backdrop-blur-xl rounded-xl p-4 border border-teal-200/30 dark:border-teal-800/30"
-                                >
-                                    <feature.icon className="h-6 w-6 text-teal-500 mb-2" />
-                                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                                        {feature.name}
-                                    </h3>
-                                    <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">
-                                        {feature.description}
-                                    </p>
-                                </motion.div>
-                            ))}
+                            {
+                                features.map((feature) => (
+                                    <motion.div
+                                        key={feature.name}
+                                        initial={{ opacity: 0, y: 10 }}
+                                        whileInView={{ opacity: 1, y: 0 }}
+                                        viewport={{ once: true }}
+                                        transition={{ duration: 0.5 }}
+                                        className="relative bg-white/50 dark:bg-black/50 backdrop-blur-xl rounded-xl p-4 border border-teal-200/30 dark:border-teal-800/30"
+                                    >
+                                        <feature.icon className="h-6 w-6 text-teal-500 mb-2" />
+                                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                                            {feature.name}
+                                        </h3>
+                                        <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">
+                                            {feature.description}
+                                        </p>
+                                    </motion.div>
+                                ))
+                            }
                         </div>
                         <div className="mt-8 flex flex-wrap gap-4">
                             <Button asChild size="lg" className="bg-gradient-to-r from-teal-500 to-emerald-600 hover:from-teal-600 hover:to-emerald-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 rounded-xl">

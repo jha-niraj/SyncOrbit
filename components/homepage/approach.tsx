@@ -87,41 +87,45 @@ export default function ApproachSection() {
                         viewport={{ once: true }}
                         className="mt-16 grid grid-cols-1 lg:grid-cols-3 gap-8"
                     >
-                        {steps.map((step, index) => (
-                            <motion.div
-                                key={step.title}
-                                variants={item}
-                                className="group relative bg-white/50 dark:bg-black/50 backdrop-blur-xl rounded-2xl border border-teal-200/30 dark:border-teal-800/30 hover:border-teal-300 dark:hover:border-teal-700 transition-all duration-300 overflow-hidden"
-                            >
-                                <div className="relative p-6">
-                                    <div className="aspect-[16/9] overflow-hidden rounded-xl mb-6">
-                                        <Image
-                                            src={step.image}
-                                            alt={step.title}
-                                            width={1920}
-                                            height={1080}
-                                            className="object-cover transition-transform duration-300 group-hover:scale-105"
-                                        />
+                        {
+                            steps.map((step, index) => (
+                                <motion.div
+                                    key={step.title}
+                                    variants={item}
+                                    className="group relative bg-white/50 dark:bg-black/50 backdrop-blur-xl rounded-2xl border border-teal-200/30 dark:border-teal-800/30 hover:border-teal-300 dark:hover:border-teal-700 transition-all duration-300 overflow-hidden"
+                                >
+                                    <div className="relative p-6">
+                                        <div className="aspect-[16/9] overflow-hidden rounded-xl mb-6">
+                                            <Image
+                                                src={step.image}
+                                                alt={step.title}
+                                                width={1920}
+                                                height={1080}
+                                                className="object-cover transition-transform duration-300 group-hover:scale-105"
+                                            />
+                                        </div>
+                                        <step.icon className="h-8 w-8 text-teal-500 mb-4" />
+                                        <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
+                                            {step.title}
+                                        </h3>
+                                        <p className="mt-2 text-gray-600 dark:text-gray-300">
+                                            {step.description}
+                                        </p>
+                                        <div className="mt-6 space-y-3">
+                                            {
+                                                step.features.map((feature) => (
+                                                    <div key={feature} className="flex items-center gap-2">
+                                                        <CheckCircle className="h-5 w-5 text-teal-500" />
+                                                        <span className="text-gray-700 dark:text-gray-300">{feature}</span>
+                                                    </div>
+                                                ))
+                                            }
+                                        </div>
                                     </div>
-                                    <step.icon className="h-8 w-8 text-teal-500 mb-4" />
-                                    <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
-                                        {step.title}
-                                    </h3>
-                                    <p className="mt-2 text-gray-600 dark:text-gray-300">
-                                        {step.description}
-                                    </p>
-                                    <div className="mt-6 space-y-3">
-                                        {step.features.map((feature) => (
-                                            <div key={feature} className="flex items-center gap-2">
-                                                <CheckCircle className="h-5 w-5 text-teal-500" />
-                                                <span className="text-gray-700 dark:text-gray-300">{feature}</span>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                                <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-teal-500/5 to-emerald-500/5 dark:from-teal-500/10 dark:to-emerald-500/10 opacity-0 group-hover:opacity-100 transition-opacity" />
-                            </motion.div>
-                        ))}
+                                    <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-teal-500/5 to-emerald-500/5 dark:from-teal-500/10 dark:to-emerald-500/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+                                </motion.div>
+                            ))
+                        }
                     </motion.div>
                 </div>
             </div>

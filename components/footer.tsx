@@ -3,7 +3,7 @@
 import Link from "next/link"
 import Image from "next/image"
 import { motion } from "framer-motion"
-import { Facebook, Twitter, Linkedin, Instagram, Github } from "lucide-react"
+import { Facebook, Twitter, Linkedin, Instagram } from "lucide-react"
 
 const navigation = {
 	solutions: [
@@ -29,7 +29,6 @@ const navigation = {
 		{ name: "Twitter", icon: Twitter, href: "#" },
 		{ name: "LinkedIn", icon: Linkedin, href: "#" },
 		{ name: "Instagram", icon: Instagram, href: "#" },
-		{ name: "GitHub", icon: Github, href: "#" },
 	],
 }
 

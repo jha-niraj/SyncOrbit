@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { signOut, useSession } from "next-auth/react";
 import { useTheme } from "next-themes";
@@ -17,11 +17,11 @@ import { cn } from "@/lib/utils";
 import Image from "next/image";
 
 const navigation = [
-    { name: "Services", href: "#services", icon: Code },
-    { name: "Projects", href: "#projects", icon: Briefcase },
-    { name: "Approach", href: "#approach", icon: Lightbulb },
-    { name: "Team", href: "#team", icon: Users },
-    { name: "Pricing", href: "#pricing", icon: Rocket },
+    { name: "Services", href: "/#services", icon: Code, isSection: true },
+    { name: "Projects", href: "/projectsdelivered", icon: Briefcase, isSection: false },
+    { name: "Approach", href: "/#approach", icon: Lightbulb, isSection: true },
+    { name: "About Us", href: "/aboutus", icon: Users, isSection: false },
+    { name: "Pricing", href: "/#pricing", icon: Rocket, isSection: true },
 ];
 
 export default function Navbar() {
@@ -30,6 +30,7 @@ export default function Navbar() {
     const pathname = usePathname();
     const { data: session, status } = useSession();
     const { theme, setTheme } = useTheme();
+    const router = useRouter();
 
     useEffect(() => {
         const handleScroll = () => {
@@ -42,17 +43,28 @@ export default function Navbar() {
     }, []);
 
     const isActive = (href: string) => {
-        if (href.startsWith("#")) {
+        if (href.startsWith("/#")) {
             return false;
         }
         return pathname === href;
     };
 
-    const scrollToSection = (id: string) => {
-        const element = document.getElementById(id.replace("#", ""));
-        if (element) {
-            element.scrollIntoView({ behavior: "smooth" });
+    const handleNavigation = (href: string, isSection: boolean) => {
+        if (isSection) {
+            if (pathname !== "/") {
+                router.push(href);
+            } else {
+                const sectionId = href.split("#")[1];
+                const element = document.getElementById(sectionId);
+                if (element) {
+                    element.scrollIntoView({ behavior: "smooth" });
+                }
+            }
+        } else {
+            router.push(href);
         }
+
+        setMobileMenuOpen(false);
     };
 
     return (
@@ -77,6 +89,7 @@ export default function Navbar() {
                                     alt="ShunyaTech"
                                     width={32}
                                     height={32}
+                                    className="bg-black rounded-full"
                                 />
                                 <span className="text-xl font-bold bg-gradient-to-r from-teal-600 to-emerald-700 bg-clip-text text-transparent">
                                     ShunyaTech
@@ -88,7 +101,7 @@ export default function Navbar() {
                                 navigation.map((item) => (
                                     <button
                                         key={item.name}
-                                        onClick={() => scrollToSection(item.href)}
+                                        onClick={() => handleNavigation(item.href, item.isSection)}
                                         className={cn(
                                             "relative flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-xl transition-all duration-300",
                                             isActive(item.href)
@@ -202,10 +215,7 @@ export default function Navbar() {
                                                 navigation.map((item) => (
                                                     <button
                                                         key={item.name}
-                                                        onClick={() => {
-                                                            scrollToSection(item.href);
-                                                            setMobileMenuOpen(false);
-                                                        }}
+                                                        onClick={() => handleNavigation(item.href, item.isSection)}
                                                         className="flex items-center gap-3 px-4 py-3 text-base font-medium text-teal-800 dark:text-teal-200 hover:bg-teal-100 dark:hover:bg-teal-900/50 rounded-xl transition-colors w-full"
                                                     >
                                                         <item.icon className="h-5 w-5" />

@@ -5,7 +5,6 @@ import { NextResponse } from "next/server"
 const protectedRoutes = [
 	'/dashboard',
 	'/profile',
-	'/projects',
 	'/team',
 	'/admin',
 	'/settings'
@@ -23,14 +22,12 @@ const publicRoutes = [
 	'/forgotpassword',
 	'/reset-password',
 	'/error',
-	'/about',
-	'/services',
+	'/aboutus',
 	'/contact',
-	'/pricing',
 	'/accelerator',
-	'/products',
 	'/budgetestimator',
-	'/nexinvoice'
+	'/nexinvoice',
+	'/projectsdelivered'
 ]
 
 // API routes that should be excluded from auth checks
@@ -73,8 +70,13 @@ export default auth((req) => {
 
 	// Check if current path is a public route
 	const isPublicRoute = publicRoutes.some(route =>
-		nextUrl.pathname === route || (route !== '/' && nextUrl.pathname.startsWith(route))
+		nextUrl.pathname === route || nextUrl.pathname.startsWith(route)
 	)
+
+	// If it's a public route, allow access
+	if (isPublicRoute) {
+		return NextResponse.next()
+	}
 
 	// If user is not logged in and trying to access protected route
 	if (!isLoggedIn && isProtectedRoute) {

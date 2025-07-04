@@ -74,58 +74,59 @@ export default function ProjectsSection() {
                         viewport={{ once: true }}
                         className="mt-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
                     >
-                        {projectData.map((project, index) => (
-                            <motion.div
-                                key={project.id}
-                                variants={item}
-                                className="group relative bg-white/50 dark:bg-black/50 backdrop-blur-xl rounded-2xl border border-teal-200/30 dark:border-teal-800/30 hover:border-teal-300 dark:hover:border-teal-700 transition-all duration-300 overflow-hidden"
-                            >
-                                <div className={`absolute inset-0 bg-gradient-to-r ${
-                                    index === 0 ? 'from-blue-500/20 to-cyan-500/20 dark:from-blue-500/10 dark:to-cyan-500/10' :
-                                    index === 1 ? 'from-teal-500/20 to-emerald-500/20 dark:from-teal-500/10 dark:to-emerald-500/10' :
-                                    'from-purple-500/20 to-pink-500/20 dark:from-purple-500/10 dark:to-pink-500/10'
-                                } opacity-0 group-hover:opacity-100 transition-opacity`} />
-                                <div className="relative p-6">
-                                    <div className="aspect-[16/9] overflow-hidden rounded-xl">
-                                        <Image
-                                            src={project.image}
-                                            alt={project.title}
-                                            width={1920}
-                                            height={1080}
-                                            className="object-cover transition-transform duration-300 group-hover:scale-105"
-                                        />
-                                    </div>
-                                    <div className="mt-6">
-                                        <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
-                                            {project.title}
-                                        </h3>
-                                        <p className="mt-2 text-gray-600 dark:text-gray-300">
-                                            {project.description}
-                                        </p>
-                                        <div className="mt-6 flex items-center gap-4">
-                                            <Link href={project.link} target="_blank" rel="noopener noreferrer">
-                                                <Button
-                                                    variant="outline"
-                                                    className="rounded-xl border-teal-200 dark:border-teal-800 text-teal-700 dark:text-teal-300 hover:bg-teal-50 dark:hover:bg-teal-950/30"
-                                                >
-                                                    View Project
-                                                    <ArrowRight className="ml-2 h-4 w-4" />
-                                                </Button>
-                                            </Link>
-                                            <Link href={project.link} target="_blank" rel="noopener noreferrer">
-                                                <Button
-                                                    variant="ghost"
-                                                    className="rounded-xl text-teal-700 dark:text-teal-300 hover:bg-teal-50 dark:hover:bg-teal-950/30"
-                                                >
-                                                    Live Demo
-                                                    <ExternalLink className="ml-2 h-4 w-4" />
-                                                </Button>
-                                            </Link>
+                        {
+                            projectData.map((project, index) => (
+                                <motion.div
+                                    key={project.id}
+                                    variants={item}
+                                    className="group relative bg-white/50 dark:bg-black/50 backdrop-blur-xl rounded-2xl border border-teal-200/30 dark:border-teal-800/30 hover:border-teal-300 dark:hover:border-teal-700 transition-all duration-300 overflow-hidden"
+                                >
+                                    <div className={`absolute inset-0 bg-gradient-to-r ${index === 0 ? 'from-blue-500/20 to-cyan-500/20 dark:from-blue-500/10 dark:to-cyan-500/10' :
+                                            index === 1 ? 'from-teal-500/20 to-emerald-500/20 dark:from-teal-500/10 dark:to-emerald-500/10' :
+                                                'from-purple-500/20 to-pink-500/20 dark:from-purple-500/10 dark:to-pink-500/10'
+                                        } opacity-0 group-hover:opacity-100 transition-opacity`} />
+                                    <div className="relative p-6">
+                                        <div className="aspect-[16/9] overflow-hidden rounded-xl">
+                                            <Image
+                                                src={project.image}
+                                                alt={project.title}
+                                                width={1920}
+                                                height={1080}
+                                                className="object-cover transition-transform duration-300 group-hover:scale-105"
+                                            />
+                                        </div>
+                                        <div className="mt-6">
+                                            <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
+                                                {project.title}
+                                            </h3>
+                                            <p className="mt-2 text-gray-600 dark:text-gray-300">
+                                                {project.description}
+                                            </p>
+                                            <div className="mt-6 flex items-center gap-4">
+                                                <Link href={project.link} target="_blank" rel="noopener noreferrer">
+                                                    <Button
+                                                        variant="outline"
+                                                        className="rounded-xl border-teal-200 dark:border-teal-800 text-teal-700 dark:text-teal-300 hover:bg-teal-50 dark:hover:bg-teal-950/30"
+                                                    >
+                                                        View Project
+                                                        <ArrowRight className="ml-2 h-4 w-4" />
+                                                    </Button>
+                                                </Link>
+                                                <Link href={project.link} target="_blank" rel="noopener noreferrer">
+                                                    <Button
+                                                        variant="ghost"
+                                                        className="rounded-xl text-teal-700 dark:text-teal-300 hover:bg-teal-50 dark:hover:bg-teal-950/30"
+                                                    >
+                                                        Live Demo
+                                                        <ExternalLink className="ml-2 h-4 w-4" />
+                                                    </Button>
+                                                </Link>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            </motion.div>
-                        ))}
+                                </motion.div>
+                            ))
+                        }
                     </motion.div>
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
