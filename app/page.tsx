@@ -5,17 +5,15 @@ import HeroSection from "@/components/homepage/herosection";
 import ServicesSection from "@/components/homepage/services-section";
 import ProjectsSection from "@/components/homepage/projects-section";
 import { TestimonialsSection } from "@/components/homepage/testimonials-section";
-import { Approach } from "@/components/homepage/approach";
 import WhyUs from "@/components/homepage/whyus";
 import PricingSection from "@/components/homepage/pricing-section";
 import FaqsAccrodian from "@/components/homepage/faqs";
 import { PeopleService } from "@/components/homepage/poepleserve";
-import ContactForm from "@/components/homepage/contactsection";
 import AboutUsSection from "@/components/homepage/aboutussection";
+import ApproachSection from "@/components/homepage/approach";
+import CTAPage from "@/components/homepage/cta";
 
-export const runtime = "edge";
-
-export default function ServicesPage() {
+export default function MainLandingPage() {
     return (
         <SmoothScroll>
             <main className="relative w-full mx-auto">
@@ -23,13 +21,13 @@ export default function ServicesPage() {
                 <ServicesSection />
                 <ProjectsSection />
                 <AboutUsSection />
-                <Approach />
+                <ApproachSection />
                 <WhyUs />
                 <TestimonialsSection />
                 <PeopleService />
                 <PricingSection />
                 <FaqsAccrodian />
-                <ContactForm />
+                <CTAPage />
             </main>
         </SmoothScroll>
     )

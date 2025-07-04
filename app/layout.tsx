@@ -1,54 +1,42 @@
 import type { Metadata } from "next";
-import { Space_Grotesk } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-providers";
-import { Toaster } from "@/components/ui/sonner";
+import { Toaster } from "@/components/ui/toaster";
+import Navbar from "@/components/homepage/navbar";
+import Footer from "@/components/footer";
 import { Providers } from "./providers/providers";
-import { AppProvider } from "./context/userContext";
 
-const spaceGrotesk = Space_Grotesk({
-	subsets: ['latin'],
-	weight: ['300', '400', '500', '600', '700'],
-	display: 'swap',
-	variable: '--font-space-grotesk',
-})
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-	title: "Shunya Tech",
-	description: "You think we'll deliver",
-	icons: {
-		icon: "/shunyatech.png",
-	},
+	title: "ShunyaTech - Innovative Digital Solutions",
+	description: "Transform your business with cutting-edge technology solutions from ShunyaTech. We specialize in web development, mobile apps, cloud solutions, and more.",
 };
 
 export default function RootLayout({
 	children,
-}: Readonly<{
-	children: React.ReactNode;
-}>) {
+}: {
+	children: React.ReactNode
+}) {
 	return (
-		<html lang="en">
+		<html lang="en" suppressHydrationWarning style={{ scrollBehavior: "smooth" }}>
 			<head>
-				<title>ShunyaTech</title>
-				<link rel="icon" href="/shunyatech.ico" />
+				<link rel="icon" href="/favicon.ico" />
 			</head>
-			<body
-				className={spaceGrotesk.className} style={{ scrollBehavior: "smooth" }}
-			>
+			<body className={inter.className}>
 				<Providers>
-					<AppProvider>
-						<ThemeProvider
-							attribute="class"
-							defaultTheme="light"
-							enableSystem
-							disableTransitionOnChange
-						>
-							<main className="w-full mx-auto">
-								<Toaster />
-								{children}
-							</main>
-						</ThemeProvider>
-					</AppProvider>
+					<ThemeProvider
+						attribute="class"
+						defaultTheme="system"
+						enableSystem
+						disableTransitionOnChange
+					>
+						<Navbar />
+						<main>{children}</main>
+						<Footer />
+						<Toaster />
+					</ThemeProvider>
 				</Providers>
 			</body>
 		</html>

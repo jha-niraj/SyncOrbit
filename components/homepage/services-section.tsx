@@ -1,141 +1,122 @@
-"use client";
-
-import { useState } from "react";
 import { motion } from "framer-motion";
-import { ArrowRight, CheckCircle, Code, Film, Layers, LucideIcon } from "lucide-react";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetClose } from "@/components/ui/sheet";
+import { Code2, Smartphone, Globe, Database, Shield, Rocket, Zap, Sparkles } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 
-interface Service {
-    icon: LucideIcon;
-    title: string;
-    description: string;
-    extendedDescription: string;
-    features: string[];
-}
-
-const services: Service[] = [
+const services = [
     {
-        icon: Code,
-        title: "Web Development",
-        description: "Custom websites and web applications built with the latest technologies.",
-        extendedDescription: "Our web development services cover everything from simple static websites to complex web applications. We use modern frameworks and technologies to ensure your website is fast, secure, and scalable. Our expertise includes frontend development with React, Angular, or Vue.js, backend development with Node.js, Python, or PHP, and database management with SQL or NoSQL solutions.",
-        features: ["Responsive Design", "E-commerce Solutions", "CMS Integration", "API Development", "Performance Optimization", "SEO-friendly Structure"]
+        icon: Code2,
+        name: "Web Development",
+        description: "Custom web applications built with modern frameworks and best practices",
+        color: "text-teal-500"
     },
     {
-        icon: Layers,
-        title: "Design",
-        description: "Stunning visual designs that captivate and engage your audience.",
-        extendedDescription: "Our design services focus on creating visually appealing and user-friendly interfaces that align with your brand identity. We combine aesthetics with functionality to deliver designs that not only look great but also provide an excellent user experience. From wireframing to final mockups, we ensure every design element serves a purpose.",
-        features: ["UI/UX Design", "Brand Identity", "Graphic Design", "Logo Design", "Illustration", "Print Design"]
+        icon: Smartphone,
+        name: "Mobile Apps",
+        description: "Native and cross-platform mobile applications for iOS and Android",
+        color: "text-emerald-500"
     },
     {
-        icon: Film,
-        title: "Video Editing",
-        description: "Professional video editing services for all your content needs.",
-        extendedDescription: "Our video editing services transform raw footage into polished, engaging content. Whether you need a promotional video for your business, content for social media, or a full-length documentary, our team has the skills and creativity to bring your vision to life. We use industry-standard software and techniques to ensure high-quality results.",
-        features: ["Commercial Videos", "Social Media Content", "Motion Graphics", "Color Grading", "Sound Design", "Video Effects"]
+        icon: Globe,
+        name: "Cloud Solutions",
+        description: "Scalable cloud infrastructure and deployment strategies",
+        color: "text-green-500"
     },
+    {
+        icon: Database,
+        name: "Database Design",
+        description: "Optimized database architecture and management systems",
+        color: "text-blue-500"
+    },
+    {
+        icon: Shield,
+        name: "Security",
+        description: "Robust security implementations and best practices",
+        color: "text-indigo-500"
+    },
+    {
+        icon: Rocket,
+        name: "DevOps",
+        description: "Streamlined development and deployment processes",
+        color: "text-purple-500"
+    },
+    {
+        icon: Zap,
+        name: "API Development",
+        description: "RESTful and GraphQL API design and implementation",
+        color: "text-pink-500"
+    },
+    {
+        icon: Sparkles,
+        name: "UI/UX Design",
+        description: "Beautiful and intuitive user interfaces and experiences",
+        color: "text-orange-500"
+    }
 ];
 
+const container = {
+    hidden: { opacity: 0 },
+    show: {
+        opacity: 1,
+        transition: {
+            staggerChildren: 0.1
+        }
+    }
+};
+
+const item = {
+    hidden: { opacity: 0, y: 20 },
+    show: { opacity: 1, y: 0 }
+};
+
 export default function ServicesSection() {
-    const [selectedService, setSelectedService] = useState<Service | null>(null);
-    const [isSheetOpen, setIsSheetOpen] = useState(false);
-
-    const handleLearnMore = (service: Service) => {
-        setSelectedService(service);
-        setIsSheetOpen(true);
-    };
-
     return (
-        <section className="py-20 max-w-7xl mx-auto relative">
-            <div className="absolute inset-0 bg-grid-pattern opacity-5 pointer-events-none"></div>
-            <div className="w-full px-4 md:px-6">
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5 }}
-                    viewport={{ once: true }}
-                    className="flex flex-col items-center justify-center space-y-4 text-center"
-                >
-                    <div className="space-y-2 max-w-3xl">
-                        <div className="inline-block rounded-lg bg-primary px-3 py-1 text-sm text-primary-foreground">
-                            Our Services
-                        </div>
-                        <h2 className="text-3xl font-bold tracking-tighter md:text-4xl/tight">
-                            Premium Services at Competitive Prices
+        <section id="services" className="py-24 bg-gradient-to-br from-slate-50 via-indigo-50 to-purple-50 dark:from-slate-900 dark:via-black dark:to-slate-900">
+            <div className="max-w-7xl mx-auto px-6 lg:px-8">
+                <div className="text-center">
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.5 }}
+                        className="space-y-4"
+                    >
+                        <Badge variant="outline" className="px-4 py-2 border-teal-200/30 dark:border-teal-800/30 bg-white/50 dark:bg-black/50 backdrop-blur-xl">
+                            <Rocket className="w-4 h-4 text-teal-500 mr-2" />
+                            <span className="text-teal-700 dark:text-teal-300">Our Services</span>
+                        </Badge>
+                        <h2 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-5xl">
+                            Comprehensive Digital Solutions
                         </h2>
-                        <p className="text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                            We deliver high-quality digital solutions that help businesses grow and succeed in the digital
-                            landscape.
+                        <p className="mt-4 text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+                            From concept to deployment, we offer end-to-end services to bring your digital vision to life with cutting-edge technology and expert craftsmanship.
                         </p>
-                    </div>
-                </motion.div>
-                <motion.div
-                    initial="hidden"
-                    whileInView="visible"
-                    viewport={{ once: true }}
-                    className="w-full mx-auto grid items-center gap-8 py-12 lg:grid-cols-3"
-                >
-                    {
-                        services.map((service, index) => (
-                            <Card key={index} className="group relative overflow-hidden rounded-xl border bg-background p-2 transition-all hover:shadow-lg hover:-translate-y-1">
-                                <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent z-0"></div>
-                                <CardHeader className="p-4 relative z-10">
-                                    <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                                        <service.icon className="h-6 w-6" />
-                                    </div>
-                                    <CardTitle className="mt-4">{service.title}</CardTitle>
-                                    <CardDescription>{service.description}</CardDescription>
-                                </CardHeader>
-                                <CardContent className="p-4 pt-0 relative z-10">
-                                    <ul className="grid gap-2">
-                                        {service.features.slice(0, 3).map((feature, i) => (
-                                            <li key={i} className="flex items-center gap-2">
-                                                <CheckCircle className="h-4 w-4 text-primary" />
-                                                <span className="text-sm">{feature}</span>
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </CardContent>
-                                <CardFooter className="p-4 pt-0 relative z-10">
-                                    <Button variant="outline" className="w-full group" onClick={() => handleLearnMore(service)}>
-                                        Learn More
-                                        <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
-                                    </Button>
-                                </CardFooter>
-                            </Card>
-                        ))
-                    }
-                </motion.div>
+                    </motion.div>
+                    <motion.div
+                        variants={container}
+                        initial="hidden"
+                        whileInView="show"
+                        viewport={{ once: true }}
+                        className="mt-16 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8"
+                    >
+                        {services.map((service, index) => (
+                            <motion.div
+                                key={service.name}
+                                variants={item}
+                                className="group relative bg-white/50 dark:bg-black/50 backdrop-blur-xl rounded-2xl p-6 border border-teal-200/30 dark:border-teal-800/30 hover:border-teal-300 dark:hover:border-teal-700 transition-all duration-300"
+                            >
+                                <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-teal-500/5 to-emerald-500/5 dark:from-teal-500/10 dark:to-emerald-500/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+                                <service.icon className={`h-8 w-8 ${service.color} mb-4 relative`} />
+                                <h3 className="text-lg font-semibold text-gray-900 dark:text-white relative">
+                                    {service.name}
+                                </h3>
+                                <p className="mt-2 text-gray-600 dark:text-gray-300 relative">
+                                    {service.description}
+                                </p>
+                            </motion.div>
+                        ))}
+                    </motion.div>
+                </div>
             </div>
-
-            <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
-                <SheetContent>
-                    <SheetHeader>
-                        <SheetTitle>{selectedService?.title}</SheetTitle>
-                        <SheetDescription>{selectedService?.description}</SheetDescription>
-                    </SheetHeader>
-                    <div className="mt-6">
-                        <p className="text-muted-foreground mb-6">{selectedService?.extendedDescription}</p>
-                        <h4 className="text-xl font-semibold mb-4">Features:</h4>
-                        <ul className="grid gap-3">
-                            {
-                                selectedService?.features.map((feature, index) => (
-                                    <li key={index} className="flex items-center gap-2">
-                                        <CheckCircle className="h-5 w-5 text-primary" />
-                                        <span>{feature}</span>
-                                    </li>
-                                ))
-                            }
-                        </ul>
-                    </div>
-                    <SheetClose asChild>
-                        <Button className="mt-6" variant="outline">Close</Button>
-                    </SheetClose>
-                </SheetContent>
-            </Sheet>
         </section>
     );
 }

@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { PrismaAdapter } from "@next-auth/prisma-adapter"
 import NextAuth from "next-auth";
 import { Role } from '@prisma/client';
-import bcrypt from "bcrypt";
+import bcryptjs from "bcryptjs";
 
 export const { auth, handlers, signIn, signOut } = NextAuth({
     adapter: PrismaAdapter(prisma),
@@ -37,7 +37,12 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
                         return null;
                     }
 
-                    const isPasswordValid = await bcrypt.compare(
+                    // Check if email is verified
+                    if (!user.emailVerified) {
+                        throw new Error('EmailNotVerified');
+                    }
+
+                    const isPasswordValid = await bcryptjs.compare(
                         credentials.password as string,
                         user.hashedPassword
                     );
@@ -54,8 +59,8 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
                         role: user.role,
                     };
                 } catch (err) {
-                    console.log("Authorization error:", err);
-                    return null;
+                    console.error("Authorization error:", err);
+                    throw err;
                 }
             }
         }),
@@ -65,28 +70,17 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
         }),
     ],
     callbacks: {
-        async jwt({ token, user }) {
+        async jwt({ token, user, trigger }) {
             if (user) {
-                token.id = user.id!;
+                token.id = user.id as string;
                 token.role = user.role;
             }
-
-            // if (token && !token.roleExplicitlyChosen) {
-            //     const dbUser = await prisma.user.findUnique({
-            //         where: { id: token.id },
-            //         select: { roleExplicitlyChosen: true }
-            //     });
-            //     if (dbUser) {
-            //         token.roleExplicitlyChosen = dbUser.roleExplicitlyChosen;
-            //     }
-            // }
-
             return token;
         },
         async session({ session, token }) {
             if (session.user) {
                 session.user.id = token.id as string;
-                session.user.role = token.role as Role
+                session.user.role = token.role as Role;
             }
             return session;
         },
@@ -97,10 +91,29 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
                 });
 
                 if (existingUser) {
+                    // Update existing user with Google data
+                    await prisma.user.update({
+                        where: { id: existingUser.id },
+                        data: {
+                            emailVerified: new Date(),
+                            name: user.name || existingUser.name,
+                            image: user.image || existingUser.image
+                        }
+                    });
+                    return true;
+                } else {
+                    // Create new user with Google data
+                    await prisma.user.create({
+                        data: {
+                            email: profile?.email as string,
+                            name: user.name || "",
+                            image: user.image,
+                            emailVerified: new Date(),
+                            role: 'CLIENT'
+                        }
+                    });
                     return true;
                 }
-
-                return true;
             }
             return true;
         },
@@ -130,5 +143,5 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
             },
         },
     },
-    debug: true
+    debug: process.env.NODE_ENV === "development"
 })

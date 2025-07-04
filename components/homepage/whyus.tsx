@@ -1,70 +1,85 @@
 import { motion } from "framer-motion";
-import { Palette, Code, Laptop, Clock, Film, Handshake } from "lucide-react";
+import { Palette, Code, Laptop, Clock, Film, Handshake, Shield, Sparkles } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 
 export default function WhyUs() {
-
     const cards = [
         {
-            icon: <Palette className="w-8 h-8 text-red-400 group-hover:rotate-45 transition-transform duration-300" />,
-            title: "Creative Excellence*",
+            icon: <Palette className="w-8 h-8 text-teal-500 group-hover:rotate-45 transition-transform duration-300" />,
+            title: "Creative Excellence",
             description:
-                "Transforming your vision into stunning visual experiences that captivate and engage your audience. *May occasionally resemble a toddler's crayon masterpiece.",
+                "Our design team combines creativity with strategic thinking to deliver visually stunning and user-centric digital experiences that resonate with your audience.",
         },
         {
-            icon: <Code className="w-8 h-8 text-red-400 group-hover:scale-110 transition-transform duration-300" />,
-            title: "Technical Mastery",
+            icon: <Code className="w-8 h-8 text-teal-500 group-hover:scale-110 transition-transform duration-300" />,
+            title: "Technical Expertise",
             description:
-                "Expertly crafted websites using cutting-edge technologies and best practices in development. We promise to use at least three programming languages you've never heard of.",
+                "We leverage cutting-edge technologies and industry best practices to build robust, scalable, and high-performance digital solutions.",
         },
         {
-            icon: <Laptop className="w-8 h-8 text-red-400 group-hover:-translate-y-1 transition-transform duration-300" />,
-            title: "Responsive Design",
+            icon: <Shield className="w-8 h-8 text-teal-500 group-hover:-translate-y-1 transition-transform duration-300" />,
+            title: "Quality Assurance",
             description:
-                "Seamless experiences across all devices, ensuring your website looks and performs flawlessly everywhere. Even on your grandma's flip phone from 2005.",
+                "Rigorous testing and quality control processes ensure your project meets the highest standards of performance, security, and reliability.",
         },
         {
-            icon: <Film className="w-8 h-8 text-red-400 group-hover:rotate-12 transition-transform duration-300" />,
-            title: "Visual Storytelling",
+            icon: <Sparkles className="w-8 h-8 text-teal-500 group-hover:rotate-12 transition-transform duration-300" />,
+            title: "Innovation Focus",
             description:
-                "Professional video editing that brings your narrative to life with compelling visual effects and seamless transitions. We'll make your cat video look like a Hollywood blockbuster.",
+                "We stay ahead of digital trends, incorporating innovative solutions and emerging technologies to give your business a competitive edge.",
         },
         {
-            icon: <Clock className="w-8 h-8 text-red-400 group-hover:rotate-180 transition-transform duration-300" />,
+            icon: <Clock className="w-8 h-8 text-teal-500 group-hover:rotate-180 transition-transform duration-300" />,
             title: "Timely Delivery",
             description:
-                "Consistent track record of delivering high-quality projects within agreed timelines and budgets. We'll only ask for a deadline extension twice, we promise.",
+                "Our proven project management methodology ensures efficient execution and on-time delivery while maintaining transparency throughout the process.",
         },
         {
-            icon: <Handshake className="w-8 h-8 text-red-400 group-hover:scale-110 transition-transform duration-300" />,
+            icon: <Handshake className="w-8 h-8 text-teal-500 group-hover:scale-110 transition-transform duration-300" />,
             title: "Client Partnership",
             description:
-                "Dedicated support and collaboration throughout your project, ensuring your vision is brought to life exactly as you imagined. We'll even pretend to laugh at your jokes during meetings.",
+                "We build lasting partnerships through dedicated support, clear communication, and a deep commitment to understanding and achieving your business goals.",
         },
     ];
 
     return (
-        <section id="whyus" className="w-full bg-gradient-90deg-black-to-gray px-4 py-16 md:py-24">
-            <div className="max-w-7xl mx-auto">
-                <h2 className="text-4xl md:text-5xl text-white font-bold text-center mb-16">
-                    What Makes Us <span className="text-red-400">Stand Out</span>?
-                </h2>
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12 max-w-7xl mx-auto">
-                    {
-                        cards.map((card, index) => (
-                            <motion.div
-                                key={index}
-                                className="group space-y-4 p-6 transition-all duration-300 hover:bg-white/10 shadow-lg hover:shadow-2xl rounded-2xl"
-                                initial={{ opacity: 0, y: -50 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true, amount: 0.3 }}
-                                transition={{ duration: 0.5, ease: "easeOut" }}
-                            >
-                                {card.icon}
-                                <h3 className="text-xl font-semibold text-white">{card.title}</h3>
-                                <p className="text-white leading-relaxed">{card.description}</p>
-                            </motion.div>
-                        ))
-                    }
+        <section id="whyus" className="py-24 bg-gradient-to-br from-slate-50 via-indigo-50 to-purple-50 dark:from-slate-900 dark:via-black dark:to-slate-900">
+            <div className="max-w-7xl mx-auto px-6 lg:px-8">
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.5 }}
+                    className="text-center mb-16"
+                >
+                    <Badge variant="outline" className="px-4 py-2 border-teal-200/30 dark:border-teal-800/30 bg-white/50 dark:bg-black/50 backdrop-blur-xl">
+                        <Sparkles className="w-4 h-4 text-teal-500 mr-2" />
+                        <span className="text-teal-700 dark:text-teal-300">Why Choose Us</span>
+                    </Badge>
+                    <h2 className="mt-4 text-4xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-5xl">
+                        Excellence in Every <span className="text-teal-500">Detail</span>
+                    </h2>
+                    <p className="mt-4 text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+                        We combine technical expertise with creative innovation to deliver exceptional digital solutions that drive your business forward.
+                    </p>
+                </motion.div>
+
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    {cards.map((card, index) => (
+                        <motion.div
+                            key={index}
+                            className="group bg-white/50 dark:bg-black/50 backdrop-blur-xl rounded-2xl p-8 border border-teal-200/30 dark:border-teal-800/30 hover:border-teal-500/50 dark:hover:border-teal-500/50 transition-all duration-300"
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true, amount: 0.3 }}
+                            transition={{ duration: 0.5, delay: index * 0.1 }}
+                        >
+                            {card.icon}
+                            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mt-4">{card.title}</h3>
+                            <p className="mt-2 text-gray-600 dark:text-gray-300 leading-relaxed">{card.description}</p>
+                            <div className="absolute -z-10 inset-0 bg-gradient-to-br from-teal-500/5 to-emerald-500/5 dark:from-teal-500/10 dark:to-emerald-500/10 rounded-2xl" />
+                        </motion.div>
+                    ))}
                 </div>
             </div>
         </section>

@@ -1,5 +1,3 @@
-"use client"
-
 import type React from "react"
 
 import { useState } from "react"
@@ -47,7 +45,7 @@ export default function PricingPage() {
 
     const pricingData: PricingData = {
         mvp: {
-            name: "MVP Miracle",
+            name: "MVP Launch",
             oneTime: {
                 inr: 14999,
                 usd: 199,
@@ -57,92 +55,92 @@ export default function PricingPage() {
                 usd: 139,
             },
             features: [
-                { icon: <Rocket className="w-5 h-5" />, text: "Just enough code to impress investors" },
-                { icon: <Code className="w-5 h-5" />, text: "Duct-tape & bubble gum architecture" },
-                { icon: <Laptop className="w-5 h-5" />, text: "2 revisions (or until we both give up)" },
-                { icon: <Palette className="w-5 h-5" />, text: "UI designed by our intern's pet hamster" },
-                { icon: <Bot className="w-5 h-5" />, text: "AI that's basically a bunch of if/else statements" },
-                { icon: <Zap className="w-5 h-5" />, text: "Works 60% of the time, every time" },
-                { icon: <Globe className="w-5 h-5" />, text: "Runs on your cousin's shared hosting" },
-                { icon: <BarChart className="w-5 h-5" />, text: "Analytics via console.log statements" },
-                { icon: <Upload className="w-5 h-5" />, text: "Demo that only works on our machine" },
-                { icon: <Award className="w-5 h-5" />, text: "'Ship now, fix later' philosophy" },
+                { icon: <Rocket className="w-5 h-5" />, text: "Rapid development for quick market entry" },
+                { icon: <Code className="w-5 h-5" />, text: "Essential features and core functionality" },
+                { icon: <Laptop className="w-5 h-5" />, text: "2 rounds of revisions and refinements" },
+                { icon: <Palette className="w-5 h-5" />, text: "Clean, modern UI design" },
+                { icon: <Bot className="w-5 h-5" />, text: "Basic automation and integrations" },
+                { icon: <Zap className="w-5 h-5" />, text: "Performance optimization" },
+                { icon: <Globe className="w-5 h-5" />, text: "Standard hosting setup" },
+                { icon: <BarChart className="w-5 h-5" />, text: "Basic analytics implementation" },
+                { icon: <Upload className="w-5 h-5" />, text: "Development environment setup" },
+                { icon: <Award className="w-5 h-5" />, text: "Quality assurance testing" },
             ],
         },
         tier1: {
-            name: "Basic Byte",
+            name: "Startup Success",
             price: {
                 inr: 29999,
                 usd: 399,
             },
             features: [
-                { icon: <User className="w-5 h-5" />, text: "1 Developer (who works 25 hours a day)" },
-                { icon: <Code className="w-5 h-5" />, text: "HTML & CSS (we promise not to use tables)" },
-                { icon: <Laptop className="w-5 h-5" />, text: "3 revisions (before we start crying)" },
-                { icon: <Palette className="w-5 h-5" />, text: "Basic design (MS Paint is our passion)" },
-                { icon: <Bot className="w-5 h-5" />, text: "Chatbot that only says 'Please contact support'" },
-                { icon: <Zap className="w-5 h-5" />, text: "Lightning fast* (*terms and conditions apply)" },
-                { icon: <Globe className="w-5 h-5" />, text: "Domain setup (we'll try our best)" },
-                { icon: <BarChart className="w-5 h-5" />, text: "SEO that might work (no promises)" },
-                { icon: <Upload className="w-5 h-5" />, text: "Unlimited coffee-fueled coding sessions" },
-                { icon: <Award className="w-5 h-5" />, text: "'It works on my machine' guarantee" },
+                { icon: <User className="w-5 h-5" />, text: "Dedicated developer for your project" },
+                { icon: <Code className="w-5 h-5" />, text: "Modern tech stack implementation" },
+                { icon: <Laptop className="w-5 h-5" />, text: "3 rounds of comprehensive revisions" },
+                { icon: <Palette className="w-5 h-5" />, text: "Professional UI/UX design" },
+                { icon: <Bot className="w-5 h-5" />, text: "Interactive features and automations" },
+                { icon: <Zap className="w-5 h-5" />, text: "Enhanced performance optimization" },
+                { icon: <Globe className="w-5 h-5" />, text: "Domain and hosting configuration" },
+                { icon: <BarChart className="w-5 h-5" />, text: "SEO optimization package" },
+                { icon: <Upload className="w-5 h-5" />, text: "Continuous development support" },
+                { icon: <Award className="w-5 h-5" />, text: "Quality assurance and testing" },
             ],
         },
         tier2: {
-            name: "Pro Pixel",
+            name: "Growth Plus",
             price: {
                 inr: 59999,
                 usd: 799,
             },
             features: [
-                { icon: <User className="w-5 h-5" />, text: "3 Developers (one codes, two debug)" },
-                { icon: <Code className="w-5 h-5" />, text: "HTML, CSS & JavaScript (we'll try not to break it)" },
-                { icon: <Laptop className="w-5 h-5" />, text: "6 revisions (we'll only sigh audibly after 4)" },
-                { icon: <Palette className="w-5 h-5" />, text: "Advanced design (we discovered Figma last week)" },
-                { icon: <Bot className="w-5 h-5" />, text: "AI chatbot that knows 3 different responses" },
-                { icon: <Zap className="w-5 h-5" />, text: "Website faster than our excuses for delays" },
-                { icon: <Globe className="w-5 h-5" />, text: "Domain & hosting (we'll remember the passwords)" },
-                { icon: <BarChart className="w-5 h-5" />, text: "SEO that Google might notice" },
-                { icon: <Upload className="w-5 h-5" />, text: "Unlimited 'urgent' weekend calls" },
-                { icon: <Award className="w-5 h-5" />, text: "'It works in Chrome at least' certificate" },
+                { icon: <User className="w-5 h-5" />, text: "3-developer team collaboration" },
+                { icon: <Code className="w-5 h-5" />, text: "Full-stack development expertise" },
+                { icon: <Laptop className="w-5 h-5" />, text: "6 rounds of detailed revisions" },
+                { icon: <Palette className="w-5 h-5" />, text: "Advanced UI/UX with animations" },
+                { icon: <Bot className="w-5 h-5" />, text: "AI-powered features integration" },
+                { icon: <Zap className="w-5 h-5" />, text: "Advanced performance optimization" },
+                { icon: <Globe className="w-5 h-5" />, text: "Premium hosting and security" },
+                { icon: <BarChart className="w-5 h-5" />, text: "Advanced SEO implementation" },
+                { icon: <Upload className="w-5 h-5" />, text: "Priority support and updates" },
+                { icon: <Award className="w-5 h-5" />, text: "Comprehensive testing suite" },
             ],
         },
         tier3: {
-            name: "Business Bit",
+            name: "Business Pro",
             price: {
                 inr: 99999,
                 usd: 1399,
             },
             features: [
-                { icon: <User className="w-5 h-5" />, text: "10 Developers (5 actually working, 5 in meetings)" },
-                { icon: <Code className="w-5 h-5" />, text: "Full-stack development (we know what that means now)" },
-                { icon: <Laptop className="w-5 h-5" />, text: "12 revisions (we've accepted our fate)" },
-                { icon: <Palette className="w-5 h-5" />, text: "Premium design (we hired someone who can draw)" },
-                { icon: <Bot className="w-5 h-5" />, text: "AI that pretends to understand your business" },
-                { icon: <Zap className="w-5 h-5" />, text: "Speed that will make your competitors jealous" },
-                { icon: <Globe className="w-5 h-5" />, text: "Multi-language support (Google Translate API)" },
-                { icon: <BarChart className="w-5 h-5" />, text: "SEO that actually works (we read a blog about it)" },
-                { icon: <Upload className="w-5 h-5" />, text: "Unlimited 'emergency' feature requests" },
-                { icon: <Award className="w-5 h-5" />, text: "'We'll fix it in production' promise" },
+                { icon: <User className="w-5 h-5" />, text: "Dedicated development team" },
+                { icon: <Code className="w-5 h-5" />, text: "Enterprise-grade architecture" },
+                { icon: <Laptop className="w-5 h-5" />, text: "Unlimited revision cycles" },
+                { icon: <Palette className="w-5 h-5" />, text: "Premium design customization" },
+                { icon: <Bot className="w-5 h-5" />, text: "Advanced AI/ML integration" },
+                { icon: <Zap className="w-5 h-5" />, text: "Enterprise performance solutions" },
+                { icon: <Globe className="w-5 h-5" />, text: "Multi-language support" },
+                { icon: <BarChart className="w-5 h-5" />, text: "Complete SEO mastery package" },
+                { icon: <Upload className="w-5 h-5" />, text: "24/7 priority support" },
+                { icon: <Award className="w-5 h-5" />, text: "Comprehensive security audit" },
             ],
         },
         tier4: {
-            name: "Enterprise Error",
+            name: "Enterprise Elite",
             price: {
                 inr: 199999,
                 usd: 2699,
             },
             features: [
-                { icon: <User className="w-5 h-5" />, text: "Unlimited Developers (most watching cat videos)" },
-                { icon: <Code className="w-5 h-5" />, text: "Any tech stack (even the ones we have to Google)" },
-                { icon: <Laptop className="w-5 h-5" />, text: "Infinite revisions (our therapists are on standby)" },
-                { icon: <Palette className="w-5 h-5" />, text: "Design so good it might win awards (participation ones)" },
-                { icon: <Bot className="w-5 h-5" />, text: "AI that's smarter than our project manager" },
-                { icon: <Zap className="w-5 h-5" />, text: "Website faster than our CEO's sports car" },
-                { icon: <Globe className="w-5 h-5" />, text: "Global CDN (we finally learned what that means)" },
-                { icon: <BarChart className="w-5 h-5" />, text: "SEO that will make Google notice you exist" },
-                { icon: <Upload className="w-5 h-5" />, text: "24/7 support (we sleep with phones under pillows)" },
-                { icon: <Award className="w-5 h-5" />, text: "'It will definitely be done by Friday' guarantee" },
+                { icon: <User className="w-5 h-5" />, text: "Full-scale development team" },
+                { icon: <Code className="w-5 h-5" />, text: "Custom technology solutions" },
+                { icon: <Laptop className="w-5 h-5" />, text: "Dedicated project management" },
+                { icon: <Palette className="w-5 h-5" />, text: "Enterprise design system" },
+                { icon: <Bot className="w-5 h-5" />, text: "Custom AI solution development" },
+                { icon: <Zap className="w-5 h-5" />, text: "Global CDN implementation" },
+                { icon: <Globe className="w-5 h-5" />, text: "Enterprise infrastructure" },
+                { icon: <BarChart className="w-5 h-5" />, text: "Advanced analytics suite" },
+                { icon: <Upload className="w-5 h-5" />, text: "Dedicated support team" },
+                { icon: <Award className="w-5 h-5" />, text: "Enterprise compliance & security" },
             ],
         },
     }
@@ -152,12 +150,11 @@ export default function PricingPage() {
             <div className="container mx-auto px-4 py-16">
                 <div className="text-center mb-16">
                     <div className="inline-block px-3 py-1 mb-4 text-xs font-semibold tracking-wider uppercase border border-white/20 rounded-full bg-white/5 backdrop-blur-sm">
-                        <span className="text-white/80">PROBABLY A GOOD CHOICE</span>
+                        <span className="text-white/80">TAILORED SOLUTIONS</span>
                     </div>
-                    <h1 className="text-3xl md:text-5xl font-bold tracking-wide mb-4">Choose your website development package</h1>
+                    <h1 className="text-3xl md:text-5xl font-bold tracking-wide mb-4">Choose Your Development Package</h1>
                     <p className="text-zinc-400 max-w-2xl mx-auto">
-                        Select how much you want to pay us to turn your ideas into a website that might work. No refunds, but we
-                        accept bribes in the form of pizza.
+                        Select the perfect package that aligns with your business goals and requirements. Each tier is designed to deliver maximum value and results.
                     </p>
                 </div>
                 <div className="max-w-5xl mx-auto">
@@ -236,13 +233,13 @@ export default function PricingPage() {
                                                 <div className="flex items-center space-x-2">
                                                     <RadioGroupItem value="oneTime" id="oneTime" />
                                                     <Label htmlFor="oneTime" className="text-sm">
-                                                        One-time MVP (abandon ship after launch)
+                                                        One-time MVP Development
                                                     </Label>
                                                 </div>
                                                 <div className="flex items-center space-x-2">
                                                     <RadioGroupItem value="longTerm" id="longTerm" />
                                                     <Label htmlFor="longTerm" className="text-sm">
-                                                        Long-term partnership (we&apos;ll stick around for the chaos)
+                                                        Long-term Development Partnership
                                                     </Label>
                                                 </div>
                                             </RadioGroup>
@@ -257,11 +254,9 @@ export default function PricingPage() {
                                             </span>
                                         </div>
                                         <p className="text-zinc-500 text-sm mt-2">
-                                            {
-                                                mvpOption === "oneTime"
-                                                    ? "One-time payment (no takebacks)"
-                                                    : "Initial payment + ongoing therapy sessions"
-                                            }
+                                            {mvpOption === "oneTime"
+                                                ? "One-time payment for initial development"
+                                                : "Initial development plus ongoing support"}
                                         </p>
                                     </div>
                                     <div className="space-y-4">
@@ -293,7 +288,7 @@ export default function PricingPage() {
                                         }
                                     </div>
                                     <Button className="w-full py-6 text-black bg-white hover:bg-white/90 hover:scale-[1.02] transition-all shadow-[0_0_15px_rgba(255,255,255,0.3)] bg-gradient-to-r from-white to-white/90">
-                                        {mvpOption === "oneTime" ? "Launch Fast, Fix Never" : "Start Your Journey of Regret"}
+                                        {mvpOption === "oneTime" ? "Start Your MVP" : "Begin Partnership"}
                                     </Button>
                                 </div>
                             </div>
@@ -313,9 +308,9 @@ export default function PricingPage() {
                     </Tabs>
                 </div>
                 <div className="text-center mt-16 text-zinc-500 text-sm">
-                    <p>© {new Date().getFullYear()} Shunya Tech - We make websites that work 60% of the time, every time.</p>
-                    <p className="mt-2">* All prices subject to change based on how much coffee we need that month.</p>
-                    <p className="mt-1">* MVP stands for &quot;Mostly Vague Product&quot; - perfect for pitching to investors!</p>
+                    <p>© {new Date().getFullYear()} ShunyaTech - Transforming Ideas into Digital Reality</p>
+                    <p className="mt-2">* All packages can be customized to meet your specific requirements</p>
+                    <p className="mt-1">* MVP stands for Minimum Viable Product - Perfect for quick market validation</p>
                 </div>
             </div>
         </div>
@@ -352,7 +347,7 @@ function StandardPricingCard({
                     </ul>
                 </div>
                 <Button className="w-full py-6 text-black bg-white hover:bg-white/90 hover:scale-[1.02] transition-all shadow-[0_0_15px_rgba(255,255,255,0.3)]">
-                    {tierData.name === "Enterprise Error" ? "Contact Sales (If You Dare)" : "Get Started (At Your Own Risk)"}
+                    {tierData.name === "Enterprise Elite" ? "Contact Our Team" : "Get Started"}
                 </Button>
             </div>
         </div>

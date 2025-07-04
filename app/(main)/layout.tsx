@@ -1,36 +1,50 @@
-import type { Metadata } from "next";
-import "../globals.css";
-import Navbar from "@/components/homepage/navbar";
-import { ThemeProvider } from "@/components/theme-providers";
-import Footer from "@/components/homepage/footer";
-import { Toaster } from "@/components/ui/toaster";
+'use client'
 
-export const metadata: Metadata = {
-	title: "ShunyaTech",
-	description: "You think we'll deliver",
-	icons: {
-		icon: "/shunyatech.png",
-	},
+import { useState } from 'react';
+import { useSession } from 'next-auth/react';
+import Sidebar from '@/components/mainsidebar';
+import MainNavbar from '@/components/mainnavbar';
+import LoadingScreen from '@/components/loading-screen';
+import { redirect } from 'next/navigation';
+import { Toaster } from 'sonner';
+
+interface LayoutProps {
+	children: React.ReactNode
+}
+
+const Layout = ({ children }: LayoutProps) => {
+	const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
+	const { data: session, status } = useSession();
+
+	const toggleSidebar = () => {
+		setSidebarCollapsed(!sidebarCollapsed);
+	};
+
+	if (status === 'loading') {
+		return <LoadingScreen routeName="dashboard" />;
+	}
+
+	if (!session?.user) {
+		redirect('/signin');
+	}
+
+	return (
+		<div className="flex h-screen">
+			<Sidebar
+				isCollapsed={sidebarCollapsed}
+				toggleSidebar={toggleSidebar}
+			/>
+			<div className="flex flex-col flex-1">
+				<MainNavbar isCollapsed={sidebarCollapsed} />
+				<main className={`backdrop-blur-sm transition-all duration-300 ${sidebarCollapsed ? 'sm:ml-[60px] ml-[0px]' : 'sm:ml-[240px] ml-[0px]'} pt-16`}>
+					<div className="h-full pb-16 md:pb-0">
+						{children}
+					</div>
+				</main>
+			</div>
+			<Toaster />
+		</div>
+	);
 };
 
-export default function RootLayout({
-	children,
-}: Readonly<{
-	children: React.ReactNode;
-}>) {
-	return (
-		<ThemeProvider
-			attribute="class"
-			defaultTheme="light"
-			enableSystem
-			disableTransitionOnChange
-		>
-			<main className="w-full mx-auto">
-				<Navbar />
-				{children}
-				<Footer />
-				<Toaster />
-			</main>
-		</ThemeProvider>
-	);
-}
+export default Layout;

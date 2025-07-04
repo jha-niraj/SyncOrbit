@@ -32,9 +32,12 @@
 		"@radix-ui/react-toast": "^1.2.5",
 		"@radix-ui/react-tooltip": "^1.1.8",
 		"@tabler/icons-react": "^3.26.0",
+		"@types/bcryptjs": "^2.4.6",
 		"axios": "^1.8.4",
 		"bcrypt": "^5.1.1",
+		"bcryptjs": "^3.0.2",
 		"class-variance-authority": "^0.7.1",
+		"cloudinary": "^2.7.0",
 		"clsx": "^2.1.1",
 		"cmdk": "^1.1.1",
 		"framer-motion": "^11.15.0",
@@ -56,7 +59,8 @@
 		"resend": "^4.1.1",
 		"sonner": "^2.0.2",
 		"tailwind-merge": "^2.6.0",
-		"tailwindcss-animate": "^1.0.7"
+		"tailwindcss-animate": "^1.0.7",
+		"zustand": "^5.0.6"
 	},
 	"overrides": {
 		"framer-motion": {

@@ -25,36 +25,38 @@ enum TaskStatus {
     COMPLETED
 }
 
+enum Status {
+    IN_PROGRESS
+    COMPLETED
+    ON_HOLD
+    CANCELLED
+}
+
 model User {
-    id             String   @id @default(uuid())
-    name           String
-    email          String   @unique
-    emailVerified  Boolean? @default(false)
-    image          String?  @default("https://tse4.mm.bing.net/th?id=OIP.-BS8Y2nH1k93GJiitUVBCAHaHa&pid=Api&P=0")
-    hashedPassword String?
-    role           Role     @default(CLIENT)
-
-    bio    String?
-    skills String?
-    teamId String?
-    team   Team?   @relation("TeamMembers", fields: [teamId], references: [id])
-
+    id                String    @id @default(cuid())
+    name              String?
+    email             String?   @unique
+    emailVerified     DateTime?
+    hashedPassword    String?
+    image             String?
+    coverImage        String?   @default("https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=2000")
+    bio               String?   @db.Text
+    skills            String?   @db.Text
+    role              Role      @default(CLIENT)
     verifyToken       String?
     verifyTokenExpiry DateTime?
     resetToken        String?
-    restTokenExpiry   DateTime?
+    resetTokenExpiry  DateTime?
     createdAt         DateTime  @default(now())
     updatedAt         DateTime  @updatedAt
-
-    // Relations
-    clientProjects  Project[]  @relation("ClientProjects")
-    managedProjects Project[]  @relation("ProductManager")
-    assignedTasks   Task[]     @relation("AssignedDeveloper")
-    feedbacks       Feedback[]
-    Team            Team?      @relation("TeamLead")
-    Project         Project?   @relation(fields: [projectId], references: [id])
-    projectId       String?
-    Account         Account[]
+    totalSpent        Float     @default(0)
+    projects          Project[]
+    accounts          Account[]
+    sessions          Session[]
+    managedTeam       Team?     @relation("TeamLead")
+    memberOfTeams     Team[]    @relation("TeamMembers")
+    assignedTasks     Task[]    @relation("AssignedDeveloper")
+    feedbacks         Feedback[]
 }
 
 model Team {
@@ -68,24 +70,19 @@ model Team {
 }
 
 model Project {
-    id               String   @id @default(uuid())
-    title            String
-    description      String?
-    logo             String?
-    duration         Int
-    price            Float
-    currency         Currency @default(USD)
-    clientId         String
-    client           User     @relation("ClientProjects", fields: [clientId], references: [id])
-    productManagerId String
-    productManager   User     @relation("ProductManager", fields: [productManagerId], references: [id])
-    createdAt        DateTime @default(now())
-    updatedAt        DateTime @updatedAt
-
-    // Relations
-    tasks      Task[]
-    developers User[]
-    Feedback   Feedback[]
+    id                String   @id @default(cuid())
+    title             String
+    description       String?
+    status            Status   @default(IN_PROGRESS)
+    budget            Float
+    startDate         DateTime @default(now())
+    endDate           DateTime?
+    userId            String
+    user              User     @relation(fields: [userId], references: [id])
+    createdAt         DateTime @default(now())
+    updatedAt         DateTime @updatedAt
+    tasks             Task[]
+    feedbacks         Feedback[]
 }
 
 model Task {
@@ -147,4 +144,12 @@ model Account {
 
     @@unique([provider, providerAccountId])
     @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
