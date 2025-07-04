@@ -10,7 +10,7 @@ export default function CTAPage() {
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 1.6 }}
-            className="max-w-7xl mx-auto text-center px-4"
+            className="max-w-7xl mx-auto text-center px-4 mb-12"
         >
             <div className="bg-gradient-to-r from-emerald-500/10 to-teal-500/10 backdrop-blur-xl rounded-3xl p-8 md:p-12 border border-emerald-200/50 dark:border-emerald-800/50 shadow-xl">
                 <Zap className="w-12 h-12 text-emerald-600 dark:text-emerald-400 mx-auto mb-6" />
@@ -27,9 +27,10 @@ export default function CTAPage() {
                     >
                         Get Started Today
                         <ArrowRight className="ml-2 h-5 w-5" />
-                    </Link>
+                </Link>
                     <Link 
                         href="https://cal.com/niraj-jha/30min"
+                        target="_blank"
                         className="flex items-center justify-center border border-emerald-300 dark:border-emerald-700 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-100/30 dark:hover:bg-emerald-950/30 px-6 md:px-8 py-3 md:py-4 rounded-xl text-md font-semibold bg-transparent transition-all duration-300 w-full sm:w-auto"
                     >
                         <Calendar className="mr-2 h-5 w-5" />

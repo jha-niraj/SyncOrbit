@@ -5,41 +5,6 @@ import { ArrowRight, Code2, ExternalLink } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 
-const projects = [
-    {
-        title: "E-commerce Platform",
-        description: "A modern e-commerce solution with real-time inventory management",
-        image: "/projects/ecommerce.jpg",
-        link: "#",
-        tags: ["Next.js", "Node.js", "MongoDB", "Stripe"],
-        color: "from-blue-500/20 to-cyan-500/20 dark:from-blue-500/10 dark:to-cyan-500/10"
-    },
-    {
-        title: "Healthcare Dashboard",
-        description: "Comprehensive healthcare analytics and patient management system",
-        image: "/projects/healthcare.jpg",
-        link: "#",
-        tags: ["React", "TypeScript", "GraphQL", "AWS"],
-        color: "from-teal-500/20 to-emerald-500/20 dark:from-teal-500/10 dark:to-emerald-500/10"
-    },
-    {
-        title: "Social Network",
-        description: "Feature-rich social platform with real-time messaging",
-        image: "/projects/social.jpg",
-        link: "#",
-        tags: ["Vue.js", "Firebase", "WebRTC", "TailwindCSS"],
-        color: "from-purple-500/20 to-pink-500/20 dark:from-purple-500/10 dark:to-pink-500/10"
-    },
-    {
-        title: "AI Content Platform",
-        description: "AI-powered content generation and management system",
-        image: "/projects/ai.jpg",
-        link: "#",
-        tags: ["Python", "TensorFlow", "FastAPI", "Redis"],
-        color: "from-orange-500/20 to-red-500/20 dark:from-orange-500/10 dark:to-red-500/10"
-    }
-]
-
 const container = {
     hidden: { opacity: 0 },
     show: {
@@ -54,6 +19,30 @@ const item = {
     hidden: { opacity: 0, y: 20 },
     show: { opacity: 1, y: 0 }
 }
+
+const projectData = [
+    {
+        id: 1,
+        title: "The Coder'z",
+        description: "One stop platform for knowledge and support for computer science studetns",
+        image: "/thecoderz.png",
+        link: "https://thecoderz.in.net"
+    },
+    {
+        id: 2,
+        title: "Logistics Center",
+        description: "An innovative startup to simplify the global logistics and freight management needs.",
+        image: "/logistics.png",
+        link: "https://logistics-website-atju.onrender.com/"
+    },
+    {
+        id: 3,
+        title: "M.P. Solutions",
+        description: "A central place to look for all the medicine that you need at one place",
+        image: "/mpsolutions.png",
+        link: "https://mpsolutions.vercel.app/"
+    }
+];
 
 export default function ProjectsSection() {
     return (
@@ -83,15 +72,19 @@ export default function ProjectsSection() {
                         initial="hidden"
                         whileInView="show"
                         viewport={{ once: true }}
-                        className="mt-16 grid grid-cols-1 md:grid-cols-2 gap-8"
+                        className="mt-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
                     >
-                        {projects.map((project, index) => (
+                        {projectData.map((project, index) => (
                             <motion.div
-                                key={project.title}
+                                key={project.id}
                                 variants={item}
                                 className="group relative bg-white/50 dark:bg-black/50 backdrop-blur-xl rounded-2xl border border-teal-200/30 dark:border-teal-800/30 hover:border-teal-300 dark:hover:border-teal-700 transition-all duration-300 overflow-hidden"
                             >
-                                <div className={`absolute inset-0 bg-gradient-to-r ${project.color} opacity-0 group-hover:opacity-100 transition-opacity`} />
+                                <div className={`absolute inset-0 bg-gradient-to-r ${
+                                    index === 0 ? 'from-blue-500/20 to-cyan-500/20 dark:from-blue-500/10 dark:to-cyan-500/10' :
+                                    index === 1 ? 'from-teal-500/20 to-emerald-500/20 dark:from-teal-500/10 dark:to-emerald-500/10' :
+                                    'from-purple-500/20 to-pink-500/20 dark:from-purple-500/10 dark:to-pink-500/10'
+                                } opacity-0 group-hover:opacity-100 transition-opacity`} />
                                 <div className="relative p-6">
                                     <div className="aspect-[16/9] overflow-hidden rounded-xl">
                                         <Image
@@ -109,28 +102,17 @@ export default function ProjectsSection() {
                                         <p className="mt-2 text-gray-600 dark:text-gray-300">
                                             {project.description}
                                         </p>
-                                        <div className="mt-4 flex flex-wrap gap-2">
-                                            {project.tags.map((tag) => (
-                                                <Badge
-                                                    key={tag}
-                                                    variant="secondary"
-                                                    className="bg-teal-500/10 text-teal-600 dark:text-teal-400 border-teal-500/20"
-                                                >
-                                                    {tag}
-                                                </Badge>
-                                            ))}
-                                        </div>
                                         <div className="mt-6 flex items-center gap-4">
-                                            <Link href={project.link}>
+                                            <Link href={project.link} target="_blank" rel="noopener noreferrer">
                                                 <Button
                                                     variant="outline"
                                                     className="rounded-xl border-teal-200 dark:border-teal-800 text-teal-700 dark:text-teal-300 hover:bg-teal-50 dark:hover:bg-teal-950/30"
                                                 >
-                                                    View Details
+                                                    View Project
                                                     <ArrowRight className="ml-2 h-4 w-4" />
                                                 </Button>
                                             </Link>
-                                            <Link href={project.link} target="_blank">
+                                            <Link href={project.link} target="_blank" rel="noopener noreferrer">
                                                 <Button
                                                     variant="ghost"
                                                     className="rounded-xl text-teal-700 dark:text-teal-300 hover:bg-teal-50 dark:hover:bg-teal-950/30"

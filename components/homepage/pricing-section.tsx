@@ -146,7 +146,7 @@ export default function PricingPage() {
     }
 
     return (
-        <div id="pricingsection" className="min-h-screen bg-gradient-to-b from-black to-zinc-900 text-white">
+        <div id="pricing" className="min-h-screen bg-gradient-to-b from-black to-zinc-900 text-white">
             <div className="container mx-auto px-4 py-16">
                 <div className="text-center mb-16">
                     <div className="inline-block px-3 py-1 mb-4 text-xs font-semibold tracking-wider uppercase border border-white/20 rounded-full bg-white/5 backdrop-blur-sm">

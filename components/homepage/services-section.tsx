@@ -70,7 +70,7 @@ const item = {
 
 export default function ServicesSection() {
     return (
-        <section id="services" className="py-24 bg-gradient-to-br from-slate-50 via-indigo-50 to-purple-50 dark:from-slate-900 dark:via-black dark:to-slate-900">
+        <section id="services" className="py-12 bg-gradient-to-br from-slate-50 via-indigo-50 to-purple-50 dark:from-slate-900 dark:via-black dark:to-slate-900">
             <div className="max-w-7xl mx-auto px-6 lg:px-8">
                 <div className="text-center">
                     <motion.div
@@ -102,7 +102,7 @@ export default function ServicesSection() {
                             <motion.div
                                 key={service.name}
                                 variants={item}
-                                className="group relative bg-white/50 dark:bg-black/50 backdrop-blur-xl rounded-2xl p-6 border border-teal-200/30 dark:border-teal-800/30 hover:border-teal-300 dark:hover:border-teal-700 transition-all duration-300"
+                                className="group flex flex-col items-center justify-center relative bg-white/50 dark:bg-black/50 backdrop-blur-xl rounded-2xl p-6 border border-teal-200/30 dark:border-teal-800/30 hover:border-teal-300 dark:hover:border-teal-700 transition-all duration-300"
                             >
                                 <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-teal-500/5 to-emerald-500/5 dark:from-teal-500/10 dark:to-emerald-500/10 opacity-0 group-hover:opacity-100 transition-opacity" />
                                 <service.icon className={`h-8 w-8 ${service.color} mb-4 relative`} />

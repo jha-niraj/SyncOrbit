@@ -82,13 +82,10 @@ export default function HeroSection() {
 
 	return (
 		<div className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-slate-50 via-emerald-50/30 to-teal-50 dark:from-slate-950 dark:via-emerald-950/10 dark:to-teal-950/10">
-			{/* Background Pattern */}
 			<div className="absolute inset-0 w-full h-full">
 				<div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]" />
 				<div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 via-transparent to-teal-500/5" />
 			</div>
-
-			{/* Dynamic Background Orbs */}
 			<div className="absolute inset-0 overflow-hidden">
 				<motion.div
 					animate={{
@@ -119,7 +116,7 @@ export default function HeroSection() {
 			</div>
 
 			{/* Main Content */}
-			<div className="relative max-w-7xl mx-auto px-6 py-16 md:py-20 lg:py-24">
+			<div className="relative max-w-7xl mx-auto px-6 py-20 md:py-28 lg:py-32">
 				{/* Header Section */}
 				<div className="text-center mb-16">
 					<motion.div
@@ -127,14 +124,11 @@ export default function HeroSection() {
 						animate={{ opacity: 1, y: 0 }}
 						transition={{ duration: 0.8, ease: "easeOut" }}
 					>
-						<Badge className="px-6 py-3 bg-gradient-to-r from-emerald-500/10 to-teal-500/10 border-emerald-200/50 dark:border-emerald-800/50 backdrop-blur-xl text-base font-medium">
-							<Star className="w-4 h-4 text-emerald-600 dark:text-emerald-400 mr-2" />
-							<span className="bg-gradient-to-r from-emerald-700 to-teal-700 dark:from-emerald-400 dark:to-teal-400 bg-clip-text text-transparent">
-								Excellence in Digital Innovation
-							</span>
+						<Badge className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-emerald-600 text-white text-sm font-medium shadow-md hover:shadow-lg transition-all duration-300">
+							<Star className="w-4 h-4 text-white" />
+							Excellence in Digital Innovation
 						</Badge>
-
-						<div className="mt-8 space-y-4">
+						<div className="mt-6 space-y-4">
 							<h1 className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-black tracking-tight">
 								<span className="block text-slate-900 dark:text-white">We</span>
 								<span className="block">
@@ -180,14 +174,14 @@ export default function HeroSection() {
 							</Button>
 						</Link>
 
-						<Button
-							variant="outline"
-							onClick={openCalendar}
-							className="w-full sm:w-auto rounded-2xl border-2 border-emerald-200 dark:border-emerald-800 hover:border-emerald-400 dark:hover:border-emerald-600 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 px-10 py-6 text-lg font-semibold backdrop-blur-sm bg-white/50 dark:bg-black/50 transition-all duration-300 hover:shadow-lg"
+						<Link
+							href="https://cal.com/niraj-jha/30min"
+							target="_blank"
+							className="flex items-center justify-center border border-emerald-300 dark:border-emerald-700 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-100/30 dark:hover:bg-emerald-950/30 px-6 md:px-8 py-3 md:py-4 rounded-xl text-md font-semibold bg-transparent transition-all duration-300 w-full sm:w-auto"
 						>
-							<Calendar className="mr-3 h-5 w-5" />
+							<Calendar className="mr-2 h-5 w-5" />
 							Schedule a Call
-						</Button>
+						</Link>
 					</motion.div>
 				</div>
 
@@ -230,7 +224,7 @@ export default function HeroSection() {
 										transition={{ duration: 0.5, delay: 0.6 + index * 0.1 }}
 										className="group"
 									>
-										<div className="bg-white/80 dark:bg-black/80 backdrop-blur-xl rounded-2xl p-6 border border-emerald-100 dark:border-emerald-900 hover:border-emerald-300 dark:hover:border-emerald-700 transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-lg">
+										<div className="flex flex-col items-center justify-center bg-white/80 dark:bg-black/80 backdrop-blur-xl rounded-2xl p-6 border border-emerald-100 dark:border-emerald-900 hover:border-emerald-300 dark:hover:border-emerald-700 transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-lg">
 											<feature.icon className="w-8 h-8 text-emerald-600 dark:text-emerald-400 mb-4 group-hover:scale-110 transition-transform duration-300" />
 											<h3 className="font-semibold text-slate-900 dark:text-white mb-2">{feature.title}</h3>
 											<p className="text-sm text-slate-600 dark:text-slate-400">{feature.description}</p>
@@ -241,19 +235,10 @@ export default function HeroSection() {
 
 							<div className="text-center">
 								<div className="flex flex-col sm:flex-row gap-4 justify-center">
-									<Link href="/product-demo">
+									<Link href="/signin">
 										<Button className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white px-8 py-4 rounded-xl text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300">
 											<Monitor className="mr-2 h-5 w-5" />
-											Try Live Demo
-										</Button>
-									</Link>
-									<Link href="/product">
-										<Button
-											variant="outline"
-											className="border-emerald-300 dark:border-emerald-700 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 px-8 py-4 rounded-xl text-lg font-semibold bg-transparent"
-										>
-											Learn More
-											<ArrowRight className="ml-2 h-5 w-5" />
+											Get Started
 										</Button>
 									</Link>
 								</div>
@@ -350,7 +335,7 @@ export default function HeroSection() {
 					initial={{ opacity: 0, y: 40 }}
 					animate={{ opacity: 1, y: 0 }}
 					transition={{ duration: 0.8, delay: 1.2 }}
-					className="mb-16"
+					className="mt-8"
 				>
 					<div className="text-center mb-12">
 						<h2 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white mb-4">Why Choose Us?</h2>

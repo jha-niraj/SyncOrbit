@@ -1,35 +1,106 @@
 "use client"
 
-import React, { useEffect } from "react";
-import { ReactLenis, useLenis } from "@/lib/lenis";
+import type React from "react"
+import { useEffect } from "react"
+import { ReactLenis, useLenis } from "@/lib/lenis"
 
 interface LenisProps {
-    children: React.ReactNode
+	children: React.ReactNode
 }
+
 function SmoothScroll({ children }: LenisProps) {
-    const lenis = useLenis(({ }) => {
-        // called every scroll
-    })
+	const lenis = useLenis(({ scroll }) => {
+		// You can add scroll event handling here if needed
+	})
 
-    useEffect(() => {
-        document.addEventListener("DOMContentLoaded", () => {
-            lenis?.stop();
-            lenis?.start();
-        })
-    }, [lenis]);
+	useEffect(() => {
+		if (!lenis) return;
 
-    return (
-        <ReactLenis
-            root
-            options={{
-                duration: 2,
-            }}
-        >
-            {
-                children
-            }
-        </ReactLenis>
-    )
+		// Initial resize with a delay to ensure all content is loaded
+		const initializeScroll = () => {
+			lenis.resize();
+		};
+
+		// Delay initial resize to allow for component mounting
+		setTimeout(initializeScroll, 300);
+
+		// Handle window resize with debouncing
+		let resizeTimeout: NodeJS.Timeout;
+		const handleResize = () => {
+			clearTimeout(resizeTimeout);
+			resizeTimeout = setTimeout(() => {
+				if (lenis) {
+					lenis.resize();
+				}
+			}, 200);
+		};
+
+		// Set up a mutation observer for significant DOM changes only
+		let mutationTimeout: NodeJS.Timeout;
+		const mutationObserver = new MutationObserver((mutations) => {
+			// Only respond to significant changes
+			const hasSignificantChange = mutations.some(mutation => 
+				mutation.type === 'childList' && mutation.addedNodes.length > 0
+			);
+			
+			if (hasSignificantChange) {
+				clearTimeout(mutationTimeout);
+				mutationTimeout = setTimeout(() => {
+					if (lenis) {
+						lenis.resize();
+					}
+				}, 150);
+			}
+		});
+
+		// Event listeners
+		window.addEventListener("resize", handleResize);
+		window.addEventListener("load", initializeScroll);
+
+		// Observe the main content area instead of entire body
+		if (typeof window !== "undefined") {
+			const main = document.querySelector('main');
+			if (main) {
+				mutationObserver.observe(main, {
+					childList: true,
+					subtree: true,
+				});
+			}
+		}
+
+		// Clean up
+		return () => {
+			mutationObserver.disconnect();
+			window.removeEventListener("resize", handleResize);
+			window.removeEventListener("load", initializeScroll);
+			clearTimeout(resizeTimeout);
+			clearTimeout(mutationTimeout);
+		};
+	}, [lenis]);
+
+	return (
+		<ReactLenis
+			root
+			options={{
+				duration: 1,
+				easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+				orientation: "vertical",
+				gestureOrientation: "vertical",
+				smoothWheel: true,
+				wheelMultiplier: 1,
+				touchMultiplier: 1,
+				syncTouch: true,
+				syncTouchLerp: 0.075,
+				touchInertiaMultiplier: 35,
+				infinite: false,
+				autoResize: true,
+				// @ts-expect-error - smoothTouch is not defined in the type
+				smoothTouch: false,
+			}}
+		>
+			{children}
+		</ReactLenis>
+	)
 }
 
-export default SmoothScroll;
+export default SmoothScroll

@@ -1,13 +1,24 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Geist_Mono, Geist, Space_Grotesk, Inter } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-providers";
 import { Toaster } from "@/components/ui/toaster";
-import Navbar from "@/components/homepage/navbar";
-import Footer from "@/components/footer";
 import { Providers } from "./providers/providers";
 
-const inter = Inter({ subsets: ["latin"] });
+const geistSans = Geist({
+	variable: "--font-geist-sans",
+	subsets: ["latin"],
+});
+const spaceGrotesk = Space_Grotesk({
+	subsets: ['latin'],
+	weight: ['300', '400', '500', '600', '700'],
+	display: 'swap',
+	variable: '--font-space-grotesk',
+})
+const geistMono = Geist_Mono({
+	variable: "--font-geist-mono",
+	subsets: ["latin"],
+});
 
 export const metadata: Metadata = {
 	title: "ShunyaTech - Innovative Digital Solutions",
@@ -20,11 +31,11 @@ export default function RootLayout({
 	children: React.ReactNode
 }) {
 	return (
-		<html lang="en" suppressHydrationWarning style={{ scrollBehavior: "smooth" }}>
+		<html lang="en" suppressHydrationWarning>
 			<head>
 				<link rel="icon" href="/favicon.ico" />
 			</head>
-			<body className={inter.className}>
+			<body className={`${spaceGrotesk.className} ${geistSans.variable} ${geistMono.variable} antialiased`}>
 				<Providers>
 					<ThemeProvider
 						attribute="class"
@@ -32,9 +43,7 @@ export default function RootLayout({
 						enableSystem
 						disableTransitionOnChange
 					>
-						<Navbar />
 						<main>{children}</main>
-						<Footer />
 						<Toaster />
 					</ThemeProvider>
 				</Providers>

@@ -86,7 +86,7 @@ export default function AboutUsSection() {
                         transition={{ duration: 0.5 }}
                         className="relative"
                     >
-                        <div className="relative aspect-square rounded-2xl overflow-hidden bg-gradient-to-br from-teal-500/10 to-emerald-500/10 p-1">
+                        <div className="relative aspect-square rounded-2xl overflow-hidden bg-gradient-to-br from-black via-emerald-500/10 to-black p-1">
                             <Image
                                 src="/shunyatech.png"
                                 alt="ShunyaTech Team"

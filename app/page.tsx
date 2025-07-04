@@ -12,11 +12,14 @@ import { PeopleService } from "@/components/homepage/poepleserve";
 import AboutUsSection from "@/components/homepage/aboutussection";
 import ApproachSection from "@/components/homepage/approach";
 import CTAPage from "@/components/homepage/cta";
+import Navbar from "@/components/homepage/navbar";
+import Footer from "@/components/footer";
 
 export default function MainLandingPage() {
     return (
         <SmoothScroll>
-            <main className="relative w-full mx-auto">
+            <Navbar />
+            <main className="w-full">
                 <HeroSection />
                 <ServicesSection />
                 <ProjectsSection />
@@ -29,6 +32,7 @@ export default function MainLandingPage() {
                 <FaqsAccrodian />
                 <CTAPage />
             </main>
+            <Footer />
         </SmoothScroll>
     )
 }
