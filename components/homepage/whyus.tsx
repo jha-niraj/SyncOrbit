@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Palette, Code, Laptop, Clock, Film, Handshake, Shield, Sparkles } from "lucide-react";
+import { Palette, Code, Clock, Handshake, Shield, Sparkles } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 export default function WhyUs() {

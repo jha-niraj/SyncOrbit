@@ -88,7 +88,7 @@ export default function ApproachSection() {
                         className="mt-16 grid grid-cols-1 lg:grid-cols-3 gap-8"
                     >
                         {
-                            steps.map((step, index) => (
+                            steps.map((step) => (
                                 <motion.div
                                     key={step.title}
                                     variants={item}

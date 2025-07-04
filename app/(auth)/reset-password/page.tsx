@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { Loader2 } from "lucide-react";
@@ -11,7 +11,7 @@ import axios from "axios";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 
-export default function ResetPassword() {
+function ResetPassword() {
 	const [otp, setOtp] = useState("");
 	const [newPassword, setNewPassword] = useState("");
 	const [confirmPassword, setConfirmPassword] = useState("");
@@ -92,7 +92,6 @@ export default function ResetPassword() {
 							</p>
 						</div>
 					</div>
-
 					<div className="grid gap-6">
 						<form onSubmit={handleSubmit}>
 							<div className="grid gap-4">
@@ -145,9 +144,8 @@ export default function ResetPassword() {
 								</Button>
 							</div>
 						</form>
-
 						<div className="flex flex-col items-center gap-2 text-sm text-muted-foreground">
-							<p>Didn't receive the code?</p>
+							<p>Didn&apos;t receive the code?</p>
 							<Button
 								variant="link"
 								className="h-auto p-0"
@@ -161,4 +159,12 @@ export default function ResetPassword() {
 			</div>
 		</div>
 	);
+}
+
+export default function ResetPasswordPage() {
+	return (
+		<Suspense fallback={<div>Loading...</div>}>
+			<ResetPassword />
+		</Suspense>
+	)
 }

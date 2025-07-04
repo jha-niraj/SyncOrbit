@@ -114,7 +114,8 @@ export default function DeveloperDashboard() {
             <main className="flex-1 container py-6">
                 <h2 className="text-xl font-semibold mb-4">Assigned Projects</h2>
                 <motion.div className="grid gap-6 md:grid-cols-2 mb-8" variants={container} initial="hidden" animate="show">
-                    {projects.map((project) => (
+                    {
+                    projects.map((project) => (
                         <motion.div key={project.id} variants={item}>
                             <Card className="overflow-hidden h-full flex flex-col">
                                 <div className="relative h-40 w-full">

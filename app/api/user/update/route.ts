@@ -16,7 +16,7 @@ export async function PATCH(req: NextRequest) {
 			.reduce((obj, key) => {
 				obj[key] = updates[key];
 				return obj;
-			}, {} as Record<string, any>);
+			}, {} as Record<string, unknown>);
 
 		const updatedUser = await prisma.user.update({
 			where: { id: session.user.id },

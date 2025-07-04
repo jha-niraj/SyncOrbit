@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Loader2, ArrowRight } from "lucide-react";
@@ -14,7 +14,7 @@ import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react"
 import { toast } from "sonner";
 
-export default function SignUp() {
+function SignUp() {
 	const [name, setName] = useState("");
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
@@ -220,4 +220,12 @@ export default function SignUp() {
 			</div>
 		</div>
 	);
+}
+
+export default function SignUpPage() {
+	return (
+		<Suspense fallback={<div>Loading...</div>}>
+			<SignUp />
+		</Suspense>
+	)
 }

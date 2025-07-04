@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Loader2 } from "lucide-react";
@@ -11,7 +11,7 @@ import axios from "axios";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 
-export default function ForgotPassword() {
+function ForgotPassword() {
     const [email, setEmail] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
     const router = useRouter();
@@ -62,11 +62,10 @@ export default function ForgotPassword() {
                         <div className="flex flex-col space-y-2 text-center">
                             <h1 className="text-2xl font-semibold tracking-tight">Reset your password</h1>
                             <p className="text-sm text-muted-foreground">
-                                Enter your email address and we'll send you a reset code
+                                Enter your email address and we&apos;ll send you a reset code
                             </p>
                         </div>
                     </div>
-
                     <div className="grid gap-6">
                         <form onSubmit={handleSubmit}>
                             <div className="grid gap-4">
@@ -91,7 +90,6 @@ export default function ForgotPassword() {
                                 </Button>
                             </div>
                         </form>
-
                         <div className="flex flex-col items-center gap-2 text-sm text-muted-foreground">
                             <p>Remember your password?</p>
                             <Button
@@ -107,4 +105,12 @@ export default function ForgotPassword() {
             </div>
         </div>
     );
+}
+
+export default function ForgotPasswordPage() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <ForgotPassword />
+        </Suspense>
+    )
 }

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react";
+import { Suspense, useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { Loader2 } from "lucide-react";
@@ -11,7 +11,7 @@ import axios from "axios";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 
-export default function VerifyEmail() {
+function VerifyEmail() {
     const [otp, setOtp] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isResending, setIsResending] = useState(false);
@@ -74,7 +74,7 @@ export default function VerifyEmail() {
                 toast.success("OTP resent successfully!", {
                     description: "Please check your email for the new OTP."
                 });
-                setCountdown(60); // Start 60-second countdown
+                setCountdown(60);
             }
         } catch (error) {
             if (axios.isAxiosError(error) && error.response) {
@@ -113,7 +113,6 @@ export default function VerifyEmail() {
                             </p>
                         </div>
                     </div>
-
                     <div className="grid gap-6">
                         <form onSubmit={handleVerify}>
                             <div className="grid gap-4">
@@ -138,22 +137,23 @@ export default function VerifyEmail() {
                                 </Button>
                             </div>
                         </form>
-
                         <div className="flex flex-col items-center gap-2 text-sm text-muted-foreground">
-                            <p>Didn't receive the code?</p>
+                            <p>Didn&apos;t receive the code?</p>
                             <Button
                                 variant="link"
                                 className="h-auto p-0"
                                 disabled={isResending || countdown > 0}
                                 onClick={handleResendOTP}
                             >
-                                {isResending ? (
-                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                ) : countdown > 0 ? (
-                                    `Resend code in ${countdown}s`
-                                ) : (
-                                    "Resend verification code"
-                                )}
+                                {
+                                    isResending ? (
+                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                    ) : countdown > 0 ? (
+                                        `Resend code in ${countdown}s`
+                                    ) : (
+                                        "Resend verification code"
+                                    )
+                                }
                             </Button>
                         </div>
                     </div>
@@ -161,4 +161,12 @@ export default function VerifyEmail() {
             </div>
         </div>
     );
+}
+
+export default function VerifyEmailPage() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <VerifyEmail />
+        </Suspense>
+    )
 }

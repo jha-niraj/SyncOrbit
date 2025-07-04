@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist_Mono, Geist, Space_Grotesk, Inter } from "next/font/google";
+import { Geist_Mono, Geist, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-providers";
 import { Toaster } from "@/components/ui/toaster";

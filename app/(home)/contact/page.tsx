@@ -9,12 +9,10 @@ import { MessageSquare, Mail, Phone, MapPin, Loader2 } from "lucide-react"
 import { useState } from "react"
 import { submitContactForm, type ContactFormData } from "@/actions/contact.action"
 import { toast } from "sonner"
-import { useRouter } from "next/navigation"
 import SmoothScroll from "@/components/smoothscroll"
 
 export default function ContactPage() {
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const router = useRouter();
     const [formData, setFormData] = useState<ContactFormData>({
         name: "",
         email: "",
@@ -25,7 +23,6 @@ export default function ContactPage() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        // Basic client-side validation
         if (!formData.name || !formData.email || !formData.message) {
             toast.error("Please fill in all required fields");
             return;
@@ -45,7 +42,6 @@ export default function ContactPage() {
 
             if (result.success) {
                 toast.success(result.message);
-                // Reset form
                 setFormData({
                     name: "",
                     email: "",
@@ -54,7 +50,6 @@ export default function ContactPage() {
                 });
             } else {
                 if (result.errors) {
-                    // Handle validation errors
                     result.errors.forEach((error: { message: string }) => {
                         toast.error(error.message);
                     });
@@ -63,7 +58,7 @@ export default function ContactPage() {
                 }
             }
         } catch (error) {
-            console.error("Form submission error:", error); // Debug log
+            console.error("Form submission error:", error);
             toast.error("Something went wrong. Please try again later.");
         } finally {
             setIsSubmitting(false);
@@ -88,10 +83,9 @@ export default function ContactPage() {
                             Get in Touch
                         </h1>
                         <p className="mt-4 text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-                            Have a project in mind? We'd love to hear from you. Send us a message and we'll respond as soon as possible.
+                            Have a project in mind? We&apos;d love to hear from you. Send us a message and we&apos;ll respond as soon as possible.
                         </p>
                     </motion.div>
-
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16">
                         <motion.div
                             initial={{ opacity: 0, x: -20 }}
@@ -164,18 +158,19 @@ export default function ContactPage() {
                                     className="w-full bg-gradient-to-r from-teal-500 to-emerald-600 hover:from-teal-600 hover:to-emerald-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 rounded-xl"
                                     disabled={isSubmitting}
                                 >
-                                    {isSubmitting ? (
-                                        <>
-                                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                            Sending...
-                                        </>
-                                    ) : (
-                                        'Send Message'
-                                    )}
+                                    {
+                                        isSubmitting ? (
+                                            <>
+                                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                                Sending...
+                                            </>
+                                        ) : (
+                                            'Send Message'
+                                        )
+                                    }
                                 </Button>
                             </form>
                         </motion.div>
-
                         <motion.div
                             initial={{ opacity: 0, x: 20 }}
                             animate={{ opacity: 1, x: 0 }}

@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import * as React from 'react';
 
 interface EmailTemplateProps {
@@ -8,27 +9,24 @@ interface EmailTemplateProps {
 export const VerificationEmailTemplate = ({ name, otp }: EmailTemplateProps): React.ReactNode => (
 	<div style={{ fontFamily: 'Arial, sans-serif', maxWidth: '600px', margin: '0 auto' }}>
 		<div style={{ backgroundColor: '#1a1a1a', color: '#ffffff', padding: '30px 20px', textAlign: 'center' }}>
-			<img
+			<Image
 				src="https://your-domain.com/shunyatech.png"
 				alt="ShunyaTech"
-				style={{ height: '40px', marginBottom: '15px' }}
+				width={100}
+				height={100}
 			/>
 			<h1 style={{ margin: '0', fontWeight: '500', fontSize: '24px' }}>Verify Your Email</h1>
 		</div>
-
 		<div style={{ padding: '35px 30px', backgroundColor: '#ffffff' }}>
 			<p style={{ fontSize: '16px', lineHeight: '1.5', color: '#333333' }}>
 				Hi {name},
 			</p>
-
 			<p style={{ fontSize: '16px', lineHeight: '1.5', color: '#333333' }}>
-				Thank you for signing up with ShunyaTech! We're excited to have you on board.
+				Thank you for signing up with ShunyaTech! We&apos;re excited to have you on board.
 			</p>
-
 			<p style={{ fontSize: '16px', lineHeight: '1.5', color: '#333333' }}>
 				Please use the following OTP to verify your email address:
 			</p>
-
 			<div style={{
 				textAlign: 'center',
 				margin: '30px 0',
@@ -50,11 +48,9 @@ export const VerificationEmailTemplate = ({ name, otp }: EmailTemplateProps): Re
 					This OTP will expire in 10 minutes
 				</p>
 			</div>
-
 			<p style={{ fontSize: '16px', lineHeight: '1.5', color: '#333333' }}>
-				If you didn't create an account with ShunyaTech, you can safely ignore this email.
+				If you didn&apos;t create an account with ShunyaTech, you can safely ignore this email.
 			</p>
-
 			<div style={{
 				marginTop: '30px',
 				paddingTop: '20px',
@@ -65,7 +61,6 @@ export const VerificationEmailTemplate = ({ name, otp }: EmailTemplateProps): Re
 				<p>Need help? Contact our support team at support@shunyatech.com</p>
 			</div>
 		</div>
-
 		<div style={{
 			backgroundColor: '#f8f9fa',
 			textAlign: 'center',
@@ -73,7 +68,7 @@ export const VerificationEmailTemplate = ({ name, otp }: EmailTemplateProps): Re
 			fontSize: '13px',
 			color: '#6c757d'
 		}}>
-			<p>&copy; 2024 ShunyaTech. You think we'll deliver.</p>
+			<p>&copy; 2024 ShunyaTech. You think we&apos;ll deliver.</p>
 			<p>Transform your digital dreams into reality</p>
 		</div>
 	</div>
@@ -82,27 +77,24 @@ export const VerificationEmailTemplate = ({ name, otp }: EmailTemplateProps): Re
 export const PasswordResetEmailTemplate = ({ name, otp }: EmailTemplateProps): React.ReactNode => (
 	<div style={{ fontFamily: 'Arial, sans-serif', maxWidth: '600px', margin: '0 auto' }}>
 		<div style={{ backgroundColor: '#dc3545', color: '#ffffff', padding: '30px 20px', textAlign: 'center' }}>
-			<img
+			<Image
 				src="https://your-domain.com/shunyatech.png"
 				alt="ShunyaTech"
-				style={{ height: '40px', marginBottom: '15px' }}
+				width={100}
+				height={100}
 			/>
 			<h1 style={{ margin: '0', fontWeight: '500', fontSize: '24px' }}>Reset Your Password</h1>
 		</div>
-
 		<div style={{ padding: '35px 30px', backgroundColor: '#ffffff' }}>
 			<p style={{ fontSize: '16px', lineHeight: '1.5', color: '#333333' }}>
 				Hi {name},
 			</p>
-
 			<p style={{ fontSize: '16px', lineHeight: '1.5', color: '#333333' }}>
 				We received a request to reset your password for your ShunyaTech account.
 			</p>
-
 			<p style={{ fontSize: '16px', lineHeight: '1.5', color: '#333333' }}>
 				Please use the following OTP to reset your password:
 			</p>
-
 			<div style={{
 				textAlign: 'center',
 				margin: '30px 0',
@@ -124,11 +116,9 @@ export const PasswordResetEmailTemplate = ({ name, otp }: EmailTemplateProps): R
 					This OTP will expire in 15 minutes
 				</p>
 			</div>
-
 			<p style={{ fontSize: '16px', lineHeight: '1.5', color: '#333333' }}>
-				If you didn't request this password reset, please ignore this email and your password will remain unchanged.
+				If you didn&apos;t request this password reset, please ignore this email and your password will remain unchanged.
 			</p>
-
 			<div style={{
 				marginTop: '30px',
 				paddingTop: '20px',
@@ -139,7 +129,6 @@ export const PasswordResetEmailTemplate = ({ name, otp }: EmailTemplateProps): R
 				<p>Need help? Contact our support team at support@shunyatech.com</p>
 			</div>
 		</div>
-
 		<div style={{
 			backgroundColor: '#f8f9fa',
 			textAlign: 'center',
@@ -147,7 +136,7 @@ export const PasswordResetEmailTemplate = ({ name, otp }: EmailTemplateProps): R
 			fontSize: '13px',
 			color: '#6c757d'
 		}}>
-			<p>&copy; 2024 ShunyaTech. You think we'll deliver.</p>
+			<p>&copy; 2024 ShunyaTech. You think we&apos;ll deliver.</p>
 			<p>Transform your digital dreams into reality</p>
 		</div>
 	</div>
@@ -156,27 +145,25 @@ export const PasswordResetEmailTemplate = ({ name, otp }: EmailTemplateProps): R
 export const WelcomeEmailTemplate = ({ name }: { name: string }): React.ReactNode => (
 	<div style={{ fontFamily: 'Arial, sans-serif', maxWidth: '600px', margin: '0 auto' }}>
 		<div style={{ backgroundColor: '#28a745', color: '#ffffff', padding: '30px 20px', textAlign: 'center' }}>
-			<img
+			<Image
 				src="https://your-domain.com/shunyatech.png"
 				alt="ShunyaTech"
 				style={{ height: '40px', marginBottom: '15px' }}
+				width={100}
+				height={100}
 			/>
 			<h1 style={{ margin: '0', fontWeight: '500', fontSize: '24px' }}>Welcome to ShunyaTech!</h1>
 		</div>
-
 		<div style={{ padding: '35px 30px', backgroundColor: '#ffffff' }}>
 			<p style={{ fontSize: '16px', lineHeight: '1.5', color: '#333333' }}>
 				Hi {name},
 			</p>
-
 			<p style={{ fontSize: '16px', lineHeight: '1.5', color: '#333333' }}>
 				🎉 Congratulations! Your email has been successfully verified and your account is now active.
 			</p>
-
 			<p style={{ fontSize: '16px', lineHeight: '1.5', color: '#333333' }}>
 				You can now access your dashboard and explore all the features ShunyaTech has to offer:
 			</p>
-
 			<div style={{ margin: '25px 0' }}>
 				<ul style={{ fontSize: '16px', lineHeight: '1.8', color: '#333333', paddingLeft: '20px' }}>
 					<li>View and track your projects</li>
@@ -185,7 +172,6 @@ export const WelcomeEmailTemplate = ({ name }: { name: string }): React.ReactNod
 					<li>Submit feedback and requests</li>
 				</ul>
 			</div>
-
 			<div style={{ textAlign: 'center', margin: '30px 0' }}>
 				<a
 					href="https://shunyatech.com/dashboard"
@@ -203,11 +189,9 @@ export const WelcomeEmailTemplate = ({ name }: { name: string }): React.ReactNod
 					Go to Dashboard
 				</a>
 			</div>
-
 			<p style={{ fontSize: '16px', lineHeight: '1.5', color: '#333333' }}>
 				If you have any questions or need assistance, our team is here to help!
 			</p>
-
 			<div style={{
 				marginTop: '30px',
 				paddingTop: '20px',
@@ -218,7 +202,6 @@ export const WelcomeEmailTemplate = ({ name }: { name: string }): React.ReactNod
 				<p>Need help? Contact our support team at support@shunyatech.com</p>
 			</div>
 		</div>
-
 		<div style={{
 			backgroundColor: '#f8f9fa',
 			textAlign: 'center',
@@ -226,7 +209,7 @@ export const WelcomeEmailTemplate = ({ name }: { name: string }): React.ReactNod
 			fontSize: '13px',
 			color: '#6c757d'
 		}}>
-			<p>&copy; 2024 ShunyaTech. You think we'll deliver.</p>
+			<p>&copy; 2024 ShunyaTech. You think we&apos;ll deliver.</p>
 			<p>Transform your digital dreams into reality</p>
 		</div>
 	</div>

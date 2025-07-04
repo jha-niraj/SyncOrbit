@@ -93,7 +93,7 @@ export default function AboutUsPage() {
                                 Innovating for Tomorrow
                             </h1>
                             <p className="mt-4 text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-                                We're a team of passionate individuals dedicated to creating innovative digital solutions that transform businesses.
+                                We&apos;re a team of passionate individuals dedicated to creating innovative digital solutions that transform businesses.
                             </p>
                         </motion.div>
                     </div>
@@ -158,41 +158,41 @@ export default function AboutUsPage() {
                             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
                         >
                             {
-                            teamMembers.map((member) => (
-                                <motion.div
-                                    key={member.id}
-                                    variants={item}
-                                    className="group relative bg-white/50 dark:bg-black/50 backdrop-blur-xl rounded-2xl p-6 border border-teal-200/30 dark:border-teal-800/30 hover:border-teal-300 dark:hover:border-teal-700 transition-all duration-300"
-                                >
-                                    <div className="relative w-32 h-32 mx-auto mb-6 rounded-full overflow-hidden">
-                                        <Image
-                                            src={member.image}
-                                            alt={member.name}
-                                            fill
-                                            className="object-cover transition-transform duration-300 group-hover:scale-110"
-                                        />
-                                    </div>
-                                    <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
-                                        {member.name}
-                                    </h3>
-                                    <p className="text-teal-600 dark:text-teal-400 font-medium mt-1">
-                                        {member.role}
-                                    </p>
-                                    <p className="mt-4 text-gray-600 dark:text-gray-300">
-                                        {member.bio}
-                                    </p>
-                                    <div className="mt-6">
-                                        <Link
-                                            href={member.linkedin}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="text-teal-600 dark:text-teal-400 hover:text-teal-700 dark:hover:text-teal-300 transition-colors"
-                                        >
-                                            Connect on LinkedIn →
-                                        </Link>
-                                    </div>
-                                </motion.div>
-                            ))
+                                teamMembers.map((member) => (
+                                    <motion.div
+                                        key={member.id}
+                                        variants={item}
+                                        className="group relative bg-white/50 dark:bg-black/50 backdrop-blur-xl rounded-2xl p-6 border border-teal-200/30 dark:border-teal-800/30 hover:border-teal-300 dark:hover:border-teal-700 transition-all duration-300"
+                                    >
+                                        <div className="relative w-32 h-32 mx-auto mb-6 rounded-full overflow-hidden">
+                                            <Image
+                                                src={member.image}
+                                                alt={member.name}
+                                                fill
+                                                className="object-cover transition-transform duration-300 group-hover:scale-110"
+                                            />
+                                        </div>
+                                        <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
+                                            {member.name}
+                                        </h3>
+                                        <p className="text-teal-600 dark:text-teal-400 font-medium mt-1">
+                                            {member.role}
+                                        </p>
+                                        <p className="mt-4 text-gray-600 dark:text-gray-300">
+                                            {member.bio}
+                                        </p>
+                                        <div className="mt-6">
+                                            <Link
+                                                href={member.linkedin}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="text-teal-600 dark:text-teal-400 hover:text-teal-700 dark:hover:text-teal-300 transition-colors"
+                                            >
+                                                Connect on LinkedIn →
+                                            </Link>
+                                        </div>
+                                    </motion.div>
+                                ))
                             }
                         </motion.div>
                     </div>

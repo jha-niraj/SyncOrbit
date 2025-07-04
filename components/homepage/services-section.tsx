@@ -99,7 +99,7 @@ export default function ServicesSection() {
                         className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8"
                     >
                         {
-                            services.map((service, index) => (
+                            services.map((service) => (
                                 <motion.div
                                     key={service.name}
                                     variants={item}
