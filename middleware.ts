@@ -1,7 +1,6 @@
 import { auth } from "@/auth"
 import { NextResponse } from "next/server"
 
-// Protected routes that require authentication
 const protectedRoutes = [
 	'/dashboard',
 	'/profile',
@@ -10,7 +9,6 @@ const protectedRoutes = [
 	'/settings'
 ]
 
-// Public routes that don't require authentication
 const publicRoutes = [
 	'/',
 	'/signin',
@@ -30,7 +28,6 @@ const publicRoutes = [
 	'/projectsdelivered'
 ]
 
-// API routes that should be excluded from auth checks
 const apiRoutes = [
 	'/api/auth',
 	'/api/health',
@@ -48,7 +45,6 @@ export default auth((req) => {
 
 	console.log(`Middleware: ${nextUrl.pathname}, isLoggedIn: ${isLoggedIn}`) // Debug log
 
-	// Allow API routes to pass through
 	if (apiRoutes.some(route => nextUrl.pathname.startsWith(route))) {
 		return NextResponse.next()
 	}

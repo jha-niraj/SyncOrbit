@@ -68,7 +68,7 @@ export default function Navbar() {
     };
 
     return (
-        <div className="w-full h-20 flex items-center justify-center fixed top-0 z-50 mt-2">
+        <div className="w-full h-20 flex items-center justify-center fixed top-0 z-50 mt-1">
             <motion.header
                 initial={{ y: -100, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
