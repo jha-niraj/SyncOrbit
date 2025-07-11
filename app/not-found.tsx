@@ -39,7 +39,7 @@ export default function NotFound() {
                                     initial={{ scale: 0.8 }}
                                     animate={{ scale: [0.8, 1.2, 1] }}
                                     transition={{ delay: 0.6, duration: 0.5 }}
-                                    className="inline-block text-primary"
+                                    className="inline-block text-black dark:text-white"
                                 >
                                     404
                                 </motion.span>

@@ -30,7 +30,7 @@ const features = [
 
 export default function AboutUsSection() {
     return (
-        <section id="about" className="py-24 bg-gradient-to-br from-slate-50 via-indigo-50 to-purple-50 dark:from-slate-900 dark:via-black dark:to-slate-900">
+        <section id="about" className="py-24 bg-transparent">
             <div className="max-w-7xl mx-auto px-6 lg:px-8">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
                     <motion.div

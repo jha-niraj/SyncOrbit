@@ -6,6 +6,7 @@ import { Building2, Target, Users2, Lightbulb } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import SmoothScroll from "@/components/smoothscroll"
+import { Button } from "@/components/ui/button"
 
 const teamMembers = [
     {
@@ -74,11 +75,21 @@ const item = {
 };
 
 export default function AboutUsPage() {
+    const scrollToSection = (sectionId: string) => {
+        const section = document.getElementById(sectionId);
+        if (section) {
+            section.scrollIntoView({ behavior: 'smooth' });
+        }
+    };
+
     return (
         <SmoothScroll>
             <div className="min-h-screen">
-                <section className="py-40 bg-gradient-to-br from-slate-50 via-indigo-50 to-purple-50 dark:from-slate-900 dark:via-black dark:to-slate-900">
-                    <div className="max-w-7xl mx-auto px-6 lg:px-8">
+                <section className="relative py-40 bg-gradient-to-br from-slate-50 via-indigo-50 to-purple-50 dark:from-slate-900 dark:via-black dark:to-slate-900 overflow-hidden">
+                    <div className="absolute inset-0 pointer-events-none">
+                        <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-fuchsia-400/10 rounded-full blur-3xl"></div>
+                    </div>
+                    <div className="relative max-w-7xl mx-auto px-6 lg:px-8">
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
@@ -89,12 +100,24 @@ export default function AboutUsPage() {
                                 <Building2 className="w-4 h-4 text-teal-500 mr-2" />
                                 <span className="text-teal-700 dark:text-teal-300">About Us</span>
                             </Badge>
-                            <h1 className="mt-4 text-4xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-5xl">
-                                Innovating for Tomorrow
+                            <h1 className="mt-6 text-4xl font-extrabold tracking-tight text-gray-900 dark:text-white sm:text-5xl md:text-6xl leading-tight">
+                                Innovating for <span className="text-indigo-500">a Smarter Tomorrow</span>
                             </h1>
-                            <p className="mt-4 text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-                                We&apos;re a team of passionate individuals dedicated to creating innovative digital solutions that transform businesses.
+                            <p className="mt-6 text-lg sm:text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+                                We are a team of engineers, designers, and strategists passionate about building scalable digital solutions. Our mission is to empower businesses with the technology they need to thrive in a connected world.
                             </p>
+                            <div className="mt-8 flex justify-center gap-4 flex-wrap">
+                                <Button 
+                                    variant="default" 
+                                    size="lg"
+                                    onClick={() => scrollToSection("team")}
+                                >
+                                    Meet the Team
+                                </Button>
+                                <Button variant="outline" size="lg">
+                                    <Link href="/#approach">Our Approach</Link>
+                                </Button>
+                            </div>
                         </motion.div>
                     </div>
                 </section>
@@ -130,7 +153,7 @@ export default function AboutUsPage() {
                         </motion.div>
                     </div>
                 </section>
-                <section className="py-24 bg-gradient-to-br from-slate-50 via-indigo-50 to-purple-50 dark:from-slate-900 dark:via-black dark:to-slate-900">
+                <section id="team" className="py-24 bg-gradient-to-br from-slate-50 via-indigo-50 to-purple-50 dark:from-slate-900 dark:via-black dark:to-slate-900">
                     <div className="max-w-7xl mx-auto px-6 lg:px-8">
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}

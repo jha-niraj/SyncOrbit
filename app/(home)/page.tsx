@@ -21,16 +21,18 @@ export default function MainLandingPage() {
             <Navbar />
             <main className="w-full">
                 <HeroSection />
-                <ServicesSection />
-                <ProjectsSection />
-                <AboutUsSection />
-                <ApproachSection />
-                <WhyUs />
-                <TestimonialsSection />
-                <PeopleService />
-                <PricingSection />
-                <FaqsAccrodian />
-                <CTAPage />
+                <section className="bg-gradient-to-br from-slate-50 via-indigo-50 to-purple-50 dark:from-slate-900 dark:via-black dark:to-slate-900">
+                    <ServicesSection />
+                    <ProjectsSection />
+                    <AboutUsSection />
+                    <ApproachSection />
+                    <WhyUs />
+                    <TestimonialsSection />
+                    <PeopleService />
+                    <PricingSection />
+                    <FaqsAccrodian />
+                    <CTAPage />
+                </section>
             </main>
             <Footer />
         </SmoothScroll>

@@ -70,7 +70,7 @@ const item = {
 
 export default function ServicesSection() {
     return (
-        <section id="services" className="py-12 bg-gradient-to-br from-slate-50 via-indigo-50 to-purple-50 dark:from-slate-900 dark:via-black dark:to-slate-900">
+        <section id="services" className="py-12 bg-transparent">
             <div className="max-w-7xl mx-auto px-6 lg:px-8">
                 <div className="text-center">
                     <motion.div

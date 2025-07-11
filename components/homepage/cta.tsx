@@ -10,7 +10,7 @@ export default function CTAPage() {
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 1.6 }}
-            className="max-w-7xl mx-auto text-center px-4 mb-12"
+            className="max-w-7xl mx-auto text-center px-4 mb-12 bg-transparent"
         >
             <div className="bg-gradient-to-r from-emerald-500/10 to-teal-500/10 backdrop-blur-xl rounded-3xl p-8 md:p-12 border border-emerald-200/50 dark:border-emerald-800/50 shadow-xl">
                 <Zap className="w-12 h-12 text-emerald-600 dark:text-emerald-400 mx-auto mb-6" />

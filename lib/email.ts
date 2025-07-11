@@ -1,25 +1,26 @@
 import { Resend } from 'resend';
-import { VerificationEmailTemplate, PasswordResetEmailTemplate, WelcomeEmailTemplate } from './email-templates';
+import {
+	VerificationEmailTemplate,
+	PasswordResetEmailTemplate,
+	WelcomeEmailTemplate,
+} from '@/lib/email-templates';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-// Generate a 6-digit OTP
 export function generateOTP(): string {
 	return Math.floor(100000 + Math.random() * 900000).toString();
 }
 
-// Generate OTP expiry time (10 minutes for verification, 15 minutes for password reset)
 export function generateOTPExpiry(minutes: number = 10): Date {
 	const expiry = new Date();
 	expiry.setMinutes(expiry.getMinutes() + minutes);
 	return expiry;
 }
 
-// Send verification email with OTP
 export async function sendVerificationEmail(email: string, name: string, otp: string) {
 	try {
 		const { data, error } = await resend.emails.send({
-			from: 'ShunyaTech <noreply@shunyatech.com>',
+			from: 'ShunyaTech <noreply@setu.nirajjha.xyz>',
 			to: [email],
 			subject: 'Verify Your Email - ShunyaTech',
 			react: VerificationEmailTemplate({ name, otp }),
@@ -38,11 +39,10 @@ export async function sendVerificationEmail(email: string, name: string, otp: st
 	}
 }
 
-// Send password reset email with OTP
 export async function sendPasswordResetEmail(email: string, name: string, otp: string) {
 	try {
 		const { data, error } = await resend.emails.send({
-			from: 'ShunyaTech <noreply@shunyatech.com>',
+			from: 'ShunyaTech <noreply@setu.nirajjha.xyz>',
 			to: [email],
 			subject: 'Reset Your Password - ShunyaTech',
 			react: PasswordResetEmailTemplate({ name, otp }),
@@ -61,11 +61,10 @@ export async function sendPasswordResetEmail(email: string, name: string, otp: s
 	}
 }
 
-// Send welcome email after successful verification
 export async function sendWelcomeEmail(email: string, name: string) {
 	try {
 		const { data, error } = await resend.emails.send({
-			from: 'ShunyaTech <noreply@shunyatech.com>',
+			from: 'ShunyaTech <noreply@setu.nirajjha.xyz>',
 			to: [email],
 			subject: 'Welcome to ShunyaTech! 🎉',
 			react: WelcomeEmailTemplate({ name }),

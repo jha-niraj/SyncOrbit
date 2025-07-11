@@ -1,4 +1,3 @@
-import Image from 'next/image';
 import * as React from 'react';
 
 interface EmailTemplateProps {
@@ -9,11 +8,12 @@ interface EmailTemplateProps {
 export const VerificationEmailTemplate = ({ name, otp }: EmailTemplateProps): React.ReactNode => (
 	<div style={{ fontFamily: 'Arial, sans-serif', maxWidth: '600px', margin: '0 auto' }}>
 		<div style={{ backgroundColor: '#1a1a1a', color: '#ffffff', padding: '30px 20px', textAlign: 'center' }}>
-			<Image
-				src="https://your-domain.com/shunyatech.png"
+			<img
+				src="https://shunyatech.in/shunyatech.png"
 				alt="ShunyaTech"
 				width={100}
 				height={100}
+				style={{ borderRadius: '8px', marginBottom: '15px' }}
 			/>
 			<h1 style={{ margin: '0', fontWeight: '500', fontSize: '24px' }}>Verify Your Email</h1>
 		</div>
@@ -77,11 +77,12 @@ export const VerificationEmailTemplate = ({ name, otp }: EmailTemplateProps): Re
 export const PasswordResetEmailTemplate = ({ name, otp }: EmailTemplateProps): React.ReactNode => (
 	<div style={{ fontFamily: 'Arial, sans-serif', maxWidth: '600px', margin: '0 auto' }}>
 		<div style={{ backgroundColor: '#dc3545', color: '#ffffff', padding: '30px 20px', textAlign: 'center' }}>
-			<Image
-				src="https://your-domain.com/shunyatech.png"
+			<img
+				src="https://shunyatech.in/shunyatech.png"
 				alt="ShunyaTech"
 				width={100}
 				height={100}
+				style={{ borderRadius: '8px', marginBottom: '15px' }}
 			/>
 			<h1 style={{ margin: '0', fontWeight: '500', fontSize: '24px' }}>Reset Your Password</h1>
 		</div>
@@ -145,12 +146,12 @@ export const PasswordResetEmailTemplate = ({ name, otp }: EmailTemplateProps): R
 export const WelcomeEmailTemplate = ({ name }: { name: string }): React.ReactNode => (
 	<div style={{ fontFamily: 'Arial, sans-serif', maxWidth: '600px', margin: '0 auto' }}>
 		<div style={{ backgroundColor: '#28a745', color: '#ffffff', padding: '30px 20px', textAlign: 'center' }}>
-			<Image
-				src="https://your-domain.com/shunyatech.png"
+			<img
+				src="https://shunyatech.in/shunyatech.png"
 				alt="ShunyaTech"
-				style={{ height: '40px', marginBottom: '15px' }}
 				width={100}
 				height={100}
+				style={{ borderRadius: '8px', marginBottom: '15px' }}
 			/>
 			<h1 style={{ margin: '0', fontWeight: '500', fontSize: '24px' }}>Welcome to ShunyaTech!</h1>
 		</div>

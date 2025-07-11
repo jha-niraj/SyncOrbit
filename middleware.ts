@@ -32,7 +32,8 @@ const apiRoutes = [
 	'/api/auth',
 	'/api/health',
 	'/api/register',
-	'/api/verify',
+	'/api/verify-email',
+	'/api/resend-otp',
 	'/api/forgot-password',
 	'/api/reset-password',
 	'/api/contact',
@@ -81,35 +82,14 @@ export default auth((req) => {
 		return NextResponse.redirect(signInUrl)
 	}
 
-	// Handle post-login redirection logic
-	if (isLoggedIn) {
-		// If user is trying to access signin/signup, redirect to dashboard
-		if (nextUrl.pathname === '/signin' || nextUrl.pathname === '/signup' || nextUrl.pathname === '/register') {
-			return NextResponse.redirect(new URL('/dashboard', nextUrl.origin))
-		}
-
-		// For the root path, redirect authenticated users to dashboard
-		if (nextUrl.pathname === '/') {
-			return NextResponse.redirect(new URL('/dashboard', nextUrl.origin))
-		}
+	// If user is logged in and trying to access auth pages, redirect to dashboard
+	if (isLoggedIn && (nextUrl.pathname === '/signin' || nextUrl.pathname === '/signup' || nextUrl.pathname === '/register')) {
+		return NextResponse.redirect(new URL('/dashboard', nextUrl.origin))
 	}
 
 	return NextResponse.next()
 })
 
 export const config = {
-	// More specific matcher to avoid catching static files and API routes
-	matcher: [
-		/*
-		 * Match all request paths except for the ones starting with:
-		 * - api (API routes)
-		 * - _next/static (static files)
-		 * - _next/image (image optimization files)
-		 * - favicon.ico (favicon file)
-		 * - public folder files
-		 * - files with extensions (images, etc.)
-		 * - webhook endpoints
-		 */
-		'/((?!api/auth|api/webhooks|_next/static|_next/image|favicon.ico|public/|.*\\..*).*)',
-	],
+	matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
 } 

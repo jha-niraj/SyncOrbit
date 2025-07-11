@@ -101,18 +101,6 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
                         }
                     });
                     return true;
-                } else {
-                    // Create new user with Google data
-                    await prisma.user.create({
-                        data: {
-                            email: profile?.email as string,
-                            name: user.name || "",
-                            image: user.image,
-                            emailVerified: new Date(),
-                            role: 'CLIENT'
-                        }
-                    });
-                    return true;
                 }
             }
             return true;

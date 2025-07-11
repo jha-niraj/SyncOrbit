@@ -148,7 +148,7 @@ export default function PricingPage() {
     return (
         <div id="pricing" className="min-h-screen bg-gradient-to-b from-black to-zinc-900 text-white">
             <div className="container mx-auto px-4 py-16">
-                <div className="text-center mb-16">
+                <div className="text-center mb-4">
                     <div className="inline-block px-3 py-1 mb-4 text-xs font-semibold tracking-wider uppercase border border-white/20 rounded-full bg-white/5 backdrop-blur-sm">
                         <span className="text-white/80">TAILORED SOLUTIONS</span>
                     </div>
@@ -158,7 +158,7 @@ export default function PricingPage() {
                     </p>
                 </div>
                 <div className="max-w-5xl mx-auto">
-                    <div className="flex items-center justify-center mb-10">
+                    <div className="flex items-center justify-center mb-4">
                         <div className="flex items-center justify-center space-x-4">
                             <Label htmlFor="currency-toggle" className="text-zinc-400">
                                 INR
@@ -181,7 +181,6 @@ export default function PricingPage() {
                                     transition-colors
                                 "
                             />
-
                             <Label htmlFor="currency-toggle" className="text-zinc-400">
                                 USD
                             </Label>

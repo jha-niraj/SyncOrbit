@@ -43,7 +43,7 @@ export default function WhyUs() {
     ];
 
     return (
-        <section id="whyus" className="py-24 bg-gradient-to-br from-slate-50 via-indigo-50 to-purple-50 dark:from-slate-900 dark:via-black dark:to-slate-900">
+        <section id="whyus" className="py-24 bg-transparent">
             <div className="max-w-7xl mx-auto px-6 lg:px-8">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}

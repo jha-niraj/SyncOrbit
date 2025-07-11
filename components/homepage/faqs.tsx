@@ -43,7 +43,7 @@ const FaqsAccrodian = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.4 }}
-            className="max-w-7xl mx-auto mt-20 mb-16"
+            className="max-w-7xl mx-auto mt-20 mb-16 bg-transparent"
             id="faqs"
         >
             <div className="flex flex-col lg:flex-row gap-10 w-full justify-around">
