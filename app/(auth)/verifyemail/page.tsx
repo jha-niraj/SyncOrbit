@@ -294,8 +294,6 @@ function VerifyEmail() {
 						</p>
 					</div>
 				</div>
-
-				{/* OTP Form */}
 				<motion.div
 					className="sm:w-[350px] bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl border border-slate-200/50 dark:border-slate-700/50 p-8 shadow-xl"
 					initial={{ opacity: 0, y: 20 }}
@@ -305,27 +303,29 @@ function VerifyEmail() {
 					<form onSubmit={handleSubmit} className="space-y-6">
 						<div className="space-y-4">
 							<div className="flex justify-center gap-3">
-								{code.map((digit, index) => (
-									<motion.div
-										key={index}
-										initial={{ opacity: 0, scale: 0.8 }}
-										animate={{ opacity: 1, scale: 1 }}
-										transition={{ delay: 0.3 + index * 0.1 }}
-									>
-										<Input
-											ref={inputRefs[index]}
-											type="text"
-											inputMode="numeric"
-											maxLength={1}
-											value={digit}
-											onChange={(e) => handleInputChange(index, e.target.value)}
-											onKeyDown={(e) => handleKeyDown(index, e)}
-											onPaste={index === 0 ? handlePaste : undefined}
-											className="w-14 h-14 text-center text-2xl font-mono font-bold rounded-xl border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-900 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 dark:focus:ring-emerald-800 transition-all duration-200 shadow-sm"
-											disabled={isLoading}
-										/>
-									</motion.div>
-								))}
+								{
+									code.map((digit, index) => (
+										<motion.div
+											key={index}
+											initial={{ opacity: 0, scale: 0.8 }}
+											animate={{ opacity: 1, scale: 1 }}
+											transition={{ delay: 0.3 + index * 0.1 }}
+										>
+											<Input
+												ref={inputRefs[index]}
+												type="text"
+												inputMode="numeric"
+												maxLength={1}
+												value={digit}
+												onChange={(e) => handleInputChange(index, e.target.value)}
+												onKeyDown={(e) => handleKeyDown(index, e)}
+												onPaste={index === 0 ? handlePaste : undefined}
+												className="w-14 h-14 text-center text-2xl font-mono font-bold rounded-xl border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-900 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 dark:focus:ring-emerald-800 transition-all duration-200 shadow-sm"
+												disabled={isLoading}
+											/>
+										</motion.div>
+									))
+								}
 							</div>
 							<p className="text-xs text-slate-500 dark:text-slate-400 text-center">
 								Code expires in 10 minutes
@@ -341,8 +341,6 @@ function VerifyEmail() {
 						</Button>
 					</form>
 				</motion.div>
-
-				{/* Resend Section */}
 				<motion.div
 					className="text-center space-y-4"
 					initial={{ opacity: 0 }}
@@ -357,7 +355,6 @@ function VerifyEmail() {
 					>
 						{canResend ? "Didn't receive the code? Resend" : `Resend code in ${timer}s`}
 					</Button>
-
 					<div className="relative">
 						<div className="absolute inset-0 flex items-center">
 							<Separator className="w-full" />
@@ -368,7 +365,6 @@ function VerifyEmail() {
 							</span>
 						</div>
 					</div>
-
 					<div className="flex justify-center gap-4">
 						<Button
 							variant="outline"

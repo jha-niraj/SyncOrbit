@@ -106,9 +106,9 @@ export default function PrivacyPolicy() {
                         </p>
                         <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
                             For privacy-related inquiries, please contact us at{" "}
-                            <a href="mailto:privacy@shunyatech.com" className="text-primary hover:underline">
+                            <Link href="mailto:privacy@shunyatech.com" className="text-primary hover:underline">
                                 privacy@shunyatech.com
-                            </a>
+                            </Link>
                         </p>
                     </div>
                 </div>
