@@ -67,16 +67,18 @@ export default function Footer() {
 					>
 						<h3 className="text-sm font-semibold text-gray-900 dark:text-white">Solutions</h3>
 						<ul className="mt-4 space-y-2">
-							{navigation.solutions.map((item) => (
-								<li key={item.name}>
-									<Link
-										href={item.href}
-										className="text-sm text-gray-600 dark:text-gray-300 hover:text-teal-600 dark:hover:text-teal-400 transition-colors"
-									>
-										{item.name}
-									</Link>
-								</li>
-							))}
+							{
+								navigation.solutions.map((item) => (
+									<li key={item.name}>
+										<Link
+											href={item.href}
+											className="text-sm text-gray-600 dark:text-gray-300 hover:text-teal-600 dark:hover:text-teal-400 transition-colors"
+										>
+											{item.name}
+										</Link>
+									</li>
+								))
+							}
 						</ul>
 					</motion.div>
 					<motion.div
@@ -87,16 +89,18 @@ export default function Footer() {
 					>
 						<h3 className="text-sm font-semibold text-gray-900 dark:text-white">Company</h3>
 						<ul className="mt-4 space-y-2">
-							{navigation.company.map((item) => (
-								<li key={item.name}>
-									<Link
-										href={item.href}
-										className="text-sm text-gray-600 dark:text-gray-300 hover:text-teal-600 dark:hover:text-teal-400 transition-colors"
-									>
-										{item.name}
-									</Link>
-								</li>
-							))}
+							{
+								navigation.company.map((item) => (
+									<li key={item.name}>
+										<Link
+											href={item.href}
+											className="text-sm text-gray-600 dark:text-gray-300 hover:text-teal-600 dark:hover:text-teal-400 transition-colors"
+										>
+											{item.name}
+										</Link>
+									</li>
+								))
+							}
 						</ul>
 					</motion.div>
 					<motion.div
@@ -107,16 +111,18 @@ export default function Footer() {
 					>
 						<h3 className="text-sm font-semibold text-gray-900 dark:text-white">Resources</h3>
 						<ul className="mt-4 space-y-2">
-							{navigation.resources.map((item) => (
-								<li key={item.name}>
-									<Link
-										href={item.href}
-										className="text-sm text-gray-600 dark:text-gray-300 hover:text-teal-600 dark:hover:text-teal-400 transition-colors"
-									>
-										{item.name}
-									</Link>
-								</li>
-							))}
+							{
+								navigation.resources.map((item) => (
+									<li key={item.name}>
+										<Link
+											href={item.href}
+											className="text-sm text-gray-600 dark:text-gray-300 hover:text-teal-600 dark:hover:text-teal-400 transition-colors"
+										>
+											{item.name}
+										</Link>
+									</li>
+								))
+							}
 						</ul>
 					</motion.div>
 				</div>
@@ -129,16 +135,18 @@ export default function Footer() {
 							transition={{ duration: 0.5, delay: 0.4 }}
 							className="flex space-x-6"
 						>
-							{navigation.social.map((item) => (
-								<Link
-									key={item.name}
-									href={item.href}
-									className="text-gray-600 dark:text-gray-300 hover:text-teal-600 dark:hover:text-teal-400 transition-colors"
-								>
-									<span className="sr-only">{item.name}</span>
-									<item.icon className="h-5 w-5" />
-								</Link>
-							))}
+							{
+								navigation.social.map((item) => (
+									<Link
+										key={item.name}
+										href={item.href}
+										className="text-gray-600 dark:text-gray-300 hover:text-teal-600 dark:hover:text-teal-400 transition-colors"
+									>
+										<span className="sr-only">{item.name}</span>
+										<item.icon className="h-5 w-5" />
+									</Link>
+								))
+							}
 						</motion.div>
 						<motion.p
 							initial={{ opacity: 0 }}

@@ -293,7 +293,6 @@ const Sidebar = ({ isCollapsed, toggleSidebar }: SidebarProps) => {
                     }
                 </div>
             </motion.div>
-
             <div className="mt-6 sm:hidden fixed bottom-0 left-0 right-0 bg-gradient-to-br from-slate-50 via-indigo-50 to-purple-50 dark:from-slate-900 dark:via-black dark:to-slate-900 border-t border-border/20 backdrop-blur-xl shadow-2xl z-20">
                 <div className="flex justify-around py-2">
                     {

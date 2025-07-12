@@ -156,10 +156,8 @@ function VerifyEmail() {
 				setIsVerified(true)
 				toast.success("Email verified successfully! Signing you in...")
 
-				// Clear signup data from session storage
 				sessionStorage.removeItem('signupData')
 
-				// Try to sign in automatically if we have the password
 				if (signupData?.password) {
 					const signInResult = await signIn('credentials', {
 						email: email || signupData?.email,
@@ -181,7 +179,6 @@ function VerifyEmail() {
 						}, 2000)
 					}
 				} else {
-					// No password available, redirect to signin with callback
 					setTimeout(() => {
 						const redirectUrl = callbackUrl
 							? `/signin?callbackUrl=${encodeURIComponent(callbackUrl)}&verified=true`
@@ -271,7 +268,6 @@ function VerifyEmail() {
 				animate={{ opacity: 1, y: 0 }}
 				transition={{ duration: 0.6 }}
 			>
-				{/* Logo and Header */}
 				<div className="flex flex-col items-center space-y-6">
 					<motion.div
 						initial={{ opacity: 0, scale: 0.8 }}

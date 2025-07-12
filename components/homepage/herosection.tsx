@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import {
 	ArrowRight, Calendar, Lightbulb, Users,
-	Star, CheckCircle, Globe, Smartphone, Database, Shield, Rocket,
+	CheckCircle, Globe, Smartphone, Database, Shield, Rocket,
 	TrendingUp, Award, Clock, Monitor, MessageSquare, Eye, Bell, BarChart3, Settings
 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
@@ -57,10 +57,6 @@ export default function HeroSection() {
 
 	return (
 		<div className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-slate-50 via-emerald-50/30 to-teal-50 dark:from-slate-950 dark:via-emerald-950/10 dark:to-teal-950/10">
-			{/* <div className="absolute inset-0 w-full h-full">
-				<div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]" />
-				<div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 via-transparent to-teal-500/5" />
-			</div> */}
 			<div className="absolute inset-0 overflow-hidden">
 				<motion.div
 					animate={{
@@ -138,19 +134,6 @@ export default function HeroSection() {
 									</span>
 								</motion.span>
 							</motion.h1>
-							{/* Animated Underline */}
-							{/* <motion.div
-								initial={{ scaleX: 0 }}
-								animate={{ scaleX: 1 }}
-								transition={{ duration: 1.2, delay: 0.9, ease: "easeOut" }}
-								className="h-1 w-32 mx-auto bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-500 rounded-full relative"
-							>
-								<motion.div
-									className="absolute inset-0 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-500 rounded-full"
-									animate={{ x: ['-100%', '100%'] }}
-									transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-								/>
-							</motion.div> */}
 						</div>
 						<motion.div
 							initial={{ opacity: 0, y: 30 }}

@@ -80,7 +80,6 @@ function ResetPassword() {
 					animate={{ opacity: 1, y: 0 }}
 					transition={{ duration: 0.6 }}
 				>
-					{/* Logo and Header */}
 					<div className="flex flex-col items-center space-y-6">
 						<motion.div
 							initial={{ opacity: 0, scale: 0.8 }}
@@ -105,15 +104,15 @@ function ResetPassword() {
 									{email}
 								</span>
 							</p>
-							{callbackUrl && (
-								<p className="text-sm text-emerald-600 dark:text-emerald-400">
-									You'll be redirected back after resetting
-								</p>
-							)}
+							{
+								callbackUrl && (
+									<p className="text-sm text-emerald-600 dark:text-emerald-400">
+										You'll be redirected back after resetting
+									</p>
+								)
+							}
 						</div>
 					</div>
-
-					{/* Reset Form */}
 					<motion.div
 						className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl border border-slate-200/50 dark:border-slate-700/50 p-8 shadow-xl"
 						initial={{ opacity: 0, y: 20 }}
@@ -182,8 +181,6 @@ function ResetPassword() {
 							</Button>
 						</form>
 					</motion.div>
-
-					{/* Navigation Links */}
 					<motion.div
 						className="text-center space-y-4"
 						initial={{ opacity: 0 }}

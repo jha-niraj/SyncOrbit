@@ -34,7 +34,7 @@ export default function NotFound() {
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.3, duration: 0.7 }}
                         >
-                            <h1 className="text-5xl md:text-7xl font-bold text-gray-800">
+                            <h1 className="text-5xl md:text-7xl font-bold">
                                 <motion.span
                                     initial={{ scale: 0.8 }}
                                     animate={{ scale: [0.8, 1.2, 1] }}
@@ -48,7 +48,7 @@ export default function NotFound() {
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
                                 transition={{ delay: 0.8, duration: 0.5 }}
-                                className="text-2xl md:text-3xl font-semibold text-gray-700 mt-2"
+                                className="text-2xl md:text-3xl font-semibold mt-2"
                             >
                                 Page Not Found
                             </motion.h2>
@@ -57,7 +57,7 @@ export default function NotFound() {
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             transition={{ delay: 1, duration: 0.5 }}
-                            className="text-gray-600 max-w-lg mx-auto text-lg"
+                            className="max-w-lg mx-auto text-lg"
                         >
                             Oops! The page you&apos;re looking for seems to have wandered off into
                             the digital wilderness. Let&apos;s get you back on track.
@@ -75,7 +75,7 @@ export default function NotFound() {
                                 <Button
                                     asChild
                                     size="lg"
-                                    className="bg-gradient-to-r from-primary to-primary/90 hover:shadow-lg transition-all duration-300 px-8 py-6 text-lg"
+                                    className="bg-gradient-to-r from-black to-black/90 hover:shadow-lg transition-all duration-300 px-8 py-6 text-lg"
                                 >
                                     <Link href="/" className="flex items-center gap-2">
                                         <Home className="h-5 w-5" />
@@ -130,7 +130,6 @@ function NotFoundSVG() {
                 r="180"
                 stroke="currentColor"
                 strokeWidth="2"
-                className="text-gray-200"
                 variants={pathVariants}
                 initial="hidden"
                 animate="visible"
@@ -142,7 +141,6 @@ function NotFoundSVG() {
                 r="150"
                 stroke="currentColor"
                 strokeWidth="2"
-                className="text-primary/30"
                 variants={pathVariants}
                 initial="hidden"
                 animate="visible"
@@ -156,7 +154,6 @@ function NotFoundSVG() {
                         cy={200 + Math.sin((i * Math.PI * 2) / 5) * 120}
                         r="8"
                         fill="currentColor"
-                        className="text-primary"
                         variants={circleVariants}
                         initial="hidden"
                         animate="visible"
@@ -182,7 +179,6 @@ function NotFoundSVG() {
                     fontSize="120"
                     fontWeight="bold"
                     fill="currentColor"
-                    className="text-gray-800"
                     initial={{ y: 50, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
                     transition={{ delay: 1.2, duration: 0.7 }}
@@ -194,7 +190,6 @@ function NotFoundSVG() {
                 d="M400 100 L400 120 M400 280 L400 300 M300 200 L320 200 M480 200 L500 200"
                 stroke="currentColor"
                 strokeWidth="3"
-                className="text-gray-400"
                 variants={pathVariants}
                 initial="hidden"
                 animate="visible"

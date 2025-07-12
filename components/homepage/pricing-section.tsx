@@ -253,9 +253,11 @@ export default function PricingPage() {
                                             </span>
                                         </div>
                                         <p className="text-zinc-500 text-sm mt-2">
-                                            {mvpOption === "oneTime"
-                                                ? "One-time payment for initial development"
-                                                : "Initial development plus ongoing support"}
+                                            {
+                                                mvpOption === "oneTime"
+                                                    ? "One-time payment for initial development"
+                                                    : "Initial development plus ongoing support"
+                                            }
                                         </p>
                                     </div>
                                     <div className="space-y-4">
