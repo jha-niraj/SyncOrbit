@@ -142,7 +142,7 @@ export default function HeroSection() {
 							className="mt-6"
 						>
 							<p className="text-lg md:text-xl lg:text-2xl text-slate-600 dark:text-slate-300 max-w-2xl mx-auto leading-relaxed font-light">
-								We're{" "}
+								We&apos;re{" "}
 								<motion.span
 									className="text-emerald-700 dark:text-emerald-400 font-medium relative"
 									initial={{ opacity: 0 }}

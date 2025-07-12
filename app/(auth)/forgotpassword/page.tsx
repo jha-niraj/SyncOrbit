@@ -74,12 +74,12 @@ function ForgotPassword() {
 								Reset your password
 							</h1>
 							<p className="text-slate-600 dark:text-slate-300 max-w-sm mx-auto leading-relaxed">
-								Enter your email address and we'll send you a reset code
+								Enter your email address and we&apos;ll send you a reset code
 							</p>
 							{
 								callbackUrl && (
 									<p className="text-sm text-emerald-600 dark:text-emerald-400">
-										You'll be redirected back after resetting
+										You&apos;ll be redirected back after resetting
 									</p>
 								)
 							}

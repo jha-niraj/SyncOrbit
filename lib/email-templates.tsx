@@ -8,6 +8,7 @@ interface EmailTemplateProps {
 export const VerificationEmailTemplate = ({ name, otp }: EmailTemplateProps): React.ReactNode => (
 	<div style={{ fontFamily: 'Arial, sans-serif', maxWidth: '600px', margin: '0 auto' }}>
 		<div style={{ backgroundColor: '#1a1a1a', color: '#ffffff', padding: '30px 20px', textAlign: 'center' }}>
+			{/* eslint-disable-next-line @next/next/no-img-element */}
 			<img
 				src="https://shunyatech.in/shunyatech.png"
 				alt="ShunyaTech"
@@ -77,6 +78,7 @@ export const VerificationEmailTemplate = ({ name, otp }: EmailTemplateProps): Re
 export const PasswordResetEmailTemplate = ({ name, otp }: EmailTemplateProps): React.ReactNode => (
 	<div style={{ fontFamily: 'Arial, sans-serif', maxWidth: '600px', margin: '0 auto' }}>
 		<div style={{ backgroundColor: '#dc3545', color: '#ffffff', padding: '30px 20px', textAlign: 'center' }}>
+			{/* eslint-disable-next-line @next/next/no-img-element */}
 			<img
 				src="https://shunyatech.in/shunyatech.png"
 				alt="ShunyaTech"
@@ -146,6 +148,7 @@ export const PasswordResetEmailTemplate = ({ name, otp }: EmailTemplateProps): R
 export const WelcomeEmailTemplate = ({ name }: { name: string }): React.ReactNode => (
 	<div style={{ fontFamily: 'Arial, sans-serif', maxWidth: '600px', margin: '0 auto' }}>
 		<div style={{ backgroundColor: '#28a745', color: '#ffffff', padding: '30px 20px', textAlign: 'center' }}>
+			{/* eslint-disable-next-line @next/next/no-img-element */}
 			<img
 				src="https://shunyatech.in/shunyatech.png"
 				alt="ShunyaTech"

@@ -143,7 +143,7 @@ function SignIn() {
 							{
 								callbackUrl && callbackUrl !== "/dashboard" && (
 									<p className="text-sm text-emerald-600 dark:text-emerald-400">
-										You'll be redirected back after signin
+										You&apos;ll be redirected back after signin
 									</p>
 								)
 							}
@@ -257,7 +257,7 @@ function SignIn() {
 						transition={{ delay: 0.4, duration: 0.6 }}
 					>
 						<p className="text-sm text-slate-600 dark:text-slate-300">
-							Don't have an account?{" "}
+							Don&apos;t have an account?{" "}
 							<Link
 								href={callbackUrl ? `/signup?callbackUrl=${encodeURIComponent(callbackUrl)}` : '/signup'}
 								className="text-emerald-600 dark:text-emerald-400 underline underline-offset-4 hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors font-medium"

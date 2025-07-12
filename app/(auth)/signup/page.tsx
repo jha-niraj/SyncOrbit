@@ -1,6 +1,6 @@
 "use client"
 
-import { Suspense, useState, useEffect } from "react";
+import { Suspense, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Loader2, ArrowRight } from "lucide-react";
@@ -113,7 +113,7 @@ function SignUp() {
 							{
 								callbackUrl && (
 									<p className="text-sm text-emerald-600 dark:text-emerald-400">
-										You'll be redirected back after signup
+										You&apos;ll be redirected back after signup
 									</p>
 								)
 							}

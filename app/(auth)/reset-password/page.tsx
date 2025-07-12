@@ -107,7 +107,7 @@ function ResetPassword() {
 							{
 								callbackUrl && (
 									<p className="text-sm text-emerald-600 dark:text-emerald-400">
-										You'll be redirected back after resetting
+										You&apos;ll be redirected back after resetting
 									</p>
 								)
 							}
@@ -188,7 +188,7 @@ function ResetPassword() {
 						transition={{ delay: 0.4, duration: 0.6 }}
 					>
 						<p className="text-sm text-slate-600 dark:text-slate-300">
-							Didn't receive the code?{" "}
+							Didn&apos;t receive the code?{" "}
 							<Button
 								variant="link"
 								className="h-auto p-0 text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors font-medium"
