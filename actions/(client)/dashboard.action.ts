@@ -148,3 +148,111 @@ export async function getClientDashboardData(): Promise<DashboardData> {
 		throw error;
 	}
 }
+
+export async function getDeveloperDashboardData() {
+	try {
+		const session = await auth();
+		if (!session?.user?.id) {
+			throw new Error("Unauthorized");
+		}
+
+		// Check if user is developer or product manager
+		if (!['DEVELOPER', 'PRODUCTMANAGER'].includes(session.user.role)) {
+			throw new Error("Access denied");
+		}
+
+		const user = await prisma.user.findUnique({
+			where: { id: session.user.id },
+			select: {
+				id: true,
+				name: true,
+				email: true,
+				role: true,
+				skills: true,
+			}
+		});
+
+		if (!user) {
+			throw new Error("User not found");
+		}
+
+		// Get projects assigned to this developer
+		const projects = await prisma.project.findMany({
+			where: {
+				tasks: {
+					some: {
+						assignedDeveloperId: session.user.id
+					}
+				}
+			},
+			include: {
+				user: {
+					select: {
+						id: true,
+						name: true,
+						email: true,
+						image: true,
+					}
+				},
+				tasks: {
+					where: {
+						assignedDeveloperId: session.user.id
+					},
+					select: {
+						id: true,
+						title: true,
+						description: true,
+						status: true,
+						createdAt: true,
+						updatedAt: true,
+					}
+				},
+				_count: {
+					select: {
+						tasks: true,
+						feedbacks: true,
+					}
+				}
+			},
+			orderBy: {
+				updatedAt: 'desc'
+			}
+		});
+
+		// Get task statistics
+		const allTasks = await prisma.task.findMany({
+			where: {
+				assignedDeveloperId: session.user.id
+			},
+			select: {
+				status: true
+			}
+		});
+
+		const taskStats = {
+			total: allTasks.length,
+			completed: allTasks.filter(task => task.status === 'COMPLETED').length,
+			inProgress: allTasks.filter(task => task.status === 'IN_PROGRESS').length,
+			yetToStart: allTasks.filter(task => task.status === 'YET_TO_START').length,
+		};
+
+		// Get project statistics
+		const projectStats = {
+			total: projects.length,
+			inProgress: projects.filter(p => p.status === 'IN_PROGRESS').length,
+			completed: projects.filter(p => p.status === 'COMPLETED').length,
+			onHold: projects.filter(p => p.status === 'ON_HOLD').length,
+			cancelled: projects.filter(p => p.status === 'CANCELLED').length,
+		};
+
+		return {
+			user,
+			projects,
+			taskStats,
+			projectStats,
+		};
+	} catch (error) {
+		console.error('Error fetching developer dashboard data:', error);
+		throw error;
+	}
+}

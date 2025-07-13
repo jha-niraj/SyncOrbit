@@ -114,6 +114,7 @@ export function SettingsForm({ user }: SettingsFormProps) {
                     </div>
                 </CardContent>
             </Card>
+            
             <Card>
                 <CardHeader>
                     <CardTitle>Change Password</CardTitle>
@@ -178,21 +179,20 @@ export function SettingsForm({ user }: SettingsFormProps) {
                     </form>
                 </CardContent>
             </Card>
+            
             <Separator />
-            <Card className="border-red-200">
+            
+            <Card className="border-red-200 dark:border-red-800">
                 <CardHeader>
-                    <CardTitle className="text-red-600 flex items-center gap-2">
-                        <AlertTriangle className="h-5 w-5" />
-                        Danger Zone
-                    </CardTitle>
+                    <CardTitle className="text-red-600 dark:text-red-400">Danger Zone</CardTitle>
                     <CardDescription>
                         Irreversible and destructive actions
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <Alert className="border-red-200 bg-red-50">
-                        <AlertTriangle className="h-4 w-4 text-red-600" />
-                        <AlertDescription className="text-red-800">
+                    <Alert className="border-red-200 dark:border-red-800">
+                        <AlertTriangle className="h-4 w-4" />
+                        <AlertDescription>
                             Once you delete your account, there is no going back. Please be certain.
                         </AlertDescription>
                     </Alert>

@@ -3,11 +3,12 @@ import { NextRequest, NextResponse } from "next/server";
 import bcryptjs from "bcryptjs";
 import { RequestBody } from "@/types";
 import { generateOTP, generateOTPExpiry, sendVerificationEmail } from "@/lib/email";
+import { Role } from "@prisma/client";
 
 export async function POST(request: NextRequest) {
     try {
         const body: RequestBody = await request.json();
-        const { name, email, password } = body;
+        const { name, email, password, role } = body;
 
         if (!name || !email || !password) {
             return NextResponse.json(
@@ -32,6 +33,10 @@ export async function POST(request: NextRequest) {
                 { status: 400 }
             );
         }
+
+        // Validate role if provided
+        const validRoles = ['CLIENT', 'DEVELOPER', 'PRODUCTMANAGER', 'ADMIN'];
+        const userRole = role && validRoles.includes(role) ? role : 'CLIENT';
 
         const existingUser = await prisma.user.findUnique({
             where: {
@@ -58,7 +63,7 @@ export async function POST(request: NextRequest) {
                 hashedPassword,
                 verifyToken: otp,
                 verifyTokenExpiry: otpExpiry,
-                role: 'CLIENT'
+                role: userRole as Role
             }
         });
 

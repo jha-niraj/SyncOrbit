@@ -3,7 +3,8 @@ export interface RequestBody {
     name: string;
     email: string;
     password: string;
-    referralCode: string;
+    referralCode?: string;
+    role?: 'CLIENT' | 'DEVELOPER' | 'PRODUCTMANAGER' | 'ADMIN';
 }
 
 // Invoice Page Types:

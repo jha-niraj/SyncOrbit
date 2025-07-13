@@ -37,6 +37,8 @@ export function ProfileForm({ user }: ProfileFormProps) {
         image: user.image || ""
     })
 
+    const isDeveloper = ['DEVELOPER', 'PRODUCTMANAGER'].includes(user.role)
+
     const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0]
         if (!file) return
@@ -73,9 +75,10 @@ export function ProfileForm({ user }: ProfileFormProps) {
         setIsLoading(true)
 
         try {
-            const dataToUpdate = user.role === 'CLIENT'
-                ? { name: formData.name, bio: formData.bio, image: formData.image }
-                : formData
+            // Prepare data based on user role
+            const dataToUpdate = isDeveloper
+                ? { name: formData.name, bio: formData.bio, skills: formData.skills, image: formData.image }
+                : { name: formData.name, bio: formData.bio, image: formData.image }
 
             const result = await updateProfile(dataToUpdate)
 
@@ -171,6 +174,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
                     </div>
                 </CardContent>
             </Card>
+            
             <div className="space-y-2">
                 <Label htmlFor="name">Full Name</Label>
                 <Input
@@ -182,6 +186,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
                     required
                 />
             </div>
+            
             <div className="space-y-2">
                 <Label htmlFor="bio">Bio</Label>
                 <Textarea
@@ -189,25 +194,33 @@ export function ProfileForm({ user }: ProfileFormProps) {
                     name="bio"
                     value={formData.bio}
                     onChange={handleChange}
-                    placeholder="Tell us about yourself..."
+                    placeholder={isDeveloper ? "Tell us about your background and experience..." : "Tell us about yourself..."}
                     rows={4}
                 />
             </div>
-            {
-                user.role !== 'CLIENT' && (
-                    <div className="space-y-2">
-                        <Label htmlFor="skills">Skills</Label>
-                        <Textarea
-                            id="skills"
-                            name="skills"
-                            value={formData.skills}
-                            onChange={handleChange}
-                            placeholder="List your skills (e.g., JavaScript, React, Node.js)"
-                            rows={3}
-                        />
-                    </div>
-                )
-            }
+            
+            {isDeveloper && (
+                <div className="space-y-2">
+                    <Label htmlFor="skills">
+                        Technical Skills
+                        <span className="text-xs text-muted-foreground ml-2">
+                            (e.g., JavaScript, React, Node.js, Python, etc.)
+                        </span>
+                    </Label>
+                    <Textarea
+                        id="skills"
+                        name="skills"
+                        value={formData.skills}
+                        onChange={handleChange}
+                        placeholder="List your technical skills, programming languages, frameworks, and tools..."
+                        rows={3}
+                    />
+                    <p className="text-xs text-muted-foreground">
+                        This helps clients and project managers understand your expertise when assigning tasks.
+                    </p>
+                </div>
+            )}
+            
             <Button type="submit" disabled={isLoading || imageUploading} className="w-full">
                 {
                     isLoading ? (
