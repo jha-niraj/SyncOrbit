@@ -12,6 +12,7 @@ import { formatDistanceToNow } from "date-fns"
 import { useSession } from "next-auth/react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { useProjectStore } from "@/store/useProjectStore"
+import Image from "next/image"
 
 interface Message {
 	id: string
@@ -248,11 +249,13 @@ export function ChatSheet({ projectId, projectTitle, initialMessages = [] }: Cha
 					{message.content && message.content !== "Image" && (
 						<p className="text-sm">{message.content}</p>
 					)}
-					<img 
+					<Image
 						src={message.imageUrl} 
 						alt="Shared image" 
 						className="max-w-full h-auto rounded-lg cursor-pointer"
 						onClick={() => window.open(message.imageUrl!, '_blank')}
+						width={100}
+						height={100}
 					/>
 				</div>
 			)
@@ -429,10 +432,12 @@ export function ChatSheet({ projectId, projectTitle, initialMessages = [] }: Cha
 					<div className="space-y-4">
 						{imagePreview && (
 							<div className="flex justify-center">
-								<img 
+								<Image 
 									src={imagePreview} 
 									alt="Preview" 
 									className="max-w-full max-h-64 rounded-lg"
+									width={100}
+									height={100}
 								/>
 							</div>
 						)}
