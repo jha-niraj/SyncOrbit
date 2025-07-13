@@ -64,7 +64,7 @@ export function TaskManagementSheet({ taskId, trigger, userRole }: TaskManagemen
 
 	const loadTask = useCallback(async () => {
 		if (!taskId) return
-		
+
 		setLoading(true)
 		try {
 			const result = await getTaskWithSubTasks(taskId)
@@ -186,191 +186,204 @@ export function TaskManagementSheet({ taskId, trigger, userRole }: TaskManagemen
 			<SheetTrigger asChild>
 				{trigger}
 			</SheetTrigger>
-			<SheetContent className="w-full sm:max-w-md lg:max-w-lg xl:max-w-xl overflow-y-auto">
+			<SheetContent
+				side="right"
+				className="w-full h-full sm:w-[80vw] md:w-[55vw] sm:max-w-[80vw] p-6 overflow-y-auto"
+				style={{ maxWidth: '90vw' }}
+			>
 				<SheetHeader>
 					<SheetTitle className="text-lg font-semibold">Task Details</SheetTitle>
 					<SheetDescription>
 						Manage subtasks and track progress
 					</SheetDescription>
 				</SheetHeader>
-
-				{loading ? (
-					<div className="flex items-center justify-center py-8">
-						<Loader2 className="h-8 w-8 animate-spin text-blue-500" />
-					</div>
-				) : task ? (
-					<div className="space-y-6 mt-6">
-						{/* Task Header */}
-						<Card>
-							<CardHeader className="pb-3">
-								<div className="flex items-center justify-between">
-									<CardTitle className="text-lg">{task.title}</CardTitle>
-									<Badge className={`${getStatusColor(task.status)} border text-xs`}>
-										{getStatusIcon(task.status)}
-										<span className="ml-1">{task.status.replace('_', ' ')}</span>
-									</Badge>
-								</div>
-								{task.description && (
-									<p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
-										{task.description}
-									</p>
-								)}
-							</CardHeader>
-							<CardContent className="space-y-4">
-								{/* Assigned Developer */}
-								{task.assignedDeveloper && (
+				{
+					loading ? (
+						<div className="flex items-center justify-center py-8">
+							<Loader2 className="h-8 w-8 animate-spin text-blue-500" />
+						</div>
+					) : task ? (
+						<div className="space-y-6 mt-6">
+							<Card>
+								<CardHeader className="pb-3">
+									<div className="flex items-center justify-between">
+										<CardTitle className="text-lg">{task.title}</CardTitle>
+										<Badge className={`${getStatusColor(task.status)} border text-xs`}>
+											{getStatusIcon(task.status)}
+											<span className="ml-1">{task.status.replace('_', ' ')}</span>
+										</Badge>
+									</div>
+									{
+										task.description && (
+											<p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
+												{task.description}
+											</p>
+										)
+									}
+								</CardHeader>
+								<CardContent className="space-y-4">
+									{
+										task.assignedDeveloper && (
+											<div className="flex items-center gap-3">
+												<User className="h-4 w-4 text-gray-500" />
+												<div className="flex items-center gap-2">
+													<Avatar className="h-6 w-6">
+														<AvatarImage src={task.assignedDeveloper.image || "/placeholder.svg"} />
+														<AvatarFallback className="text-xs">
+															{task.assignedDeveloper.name?.charAt(0) || 'D'}
+														</AvatarFallback>
+													</Avatar>
+													<span className="text-sm text-gray-700 dark:text-gray-300">
+														{task.assignedDeveloper.name || task.assignedDeveloper.email}
+													</span>
+												</div>
+											</div>
+										)
+									}
 									<div className="flex items-center gap-3">
-										<User className="h-4 w-4 text-gray-500" />
-										<div className="flex items-center gap-2">
-											<Avatar className="h-6 w-6">
-												<AvatarImage src={task.assignedDeveloper.image || "/placeholder.svg"} />
-												<AvatarFallback className="text-xs">
-													{task.assignedDeveloper.name?.charAt(0) || 'D'}
-												</AvatarFallback>
-											</Avatar>
-											<span className="text-sm text-gray-700 dark:text-gray-300">
-												{task.assignedDeveloper.name || task.assignedDeveloper.email}
+										<Calendar className="h-4 w-4 text-gray-500" />
+										<span className="text-sm text-gray-600 dark:text-gray-400">
+											Created {new Date(task.createdAt).toLocaleDateString()}
+										</span>
+									</div>
+									<div className="space-y-2">
+										<div className="flex justify-between items-center">
+											<span className="text-sm font-medium">Progress</span>
+											<span className="text-sm text-gray-600 dark:text-gray-400">
+												{completedSubTasks} of {totalSubTasks} subtasks
+											</span>
+										</div>
+										<Progress value={progressPercentage} className="h-2" />
+										<div className="text-center">
+											<span className="text-2xl font-bold text-blue-600">
+												{Math.round(progressPercentage)}%
 											</span>
 										</div>
 									</div>
-								)}
-
-								{/* Created Date */}
-								<div className="flex items-center gap-3">
-									<Calendar className="h-4 w-4 text-gray-500" />
-									<span className="text-sm text-gray-600 dark:text-gray-400">
-										Created {new Date(task.createdAt).toLocaleDateString()}
-									</span>
-								</div>
-
-								{/* Progress */}
-								<div className="space-y-2">
-									<div className="flex justify-between items-center">
-										<span className="text-sm font-medium">Progress</span>
-										<span className="text-sm text-gray-600 dark:text-gray-400">
-											{completedSubTasks} of {totalSubTasks} subtasks
-										</span>
-									</div>
-									<Progress value={progressPercentage} className="h-2" />
-									<div className="text-center">
-										<span className="text-2xl font-bold text-blue-600">
-											{Math.round(progressPercentage)}%
-										</span>
-									</div>
-								</div>
-							</CardContent>
-						</Card>
-
-						{/* Add New Subtask (Developer Only) */}
-						{isDeveloper && (
-							<Card>
-								<CardHeader>
-									<CardTitle className="text-base">Add New Subtask</CardTitle>
-								</CardHeader>
-								<CardContent className="space-y-4">
-									<div className="space-y-2">
-										<Label htmlFor="subtask-title">Task Title</Label>
-										<Input
-											id="subtask-title"
-											placeholder="Enter subtask title..."
-											value={newSubTask.title}
-											onChange={(e) => setNewSubTask({ ...newSubTask, title: e.target.value })}
-										/>
-									</div>
-									<div className="space-y-2">
-										<Label htmlFor="subtask-description">Description (Optional)</Label>
-										<Textarea
-											id="subtask-description"
-											placeholder="Enter subtask description..."
-											value={newSubTask.description}
-											onChange={(e) => setNewSubTask({ ...newSubTask, description: e.target.value })}
-											rows={3}
-										/>
-									</div>
-									<Button 
-										onClick={handleCreateSubTask}
-										disabled={creatingSubTask || !newSubTask.title.trim()}
-										className="w-full"
-									>
-										{creatingSubTask ? (
-											<>
-												<Loader2 className="mr-2 h-4 w-4 animate-spin" />
-												Creating...
-											</>
-										) : (
-											<>
-												<Plus className="mr-2 h-4 w-4" />
-												Add Subtask
-											</>
-										)}
-									</Button>
 								</CardContent>
 							</Card>
-						)}
+							{
+								isDeveloper && (
+									<Card>
+										<CardHeader>
+											<CardTitle className="text-base">Add New Subtask</CardTitle>
+										</CardHeader>
+										<CardContent className="space-y-4">
+											<div className="space-y-2">
+												<Label htmlFor="subtask-title">Task Title</Label>
+												<Input
+													id="subtask-title"
+													placeholder="Enter subtask title..."
+													value={newSubTask.title}
+													onChange={(e) => setNewSubTask({ ...newSubTask, title: e.target.value })}
+												/>
+											</div>
+											<div className="space-y-2">
+												<Label htmlFor="subtask-description">Description (Optional)</Label>
+												<Textarea
+													id="subtask-description"
+													placeholder="Enter subtask description..."
+													value={newSubTask.description}
+													onChange={(e) => setNewSubTask({ ...newSubTask, description: e.target.value })}
+													rows={3}
+												/>
+											</div>
+											<Button
+												onClick={handleCreateSubTask}
+												disabled={creatingSubTask || !newSubTask.title.trim()}
+												className="w-full"
+											>
+												{
+													creatingSubTask ? (
+														<>
+															<Loader2 className="mr-2 h-4 w-4 animate-spin" />
+															Creating...
+														</>
+													) : (
+														<>
+															<Plus className="mr-2 h-4 w-4" />
+															Add Subtask
+														</>
+													)
+												}
+											</Button>
+										</CardContent>
+									</Card>
+								)
+							}
 
-						<Separator />
+							<Separator />
 
-						{/* Subtasks List */}
-						<div className="space-y-4">
-							<h3 className="text-lg font-semibold">Subtasks ({totalSubTasks})</h3>
-							{task.subtasks.length > 0 ? (
-								<div className="space-y-3">
-									{task.subtasks.map((subTask) => (
-										<Card key={subTask.id} className={`${subTask.completed ? 'bg-gray-50 dark:bg-gray-900/50' : ''}`}>
-											<CardContent className="p-4">
-												<div className="flex items-start gap-3">
-													<Checkbox
-														checked={subTask.completed}
-														onCheckedChange={(checked) => 
-															handleToggleSubTask(subTask.id, checked as boolean)
-														}
-														disabled={!isDeveloper}
-														className="mt-1"
-													/>
-													<div className="flex-1 min-w-0">
-														<h4 className={`font-medium ${subTask.completed ? 'line-through text-gray-500' : ''}`}>
-															{subTask.title}
-														</h4>
-														{subTask.description && (
-															<p className={`text-sm mt-1 ${subTask.completed ? 'line-through text-gray-400' : 'text-gray-600 dark:text-gray-400'}`}>
-																{subTask.description}
-															</p>
-														)}
-														<p className="text-xs text-gray-500 mt-2">
-															Created {new Date(subTask.createdAt).toLocaleDateString()}
-														</p>
-													</div>
-													{isDeveloper && (
-														<Button
-															variant="ghost"
-															size="sm"
-															onClick={() => handleDeleteSubTask(subTask.id)}
-															className="text-red-500 hover:text-red-700 hover:bg-red-50"
-														>
-															<Trash2 className="h-4 w-4" />
-														</Button>
-													)}
-												</div>
-											</CardContent>
-										</Card>
-									))}
-								</div>
-							) : (
-								<div className="text-center py-8 text-gray-500 dark:text-gray-400">
-									<AlertCircle className="h-12 w-12 mx-auto mb-4 text-gray-300" />
-									<p>No subtasks yet</p>
-									{isDeveloper && (
-										<p className="text-sm mt-2">Add subtasks to track progress on this task</p>
+							<div className="space-y-4">
+								<h3 className="text-lg font-semibold">Subtasks ({totalSubTasks})</h3>
+								{
+									task.subtasks.length > 0 ? (
+										<div className="space-y-3">
+											{
+												task.subtasks.map((subTask) => (
+													<Card key={subTask.id} className={`${subTask.completed ? 'bg-gray-50 dark:bg-gray-900/50' : ''}`}>
+														<CardContent className="p-4">
+															<div className="flex items-start gap-3">
+																<Checkbox
+																	checked={subTask.completed}
+																	onCheckedChange={(checked) =>
+																		handleToggleSubTask(subTask.id, checked as boolean)
+																	}
+																	disabled={!isDeveloper}
+																	className="mt-1"
+																/>
+																<div className="flex-1 min-w-0">
+																	<h4 className={`font-medium ${subTask.completed ? 'line-through text-gray-500' : ''}`}>
+																		{subTask.title}
+																	</h4>
+																	{
+																		subTask.description && (
+																			<p className={`text-sm mt-1 ${subTask.completed ? 'line-through text-gray-400' : 'text-gray-600 dark:text-gray-400'}`}>
+																				{subTask.description}
+																			</p>
+																		)
+																	}
+																	<p className="text-xs text-gray-500 mt-2">
+																		Created {new Date(subTask.createdAt).toLocaleDateString()}
+																	</p>
+																</div>
+																{
+																	isDeveloper && (
+																		<Button
+																			variant="ghost"
+																			size="sm"
+																			onClick={() => handleDeleteSubTask(subTask.id)}
+																			className="text-red-500 hover:text-red-700 hover:bg-red-50"
+																		>
+																			<Trash2 className="h-4 w-4" />
+																		</Button>
+																	)
+																}
+															</div>
+														</CardContent>
+													</Card>
+												))
+											}
+										</div>
+									) : (
+										<div className="text-center py-8 text-gray-500 dark:text-gray-400">
+											<AlertCircle className="h-12 w-12 mx-auto mb-4 text-gray-300" />
+											<p>No subtasks yet</p>
+											{
+												isDeveloper && (
+													<p className="text-sm mt-2">Add subtasks to track progress on this task</p>
+												)
+											}
+										</div>
 									)}
-								</div>
-							)}
+							</div>
 						</div>
-					</div>
-				) : (
-					<div className="text-center py-8 text-gray-500 dark:text-gray-400">
-						<p>Failed to load task details</p>
-					</div>
-				)}
+					) : (
+						<div className="text-center py-8 text-gray-500 dark:text-gray-400">
+							<p>Failed to load task details</p>
+						</div>
+					)
+				}
 			</SheetContent>
 		</Sheet>
 	)

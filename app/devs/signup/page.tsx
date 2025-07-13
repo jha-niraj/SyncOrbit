@@ -1,29 +1,88 @@
 "use client"
 
-import { Suspense, useState } from "react";
+import { Suspense, useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Loader2, ArrowRight } from "lucide-react";
+import { Loader2, ArrowRight, Building2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import axios from "axios";
 import { motion } from "framer-motion";
 import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react"
 import { toast } from "sonner";
+import { getCompanyByReferralCode } from "@/actions/(productmanager)/pm.action";
+
+interface Company {
+	id: string;
+	name: string;
+	shortName: string;
+}
 
 function DeveloperSignUp() {
 	const [name, setName] = useState("");
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
+	const [referralCode, setReferralCode] = useState("");
 	const [role, setRole] = useState<'DEVELOPER' | 'PRODUCTMANAGER'>('DEVELOPER');
+	const [companyName, setCompanyName] = useState("");
+	const [companyShortName, setCompanyShortName] = useState("");
+	const [company, setCompany] = useState<Company | null>(null);
+	const [validatingReferral, setValidatingReferral] = useState(false);
+	const [referralValidated, setReferralValidated] = useState(false);
 	const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 	const [googleSignUp, setGoogleSignUp] = useState<boolean>(false);
 	const router = useRouter();
 	const searchParams = useSearchParams();
 	const callbackUrl = searchParams.get("callbackUrl");
+	const urlReferralCode = searchParams.get("ref");
+
+	// Auto-populate referral code from URL
+	useEffect(() => {
+		if (urlReferralCode) {
+			setReferralCode(urlReferralCode);
+			validateReferralCode(urlReferralCode);
+		}
+	}, [urlReferralCode]);
+
+	const validateReferralCode = async (code: string) => {
+		if (!code.trim()) {
+			setCompany(null);
+			setReferralValidated(false);
+			return;
+		}
+
+		setValidatingReferral(true);
+		try {
+			const result = await getCompanyByReferralCode(code);
+			if (result.success && result.company) {
+				setCompany(result.company);
+				setReferralValidated(true);
+				toast.success(`Referral code validated for ${result.company.name}`);
+			} else {
+				setCompany(null);
+				setReferralValidated(false);
+				toast.error(result.error || "Invalid referral code");
+			}
+		} catch (error) {
+			console.error("Referral validation error:", error);
+			setCompany(null);
+			setReferralValidated(false);
+			toast.error("Failed to validate referral code");
+		} finally {
+			setValidatingReferral(false);
+		}
+	};
+
+	const handleReferralCodeChange = (value: string) => {
+		setReferralCode(value);
+		// Debounce validation
+		setTimeout(() => validateReferralCode(value), 500);
+	};
 
 	const handleGoogleSignUp = async () => {
 		try {
@@ -43,213 +102,326 @@ function DeveloperSignUp() {
 		setIsSubmitting(true);
 
 		try {
-			const response = await axios.post("/api/register", {
+			const requestData: {
+				name: string;
+				email: string;
+				password: string;
+				role: 'DEVELOPER' | 'PRODUCTMANAGER';
+				referralCode?: string;
+				companyId?: string;
+				companyName?: string;
+				companyShortName?: string;
+			} = {
 				name,
 				email,
 				password,
 				role
-			});
+			};
 
-			if (response.status === 200) {
-				const signupData = {
-					name,
-					email,
-					password
-				};
-				sessionStorage.setItem('signupData', JSON.stringify(signupData));
-
-				toast.success("Developer account created successfully!", {
-					description: "Please check your email for verification OTP."
-				});
-
-				const verifyUrl = `/verifyemail?email=${encodeURIComponent(email)}${callbackUrl ? `&callbackUrl=${encodeURIComponent(callbackUrl)}` : ''
-					}`;
-				router.push(verifyUrl);
+			// Add referral code if provided and validated
+			if (referralCode && referralValidated && company) {
+				requestData.referralCode = referralCode;
+				requestData.companyId = company.id;
 			}
-		} catch (error) {
-			if (axios.isAxiosError(error) && error.response) {
-				const errorMessage = error.response.data.message || "An error occurred during registration";
-				toast.error(errorMessage);
-			} else if (axios.isAxiosError(error) && error.request) {
-				toast.error("No response from server. Please try again.");
+
+			// Add company info for PM registration
+			if (role === 'PRODUCTMANAGER') {
+				if (!companyName.trim()) {
+					toast.error("Company name is required for Product Manager registration");
+					setIsSubmitting(false);
+					return;
+				}
+				if (!companyShortName.trim()) {
+					toast.error("Company short name is required for Product Manager registration");
+					setIsSubmitting(false);
+					return;
+				}
+				requestData.companyName = companyName;
+				requestData.companyShortName = companyShortName;
+			}
+
+			const response = await axios.post("/api/register", requestData);
+
+			if (response.data.success) {
+				toast.success("Registration successful! Please check your email for verification.");
+				router.push(`/signin?message=Registration successful. Please verify your email.`);
 			} else {
-				toast.error("Error setting up the request. Please try again.");
+				toast.error(response.data.error || "Registration failed. Please try again.");
 			}
-			console.log("Registration error:", error);
+		} catch (error: unknown) {
+			console.error("Registration error:", error);
+			if (axios.isAxiosError(error) && error.response?.data?.error) {
+				toast.error(error.response.data.error);
+			} else {
+				toast.error("Registration failed. Please try again.");
+			}
 		} finally {
 			setIsSubmitting(false);
 		}
 	};
 
 	return (
-		<div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50 dark:from-slate-950 dark:via-blue-950/10 dark:to-indigo-950/10">
-			<div className="flex-1 flex flex-col items-center justify-center p-6">
-				<motion.div
-					className="mx-auto flex w-full flex-col justify-center space-y-8 sm:w-[420px]"
-					initial={{ opacity: 0, y: 20 }}
-					animate={{ opacity: 1, y: 0 }}
-					transition={{ duration: 0.6 }}
-				>
-					<div className="flex flex-col items-center space-y-6">
-						<motion.div
-							initial={{ opacity: 0, scale: 0.8 }}
-							animate={{ opacity: 1, scale: 1 }}
-							transition={{ duration: 0.5 }}
-							className="rounded-2xl bg-black"
-						>
+		<div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-cyan-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+			<div className="container mx-auto px-4 py-8">
+				<div className="max-w-md mx-auto">
+					<motion.div
+						initial={{ opacity: 0, y: 20 }}
+						animate={{ opacity: 1, y: 0 }}
+						transition={{ duration: 0.5 }}
+						className="text-center mb-8"
+					>
+						<Link href="/" className="inline-block mb-6">
 							<Image
-								src="/shunyatech.png"
-								alt="ShunyaTech"
-								width={80}
-								height={80}
-								className="rounded-2xl"
+								src="/logo.png"
+								alt="ShunyaTech Logo"
+								width={60}
+								height={60}
+								className="mx-auto"
 							/>
-						</motion.div>
-						<div className="text-center space-y-2">
-							<h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
-								Join as Developer
-							</h1>
-							<p className="text-gray-600 dark:text-gray-400">
-								Create your developer account to start working on projects
-							</p>
-						</div>
-					</div>
-					<form onSubmit={handleSignUp} className="space-y-6">
-						<div className="space-y-4">
-							<div className="space-y-2">
-								<Label htmlFor="name" className="text-sm font-medium text-gray-900 dark:text-gray-100">
-									Full Name
-								</Label>
-								<Input
-									id="name"
-									type="text"
-									placeholder="Enter your full name"
-									value={name}
-									onChange={(e) => setName(e.target.value)}
-									required
-									className="h-12"
-								/>
-							</div>
-							<div className="space-y-2">
-								<Label htmlFor="email" className="text-sm font-medium text-gray-900 dark:text-gray-100">
-									Email Address
-								</Label>
-								<Input
-									id="email"
-									type="email"
-									placeholder="Enter your email"
-									value={email}
-									onChange={(e) => setEmail(e.target.value)}
-									required
-									className="h-12"
-								/>
-							</div>
-							<div className="space-y-2">
-								<Label htmlFor="password" className="text-sm font-medium text-gray-900 dark:text-gray-100">
-									Password
-								</Label>
-								<Input
-									id="password"
-									type="password"
-									placeholder="Enter your password"
-									value={password}
-									onChange={(e) => setPassword(e.target.value)}
-									required
-									className="h-12"
-								/>
-							</div>
-							<div className="space-y-2">
-								<Label htmlFor="role" className="text-sm font-medium text-gray-900 dark:text-gray-100">
-									Your Role
-								</Label>
-								<Select value={role} onValueChange={(value: 'DEVELOPER' | 'PRODUCTMANAGER') => setRole(value)}>
-									<SelectTrigger className="h-12">
-										<SelectValue placeholder="Select your role" />
-									</SelectTrigger>
-									<SelectContent>
-										<SelectItem value="DEVELOPER">Developer</SelectItem>
-										<SelectItem value="PRODUCTMANAGER">Product Manager</SelectItem>
-									</SelectContent>
-								</Select>
-							</div>
-						</div>
-						<Button
-							type="submit"
-							className="w-full h-12 bg-black hover:bg-gray-800 text-white font-medium transition-colors"
-							disabled={isSubmitting}
-						>
-							{
-								isSubmitting ? (
-									<>
-										<Loader2 className="mr-2 h-4 w-4 animate-spin" />
-										Creating Account...
-									</>
-								) : (
-									<>
-										Create Developer Account
-										<ArrowRight className="ml-2 h-4 w-4" />
-									</>
-								)
-							}
-						</Button>
-						<div className="relative">
-							<div className="absolute inset-0 flex items-center">
-								<div className="w-full border-t border-gray-300 dark:border-gray-600" />
-							</div>
-							<div className="relative flex justify-center text-sm">
-								<span className="px-2 bg-white dark:bg-gray-950 text-gray-500 dark:text-gray-400">
-									Or continue with
-								</span>
-							</div>
-						</div>
-						<Button
-							type="button"
-							variant="outline"
-							className="w-full h-12 border-gray-300 dark:border-gray-600"
-							onClick={handleGoogleSignUp}
-							disabled={googleSignUp}
-						>
-							{
-								googleSignUp ? (
-									<>
-										<Loader2 className="mr-2 h-4 w-4 animate-spin" />
-										Connecting...
-									</>
-								) : (
-									<>
-										<svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
-											<path
-												fill="currentColor"
-												d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-											/>
-											<path
-												fill="currentColor"
-												d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-											/>
-											<path
-												fill="currentColor"
-												d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
-											/>
-											<path
-												fill="currentColor"
-												d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-											/>
-										</svg>
-										Continue with Google
-									</>
-								)
-							}
-						</Button>
-					</form>
-					<div className="text-center">
-						<p className="text-sm text-gray-600 dark:text-gray-400">
-							Already have an account?{" "}
-							<Link href="/devs/signin" className="font-medium text-black dark:text-white hover:underline">
-								Sign in here
-							</Link>
+						</Link>
+						<h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+							Join ShunyaTech
+						</h1>
+						<p className="text-gray-600 dark:text-gray-300">
+							{role === 'PRODUCTMANAGER' ? 'Register your company' : 'Join as a developer'}
 						</p>
-					</div>
-				</motion.div>
+					</motion.div>
+
+					{/* Company Display for Referral Code */}
+					{company && referralValidated && (
+						<motion.div
+							initial={{ opacity: 0, scale: 0.95 }}
+							animate={{ opacity: 1, scale: 1 }}
+							className="mb-6"
+						>
+							<Card className="border-green-200 bg-green-50 dark:bg-green-900/20">
+								<CardContent className="p-4">
+									<div className="flex items-center gap-3">
+										<Building2 className="h-5 w-5 text-green-600" />
+										<div>
+											<p className="font-semibold text-green-800 dark:text-green-200">
+												{company.name}
+											</p>
+											<p className="text-sm text-green-600 dark:text-green-300">
+												Referral code validated
+											</p>
+										</div>
+										<Badge className="ml-auto bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100">
+											Verified
+										</Badge>
+									</div>
+								</CardContent>
+							</Card>
+						</motion.div>
+					)}
+
+					<motion.div
+						initial={{ opacity: 0, y: 20 }}
+						animate={{ opacity: 1, y: 0 }}
+						transition={{ duration: 0.5, delay: 0.1 }}
+					>
+						<Card className="shadow-xl border-0 bg-white/80 backdrop-blur-sm dark:bg-gray-800/80">
+							<CardHeader>
+								<CardTitle className="text-2xl font-bold text-center text-gray-900 dark:text-white">
+									Create Account
+								</CardTitle>
+								<CardDescription className="text-center text-gray-600 dark:text-gray-300">
+									Fill in your details to get started
+								</CardDescription>
+							</CardHeader>
+							<CardContent>
+								<form onSubmit={handleSignUp} className="space-y-6">
+									<div className="space-y-2">
+										<Label htmlFor="role" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+											Role
+										</Label>
+										<Select value={role} onValueChange={(value: 'DEVELOPER' | 'PRODUCTMANAGER') => setRole(value)}>
+											<SelectTrigger className="w-full">
+												<SelectValue placeholder="Select your role" />
+											</SelectTrigger>
+											<SelectContent>
+												<SelectItem value="DEVELOPER">Developer</SelectItem>
+												<SelectItem value="PRODUCTMANAGER">Product Manager</SelectItem>
+											</SelectContent>
+										</Select>
+									</div>
+
+									{/* Referral Code Field (only for developers) */}
+									{role === 'DEVELOPER' && (
+										<div className="space-y-2">
+											<Label htmlFor="referralCode" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+												Referral Code (Optional)
+											</Label>
+											<div className="relative">
+												<Input
+													id="referralCode"
+													type="text"
+													value={referralCode}
+													onChange={(e) => handleReferralCodeChange(e.target.value)}
+													placeholder="Enter referral code..."
+													className="pr-10"
+												/>
+												{validatingReferral && (
+													<div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+														<Loader2 className="h-4 w-4 animate-spin text-blue-500" />
+													</div>
+												)}
+											</div>
+											{referralCode && !validatingReferral && (
+												<p className={`text-sm ${referralValidated ? 'text-green-600' : 'text-red-600'}`}>
+													{referralValidated ? 'Valid referral code' : 'Invalid referral code'}
+												</p>
+											)}
+										</div>
+									)}
+
+									{/* Company Fields (only for PMs) */}
+									{role === 'PRODUCTMANAGER' && (
+										<>
+											<div className="space-y-2">
+												<Label htmlFor="companyName" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+													Company Name *
+												</Label>
+												<Input
+													id="companyName"
+													type="text"
+													value={companyName}
+													onChange={(e) => setCompanyName(e.target.value)}
+													placeholder="Enter company name..."
+													required
+												/>
+											</div>
+											<div className="space-y-2">
+												<Label htmlFor="companyShortName" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+													Company Short Name *
+												</Label>
+												<Input
+													id="companyShortName"
+													type="text"
+													value={companyShortName}
+													onChange={(e) => setCompanyShortName(e.target.value)}
+													placeholder="e.g., shunyatech"
+													required
+													pattern="[a-zA-Z0-9]+"
+													title="Only alphanumeric characters allowed"
+												/>
+												<p className="text-xs text-gray-500">
+													Used for generating referral codes (alphanumeric only)
+												</p>
+											</div>
+										</>
+									)}
+
+									<div className="space-y-2">
+										<Label htmlFor="name" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+											Full Name
+										</Label>
+										<Input
+											id="name"
+											type="text"
+											value={name}
+											onChange={(e) => setName(e.target.value)}
+											placeholder="Enter your full name"
+											required
+										/>
+									</div>
+
+									<div className="space-y-2">
+										<Label htmlFor="email" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+											Email Address
+										</Label>
+										<Input
+											id="email"
+											type="email"
+											value={email}
+											onChange={(e) => setEmail(e.target.value)}
+											placeholder="Enter your email"
+											required
+										/>
+									</div>
+
+									<div className="space-y-2">
+										<Label htmlFor="password" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+											Password
+										</Label>
+										<Input
+											id="password"
+											type="password"
+											value={password}
+											onChange={(e) => setPassword(e.target.value)}
+											placeholder="Create a password"
+											required
+										/>
+									</div>
+
+									<Button
+										type="submit"
+										className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 transform hover:scale-105 shadow-lg"
+										disabled={isSubmitting}
+									>
+										{isSubmitting ? (
+											<>
+												<Loader2 className="mr-2 h-4 w-4 animate-spin" />
+												Creating Account...
+											</>
+										) : (
+											<>
+												Create Account
+												<ArrowRight className="ml-2 h-4 w-4" />
+											</>
+										)}
+									</Button>
+
+									<div className="relative">
+										<div className="absolute inset-0 flex items-center">
+											<span className="w-full border-t border-gray-300 dark:border-gray-600" />
+										</div>
+										<div className="relative flex justify-center text-xs uppercase">
+											<span className="bg-white dark:bg-gray-800 px-2 text-gray-500 dark:text-gray-400">
+												Or continue with
+											</span>
+										</div>
+									</div>
+
+									<Button
+										type="button"
+										variant="outline"
+										onClick={handleGoogleSignUp}
+										className="w-full border-2 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 font-semibold py-3 px-4 rounded-lg transition-all duration-200"
+										disabled={googleSignUp}
+									>
+										{googleSignUp ? (
+											<>
+												<Loader2 className="mr-2 h-4 w-4 animate-spin" />
+												Signing up...
+											</>
+										) : (
+											<>
+												<Image
+													src="/google-logo.png"
+													alt="Google"
+													width={20}
+													height={20}
+													className="mr-2"
+												/>
+												Sign up with Google
+											</>
+										)}
+									</Button>
+								</form>
+
+								<div className="mt-6 text-center">
+									<p className="text-sm text-gray-600 dark:text-gray-400">
+										Already have an account?{' '}
+										<Link href="/signin" className="font-semibold text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300">
+											Sign in
+										</Link>
+									</p>
+								</div>
+							</CardContent>
+						</Card>
+					</motion.div>
+				</div>
 			</div>
 		</div>
 	);
@@ -257,7 +429,7 @@ function DeveloperSignUp() {
 
 export default function DeveloperSignUpPage() {
 	return (
-		<Suspense fallback={<div>Loading...</div>}>
+		<Suspense fallback={<div className="flex items-center justify-center min-h-screen"><Loader2 className="h-8 w-8 animate-spin" /></div>}>
 			<DeveloperSignUp />
 		</Suspense>
 	);

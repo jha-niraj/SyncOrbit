@@ -1,5 +1,6 @@
 import { getClientDashboardData, getDeveloperDashboardData } from "@/actions/(client)/dashboard.action";
 import { getAdminDashboardData } from "@/actions/(admin)/dashboard.action";
+import { getPMDashboardData } from "@/actions/(productmanager)/pm.action";
 import { auth } from "@/auth";
 import { DashboardStats } from "./_components/DashboardStats";
 import { ProjectCard } from "./_components/ProjectCard";
@@ -11,6 +12,7 @@ import { Status } from "@prisma/client";
 import { MessageCircle, Calendar, ArrowRight, Code, Users, BarChart3 } from "lucide-react";
 import Link from "next/link";
 import { DeveloperDashboard } from "./_components/developerdashboard";
+import { PMDashboard } from "./_components/pmdashboard";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export default async function DashboardPage() {
@@ -35,7 +37,16 @@ export default async function DashboardPage() {
 		return <AdminDashboardView data={data} />;
 	}
 
-	if (userRole === 'DEVELOPER' || userRole === 'PRODUCTMANAGER') {
+	if (userRole === 'PRODUCTMANAGER') {
+		const result = await getPMDashboardData();
+		if (result.success && result.data) {
+			return <PMDashboard data={result.data} />;
+		} else {
+			return <PMSetupView />;
+		}
+	}
+
+	if (userRole === 'DEVELOPER') {
 		const data = await getDeveloperDashboardData();
 		return <DeveloperDashboardView data={data} userRole={userRole} />;
 	}
@@ -43,6 +54,41 @@ export default async function DashboardPage() {
 	// Default to client dashboard
 	const data = await getClientDashboardData();
 	return <ClientDashboardView data={data} />;
+}
+
+function PMSetupView() {
+	return (
+		<div className="min-h-screen bg-gradient-to-bl dark:from-black dark:via-gray-900 dark:to-black flex items-center justify-center">
+			<div className="max-w-2xl mx-auto p-8 text-center">
+				<Card className="bg-white dark:bg-gray-800 shadow-xl">
+					<CardHeader className="pb-6">
+						<div className="mx-auto mb-4 w-16 h-16 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
+							<BarChart3 className="w-8 h-8 text-blue-600 dark:text-blue-400" />
+						</div>
+						<CardTitle className="text-2xl font-bold text-gray-900 dark:text-white">
+							Welcome, Product Manager!
+						</CardTitle>
+					</CardHeader>
+					<CardContent className="space-y-6">
+						<div className="space-y-4">
+							<p className="text-gray-600 dark:text-gray-400 leading-relaxed">
+								Your company profile is being set up. Please complete your profile setup to access the full dashboard.
+							</p>
+						</div>
+						<div className="flex flex-col sm:flex-row gap-4 justify-center">
+							<Link href="/profile">
+								<Button size="lg" className="w-full sm:w-auto">
+									<Users className="mr-2 h-5 w-5" />
+									Complete Profile Setup
+									<ArrowRight className="ml-2 h-5 w-5" />
+								</Button>
+							</Link>
+						</div>
+					</CardContent>
+				</Card>
+			</div>
+		</div>
+	);
 }
 
 function ClientDashboardView({ data }: { data: any }) {

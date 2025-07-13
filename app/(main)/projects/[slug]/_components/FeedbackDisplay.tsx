@@ -1,17 +1,17 @@
 "use client"
 
 import { useState } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { MessageSquare, Calendar, CheckCircle, Clock, XCircle, AlertCircle } from "lucide-react"
-import { formatDistanceToNow } from "date-fns"
+import { CheckCircle, Clock, AlertCircle, MessageSquare, X, Calendar } from "lucide-react"
 import { updateFeedbackStatus } from "@/actions/(client)/project.action"
-import { useProjectStore } from "@/store/useProjectStore"
 import { toast } from "sonner"
 import { useSession } from "next-auth/react"
+import { useProjectStore } from "@/store/useProjectStore"
+import { formatDistanceToNow } from "date-fns"
 import { FeedbackStatus } from "@prisma/client"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+
 
 interface Feedback {
 	id: string
@@ -82,7 +82,7 @@ export function FeedbackDisplay({ feedbacks }: FeedbackDisplayProps) {
 			case FeedbackStatus.COMPLETED:
 				return <CheckCircle className="h-4 w-4" />
 			case FeedbackStatus.CANCELLED:
-				return <XCircle className="h-4 w-4" />
+				return <X className="h-4 w-4" />
 			default:
 				return <Clock className="h-4 w-4" />
 		}

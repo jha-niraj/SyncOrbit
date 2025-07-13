@@ -178,11 +178,10 @@ export default function ProjectPage({ params }: ProjectPageProps) {
 					<div className="p-4 border rounded-lg hover:bg-muted/50 transition-colors cursor-pointer">
 						<div className="flex items-center justify-between mb-3">
 							<div className="flex items-center gap-2">
-								<div className={`w-3 h-3 rounded-full ${
-									task.status === TaskStatus.COMPLETED ? "bg-green-500" :
-									task.status === TaskStatus.IN_PROGRESS ? "bg-blue-500" :
-									"bg-gray-400"
-								}`} />
+								<div className={`w-3 h-3 rounded-full ${task.status === TaskStatus.COMPLETED ? "bg-green-500" :
+										task.status === TaskStatus.IN_PROGRESS ? "bg-blue-500" :
+											"bg-gray-400"
+									}`} />
 								<h4 className="font-medium text-foreground">{task.title}</h4>
 							</div>
 							{task.assignedDeveloper && (
@@ -194,32 +193,38 @@ export default function ProjectPage({ params }: ProjectPageProps) {
 								</Avatar>
 							)}
 						</div>
-						
-						{task.description && (
-							<p className="text-sm text-muted-foreground mb-3">{task.description}</p>
-						)}
-						
-						{subtaskCount > 0 && (
-							<div className="space-y-2">
-								<div className="flex justify-between items-center">
-									<span className="text-xs text-muted-foreground">
-										{completedSubtasks} of {subtaskCount} subtasks
-									</span>
-									<span className="text-xs font-medium">{progress}%</span>
+
+						{
+							task.description && (
+								<p className="text-sm text-muted-foreground mb-3">{task.description}</p>
+							)
+						}
+
+						{
+							subtaskCount > 0 && (
+								<div className="space-y-2">
+									<div className="flex justify-between items-center">
+										<span className="text-xs text-muted-foreground">
+											{completedSubtasks} of {subtaskCount} subtasks
+										</span>
+										<span className="text-xs font-medium">{progress}%</span>
+									</div>
+									<Progress value={progress} className="h-1" />
 								</div>
-								<Progress value={progress} className="h-1" />
-							</div>
-						)}
-						
+							)
+						}
+
 						<div className="flex items-center justify-between mt-3">
 							<Badge className={`${getTaskStatusColor(task.status)} border text-xs`}>
 								{task.status.replace('_', ' ')}
 							</Badge>
-							{task.assignedDeveloper && (
-								<span className="text-xs text-muted-foreground">
-									{task.assignedDeveloper.name}
-								</span>
-							)}
+							{
+								task.assignedDeveloper && (
+									<span className="text-xs text-muted-foreground">
+										{task.assignedDeveloper.name}
+									</span>
+								)
+							}
 						</div>
 					</div>
 				}
@@ -234,37 +239,42 @@ export default function ProjectPage({ params }: ProjectPageProps) {
 					{icon}
 					{title} ({tasks.length})
 				</h3>
-				{isDeveloper && status !== TaskStatus.COMPLETED && (
-					<div className="flex gap-2">
-						{tasks.map((task: any) => (
-							<Button
-								key={task.id}
-								variant="ghost"
-								size="sm"
-								onClick={(e) => {
-									e.preventDefault()
-									const nextStatus = status === TaskStatus.YET_TO_START ? TaskStatus.IN_PROGRESS : TaskStatus.COMPLETED
-									handleTaskStatusUpdate(task.id, nextStatus)
-								}}
-								className="text-xs"
-							>
-								Move to {status === TaskStatus.YET_TO_START ? 'Working' : 'Completed'}
-							</Button>
-						)).slice(0, 1)}
-					</div>
-				)}
+				{
+					isDeveloper && status !== TaskStatus.COMPLETED && (
+						<div className="flex gap-2">
+							{
+								tasks.map((task: any) => (
+									<Button
+										key={task.id}
+										variant="ghost"
+										size="sm"
+										onClick={(e) => {
+											e.preventDefault()
+											const nextStatus = status === TaskStatus.YET_TO_START ? TaskStatus.IN_PROGRESS : TaskStatus.COMPLETED
+											handleTaskStatusUpdate(task.id, nextStatus)
+										}}
+										className="text-xs"
+									>
+										Move to {status === TaskStatus.YET_TO_START ? 'Working' : 'Completed'}
+									</Button>
+								)).slice(0, 1)}
+						</div>
+					)
+				}
 			</div>
 			<div className="space-y-3 min-h-32">
-				{tasks.length > 0 ? (
-					tasks.map(renderTaskCard)
-				) : (
-					<div className="text-center py-8 text-muted-foreground">
-						<div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-3">
-							{icon}
+				{
+					tasks.length > 0 ? (
+						tasks.map(renderTaskCard)
+					) : (
+						<div className="text-center py-8 text-muted-foreground">
+							<div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-3">
+								{icon}
+							</div>
+							<p className="text-sm">No tasks in {title.toLowerCase()}</p>
 						</div>
-						<p className="text-sm">No tasks in {title.toLowerCase()}</p>
-					</div>
-				)}
+					)
+				}
 			</div>
 		</div>
 	)
@@ -456,10 +466,8 @@ export default function ProjectPage({ params }: ProjectPageProps) {
 						</div>
 					</div>
 				</div>
-				
 				<div className="w-full px-4 sm:px-6 lg:px-8 py-12">
 					<div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-						{/* Kanban Task Board */}
 						<div className="lg:col-span-3">
 							<Card className="mb-8">
 								<CardHeader>
@@ -473,18 +481,20 @@ export default function ProjectPage({ params }: ProjectPageProps) {
 												Organize and track tasks across different stages
 											</CardDescription>
 										</div>
-										{isDeveloper && (
-											<CreateTaskSheet
-												projectId={project.id}
-												onTaskCreated={handleTaskCreated}
-												trigger={
-													<Button>
-														<Plus className="h-4 w-4 mr-2" />
-														Add Task
-													</Button>
-												}
-											/>
-										)}
+										{
+											isDeveloper && (
+												<CreateTaskSheet
+													projectId={project.id}
+													onTaskCreated={handleTaskCreated}
+													trigger={
+														<Button>
+															<Plus className="h-4 w-4 mr-2" />
+															Add Task
+														</Button>
+													}
+												/>
+											)
+										}
 									</div>
 								</CardHeader>
 								<CardContent>
@@ -507,18 +517,13 @@ export default function ProjectPage({ params }: ProjectPageProps) {
 									</div>
 								</CardContent>
 							</Card>
-							
-							{/* Kanban Columns */}
 							<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 								{renderKanbanColumn("Initiate", initiateeTasks, TaskStatus.YET_TO_START, <ListTodo className="h-4 w-4" />)}
 								{renderKanbanColumn("Working", workingTasks, TaskStatus.IN_PROGRESS, <Clock className="h-4 w-4" />)}
 								{renderKanbanColumn("Completed", completedTasks, TaskStatus.COMPLETED, <CheckCircle className="h-4 w-4" />)}
 							</div>
 						</div>
-						
-						{/* Right Sidebar */}
 						<div className="space-y-6">
-							{/* Team Members */}
 							<Card>
 								<CardHeader>
 									<CardTitle className="flex items-center gap-2">
@@ -557,8 +562,6 @@ export default function ProjectPage({ params }: ProjectPageProps) {
 									</div>
 								</CardContent>
 							</Card>
-							
-							{/* Feedback Section */}
 							<Card id="feedback-section">
 								<CardHeader>
 									<CardTitle className="flex items-center gap-2">
@@ -573,8 +576,6 @@ export default function ProjectPage({ params }: ProjectPageProps) {
 									<FeedbackDisplay feedbacks={project.feedbacks || []} />
 								</CardContent>
 							</Card>
-							
-							{/* Quick Stats */}
 							<Card>
 								<CardHeader>
 									<CardTitle>Quick Stats</CardTitle>

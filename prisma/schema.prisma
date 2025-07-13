@@ -62,6 +62,11 @@ model User {
     createdAt         DateTime   @default(now())
     updatedAt         DateTime   @updatedAt
     totalSpent        Float      @default(0)
+    // Company-related fields
+    companyId         String?
+    company           Company?   @relation("CompanyUsers", fields: [companyId], references: [id])
+    referralCode      String?    // The referral code used during registration
+    managedCompany    Company?   @relation("CompanyManager")
     projects          Project[]
     accounts          Account[]
     sessions          Session[]
@@ -70,6 +75,21 @@ model User {
     assignedTasks     Task[]     @relation("AssignedDeveloper")
     feedbacks         Feedback[]
     messages          Message[]
+}
+
+model Company {
+    id                String   @id @default(cuid())
+    name              String   @unique
+    shortName         String   @unique // For referral codes
+    devReferralCode   String   @unique // For developer signup
+    clientReferralCode String  @unique // For client signup
+    productManagerId  String   @unique
+    productManager    User     @relation("CompanyManager", fields: [productManagerId], references: [id])
+    users             User[]   @relation("CompanyUsers")
+    createdAt         DateTime @default(now())
+    updatedAt         DateTime @updatedAt
+    
+    @@map("companies")
 }
 
 model Team {

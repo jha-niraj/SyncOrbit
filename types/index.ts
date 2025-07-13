@@ -5,6 +5,10 @@ export interface RequestBody {
     password: string;
     referralCode?: string;
     role?: 'CLIENT' | 'DEVELOPER' | 'PRODUCTMANAGER' | 'ADMIN';
+    // Company fields for PM registration
+    companyName?: string;
+    companyShortName?: string;
+    companyId?: string;
 }
 
 // Invoice Page Types:
