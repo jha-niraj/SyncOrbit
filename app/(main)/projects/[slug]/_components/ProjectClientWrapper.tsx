@@ -20,19 +20,16 @@ interface ProjectClientWrapperProps {
 	projectTitle: string
 	initialMessages: Message[]
 	userRole?: string
+	onFeedbackAdded?: () => void
 }
 
 export function ProjectClientWrapper({
 	projectId,
 	projectTitle,
 	initialMessages,
-	userRole
+	userRole,
+	onFeedbackAdded
 }: ProjectClientWrapperProps) {
-	const handleFeedbackAdded = () => {
-		// Refresh the page to show new feedback
-		window.location.reload()
-	}
-
 	return (
 		<>
 			<ChatSheet
@@ -43,7 +40,7 @@ export function ProjectClientWrapper({
 			{userRole === 'CLIENT' && (
 				<FeedbackSheet
 					projectId={projectId}
-					onFeedbackAdded={handleFeedbackAdded}
+					onFeedbackAdded={onFeedbackAdded}
 				/>
 			)}
 		</>

@@ -35,47 +35,17 @@ export function FeedbackSheet({ projectId, onFeedbackAdded }: FeedbackSheetProps
 			if (result.success && result.feedback) {
 				toast.success("Feedback added successfully!")
 				setFormData({ title: "", description: "" })
-				setIsOpen(false)
 				
-				// Add to store to update UI immediately
+				// Add to store for real-time update
 				addFeedbackToStore(result.feedback)
 				
-				// Call callback if provided
+				// Close the sheet
+				setIsOpen(false)
+				
+				// Call the callback to handle tab switching and scrolling
 				if (onFeedbackAdded) {
 					onFeedbackAdded()
 				}
-				
-				// Scroll to feedback section with multiple fallback methods
-				setTimeout(() => {
-					// Try multiple selectors to find the feedback section
-					const feedbackSection = document.querySelector('[data-feedback-section]') ||
-										   document.querySelector('[data-testid="feedback-section"]') ||
-										   document.querySelector('.feedback-section') ||
-										   document.querySelector('#feedback-section')
-					
-					if (feedbackSection) {
-						feedbackSection.scrollIntoView({ 
-							behavior: 'smooth',
-							block: 'start',
-							inline: 'nearest'
-						})
-					} else {
-						// Fallback: scroll to feedback tab if section not found
-						const feedbackTab = document.querySelector('[data-value="feedback"]')
-						if (feedbackTab) {
-							(feedbackTab as HTMLElement).click()
-							setTimeout(() => {
-								const newFeedbackSection = document.querySelector('[data-feedback-section]')
-								if (newFeedbackSection) {
-									newFeedbackSection.scrollIntoView({ 
-										behavior: 'smooth',
-										block: 'start'
-									})
-								}
-							}, 100)
-						}
-					}
-				}, 300) // Increased timeout to ensure DOM is updated
 			} else {
 				toast.error(result.error || "Failed to add feedback")
 			}
