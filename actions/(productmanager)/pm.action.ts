@@ -5,12 +5,36 @@ import { prisma } from "@/lib/prisma"
 import { z } from "zod"
 import { revalidatePath } from "next/cache"
 import { TaskStatus } from "@prisma/client"
+import { cloudinary } from "@/lib/cloudinary"
 
 // Generate unique referral codes
 function generateReferralCode(companyShortName: string, suffix: string): string {
 	const timestamp = Date.now().toString(36)
 	const random = Math.random().toString(36).substr(2, 5)
 	return `${timestamp}${random}${companyShortName}${suffix}`.toLowerCase()
+}
+
+// Cloudinary upload interface
+interface CloudinaryUploadResult {
+	secure_url: string;
+}
+
+async function uploadToCloudinary(file: File): Promise<CloudinaryUploadResult> {
+	const arrayBuffer = await file.arrayBuffer();
+	const buffer = Buffer.from(arrayBuffer);
+
+	return new Promise<CloudinaryUploadResult>((resolve, reject) => {
+		cloudinary.uploader.upload_stream(
+			{
+				folder: 'company-logos',
+				resource_type: 'auto'
+			},
+			(error, result) => {
+				if (error) reject(error);
+				else resolve(result as CloudinaryUploadResult);
+			}
+		).end(buffer);
+	});
 }
 
 // Schema for company registration
@@ -302,6 +326,8 @@ const updatePMProfileSchema = z.object({
 	name: z.string().min(1, "Name is required").max(100),
 	bio: z.string().max(500).optional(),
 	image: z.string().url().optional(),
+	companyName: z.string().min(1, "Company name is required").max(100).optional(),
+	companyLogo: z.string().url().optional(),
 })
 
 export async function updatePMProfile(data: z.infer<typeof updatePMProfileSchema>) {
@@ -313,6 +339,7 @@ export async function updatePMProfile(data: z.infer<typeof updatePMProfileSchema
 
 		const validatedData = updatePMProfileSchema.parse(data)
 
+		// Update user profile
 		const user = await prisma.user.update({
 			where: { id: session.user.id },
 			data: {
@@ -333,6 +360,17 @@ export async function updatePMProfile(data: z.infer<typeof updatePMProfileSchema
 			}
 		})
 
+		// Update company information if provided
+		if (user.managedCompany && (validatedData.companyName || validatedData.companyLogo)) {
+			await prisma.company.update({
+				where: { id: user.managedCompany.id },
+				data: {
+					...(validatedData.companyName && { name: validatedData.companyName }),
+					...(validatedData.companyLogo && { logo: validatedData.companyLogo }),
+				}
+			})
+		}
+
 		revalidatePath('/profile')
 		return { success: true, user }
 	} catch (error) {
@@ -341,6 +379,39 @@ export async function updatePMProfile(data: z.infer<typeof updatePMProfileSchema
 			return { success: false, error: "Invalid profile data" }
 		}
 		return { success: false, error: "Failed to update profile" }
+	}
+}
+
+// Upload company logo
+export async function uploadCompanyLogo(formData: FormData) {
+	try {
+		const session = await auth()
+		if (!session?.user?.id || session.user.role !== 'PRODUCTMANAGER') {
+			return { success: false, error: "Unauthorized" }
+		}
+
+		const imageFile = formData.get('logo') as File;
+		
+		if (!imageFile) {
+			return { success: false, error: "No logo file provided" }
+		}
+
+		// Validate file type
+		if (!imageFile.type.startsWith('image/')) {
+			return { success: false, error: "Please select an image file" }
+		}
+
+		// Validate file size (max 5MB)
+		if (imageFile.size > 5 * 1024 * 1024) {
+			return { success: false, error: "Logo file must be less than 5MB" }
+		}
+
+		const result = await uploadToCloudinary(imageFile);
+		
+		return { success: true, logoUrl: result.secure_url };
+	} catch (error) {
+		console.error("Upload company logo error:", error);
+		return { success: false, error: "Failed to upload logo" };
 	}
 }
 

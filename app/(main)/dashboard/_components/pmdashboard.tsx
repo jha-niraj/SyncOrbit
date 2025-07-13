@@ -7,12 +7,12 @@ import { Progress } from "@/components/ui/progress"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { 
-	DollarSign, 
-	Users, 
-	Building2, 
-	TrendingUp, 
-	CheckCircle, 
+import {
+	DollarSign,
+	Users,
+	Building2,
+	TrendingUp,
+	CheckCircle,
 	AlertCircle,
 	Code,
 	Target,
@@ -90,7 +90,6 @@ export function PMDashboard({ data }: PMDashboardProps) {
 		<div className="min-h-screen bg-gradient-to-bl dark:from-black dark:via-gray-900 dark:to-black">
 			<div className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
 				<div className="flex flex-col space-y-8">
-					{/* Header */}
 					<div className="flex flex-col space-y-2">
 						<div className="flex items-center gap-3">
 							<Building2 className="h-8 w-8 text-blue-600" />
@@ -104,8 +103,6 @@ export function PMDashboard({ data }: PMDashboardProps) {
 							</div>
 						</div>
 					</div>
-
-					{/* Company Stats */}
 					<div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
 						<Card>
 							<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -124,7 +121,6 @@ export function PMDashboard({ data }: PMDashboardProps) {
 								</div>
 							</CardContent>
 						</Card>
-
 						<Card>
 							<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
 								<CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
@@ -139,7 +135,6 @@ export function PMDashboard({ data }: PMDashboardProps) {
 								</div>
 							</CardContent>
 						</Card>
-
 						<Card>
 							<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
 								<CardTitle className="text-sm font-medium">Team Size</CardTitle>
@@ -154,7 +149,6 @@ export function PMDashboard({ data }: PMDashboardProps) {
 								</div>
 							</CardContent>
 						</Card>
-
 						<Card>
 							<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
 								<CardTitle className="text-sm font-medium">Payment Progress</CardTitle>
@@ -168,8 +162,6 @@ export function PMDashboard({ data }: PMDashboardProps) {
 							</CardContent>
 						</Card>
 					</div>
-
-					{/* Referral Links */}
 					<Card>
 						<CardHeader>
 							<CardTitle className="flex items-center gap-2">
@@ -193,11 +185,13 @@ export function PMDashboard({ data }: PMDashboardProps) {
 											size="sm"
 											onClick={() => copyToClipboard(getDeveloperReferralLink(), 'Developer')}
 										>
-											{copiedCode === 'Developer' ? (
-												<CheckCircle className="h-4 w-4" />
-											) : (
-												<Copy className="h-4 w-4" />
-											)}
+											{
+												copiedCode === 'Developer' ? (
+													<CheckCircle className="h-4 w-4" />
+												) : (
+													<Copy className="h-4 w-4" />
+												)
+											}
 										</Button>
 									</div>
 								</div>
@@ -212,21 +206,20 @@ export function PMDashboard({ data }: PMDashboardProps) {
 											size="sm"
 											onClick={() => copyToClipboard(getClientReferralLink(), 'Client')}
 										>
-											{copiedCode === 'Client' ? (
-												<CheckCircle className="h-4 w-4" />
-											) : (
-												<Copy className="h-4 w-4" />
-											)}
+											{
+												copiedCode === 'Client' ? (
+													<CheckCircle className="h-4 w-4" />
+												) : (
+													<Copy className="h-4 w-4" />
+												)
+											}
 										</Button>
 									</div>
 								</div>
 							</div>
 						</CardContent>
 					</Card>
-
-					{/* Main Content */}
 					<div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-						{/* Projects - 2/3 width */}
 						<div className="lg:col-span-2 space-y-6">
 							<Tabs defaultValue="current" className="w-full">
 								<TabsList className="grid w-full grid-cols-2">
@@ -238,49 +231,54 @@ export function PMDashboard({ data }: PMDashboardProps) {
 										<h2 className="text-xl font-semibold">Current Projects</h2>
 										<Badge variant="outline">{currentProjects.length} projects</Badge>
 									</div>
-									{currentProjects.length > 0 ? (
-										<div className="space-y-4">
-											{currentProjects.map((project) => (
-												<ProjectCard key={project.id} project={project} />
-											))}
-										</div>
-									) : (
-										<div className="text-center py-8">
-											<AlertCircle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-											<h3 className="text-lg font-medium mb-2">No active projects</h3>
-											<p className="text-muted-foreground">
-												All projects are completed or you haven&apos;t started any yet.
-											</p>
-										</div>
-									)}
+									{
+										currentProjects.length > 0 ? (
+											<div className="space-y-4">
+												{
+													currentProjects.map((project) => (
+														<ProjectCard key={project.id} project={project} />
+													))
+												}
+											</div>
+										) : (
+											<div className="text-center py-8">
+												<AlertCircle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+												<h3 className="text-lg font-medium mb-2">No active projects</h3>
+												<p className="text-muted-foreground">
+													All projects are completed or you haven&apos;t started any yet.
+												</p>
+											</div>
+										)
+									}
 								</TabsContent>
 								<TabsContent value="completed" className="space-y-4">
 									<div className="flex items-center justify-between">
 										<h2 className="text-xl font-semibold">Completed Projects</h2>
 										<Badge variant="outline">{completedProjects.length} projects</Badge>
 									</div>
-									{completedProjects.length > 0 ? (
-										<div className="space-y-4">
-											{completedProjects.map((project) => (
-												<ProjectCard key={project.id} project={project} />
-											))}
-										</div>
-									) : (
-										<div className="text-center py-8">
-											<CheckCircle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-											<h3 className="text-lg font-medium mb-2">No completed projects</h3>
-											<p className="text-muted-foreground">
-												Completed projects will appear here.
-											</p>
-										</div>
-									)}
+									{
+										completedProjects.length > 0 ? (
+											<div className="space-y-4">
+												{
+													completedProjects.map((project) => (
+														<ProjectCard key={project.id} project={project} />
+													))
+												}
+											</div>
+										) : (
+											<div className="text-center py-8">
+												<CheckCircle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+												<h3 className="text-lg font-medium mb-2">No completed projects</h3>
+												<p className="text-muted-foreground">
+													Completed projects will appear here.
+												</p>
+											</div>
+										)
+									}
 								</TabsContent>
 							</Tabs>
 						</div>
-
-						{/* Developers - 1/3 width */}
 						<div className="space-y-6">
-							{/* Developer List */}
 							<Card>
 								<CardHeader>
 									<CardTitle className="flex items-center gap-2">
@@ -289,24 +287,26 @@ export function PMDashboard({ data }: PMDashboardProps) {
 									</CardTitle>
 								</CardHeader>
 								<CardContent>
-									{data.developers.length > 0 ? (
-										<div className="space-y-4">
-											{data.developers.map((developer) => (
-												<DeveloperCard key={developer.id} developer={developer} />
-											))}
-										</div>
-									) : (
-										<div className="text-center py-4">
-											<Users className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
-											<p className="text-sm text-muted-foreground">
-												No developers yet. Share your referral link to invite developers.
-											</p>
-										</div>
-									)}
+									{
+										data.developers.length > 0 ? (
+											<div className="space-y-4">
+												{
+													data.developers.map((developer) => (
+														<DeveloperCard key={developer.id} developer={developer} />
+													))
+												}
+											</div>
+										) : (
+											<div className="text-center py-4">
+												<Users className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
+												<p className="text-sm text-muted-foreground">
+													No developers yet. Share your referral link to invite developers.
+												</p>
+											</div>
+										)
+									}
 								</CardContent>
 							</Card>
-
-							{/* Developer Activity */}
 							<Card>
 								<CardHeader>
 									<CardTitle className="flex items-center gap-2">
@@ -317,6 +317,7 @@ export function PMDashboard({ data }: PMDashboardProps) {
 								<CardContent>
 									<div className="space-y-4">
 										{data.developers.map((developer) => (
+
 											<div key={developer.id} className="space-y-2">
 												<div className="flex items-center justify-between">
 													<div className="flex items-center gap-2">
@@ -340,7 +341,8 @@ export function PMDashboard({ data }: PMDashboardProps) {
 													<Progress value={developer.taskStats.completionRate} className="h-1" />
 												</div>
 											</div>
-										))}
+										))
+										}
 									</div>
 								</CardContent>
 							</Card>
@@ -370,7 +372,7 @@ function ProjectCard({ project }: { project: { id: string; title: string; slug: 
 							{project.description || "No description provided"}
 						</CardDescription>
 					</div>
-					<Badge 
+					<Badge
 						className={`${project.status === Status.COMPLETED ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'}`}
 					>
 						{project.status}
