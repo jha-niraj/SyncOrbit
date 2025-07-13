@@ -10,7 +10,7 @@ export async function PATCH(req: NextRequest) {
 		}
 
 		const updates = await req.json();
-		const allowedUpdates = ["name", "image", "coverImage"];
+		const allowedUpdates = ["name", "image"];
 		const filteredUpdates = Object.keys(updates)
 			.filter(key => allowedUpdates.includes(key))
 			.reduce((obj, key) => {
@@ -26,7 +26,6 @@ export async function PATCH(req: NextRequest) {
 				name: true,
 				email: true,
 				image: true,
-				coverImage: true,
 				role: true,
 				createdAt: true,
 				totalSpent: true

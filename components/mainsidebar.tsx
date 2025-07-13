@@ -90,12 +90,12 @@ const Sidebar = ({ isCollapsed, toggleSidebar }: SidebarProps) => {
     return (
         <TooltipProvider>
             <motion.div
-                className="fixed top-0 left-0 h-full bg-gradient-to-br from-slate-50 via-indigo-50 to-purple-50 dark:from-slate-900 dark:via-black dark:to-slate-900 backdrop-blur-xl border-r border-border/20 shadow-2xl z-20 sm:block hidden"
+                className="fixed top-0 left-0 h-full bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 shadow-sm z-20 sm:block hidden"
                 animate={{ width: isCollapsed ? 60 : 240 }}
                 transition={{ duration: 0.3, ease: "easeInOut" }}
             >
                 <div className="flex flex-col h-full relative">
-                    <div className="flex items-center justify-center p-4 h-[80px] border-b border-border/20">
+                    <div className="flex items-center justify-center p-4 h-[80px] border-b border-gray-200 dark:border-gray-800">
                         <Link href={session ? "/dashboard" : "/"} className="flex gap-2 items-center justify-center group cursor-pointer">
                             <Image
                                 src="/shunyatech.png"
@@ -113,7 +113,7 @@ const Sidebar = ({ isCollapsed, toggleSidebar }: SidebarProps) => {
                                 style={{ overflow: "hidden" }}
                             >
                                 <div className="whitespace-nowrap">
-                                    <h1 className="text-xl font-bold bg-gradient-to-r from-teal-600 via-emerald-600 to-green-600 bg-clip-text text-transparent">
+                                    <h1 className="text-xl font-bold text-gray-900 dark:text-white">
                                         ShunyaTech
                                     </h1>
                                 </div>
@@ -141,46 +141,28 @@ const Sidebar = ({ isCollapsed, toggleSidebar }: SidebarProps) => {
                                                             <div
                                                                 className={`
                                                         ${isActive
-                                                                        ? "bg-gradient-to-r from-black via-emerald-200 to-black text-white shadow-xl shadow-teal-500/25"
-                                                                        : "hover:bg-white/60 dark:hover:bg-slate-800/60 text-foreground/80 hover:text-foreground"
+                                                                        ? "bg-gray-900 dark:bg-white text-white dark:text-gray-900"
+                                                                        : "hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
                                                                     } 
-                                                        flex items-center rounded-2xl transition-all duration-300 cursor-pointer group relative overflow-hidden backdrop-blur-sm
-                                                        ${isCollapsed ? "justify-center px-3 py-4" : "px-4 py-3.5"}
+                                                        flex items-center rounded-lg transition-all duration-200 cursor-pointer
+                                                        ${isCollapsed ? "justify-center px-3 py-4" : "px-4 py-3"}
                                                     `}
                                                             >
                                                                 {
-                                                                    isActive && (
-                                                                        <motion.div
-                                                                            layoutId="activeBackground"
-                                                                            className="absolute inset-0 bg-gradient-to-r from-teal-500 via-emerald-600 to-green-500 rounded-2xl"
-                                                                            transition={{ duration: 0.2, ease: "easeInOut" }}
-                                                                        />
-                                                                    )
-                                                                }
-                                                                {
                                                                     isCollapsed ? (
-                                                                        <div className="relative z-10 flex items-center justify-center">
-                                                                            <div
-                                                                                className={`transition-all duration-300 ${isActive ? "scale-110" : "group-hover:scale-110"}`}
-                                                                            >
+                                                                        <div className="flex items-center justify-center">
+                                                                            <div className="transition-all duration-200">
                                                                                 {route.icon}
                                                                             </div>
                                                                         </div>
                                                                     ) : (
-                                                                        <div className="flex items-center gap-3 relative z-10 w-full">
-                                                                            <div
-                                                                                className={`transition-all duration-300 ${isActive ? "scale-110" : "group-hover:scale-105"} flex-shrink-0`}
-                                                                            >
+                                                                        <div className="flex items-center gap-3 w-full">
+                                                                            <div className="flex-shrink-0">
                                                                                 {route.icon}
                                                                             </div>
-                                                                            <motion.span
-                                                                                initial={{ opacity: 0, x: -10 }}
-                                                                                animate={{ opacity: 1, x: 0 }}
-                                                                                transition={{ delay: index * 0.03 }}
-                                                                                className="text-sm font-medium truncate"
-                                                                            >
+                                                                            <span className="text-sm font-medium truncate">
                                                                                 {route.name}
-                                                                            </motion.span>
+                                                                            </span>
                                                                         </div>
                                                                     )
                                                                 }
@@ -207,17 +189,17 @@ const Sidebar = ({ isCollapsed, toggleSidebar }: SidebarProps) => {
                                                 initial={{ opacity: 0, y: 20 }}
                                                 animate={{ opacity: 1, y: 0 }}
                                                 transition={{ duration: 0.5 }}
-                                                className="bg-white/60 dark:bg-slate-800/60 rounded-2xl p-6 mb-4 backdrop-blur-sm border border-teal-100"
+                                                className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6 mb-4 border border-gray-200 dark:border-gray-700"
                                             >
-                                                <div className="w-12 h-12 bg-gradient-to-r from-teal-500 to-emerald-600 rounded-xl flex items-center justify-center mx-auto mb-4">
-                                                    <UserPlus className="w-6 h-6 text-white" />
+                                                <div className="w-12 h-12 bg-gray-900 dark:bg-white rounded-lg flex items-center justify-center mx-auto mb-4">
+                                                    <UserPlus className="w-6 h-6 text-white dark:text-gray-900" />
                                                 </div>
-                                                <h3 className="text-lg font-bold text-gray-800 mb-2">Join ShunyaTech</h3>
-                                                <p className="text-sm text-gray-600 mb-4 leading-relaxed">
+                                                <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">Join ShunyaTech</h3>
+                                                <p className="text-sm text-gray-600 dark:text-gray-400 mb-4 leading-relaxed">
                                                     Sign in to access your projects, manage team, and track development progress.
                                                 </p>
                                                 <Link href="/signin">
-                                                    <Button className="w-full bg-gradient-to-r from-teal-500 to-emerald-600 hover:from-teal-600 hover:to-emerald-700 text-white rounded-xl">
+                                                    <Button className="w-full bg-gray-900 dark:bg-white text-white dark:text-gray-900 hover:bg-gray-800 dark:hover:bg-gray-100 rounded-lg">
                                                         Sign In
                                                     </Button>
                                                 </Link>
@@ -230,7 +212,7 @@ const Sidebar = ({ isCollapsed, toggleSidebar }: SidebarProps) => {
                                                 <TooltipTrigger asChild>
                                                     <Button
                                                         size="sm"
-                                                        className="w-10 h-10 p-0 bg-gradient-to-r from-teal-500 to-emerald-600 hover:from-teal-600 hover:to-emerald-700 text-white rounded-xl"
+                                                        className="w-10 h-10 p-0 bg-gray-900 dark:bg-white text-white dark:text-gray-900 hover:bg-gray-800 dark:hover:bg-gray-100 rounded-lg"
                                                     >
                                                         <UserPlus className="w-4 h-4" />
                                                     </Button>
@@ -247,21 +229,21 @@ const Sidebar = ({ isCollapsed, toggleSidebar }: SidebarProps) => {
                     </div>
                     <motion.button
                         onClick={toggleSidebar}
-                        className="absolute top-1/2 -translate-y-1/2 -right-4 p-2 bg-white dark:bg-slate-800 rounded-full hover:bg-slate-50 dark:hover:bg-slate-700 border border-border/20 shadow-lg hover:shadow-xl transition-all duration-300 z-30 cursor-pointer"
+                        className="absolute top-1/2 -translate-y-1/2 -right-4 p-2 bg-white dark:bg-gray-900 rounded-full hover:bg-gray-50 dark:hover:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-all duration-200 z-30 cursor-pointer"
                         aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
                         animate={{ rotate: isCollapsed ? 0 : 180 }}
                         transition={{ duration: 0.3, ease: "easeInOut" }}
                     >
-                        <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                        <ChevronRight className="h-4 w-4 text-gray-600 dark:text-gray-400" />
                     </motion.button>
                     {
                         session?.user && (
-                            <div className="border-t border-border/20 p-4 mt-auto bg-white/40 dark:bg-slate-800/40 backdrop-blur-sm">
+                            <div className="border-t border-gray-200 dark:border-gray-800 p-4 mt-auto bg-gray-50 dark:bg-gray-800">
                                 <div className={`flex items-center justify-between ${isCollapsed ? "flex-col" : "flex-row"}`}>
                                     <div className="flex items-center space-x-3">
-                                        <Avatar className="h-10 w-10 border-2 border-white shadow-lg">
+                                        <Avatar className="h-10 w-10 border-2 border-gray-200 dark:border-gray-700">
                                             <AvatarImage src={session.user.image || "/placeholder.svg"} alt={session.user.name || "User"} />
-                                            <AvatarFallback className="bg-gradient-to-r from-teal-500 to-emerald-500 text-white text-sm font-bold">
+                                            <AvatarFallback className="bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-sm font-bold">
                                                 {
                                                     session.user.name
                                                         ?.split(" ")
@@ -277,7 +259,7 @@ const Sidebar = ({ isCollapsed, toggleSidebar }: SidebarProps) => {
                                                 variant="ghost"
                                                 size="sm"
                                                 onClick={handleSignOut}
-                                                className={`${isCollapsed ? "h-10 w-10 p-0" : "px-3"} hover:bg-red-50 dark:hover:bg-red-950/20 text-red-600 dark:text-red-400 cursor-pointer transition-all duration-200`}
+                                                className={`${isCollapsed ? "h-10 w-10 p-0" : "px-3"} hover:bg-red-50 dark:hover:bg-red-950 text-red-600 dark:text-red-400 cursor-pointer transition-all duration-200`}
                                             >
                                                 <LogOut className="h-4 w-4" />
                                                 {!isCollapsed && <span className="ml-2 text-sm">Sign Out</span>}
@@ -293,7 +275,7 @@ const Sidebar = ({ isCollapsed, toggleSidebar }: SidebarProps) => {
                     }
                 </div>
             </motion.div>
-            <div className="mt-6 sm:hidden fixed bottom-0 left-0 right-0 bg-gradient-to-br from-slate-50 via-indigo-50 to-purple-50 dark:from-slate-900 dark:via-black dark:to-slate-900 border-t border-border/20 backdrop-blur-xl shadow-2xl z-20">
+            <div className="mt-6 sm:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 shadow-sm z-20">
                 <div className="flex justify-around py-2">
                     {
                         displayRoutes.slice(0, 5).map((route) => {
@@ -302,7 +284,7 @@ const Sidebar = ({ isCollapsed, toggleSidebar }: SidebarProps) => {
                                 <button
                                     key={route.path}
                                     onClick={() => handleNavigation(route.path)}
-                                    className={`flex flex-col items-center gap-1 text-xs ${isActive ? 'text-teal-600 dark:text-teal-400' : 'text-muted-foreground'} focus:outline-none`}
+                                    className={`flex flex-col items-center gap-1 text-xs ${isActive ? 'text-gray-900 dark:text-white' : 'text-gray-500 dark:text-gray-400'} focus:outline-none`}
                                 >
                                     {route.icon}
                                     <span>{route.name}</span>

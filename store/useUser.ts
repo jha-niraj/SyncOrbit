@@ -8,7 +8,6 @@ interface UserState {
     setUser: (user: Partial<User> | null) => void;
     updateUser: (updates: Partial<User>) => Promise<void>;
     updateProfileImage: (imageUrl: string) => Promise<void>;
-    updateCoverImage: (imageUrl: string) => Promise<void>;
 }
 
 export const useUser = create<UserState>((set, get) => ({
@@ -54,27 +53,6 @@ export const useUser = create<UserState>((set, get) => ({
             set({ user: { ...get().user, image: updatedUser.image } });
         } catch (error) {
             set({ error: error instanceof Error ? error.message : 'Failed to update profile image' });
-        } finally {
-            set({ isLoading: false });
-        }
-    },
-    updateCoverImage: async (imageUrl) => {
-        try {
-            set({ isLoading: true, error: null });
-            const response = await fetch('/api/user/update', {
-                method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ coverImage: imageUrl })
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to update cover image');
-            }
-
-            const updatedUser = await response.json();
-            set({ user: { ...get().user, coverImage: updatedUser.coverImage } });
-        } catch (error) {
-            set({ error: error instanceof Error ? error.message : 'Failed to update cover image' });
         } finally {
             set({ isLoading: false });
         }

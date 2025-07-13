@@ -8,8 +8,10 @@ interface ProjectWithDetails {
 	id: string;
 	title: string;
 	description: string | null;
+	slug: string;
 	status: Status;
 	budget: number;
+	currency: string;
 	startDate: Date;
 	endDate: Date | null;
 	tasks: {
@@ -36,7 +38,6 @@ interface DashboardData {
 		name: string | null;
 		email: string | null;
 		image: string | null;
-		coverImage: string | null;
 		totalSpent: number;
 	};
 	projects: ProjectWithDetails[];
@@ -69,15 +70,16 @@ export async function getClientDashboardData(): Promise<DashboardData> {
 				name: true,
 				email: true,
 				image: true,
-				coverImage: true,
 				totalSpent: true,
 				projects: {
 					select: {
 						id: true,
 						title: true,
 						description: true,
+						slug: true,
 						status: true,
 						budget: true,
+						currency: true,
 						startDate: true,
 						endDate: true,
 						tasks: {
@@ -135,7 +137,6 @@ export async function getClientDashboardData(): Promise<DashboardData> {
 				name: user.name,
 				email: user.email,
 				image: user.image,
-				coverImage: user.coverImage,
 				totalSpent: user.totalSpent
 			},
 			projects: user.projects,

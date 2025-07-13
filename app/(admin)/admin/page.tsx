@@ -1,167 +1,303 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Users, FileText, MessageSquare, ShieldAlert } from "lucide-react"
+import { Badge } from "@/components/ui/badge"
+import { Users, FileText, MessageSquare, TrendingUp } from "lucide-react"
 import Link from "next/link"
+import { getAdminDashboardData } from "@/actions/(admin)/dashboard.action"
+import { formatDate } from "@/lib/utils"
 
-export default function AdminDashboard() {
-    // Mock data - in a real app, this would come from an API or database
-    const systemOverview = {
-        totalUsers: 42,
-        totalProjects: 15,
-        feedbackCount: 28,
-    }
+interface Project {
+	id: string;
+	title: string;
+	slug: string;
+	status: string;
+	budget: number;
+	currency: string;
+	startDate: Date;
+	createdAt: Date;
+	user: {
+		name: string | null;
+		email: string | null;
+	};
+	_count: {
+		tasks: number;
+	};
+}
 
-    const users = [
-        { id: 1, name: "John Doe", email: "john@example.com", role: "DEVELOPER" },
-        { id: 2, name: "Jane Smith", email: "jane@example.com", role: "PRODUCT_MANAGER" },
-        { id: 3, name: "Mike Johnson", email: "mike@example.com", role: "DEVELOPER" },
-        { id: 4, name: "Sarah Williams", email: "sarah@example.com", role: "CLIENT" },
-        { id: 5, name: "Alex Brown", email: "alex@example.com", role: "ADMIN" },
-    ]
+interface User {
+	id: string;
+	name: string | null;
+	email: string | null;
+	role: string;
+	createdAt: Date;
+	_count: {
+		projects: number;
+	};
+}
 
-    const auditLogs = [
-        { id: 1, action: "User Login", user: "John Doe", timestamp: "2023-10-15T14:30:00" },
-        { id: 2, action: "Project Created", user: "Jane Smith", timestamp: "2023-10-14T10:15:00" },
-        { id: 3, action: "Task Status Updated", user: "Mike Johnson", timestamp: "2023-10-14T09:45:00" },
-        { id: 4, action: "Feedback Added", user: "Sarah Williams", timestamp: "2023-10-13T16:20:00" },
-        { id: 5, action: "Role Updated", user: "Alex Brown", timestamp: "2023-10-12T11:10:00" },
-    ]
+export default async function AdminDashboard() {
+	const result = await getAdminDashboardData()
 
-    return (
-        <div className="flex min-h-screen flex-col">
-            <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-                <div className="container flex h-14 items-center justify-between">
-                    <Link href="/" className="flex items-center space-x-2">
-                        <span className="font-bold">Project Management System</span>
-                    </Link>
-                    <div className="flex items-center space-x-4">
-                        <span className="text-sm text-muted-foreground">Welcome, Admin</span>
-                    </div>
-                </div>
-            </header>
-            <main className="flex-1 container py-6">
-                <h1 className="text-2xl font-bold mb-6">Admin Dashboard</h1>
-                <h2 className="text-xl font-semibold mb-4">System Overview</h2>
-                <div className="grid gap-4 md:grid-cols-3 mb-8">
-                    <Card>
-                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Total Users</CardTitle>
-                            <Users className="h-4 w-4 text-muted-foreground" />
-                        </CardHeader>
-                        <CardContent>
-                            <div className="text-2xl font-bold">{systemOverview.totalUsers}</div>
-                            <p className="text-xs text-muted-foreground">+3 new users this month</p>
-                        </CardContent>
-                    </Card>
-                    <Card>
-                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Total Projects</CardTitle>
-                            <FileText className="h-4 w-4 text-muted-foreground" />
-                        </CardHeader>
-                        <CardContent>
-                            <div className="text-2xl font-bold">{systemOverview.totalProjects}</div>
-                            <p className="text-xs text-muted-foreground">+2 new projects this month</p>
-                        </CardContent>
-                    </Card>
-                    <Card>
-                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Feedback Summary</CardTitle>
-                            <MessageSquare className="h-4 w-4 text-muted-foreground" />
-                        </CardHeader>
-                        <CardContent>
-                            <div className="text-2xl font-bold">{systemOverview.feedbackCount}</div>
-                            <p className="text-xs text-muted-foreground">+5 new feedback this month</p>
-                        </CardContent>
-                    </Card>
-                </div>
-                <h2 className="text-xl font-semibold mb-4">Role Management</h2>
-                <Card className="mb-8">
-                    <CardHeader>
-                        <CardTitle>User Roles</CardTitle>
-                        <CardDescription>Manage user roles and permissions</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="rounded-md border">
-                            <Table>
-                                <TableHeader>
-                                    <TableRow>
-                                        <TableHead>Name</TableHead>
-                                        <TableHead>Email</TableHead>
-                                        <TableHead>Current Role</TableHead>
-                                        <TableHead>Actions</TableHead>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    {
-                                        users.map((user) => (
-                                            <TableRow key={user.id}>
-                                                <TableCell className="font-medium">{user.name}</TableCell>
-                                                <TableCell>{user.email}</TableCell>
-                                                <TableCell>{user.role}</TableCell>
-                                                <TableCell>
-                                                    <div className="flex items-center gap-2">
-                                                        <Select defaultValue={user.role}>
-                                                            <SelectTrigger className="w-[180px]">
-                                                                <SelectValue placeholder="Select role" />
-                                                            </SelectTrigger>
-                                                            <SelectContent>
-                                                                <SelectItem value="CLIENT">CLIENT</SelectItem>
-                                                                <SelectItem value="DEVELOPER">DEVELOPER</SelectItem>
-                                                                <SelectItem value="PRODUCT_MANAGER">PRODUCT_MANAGER</SelectItem>
-                                                                <SelectItem value="ADMIN">ADMIN</SelectItem>
-                                                            </SelectContent>
-                                                        </Select>
-                                                        <Button size="sm">Update Role</Button>
-                                                    </div>
-                                                </TableCell>
-                                            </TableRow>
-                                        ))
-                                    }
-                                </TableBody>
-                            </Table>
-                        </div>
-                        <p className="text-xs text-muted-foreground mt-2">Absolute power... but don&apos;t get carried away.</p>
-                    </CardContent>
-                </Card>
-                <h2 className="text-xl font-semibold mb-4">Audit Logs</h2>
-                <Card>
-                    <CardHeader>
-                        <CardTitle>System Activity</CardTitle>
-                        <CardDescription>Recent actions taken by users</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="rounded-md border">
-                            <Table>
-                                <TableHeader>
-                                    <TableRow>
-                                        <TableHead>Action</TableHead>
-                                        <TableHead>User</TableHead>
-                                        <TableHead>Timestamp</TableHead>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    {
-                                        auditLogs.map((log) => (
-                                            <TableRow key={log.id}>
-                                                <TableCell className="font-medium">
-                                                    <div className="flex items-center">
-                                                        <ShieldAlert className="h-4 w-4 mr-2 text-muted-foreground" />
-                                                        {log.action}
-                                                    </div>
-                                                </TableCell>
-                                                <TableCell>{log.user}</TableCell>
-                                                <TableCell>{new Date(log.timestamp).toLocaleString()}</TableCell>
-                                            </TableRow>
-                                        ))
-                                    }
-                                </TableBody>
-                            </Table>
-                        </div>
-                    </CardContent>
-                </Card>
-            </main>
-        </div>
-    )
+	if (!result.success) {
+		return (
+			<div className="flex min-h-screen items-center justify-center">
+				<div className="text-center">
+					<h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+						Error Loading Dashboard
+					</h1>
+					<p className="text-gray-600 dark:text-gray-400">
+						{result.error || "Failed to load dashboard data"}
+					</p>
+				</div>
+			</div>
+		)
+	}
+
+	const { systemOverview, users, projects } = result.data!
+
+	const formatCurrencyAmount = (amount: number, currency: string) => {
+		const symbols = {
+			USD: '$',
+			INR: '₹',
+			NPR: 'Rs.'
+		};
+		return `${symbols[currency as keyof typeof symbols] || currency} ${amount.toLocaleString()}`;
+	}
+
+	const getStatusColor = (status: string) => {
+		switch (status) {
+			case 'IN_PROGRESS':
+				return "bg-blue-100 text-blue-700 border-blue-200"
+			case 'COMPLETED':
+				return "bg-green-100 text-green-700 border-green-200"
+			case 'ON_HOLD':
+				return "bg-yellow-100 text-yellow-700 border-yellow-200"
+			case 'CANCELLED':
+				return "bg-red-100 text-red-700 border-red-200"
+			default:
+				return "bg-gray-100 text-gray-700 border-gray-200"
+		}
+	}
+
+	return (
+		<div className="flex min-h-screen flex-col">
+			<main className="flex-1 p-6">
+				<div className="max-w-7xl mx-auto space-y-8">
+					{/* Header */}
+					<div className="flex items-center justify-between">
+						<div>
+							<h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+								Admin Dashboard
+							</h1>
+							<p className="text-gray-600 dark:text-gray-400 mt-1">
+								Overview of your system and recent activity
+							</p>
+						</div>
+						<Link href="/admin/createproject">
+							<Button className="bg-blue-600 hover:bg-blue-700">
+								Create New Project
+							</Button>
+						</Link>
+					</div>
+
+					{/* System Overview */}
+					<div className="grid gap-6 md:grid-cols-3">
+						<Card>
+							<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+								<CardTitle className="text-sm font-medium">Total Users</CardTitle>
+								<Users className="h-4 w-4 text-muted-foreground" />
+							</CardHeader>
+							<CardContent>
+								<div className="text-2xl font-bold">{systemOverview.totalUsers}</div>
+								<p className="text-xs text-muted-foreground">
+									<span className="text-green-600 font-medium">+{systemOverview.recentUsers}</span> new this month
+								</p>
+							</CardContent>
+						</Card>
+
+						<Card>
+							<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+								<CardTitle className="text-sm font-medium">Total Projects</CardTitle>
+								<FileText className="h-4 w-4 text-muted-foreground" />
+							</CardHeader>
+							<CardContent>
+								<div className="text-2xl font-bold">{systemOverview.totalProjects}</div>
+								<p className="text-xs text-muted-foreground">
+									<span className="text-green-600 font-medium">+{systemOverview.recentProjects}</span> new this month
+								</p>
+							</CardContent>
+						</Card>
+
+						<Card>
+							<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+								<CardTitle className="text-sm font-medium">Total Feedback</CardTitle>
+								<MessageSquare className="h-4 w-4 text-muted-foreground" />
+							</CardHeader>
+							<CardContent>
+								<div className="text-2xl font-bold">{systemOverview.totalFeedback}</div>
+								<p className="text-xs text-muted-foreground">
+									<span className="text-green-600 font-medium">+{systemOverview.recentFeedback}</span> new this month
+								</p>
+							</CardContent>
+						</Card>
+					</div>
+
+					{/* Recent Projects */}
+					<Card>
+						<CardHeader>
+							<CardTitle className="flex items-center gap-2">
+								<TrendingUp className="h-5 w-5" />
+								Recent Projects
+							</CardTitle>
+							<CardDescription>
+								Latest projects created in the system
+							</CardDescription>
+						</CardHeader>
+						<CardContent>
+							<div className="rounded-md border">
+								<Table>
+									<TableHeader>
+										<TableRow>
+											<TableHead>Project Name</TableHead>
+											<TableHead>Client</TableHead>
+											<TableHead>Status</TableHead>
+											<TableHead>Budget</TableHead>
+											<TableHead>Tasks</TableHead>
+											<TableHead>Created</TableHead>
+											<TableHead>Actions</TableHead>
+										</TableRow>
+									</TableHeader>
+									<TableBody>
+										{projects.length > 0 ? (
+											projects.map((project: Project) => (
+												<TableRow key={project.id}>
+													<TableCell className="font-medium">
+														<Link
+															href={`/projects/${project.slug}`}
+															className="hover:text-blue-600 transition-colors"
+														>
+															{project.title}
+														</Link>
+													</TableCell>
+													<TableCell>
+														<div>
+															<div className="font-medium">
+																{project.user.name || "Unknown"}
+															</div>
+															<div className="text-sm text-gray-500">
+																{project.user.email}
+															</div>
+														</div>
+													</TableCell>
+													<TableCell>
+														<Badge className={`${getStatusColor(project.status)} border text-xs`}>
+															{project.status.replace('_', ' ')}
+														</Badge>
+													</TableCell>
+													<TableCell>
+														<div className="font-medium">
+															{formatCurrencyAmount(project.budget, project.currency)}
+														</div>
+													</TableCell>
+													<TableCell>
+														<div className="text-sm">
+															{project._count.tasks} tasks
+														</div>
+													</TableCell>
+													<TableCell>
+														<div className="text-sm text-gray-500">
+															{formatDate(project.createdAt)}
+														</div>
+													</TableCell>
+													<TableCell>
+														<Link href={`/projects/${project.slug}`}>
+															<Button variant="outline" size="sm">
+																View
+															</Button>
+														</Link>
+													</TableCell>
+												</TableRow>
+											))
+										) : (
+											<TableRow>
+												<TableCell colSpan={7} className="text-center py-8">
+													<div className="text-gray-500 dark:text-gray-400">
+														No projects found
+													</div>
+												</TableCell>
+											</TableRow>
+										)}
+									</TableBody>
+								</Table>
+							</div>
+						</CardContent>
+					</Card>
+
+					{/* User Management */}
+					<Card>
+						<CardHeader>
+							<CardTitle className="flex items-center gap-2">
+								<Users className="h-5 w-5" />
+								Recent Users
+							</CardTitle>
+							<CardDescription>
+								Recently registered users in the system
+							</CardDescription>
+						</CardHeader>
+						<CardContent>
+							<div className="rounded-md border">
+								<Table>
+									<TableHeader>
+										<TableRow>
+											<TableHead>Name</TableHead>
+											<TableHead>Email</TableHead>
+											<TableHead>Role</TableHead>
+											<TableHead>Projects</TableHead>
+											<TableHead>Joined</TableHead>
+										</TableRow>
+									</TableHeader>
+									<TableBody>
+										{users.length > 0 ? (
+											users.map((user: User) => (
+												<TableRow key={user.id}>
+													<TableCell className="font-medium">
+														{user.name || "Unknown"}
+													</TableCell>
+													<TableCell>{user.email}</TableCell>
+													<TableCell>
+														<Badge variant="outline" className="text-xs">
+															{user.role}
+														</Badge>
+													</TableCell>
+													<TableCell>
+														<div className="text-sm">
+															{user._count.projects} projects
+														</div>
+													</TableCell>
+													<TableCell>
+														<div className="text-sm text-gray-500">
+															{formatDate(user.createdAt)}
+														</div>
+													</TableCell>
+												</TableRow>
+											))
+										) : (
+											<TableRow>
+												<TableCell colSpan={5} className="text-center py-8">
+													<div className="text-gray-500 dark:text-gray-400">
+														No users found
+													</div>
+												</TableCell>
+											</TableRow>
+										)}
+									</TableBody>
+								</Table>
+							</div>
+						</CardContent>
+					</Card>
+				</div>
+			</main>
+		</div>
+	)
 }

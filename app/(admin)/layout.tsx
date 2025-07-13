@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
-import Sidebar from '@/components/mainsidebar';
-import MainNavbar from '@/components/mainnavbar';
+import AdminSidebar from '@/components/adminsidebar';
+import AdminNavbar from '@/components/adminnavbar';
 import LoadingScreen from '@/components/loading-screen';
 import { redirect } from 'next/navigation';
 import { Toaster } from 'sonner';
@@ -12,13 +12,13 @@ interface LayoutProps {
 	children: React.ReactNode
 }
 
-const Layout = ({ children }: LayoutProps) => {
+const AdminLayout = ({ children }: LayoutProps) => {
 	const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
 	const { data: session, status } = useSession();
 
 	// Load sidebar state from localStorage on mount
 	useEffect(() => {
-		const savedState = localStorage.getItem('mainSidebarCollapsed');
+		const savedState = localStorage.getItem('adminSidebarCollapsed');
 		if (savedState !== null) {
 			setSidebarCollapsed(JSON.parse(savedState));
 		}
@@ -28,26 +28,30 @@ const Layout = ({ children }: LayoutProps) => {
 		const newState = !sidebarCollapsed;
 		setSidebarCollapsed(newState);
 		// Save to localStorage
-		localStorage.setItem('mainSidebarCollapsed', JSON.stringify(newState));
+		localStorage.setItem('adminSidebarCollapsed', JSON.stringify(newState));
 	};
 
 	if (status === 'loading') {
-		return <LoadingScreen routeName="dashboard" />;
+		return <LoadingScreen routeName="admin" />;
 	}
 
 	if (!session?.user) {
 		redirect('/signin');
 	}
 
+	// if (session.user.role !== 'ADMIN') {
+	// 	redirect('/dashboard');
+	// }
+
 	return (
 		<div className="flex h-screen">
-			<Sidebar
+			<AdminSidebar
 				isCollapsed={sidebarCollapsed}
 				toggleSidebar={toggleSidebar}
 			/>
 			<div className="flex flex-col flex-1">
-				<MainNavbar isCollapsed={sidebarCollapsed} />
-				<main className={`backdrop-blur-sm transition-all duration-300 ${sidebarCollapsed ? 'sm:ml-[60px] ml-[0px]' : 'sm:ml-[240px] ml-[0px]'} pt-16`}>
+				<AdminNavbar isCollapsed={sidebarCollapsed} />
+				<main className={`transition-all duration-300 ${sidebarCollapsed ? 'sm:ml-[60px] ml-[0px]' : 'sm:ml-[240px] ml-[0px]'} pt-16`}>
 					<div className="h-full pb-16 md:pb-0">
 						{children}
 					</div>
@@ -58,4 +62,4 @@ const Layout = ({ children }: LayoutProps) => {
 	);
 };
 
-export default Layout;
+export default AdminLayout; 

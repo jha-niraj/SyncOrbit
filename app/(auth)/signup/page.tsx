@@ -94,13 +94,14 @@ function SignUp() {
 							initial={{ opacity: 0, scale: 0.8 }}
 							animate={{ opacity: 1, scale: 1 }}
 							transition={{ duration: 0.5 }}
+							className="rounded-2xl bg-black"
 						>
 							<Image
 								src="/shunyatech.png"
 								alt="ShunyaTech Logo"
 								width={80}
 								height={80}
-								className="rounded-2xl shadow-lg"
+								className="rounded-2xl"
 							/>
 						</motion.div>
 						<div className="flex flex-col space-y-3 text-center">

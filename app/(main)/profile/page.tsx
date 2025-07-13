@@ -1,125 +1,133 @@
+import { getProfile } from "@/actions/(client)/profile.action"
+import { SettingsForm } from "./_components/settingsform"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
-import Link from "next/link"
+import { Separator } from "@/components/ui/separator"
+import { User, Settings, Shield, Mail, Calendar } from "lucide-react"
+import { ProfileForm } from "./_components/profileform"
 
-export default function ProfilePage() {
-    const user = {
-        name: "John Doe",
-        email: "john@example.com",
-        role: "DEVELOPER",
-        avatar: "/placeholder.svg?height=100&width=100",
-        projects: [
-            { id: 1, title: "E-commerce Website", status: "In Progress" },
-            { id: 2, title: "Mobile App Development", status: "In Progress" },
-        ],
-        tasks: [
-            { id: 1, title: "Implement User Authentication", status: "Yet to Start", project: "E-commerce Website" },
-            { id: 2, title: "Shopping Cart Functionality", status: "In Progress", project: "E-commerce Website" },
-            { id: 3, title: "Database Schema Design", status: "Completed", project: "E-commerce Website" },
-        ],
+export default async function ProfilePage() {
+    const profileData = await getProfile()
+    
+    if (!profileData.success || !profileData.user) {
+        return (
+            <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+                <div className="text-center">
+                    <h1 className="text-2xl font-bold text-red-600">Error loading profile</h1>
+                    <p className="text-gray-600 mt-2">Please try again later</p>
+                </div>
+            </div>
+        )
     }
 
+    const { user } = profileData
+
     return (
-        <div className="flex min-h-screen flex-col py-16">
-            <main className="flex-1 container py-6">
-                <div className="max-w-4xl mx-auto">
-                    <div className="flex flex-col md:flex-row gap-6 mb-8">
-                        <div className="md:w-1/3">
-                            <Card>
-                                <CardHeader className="flex flex-col items-center">
-                                    <Avatar className="h-24 w-24">
-                                        <AvatarImage src={user.avatar} alt={user.name} />
-                                        <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
+        <div className="min-h-screen bg-gradient-to-bl dark:from-black dark:via-gray-900 dark:to-black">
+            <div className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
+                <div className="flex flex-col lg:flex-row gap-8">
+                    {/* Profile Sidebar */}
+                    <div className="lg:w-1/3">
+                        <Card className="sticky top-8">
+                            <CardHeader className="text-center">
+                                <div className="relative mx-auto">
+                                    <Avatar className="h-32 w-32 mx-auto border-4 border-white shadow-lg">
+                                        <AvatarImage src={user.image || "/placeholder.svg"} alt={user.name || "User"} />
+                                        <AvatarFallback className="bg-gradient-to-r from-blue-500 to-purple-600 text-white text-2xl font-bold">
+                                            {user.name?.split(" ").map((n: string) => n[0]).join("") || "U"}
+                                        </AvatarFallback>
                                     </Avatar>
-                                    <CardTitle>{user.name}</CardTitle>
-                                    <CardDescription>{user.email}</CardDescription>
-                                </CardHeader>
-                                <CardContent className="text-center">
-                                    <Badge variant="outline">{user.role}</Badge>
-                                    <div className="mt-6">
-                                        <Button className="w-full">Edit Profile</Button>
+                                </div>
+                                <CardTitle className="text-2xl font-bold mt-4">{user.name}</CardTitle>
+                                <CardDescription className="text-lg">{user.email}</CardDescription>
+                            </CardHeader>
+                            <CardContent className="space-y-4">
+                                <div className="flex items-center justify-center">
+                                    <Badge variant="outline" className="flex items-center gap-2">
+                                        <Shield className="h-4 w-4" />
+                                        {user.role}
+                                    </Badge>
+                                </div>
+                                
+                                <Separator />
+                                
+                                <div className="space-y-3">
+                                    <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                                        <Mail className="h-4 w-4" />
+                                        <span>{user.email}</span>
                                     </div>
-                                </CardContent>
-                            </Card>
-                        </div>
-                        <div className="md:w-2/3">
-                            <Tabs defaultValue="projects">
-                                <TabsList className="grid w-full grid-cols-2">
-                                    <TabsTrigger value="projects">Projects</TabsTrigger>
-                                    <TabsTrigger value="tasks">Tasks</TabsTrigger>
-                                </TabsList>
-                                <TabsContent value="projects" className="mt-4">
-                                    <Card>
-                                        <CardHeader>
-                                            <CardTitle>My Projects</CardTitle>
-                                            <CardDescription>Projects you are currently working on</CardDescription>
-                                        </CardHeader>
-                                        <CardContent>
-                                            <div className="space-y-4">
-                                                {user.projects.map((project) => (
-                                                    <div
-                                                        key={project.id}
-                                                        className="flex items-center justify-between border-b pb-4 last:border-0 last:pb-0"
-                                                    >
-                                                        <div>
-                                                            <h3 className="font-medium">{project.title}</h3>
-                                                            <p className="text-sm text-muted-foreground">Status: {project.status}</p>
-                                                        </div>
-                                                        <Link href={`/projects/${project.id}`}>
-                                                            <Button variant="outline" size="sm">
-                                                                View Details
-                                                            </Button>
-                                                        </Link>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        </CardContent>
-                                    </Card>
-                                </TabsContent>
-                                <TabsContent value="tasks" className="mt-4">
-                                    <Card>
-                                        <CardHeader>
-                                            <CardTitle>My Tasks</CardTitle>
-                                            <CardDescription>Tasks assigned to you</CardDescription>
-                                        </CardHeader>
-                                        <CardContent>
-                                            <div className="space-y-4">
-                                                {user.tasks.map((task) => (
-                                                    <div
-                                                        key={task.id}
-                                                        className="flex items-center justify-between border-b pb-4 last:border-0 last:pb-0"
-                                                    >
-                                                        <div>
-                                                            <h3 className="font-medium">{task.title}</h3>
-                                                            <p className="text-sm text-muted-foreground">Project: {task.project}</p>
-                                                            <div
-                                                                className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold mt-1 ${task.status === "Completed"
-                                                                        ? "border-green-600/20 bg-green-600/10 text-green-600"
-                                                                        : task.status === "In Progress"
-                                                                            ? "border-blue-600/20 bg-blue-600/10 text-blue-600"
-                                                                            : "border-yellow-600/20 bg-yellow-600/10 text-yellow-600"
-                                                                    }`}
-                                                            >
-                                                                {task.status}
-                                                            </div>
-                                                        </div>
-                                                        <Button variant="outline" size="sm">
-                                                            Update Status
-                                                        </Button>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        </CardContent>
-                                    </Card>
-                                </TabsContent>
-                            </Tabs>
-                        </div>
+                                    <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                                        <Calendar className="h-4 w-4" />
+                                        <span>Member since {new Date().toLocaleDateString()}</span>
+                                    </div>
+                                </div>
+
+                                <Separator />
+
+                                <div className="space-y-2">
+                                    <h4 className="font-semibold text-sm">Account Statistics</h4>
+                                    <div className="grid grid-cols-2 gap-4 text-center">
+                                        <div>
+                                            <p className="text-2xl font-bold text-blue-600">{user.projects?.length || 0}</p>
+                                            <p className="text-xs text-muted-foreground">Projects</p>
+                                        </div>
+                                        <div>
+                                            <p className="text-2xl font-bold text-green-600">${user.totalSpent || 0}</p>
+                                            <p className="text-xs text-muted-foreground">Total Spent</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </div>
+
+                    {/* Main Content */}
+                    <div className="lg:w-2/3">
+                        <Tabs defaultValue="profile" className="w-full">
+                            <TabsList className="grid w-full grid-cols-2">
+                                <TabsTrigger value="profile" className="flex items-center gap-2">
+                                    <User className="h-4 w-4" />
+                                    Profile
+                                </TabsTrigger>
+                                <TabsTrigger value="settings" className="flex items-center gap-2">
+                                    <Settings className="h-4 w-4" />
+                                    Settings
+                                </TabsTrigger>
+                            </TabsList>
+                            
+                            <TabsContent value="profile" className="mt-6">
+                                <Card>
+                                    <CardHeader>
+                                        <CardTitle>Profile Information</CardTitle>
+                                        <CardDescription>
+                                            Update your profile information and bio
+                                        </CardDescription>
+                                    </CardHeader>
+                                    <CardContent>
+                                        <ProfileForm user={user} />
+                                    </CardContent>
+                                </Card>
+                            </TabsContent>
+                            
+                            <TabsContent value="settings" className="mt-6">
+                                <Card>
+                                    <CardHeader>
+                                        <CardTitle>Account Settings</CardTitle>
+                                        <CardDescription>
+                                            Manage your account preferences and security settings
+                                        </CardDescription>
+                                    </CardHeader>
+                                    <CardContent>
+                                        <SettingsForm user={user} />
+                                    </CardContent>
+                                </Card>
+                            </TabsContent>
+                        </Tabs>
                     </div>
                 </div>
-            </main>
+            </div>
         </div>
     )
 }

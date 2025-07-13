@@ -3,7 +3,7 @@
 import { useTheme } from "next-themes"
 import { usePathname, useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
-import { Moon, Sun, Home, User, LogOut, Shield, LogIn } from "lucide-react"
+import { Moon, Sun, Home, User, LogOut, Shield, Settings } from "lucide-react"
 import { Button } from "./ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
@@ -12,10 +12,9 @@ import {
 import { motion } from "framer-motion"
 import { signOut, useSession } from "next-auth/react"
 import { toast } from "sonner"
-import Link from "next/link"
 import { Badge } from "./ui/badge"
 
-const MainNavbar = ({ isCollapsed }: { isCollapsed: boolean }) => {
+const AdminNavbar = ({ isCollapsed }: { isCollapsed: boolean }) => {
     const { data: session } = useSession();
     const { theme, setTheme } = useTheme()
     const [scrolled, setScrolled] = useState(false)
@@ -33,21 +32,17 @@ const MainNavbar = ({ isCollapsed }: { isCollapsed: boolean }) => {
 
     const getPageTitle = () => {
         const pathSegments = pathname.split("/").filter(Boolean)
-        const currentPath = pathSegments[pathSegments.length - 1] || "dashboard"
+        const currentPath = pathSegments[pathSegments.length - 1] || "admin"
 
         switch (currentPath) {
-            case "dashboard":
-                return "Dashboard"
-            case "projects":
-                return "Projects"
-            case "team":
-                return "Team"
+            case "admin":
+                return "Admin Dashboard"
+            case "createproject":
+                return "Create Project"
+            case "users":
+                return "Manage Users"
             case "analytics":
                 return "Analytics"
-            case "feedback":
-                return "Feedback"
-            case "profile":
-                return "Profile"
             case "settings":
                 return "Settings"
             default:
@@ -80,14 +75,10 @@ const MainNavbar = ({ isCollapsed }: { isCollapsed: boolean }) => {
                             >
                                 {getPageTitle()}
                             </motion.h1>
-                            {
-                                session?.user && (
-                                    <Badge variant="secondary" className="hidden sm:flex bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700">
-                                        <Shield className="h-3 w-3 mr-1" />
-                                        {session.user.role}
-                                    </Badge>
-                                )
-                            }
+                            <Badge className="hidden sm:flex bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300 border-red-200 dark:border-red-700">
+                                <Shield className="h-3 w-3 mr-1" />
+                                ADMIN
+                            </Badge>
                         </div>
                     </div>
                     <div className="flex items-center gap-2 sm:gap-3">
@@ -110,18 +101,18 @@ const MainNavbar = ({ isCollapsed }: { isCollapsed: boolean }) => {
                             </Button>
                         </div>
                         {
-                            session?.user ? (
+                            session?.user && (
                                 <DropdownMenu>
                                     <DropdownMenuTrigger asChild>
                                         <Button variant="ghost" className="relative h-8 w-8 rounded-full p-0">
-                                            <Avatar className="h-8 w-8 border-2 border-gray-200 dark:border-gray-700">
+                                            <Avatar className="h-8 w-8 border-2 border-red-200 dark:border-red-700">
                                                 <AvatarImage src={session?.user?.image || "/placeholder.svg"} alt={session?.user?.name || "User"} />
-                                                <AvatarFallback className="bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-xs font-bold">
+                                                <AvatarFallback className="bg-red-600 text-white text-xs font-bold">
                                                     {
                                                         session.user.name
                                                             ?.split(" ")
                                                             .map((n: string) => n[0])
-                                                            .join("") || "U"
+                                                            .join("") || "A"
                                                     }
                                                 </AvatarFallback>
                                             </Avatar>
@@ -133,13 +124,13 @@ const MainNavbar = ({ isCollapsed }: { isCollapsed: boolean }) => {
                                                 <p className="text-sm font-medium leading-none">{session.user.name}</p>
                                                 <p className="text-xs leading-none text-muted-foreground">{session.user.email}</p>
                                                 <div className="flex items-center gap-1 mt-1">
-                                                    <Shield className="w-3 h-3 text-gray-600 dark:text-gray-400" />
-                                                    <span className="text-xs text-gray-600 dark:text-gray-400 font-medium">{session.user.role}</span>
+                                                    <Shield className="w-3 h-3 text-red-600 dark:text-red-400" />
+                                                    <span className="text-xs text-red-600 dark:text-red-400 font-medium">Administrator</span>
                                                 </div>
                                             </div>
                                         </DropdownMenuLabel>
                                         <DropdownMenuSeparator />
-                                        <DropdownMenuItem className="cursor-pointer md:hidden" onClick={() => router.push("/dashboard")}>
+                                        <DropdownMenuItem className="cursor-pointer md:hidden" onClick={() => router.push("/admin")}>
                                             <Home className="mr-2 h-4 w-4" />
                                             <span>Dashboard</span>
                                         </DropdownMenuItem>
@@ -162,6 +153,10 @@ const MainNavbar = ({ isCollapsed }: { isCollapsed: boolean }) => {
                                             }
                                         </DropdownMenuItem>
                                         <DropdownMenuSeparator className="md:hidden" />
+                                        <DropdownMenuItem className="cursor-pointer" onClick={() => router.push("/admin/settings")}>
+                                            <Settings className="mr-2 h-4 w-4" />
+                                            <span>Settings</span>
+                                        </DropdownMenuItem>
                                         <DropdownMenuItem className="cursor-pointer" onClick={() => router.push("/profile")}>
                                             <User className="mr-2 h-4 w-4" />
                                             <span>Profile</span>
@@ -173,16 +168,6 @@ const MainNavbar = ({ isCollapsed }: { isCollapsed: boolean }) => {
                                         </DropdownMenuItem>
                                     </DropdownMenuContent>
                                 </DropdownMenu>
-                            ) : (
-                                <Link href="/signin">
-                                    <Button
-                                        className="bg-gray-900 dark:bg-white text-white dark:text-gray-900 hover:bg-gray-800 dark:hover:bg-gray-100 hover:shadow-sm transition-all duration-200"
-                                        size="sm"
-                                    >
-                                        <LogIn className="h-4 w-4 mr-2" />
-                                        Sign In
-                                    </Button>
-                                </Link>
                             )
                         }
                     </div>
@@ -192,4 +177,4 @@ const MainNavbar = ({ isCollapsed }: { isCollapsed: boolean }) => {
     )
 }
 
-export default MainNavbar; 
+export default AdminNavbar; 
