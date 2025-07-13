@@ -44,6 +44,19 @@ export async function getProjectBySlug(slug: string) {
 								name: true,
 								image: true,
 							}
+						},
+						subtasks: {
+							select: {
+								id: true,
+								title: true,
+								description: true,
+								completed: true,
+								createdAt: true,
+								updatedAt: true,
+							},
+							orderBy: {
+								createdAt: 'asc'
+							}
 						}
 					}
 				},

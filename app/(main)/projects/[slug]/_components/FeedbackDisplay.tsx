@@ -105,65 +105,67 @@ export function FeedbackDisplay({ feedbacks }: FeedbackDisplayProps) {
 	return (
 		<div className="space-y-6" data-feedback-section>
 			{displayFeedbacks.map((feedback) => (
-				<Card key={feedback.id} className="bg-card border border-border hover:shadow-md transition-shadow">
-					<CardHeader className="pb-3">
-						<div className="flex items-start justify-between">
-							<div className="flex-1">
-								<CardTitle className="text-lg font-semibold text-foreground mb-2">
-									{feedback.title}
-								</CardTitle>
-								<div className="flex items-center gap-3 text-sm text-muted-foreground">
-									<div className="flex items-center gap-2">
-										<Avatar className="h-5 w-5">
-											<AvatarImage src={feedback.user.image || "/placeholder.svg"} alt={feedback.user.name || "User"} />
-											<AvatarFallback className="text-xs">
-												{feedback.user.name?.split(" ").map(n => n[0]).join("") || "U"}
-											</AvatarFallback>
-										</Avatar>
-										<span>{feedback.user.name || "Unknown"}</span>
-									</div>
-									<div className="flex items-center gap-1">
-										<Calendar className="h-3 w-3" />
-										<span>{formatDistanceToNow(new Date(feedback.createdAt), { addSuffix: true })}</span>
-									</div>
+				<div
+					key={feedback.id}
+					className="bg-card border border-border hover:shadow-md transition-shadow rounded-lg p-4 space-y-3"
+				>
+					<div className="flex items-start justify-between gap-3">
+						<div className="flex-1">
+							<h3 className="text-base font-semibold text-foreground mb-1">
+								{feedback.title}
+							</h3>
+							<div className="flex items-center flex-wrap gap-3 text-xs text-muted-foreground">
+								<div className="flex items-center gap-2">
+									<Avatar className="h-5 w-5">
+										<AvatarImage src={feedback.user.image || "/placeholder.svg"} alt={feedback.user.name || "User"} />
+										<AvatarFallback className="text-[10px]">
+											{feedback.user.name?.split(" ").map(n => n[0]).join("") || "U"}
+										</AvatarFallback>
+									</Avatar>
+									<span>{feedback.user.name || "Unknown"}</span>
+								</div>
+								<div className="flex items-center gap-1">
+									<Calendar className="h-3 w-3" />
+									<span>{formatDistanceToNow(new Date(feedback.createdAt), { addSuffix: true })}</span>
 								</div>
 							</div>
-							<div className="flex items-center gap-2">
-								<Badge className={`${getStatusColor(feedback.status)} border flex items-center gap-1`}>
-									{getStatusIcon(feedback.status)}
-									<span className="capitalize">{feedback.status.toLowerCase().replace('_', ' ')}</span>
-								</Badge>
-								
-								{canUpdateStatus && (
-									<Select
-										value={feedback.status}
-										onValueChange={(value) => handleStatusUpdate(feedback.id, value as FeedbackStatus)}
-										disabled={loadingStates[feedback.id]}
-									>
-										<SelectTrigger className="w-32 h-8">
-											<SelectValue />
-										</SelectTrigger>
-										<SelectContent>
-											<SelectItem value={FeedbackStatus.PENDING}>Pending</SelectItem>
-											<SelectItem value={FeedbackStatus.IN_PROGRESS}>In Progress</SelectItem>
-											<SelectItem value={FeedbackStatus.COMPLETED}>Completed</SelectItem>
-											<SelectItem value={FeedbackStatus.CANCELLED}>Cancelled</SelectItem>
-										</SelectContent>
-									</Select>
-								)}
-							</div>
 						</div>
-					</CardHeader>
+
+						<div className="flex flex-col sm:flex-row items-end sm:items-center gap-2">
+							<Badge className={`${getStatusColor(feedback.status)} border flex items-center gap-1 text-xs px-2 py-0.5`}>
+								{getStatusIcon(feedback.status)}
+								<span className="capitalize">{feedback.status.toLowerCase().replace('_', ' ')}</span>
+							</Badge>
+
+							{canUpdateStatus && (
+								<Select
+									value={feedback.status}
+									onValueChange={(value) => handleStatusUpdate(feedback.id, value as FeedbackStatus)}
+									disabled={loadingStates[feedback.id]}
+								>
+									<SelectTrigger className="w-28 h-7 text-xs">
+										<SelectValue />
+									</SelectTrigger>
+									<SelectContent>
+										<SelectItem value={FeedbackStatus.PENDING}>Pending</SelectItem>
+										<SelectItem value={FeedbackStatus.IN_PROGRESS}>In Progress</SelectItem>
+										<SelectItem value={FeedbackStatus.COMPLETED}>Completed</SelectItem>
+										<SelectItem value={FeedbackStatus.CANCELLED}>Cancelled</SelectItem>
+									</SelectContent>
+								</Select>
+							)}
+						</div>
+					</div>
+
 					{feedback.description && (
-						<CardContent className="pt-0">
-							<div className="bg-muted rounded-lg p-4">
-								<p className="text-sm text-foreground whitespace-pre-wrap leading-relaxed">
-									{feedback.description}
-								</p>
-							</div>
-						</CardContent>
+						<div className="bg-muted rounded-md px-3 py-2">
+							<p className="text-sm text-foreground whitespace-pre-wrap leading-relaxed">
+								{feedback.description}
+							</p>
+						</div>
 					)}
-				</Card>
+				</div>
+
 			))}
 		</div>
 	)

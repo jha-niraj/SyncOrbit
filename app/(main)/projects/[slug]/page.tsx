@@ -1,22 +1,25 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { DollarSign, Users, ArrowLeft, CheckCircle, Target, MessageSquare, CreditCard } from "lucide-react"
+import { DollarSign, Users, ArrowLeft, CheckCircle, Target, MessageSquare, CreditCard, Plus, Clock, ListTodo } from "lucide-react"
 import Link from "next/link"
 import { getProjectBySlug } from "@/actions/(client)/project.action"
 import { ProjectClientWrapper } from "./_components/ProjectClientWrapper"
 import { ProjectLinks } from "./_components/ProjectLinks"
 import { FeedbackDisplay } from "./_components/FeedbackDisplay"
+import { TaskManagementSheet } from "./_components/TaskManagementSheet"
+import { CreateTaskSheet } from "./_components/CreateTaskSheet"
 import { useSession } from "next-auth/react"
 import { ProjectStoreProvider } from "./_components/ProjectStoreProvider"
 import { formatCurrency, getCurrencySymbol, getPaymentProgress, useProjectStore } from "@/store/useProjectStore"
 import { TaskStatus } from "@prisma/client"
+import { updateTaskStatus } from "@/actions/(developers)/developers.action"
+import { toast } from "sonner"
 
 interface ProjectPageProps {
 	params: Promise<{
@@ -28,12 +31,12 @@ interface ProjectPageProps {
 export default function ProjectPage({ params }: ProjectPageProps) {
 	const [initialProject, setInitialProject] = useState<any>(null)
 	const [isLoading, setIsLoading] = useState(true)
-	const [activeTab, setActiveTab] = useState("tasks")
-	const feedbackSectionRef = useRef<HTMLDivElement>(null)
+	const [refreshKey, setRefreshKey] = useState(0)
 	const { data: session } = useSession()
 	const { project: storeProject } = useProjectStore()
 
 	const project = storeProject || initialProject
+	const isDeveloper = session?.user?.role && ['DEVELOPER', 'PRODUCTMANAGER', 'ADMIN'].includes(session.user.role)
 
 	useEffect(() => {
 		const loadProject = async () => {
@@ -45,20 +48,52 @@ export default function ProjectPage({ params }: ProjectPageProps) {
 			setIsLoading(false)
 		}
 		loadProject()
-	}, [params])
+	}, [params, refreshKey])
 
 	const handleFeedbackAdded = () => {
-		// Switch to feedback tab
-		setActiveTab("feedback")
-		// Scroll to feedback section with longer delay to ensure DOM is updated
+		// Scroll to feedback section using ID
 		setTimeout(() => {
-			feedbackSectionRef.current?.scrollIntoView({
-				behavior: 'smooth',
-				block: 'start',
-				inline: 'nearest'
-			})
+			const feedbackSection = document.getElementById('feedback-section')
+			if (feedbackSection) {
+				feedbackSection.scrollIntoView({
+					behavior: 'smooth',
+					block: 'start',
+					inline: 'nearest'
+				})
+			}
 		}, 200)
 	}
+
+	const handleTaskCreated = () => {
+		setRefreshKey(prev => prev + 1)
+	}
+
+	const handleTaskStatusUpdate = async (taskId: string, newStatus: TaskStatus) => {
+		try {
+			const result = await updateTaskStatus({ taskId, status: newStatus })
+			if (result.success) {
+				toast.success("Task status updated successfully")
+				setRefreshKey(prev => prev + 1)
+			} else {
+				toast.error(result.error || "Failed to update task status")
+			}
+		} catch (error) {
+			console.error("Update task status error:", error)
+			toast.error("Failed to update task status")
+		}
+	}
+
+	// Calculate subtask progress for each task
+	const getTaskProgress = (task: any) => {
+		if (!task.subtasks || task.subtasks.length === 0) return 0
+		const completed = task.subtasks.filter((st: any) => st.completed).length
+		return Math.round((completed / task.subtasks.length) * 100)
+	}
+
+	// Group tasks by status
+	const initiateeTasks = project?.tasks?.filter((task: any) => task.status === TaskStatus.YET_TO_START) || []
+	const workingTasks = project?.tasks?.filter((task: any) => task.status === TaskStatus.IN_PROGRESS) || []
+	const completedTasks = project?.tasks?.filter((task: any) => task.status === TaskStatus.COMPLETED) || []
 
 	if (isLoading) {
 		return (
@@ -92,9 +127,9 @@ export default function ProjectPage({ params }: ProjectPageProps) {
 		)
 	}
 
-	const completedTasks = project.tasks.filter((task: any) => task.status === TaskStatus.COMPLETED).length
 	const totalTasks = project.tasks.length
-	const progressPercentage = totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0
+	const overallCompletedTasks = completedTasks.length
+	const progressPercentage = totalTasks > 0 ? (overallCompletedTasks / totalTasks) * 100 : 0
 
 	const paymentProgress = getPaymentProgress(project.paidAmount, project.budget)
 	const requiredUpfront = project.budget * 0.3
@@ -129,18 +164,123 @@ export default function ProjectPage({ params }: ProjectPageProps) {
 		.map((task: any) => task.assignedDeveloper)
 		.filter((dev: any, index: number, self: any[]) => dev && self.findIndex((d: any) => d?.id === dev.id) === index)
 
+	const renderTaskCard = (task: any) => {
+		const progress = getTaskProgress(task)
+		const subtaskCount = task.subtasks?.length || 0
+		const completedSubtasks = task.subtasks?.filter((st: any) => st.completed).length || 0
+
+		return (
+			<TaskManagementSheet
+				key={task.id}
+				taskId={task.id}
+				userRole={session?.user?.role || ""}
+				trigger={
+					<div className="p-4 border rounded-lg hover:bg-muted/50 transition-colors cursor-pointer">
+						<div className="flex items-center justify-between mb-3">
+							<div className="flex items-center gap-2">
+								<div className={`w-3 h-3 rounded-full ${
+									task.status === TaskStatus.COMPLETED ? "bg-green-500" :
+									task.status === TaskStatus.IN_PROGRESS ? "bg-blue-500" :
+									"bg-gray-400"
+								}`} />
+								<h4 className="font-medium text-foreground">{task.title}</h4>
+							</div>
+							{task.assignedDeveloper && (
+								<Avatar className="h-6 w-6">
+									<AvatarImage src={task.assignedDeveloper.image || "/placeholder.svg"} alt={task.assignedDeveloper.name || "Developer"} />
+									<AvatarFallback className="text-xs">
+										{task.assignedDeveloper.name?.split(" ").map((n: string) => n[0]).join("") || "D"}
+									</AvatarFallback>
+								</Avatar>
+							)}
+						</div>
+						
+						{task.description && (
+							<p className="text-sm text-muted-foreground mb-3">{task.description}</p>
+						)}
+						
+						{subtaskCount > 0 && (
+							<div className="space-y-2">
+								<div className="flex justify-between items-center">
+									<span className="text-xs text-muted-foreground">
+										{completedSubtasks} of {subtaskCount} subtasks
+									</span>
+									<span className="text-xs font-medium">{progress}%</span>
+								</div>
+								<Progress value={progress} className="h-1" />
+							</div>
+						)}
+						
+						<div className="flex items-center justify-between mt-3">
+							<Badge className={`${getTaskStatusColor(task.status)} border text-xs`}>
+								{task.status.replace('_', ' ')}
+							</Badge>
+							{task.assignedDeveloper && (
+								<span className="text-xs text-muted-foreground">
+									{task.assignedDeveloper.name}
+								</span>
+							)}
+						</div>
+					</div>
+				}
+			/>
+		)
+	}
+
+	const renderKanbanColumn = (title: string, tasks: any[], status: TaskStatus, icon: React.ReactNode) => (
+		<div className="space-y-4 shadow-md dark:border-gray-200 dark:border-2 rounded-xl p-4">
+			<div className="flex items-center justify-between border-b-2 border-gray-400 dark:border-gray-200 pb-2">
+				<h3 className="font-semibold text-center text-foreground flex items-center justify-center gap-2">
+					{icon}
+					{title} ({tasks.length})
+				</h3>
+				{isDeveloper && status !== TaskStatus.COMPLETED && (
+					<div className="flex gap-2">
+						{tasks.map((task: any) => (
+							<Button
+								key={task.id}
+								variant="ghost"
+								size="sm"
+								onClick={(e) => {
+									e.preventDefault()
+									const nextStatus = status === TaskStatus.YET_TO_START ? TaskStatus.IN_PROGRESS : TaskStatus.COMPLETED
+									handleTaskStatusUpdate(task.id, nextStatus)
+								}}
+								className="text-xs"
+							>
+								Move to {status === TaskStatus.YET_TO_START ? 'Working' : 'Completed'}
+							</Button>
+						)).slice(0, 1)}
+					</div>
+				)}
+			</div>
+			<div className="space-y-3 min-h-32">
+				{tasks.length > 0 ? (
+					tasks.map(renderTaskCard)
+				) : (
+					<div className="text-center py-8 text-muted-foreground">
+						<div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-3">
+							{icon}
+						</div>
+						<p className="text-sm">No tasks in {title.toLowerCase()}</p>
+					</div>
+				)}
+			</div>
+		</div>
+	)
+
 	return (
 		<ProjectStoreProvider initialProject={initialProject}>
 			<div className="min-h-screen bg-gradient-to-bl dark:from-black dark:via-gray-900 dark:to-black">
-				<div className="bg-black text-white">
+				<div className="">
 					<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 						<div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
 							<div className="space-y-8">
 								<div>
-									<h1 className="text-5xl font-bold text-white mb-6">
+									<h1 className="text-5xl font-bold text-black dark:text-white mb-6">
 										{project.title}
 									</h1>
-									<p className="text-xl text-gray-300 leading-relaxed mb-8">
+									<p className="text-xl text-gray-700 dark:text-gray-300 leading-relaxed mb-8">
 										{project.description || "No description provided"}
 									</p>
 									<div className="flex items-center gap-4">
@@ -155,57 +295,57 @@ export default function ProjectPage({ params }: ProjectPageProps) {
 								</div>
 								<div className="grid grid-cols-2 gap-8">
 									<div className="flex items-center gap-4">
-										<div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center">
-											<DollarSign className="h-6 w-6 text-black" />
+										<div className="w-12 h-12 bg-white dark:bg-gray-700 rounded-lg flex items-center justify-center">
+											<DollarSign className="h-6 w-6 text-black dark:text-white" />
 										</div>
 										<div className="flex-1">
-											<p className="text-sm text-gray-400">Budget ({project.currency})</p>
-											<p className="text-2xl font-bold text-white">
+											<p className="text-sm text-gray-700 dark:text-gray-300">Budget ({project.currency})</p>
+											<p className="text-2xl font-bold text-black dark:text-white">
 												{formatCurrency(project.budget, project.currency)}
 											</p>
 										</div>
 									</div>
 									<div className="flex items-center gap-4">
-										<div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center">
-											<CreditCard className="h-6 w-6 text-black" />
+										<div className="w-12 h-12 bg-white dark:bg-gray-700 rounded-lg flex items-center justify-center">
+											<CreditCard className="h-6 w-6 text-black dark:text-white" />
 										</div>
 										<div className="flex-1">
-											<p className="text-sm text-gray-400">Payment Status</p>
-											<p className="text-2xl font-bold text-white">
+											<p className="text-sm text-gray-700 dark:text-gray-300">Payment Status</p>
+											<p className="text-2xl font-bold text-black dark:text-white">
 												{Math.round(paymentProgress)}% Paid
 											</p>
 										</div>
 									</div>
 									<div className="flex items-center gap-4">
-										<div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center">
-											<Target className="h-6 w-6 text-black" />
+										<div className="w-12 h-12 bg-white dark:bg-gray-700 rounded-lg flex items-center justify-center">
+											<Target className="h-6 w-6 text-black dark:text-white" />
 										</div>
 										<div className="flex-1">
-											<p className="text-sm text-gray-400">Progress</p>
-											<p className="text-2xl font-bold text-white">
+											<p className="text-sm text-gray-700 dark:text-gray-300">Progress</p>
+											<p className="text-2xl font-bold text-black dark:text-white">
 												{Math.round(progressPercentage)}%
 											</p>
 										</div>
 									</div>
 									<div className="flex items-center gap-4">
-										<div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center">
-											<Users className="h-6 w-6 text-black" />
+										<div className="w-12 h-12 bg-white dark:bg-gray-700 rounded-lg flex items-center justify-center">
+											<Users className="h-6 w-6 text-black dark:text-white" />
 										</div>
 										<div className="flex-1">
-											<p className="text-sm text-gray-400">Team Size</p>
-											<p className="text-2xl font-bold text-white">
+											<p className="text-sm text-gray-700 dark:text-gray-300">Team Size</p>
+											<p className="text-2xl font-bold text-black dark:text-white">
 												{assignedDevelopers.length} Developers
 											</p>
 										</div>
 									</div>
 								</div>
 								<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-									<div className="bg-white/10 rounded-xl p-6 backdrop-blur-sm">
-										<h3 className="text-lg font-semibold text-white mb-4">Payment Progress</h3>
+									<div className="border-gray-200 border-2 rounded-xl p-6">
+										<h3 className="text-lg font-semibold text-black dark:text-white mb-4">Payment Progress</h3>
 										<div className="space-y-3">
 											<div className="flex justify-between items-center">
-												<span className="text-sm text-gray-300">Paid Amount</span>
-												<span className="text-sm font-bold text-white">
+												<span className="text-sm text-gray-700 dark:text-gray-300">Paid Amount</span>
+												<span className="text-sm font-bold text-black dark:text-white">
 													{Math.round(paymentProgress)}%
 												</span>
 											</div>
@@ -215,20 +355,20 @@ export default function ProjectPage({ params }: ProjectPageProps) {
 													style={{ width: `${Math.min(paymentProgress, 100)}%` }}
 												/>
 											</div>
-											<div className="text-sm text-gray-300">
+											<div className="text-sm text-gray-700 dark:text-gray-300">
 												{formatCurrency(project.paidAmount, project.currency)} of {formatCurrency(project.budget, project.currency)}
 											</div>
-											<div className="text-xs text-gray-400">
+											<div className="text-xs text-gray-700 dark:text-gray-300">
 												Minimum 30% ({formatCurrency(requiredUpfront, project.currency)}) required to start
 											</div>
 										</div>
 									</div>
-									<div className="bg-white/10 rounded-xl p-6 backdrop-blur-sm">
-										<h3 className="text-lg font-semibold text-white mb-4">Project Progress</h3>
+									<div className="border-gray-200 border-2 rounded-xl p-6">
+										<h3 className="text-lg font-semibold text-black dark:text-white mb-4">Project Progress</h3>
 										<div className="space-y-3">
 											<div className="flex justify-between items-center">
-												<span className="text-sm text-gray-300">Completion</span>
-												<span className="text-sm font-bold text-white">
+												<span className="text-sm text-gray-700 dark:text-gray-300">Completion</span>
+												<span className="text-sm font-bold text-black dark:text-white">
 													{Math.round(progressPercentage)}%
 												</span>
 											</div>
@@ -238,10 +378,10 @@ export default function ProjectPage({ params }: ProjectPageProps) {
 													style={{ width: `${Math.min(progressPercentage, 100)}%` }}
 												/>
 											</div>
-											<div className="text-sm text-gray-300">
-												{completedTasks} of {totalTasks} tasks completed
+											<div className="text-sm text-gray-700 dark:text-gray-300">
+												{overallCompletedTasks} of {totalTasks} tasks completed
 											</div>
-											<div className="text-xs text-gray-400">
+											<div className="text-xs text-gray-700 dark:text-gray-300">
 												Track progress across all project milestones
 											</div>
 										</div>
@@ -250,33 +390,33 @@ export default function ProjectPage({ params }: ProjectPageProps) {
 							</div>
 							<div className="space-y-6">
 								<ProjectLinks project={project} />
-								<div className="bg-white rounded-xl p-6">
-									<h3 className="text-lg font-semibold text-gray-900 mb-4">
+								<div className="border-gray-200 border-2 rounded-xl p-6">
+									<h3 className="text-lg font-semibold text-black dark:text-white mb-4">
 										Payment Information
 									</h3>
 									<div className="space-y-4">
 										<div className="flex items-center justify-between">
-											<span className="text-sm text-gray-600">Payment Status</span>
+											<span className="text-sm text-gray-700 dark:text-gray-300">Payment Status</span>
 											<Badge className={`${getPaymentStatusColor(project.paymentStatus)} border`}>
 												{project.paymentStatus}
 											</Badge>
 										</div>
 										<div className="space-y-2">
 											<div className="flex justify-between items-center">
-												<span className="text-sm text-gray-600">Progress</span>
+												<span className="text-sm text-gray-700 dark:text-gray-300">Progress</span>
 												<span className="text-sm font-semibold">
 													{formatCurrency(project.paidAmount, project.currency)} of {formatCurrency(project.budget, project.currency)}
 												</span>
 											</div>
 											<Progress value={paymentProgress} className="h-2" />
 										</div>
-										<div className="text-xs text-gray-500 mt-2">
+										<div className="text-xs text-gray-700 dark:text-gray-300 mt-2">
 											Minimum 30% ({formatCurrency(requiredUpfront, project.currency)}) required to start project
 										</div>
 									</div>
 								</div>
-								<div className="bg-white rounded-xl p-6">
-									<h3 className="text-lg font-semibold text-gray-900 mb-4">
+								<div className="border-gray-200 border-2 rounded-xl p-6">
+									<h3 className="text-lg font-semibold text-black dark:text-white mb-4">
 										Client Information
 									</h3>
 									<div className="space-y-4">
@@ -288,24 +428,24 @@ export default function ProjectPage({ params }: ProjectPageProps) {
 												</AvatarFallback>
 											</Avatar>
 											<div>
-												<h4 className="text-xl font-semibold text-gray-900">
+												<h4 className="text-xl font-semibold text-gray-700 dark:text-gray-300">
 													{project.user.name || "Unknown Client"}
 												</h4>
-												<p className="text-gray-600">
+												<p className="text-gray-700 dark:text-gray-300">
 													{project.user.email || "No email provided"}
 												</p>
 											</div>
 										</div>
 										<div className="grid grid-cols-2 gap-4 pt-4 border-t">
 											<div>
-												<p className="text-sm text-gray-600">Project Type</p>
-												<p className="font-medium text-gray-900">
+												<p className="text-sm text-gray-700 dark:text-gray-300">Project Type</p>
+												<p className="font-medium text-gray-700 dark:text-gray-300">
 													{project.clientType || "Standard"}
 												</p>
 											</div>
 											<div>
-												<p className="text-sm text-gray-600">Currency</p>
-												<p className="font-medium text-gray-900">
+												<p className="text-sm text-gray-700 dark:text-gray-300">Currency</p>
+												<p className="font-medium text-gray-700 dark:text-gray-300">
 													{getCurrencySymbol(project.currency)} {project.currency}
 												</p>
 											</div>
@@ -316,27 +456,45 @@ export default function ProjectPage({ params }: ProjectPageProps) {
 						</div>
 					</div>
 				</div>
-				<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-					<div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-						<div className="lg:col-span-2">
+				
+				<div className="w-full px-4 sm:px-6 lg:px-8 py-12">
+					<div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+						{/* Kanban Task Board */}
+						<div className="lg:col-span-3">
 							<Card className="mb-8">
 								<CardHeader>
-									<CardTitle className="flex items-center gap-2">
-										<div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-										Project Progress
-									</CardTitle>
-									<CardDescription>
-										Track the completion status of all project tasks
-									</CardDescription>
+									<div className="flex items-center justify-between">
+										<div>
+											<CardTitle className="flex items-center gap-2">
+												<div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+												Task Management
+											</CardTitle>
+											<CardDescription>
+												Organize and track tasks across different stages
+											</CardDescription>
+										</div>
+										{isDeveloper && (
+											<CreateTaskSheet
+												projectId={project.id}
+												onTaskCreated={handleTaskCreated}
+												trigger={
+													<Button>
+														<Plus className="h-4 w-4 mr-2" />
+														Add Task
+													</Button>
+												}
+											/>
+										)}
+									</div>
 								</CardHeader>
 								<CardContent>
 									<div className="space-y-6">
 										<div className="flex items-center justify-between">
 											<span className="text-sm font-medium text-muted-foreground">
-												Overall Progress
+												Overall Task Progress
 											</span>
 											<span className="text-sm font-bold text-foreground">
-												{completedTasks} of {totalTasks} tasks completed
+												{overallCompletedTasks} of {totalTasks} tasks completed
 											</span>
 										</div>
 										<Progress value={progressPercentage} className="h-3" />
@@ -349,103 +507,18 @@ export default function ProjectPage({ params }: ProjectPageProps) {
 									</div>
 								</CardContent>
 							</Card>
-							<div ref={feedbackSectionRef}>
-								<Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-									<TabsList className="grid w-full grid-cols-2">
-										<TabsTrigger value="tasks" className="flex items-center gap-2">
-											<CheckCircle className="h-4 w-4" />
-											Tasks ({totalTasks})
-										</TabsTrigger>
-										<TabsTrigger value="feedback" className="flex items-center gap-2">
-											<MessageSquare className="h-4 w-4" />
-											Feedback ({(storeProject?.feedbacks || project?.feedbacks || []).length})
-										</TabsTrigger>
-									</TabsList>
-									<TabsContent value="tasks" className="mt-6">
-										<Card>
-											<CardHeader>
-												<CardTitle>Project Tasks</CardTitle>
-												<CardDescription>
-													All tasks associated with this project
-												</CardDescription>
-											</CardHeader>
-											<CardContent>
-												<div className="space-y-4">
-													{
-														project.tasks.length > 0 ? (
-															project.tasks.map((task: any) => (
-																<div key={task.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors">
-																	<div className="flex items-center gap-4">
-																		<div className="flex-shrink-0">
-																			<div className={`w-3 h-3 rounded-full ${task.status === TaskStatus.COMPLETED ? "bg-green-500" :
-																				task.status === TaskStatus.IN_PROGRESS ? "bg-blue-500" :
-																					"bg-gray-400"
-																				}`} />
-																		</div>
-																		<div className="flex-1">
-																			<h4 className="font-medium text-foreground">
-																				{task.title}
-																			</h4>
-																			{
-																				task.description && (
-																					<p className="text-sm text-muted-foreground mt-1">
-																						{task.description}
-																					</p>
-																				)
-																			}
-																			<div className="flex items-center gap-3 mt-2">
-																				<Badge className={`${getTaskStatusColor(task.status)} border text-xs`}>
-																					{task.status.replace('_', ' ')}
-																				</Badge>
-																				{
-																					task.assignedDeveloper && (
-																						<span className="text-xs text-muted-foreground">
-																							Assigned to {task.assignedDeveloper.name}
-																						</span>
-																					)
-																				}
-																			</div>
-																		</div>
-																	</div>
-																	{
-																		task.assignedDeveloper && (
-																			<Avatar className="h-8 w-8">
-																				<AvatarImage src={task.assignedDeveloper.image || "/placeholder.svg"} alt={task.assignedDeveloper.name || "Developer"} />
-																				<AvatarFallback className="text-xs">
-																					{task.assignedDeveloper.name?.split(" ").map((n: string) => n[0]).join("") || "D"}
-																				</AvatarFallback>
-																			</Avatar>
-																		)
-																	}
-																</div>
-															))
-														) : (
-															<p className="text-muted-foreground text-center py-8">
-																No tasks assigned to this project yet
-															</p>
-														)
-													}
-												</div>
-											</CardContent>
-										</Card>
-									</TabsContent>
-									<TabsContent value="feedback" className="mt-6">
-										<Card>
-											<CardHeader>
-												<CardTitle>Client Feedback</CardTitle>
-												<CardDescription>
-													Feedback and feature requests from the client
-												</CardDescription>
-											</CardHeader>
-											<CardContent>
-												<FeedbackDisplay feedbacks={project.feedbacks || []} />
-											</CardContent>
-										</Card>
-									</TabsContent>
-								</Tabs>
+							
+							{/* Kanban Columns */}
+							<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+								{renderKanbanColumn("Initiate", initiateeTasks, TaskStatus.YET_TO_START, <ListTodo className="h-4 w-4" />)}
+								{renderKanbanColumn("Working", workingTasks, TaskStatus.IN_PROGRESS, <Clock className="h-4 w-4" />)}
+								{renderKanbanColumn("Completed", completedTasks, TaskStatus.COMPLETED, <CheckCircle className="h-4 w-4" />)}
 							</div>
 						</div>
+						
+						{/* Right Sidebar */}
 						<div className="space-y-6">
+							{/* Team Members */}
 							<Card>
 								<CardHeader>
 									<CardTitle className="flex items-center gap-2">
@@ -484,6 +557,24 @@ export default function ProjectPage({ params }: ProjectPageProps) {
 									</div>
 								</CardContent>
 							</Card>
+							
+							{/* Feedback Section */}
+							<Card id="feedback-section">
+								<CardHeader>
+									<CardTitle className="flex items-center gap-2">
+										<MessageSquare className="h-5 w-5" />
+										Client Feedback ({(storeProject?.feedbacks || project?.feedbacks || []).length})
+									</CardTitle>
+									<CardDescription>
+										Feedback and feature requests from the client
+									</CardDescription>
+								</CardHeader>
+								<CardContent>
+									<FeedbackDisplay feedbacks={project.feedbacks || []} />
+								</CardContent>
+							</Card>
+							
+							{/* Quick Stats */}
 							<Card>
 								<CardHeader>
 									<CardTitle>Quick Stats</CardTitle>
@@ -496,7 +587,7 @@ export default function ProjectPage({ params }: ProjectPageProps) {
 										</div>
 										<div className="flex justify-between items-center">
 											<span className="text-sm text-muted-foreground">Completed Tasks</span>
-											<span className="font-medium text-green-600">{completedTasks}</span>
+											<span className="font-medium text-green-600">{overallCompletedTasks}</span>
 										</div>
 										<div className="flex justify-between items-center">
 											<span className="text-sm text-muted-foreground">Feedback Items</span>

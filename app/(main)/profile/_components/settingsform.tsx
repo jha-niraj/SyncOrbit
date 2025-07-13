@@ -114,7 +114,6 @@ export function SettingsForm({ user }: SettingsFormProps) {
                     </div>
                 </CardContent>
             </Card>
-            
             <Card>
                 <CardHeader>
                     <CardTitle>Change Password</CardTitle>
@@ -179,9 +178,9 @@ export function SettingsForm({ user }: SettingsFormProps) {
                     </form>
                 </CardContent>
             </Card>
-            
+
             <Separator />
-            
+
             <Card className="border-red-200 dark:border-red-800">
                 <CardHeader>
                     <CardTitle className="text-red-600 dark:text-red-400">Danger Zone</CardTitle>

@@ -72,7 +72,6 @@ export function DeveloperDashboard({ data, userRole }: DeveloperDashboardProps) 
         <div className="min-h-screen bg-gradient-to-bl dark:from-black dark:via-gray-900 dark:to-black">
             <div className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
                 <div className="flex flex-col space-y-8">
-                    {/* Header */}
                     <div className="flex flex-col space-y-2">
                         <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
                             Welcome back, {data.user.name}!
@@ -81,12 +80,10 @@ export function DeveloperDashboard({ data, userRole }: DeveloperDashboardProps) 
                             Here&apos;s an overview of your assigned projects and tasks.
                         </p>
                     </div>
-
-                    {/* Stats Grid */}
-                    <motion.div 
-                        className="grid gap-4 md:grid-cols-2 lg:grid-cols-4" 
-                        variants={container} 
-                        initial="hidden" 
+                    <motion.div
+                        className="grid gap-4 md:grid-cols-2 lg:grid-cols-4"
+                        variants={container}
+                        initial="hidden"
                         animate="show"
                     >
                         <motion.div variants={item}>
@@ -149,9 +146,7 @@ export function DeveloperDashboard({ data, userRole }: DeveloperDashboardProps) 
 
                     <Separator className="bg-gray-200 dark:bg-gray-800" />
 
-                    {/* Projects and Tasks */}
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                        {/* Assigned Projects */}
                         <div className="lg:col-span-2 space-y-6">
                             <div className="flex items-center justify-between">
                                 <h2 className="text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">
@@ -162,84 +157,83 @@ export function DeveloperDashboard({ data, userRole }: DeveloperDashboardProps) 
                                 </span>
                             </div>
                             <div className="grid gap-6">
-                                {data.projects.map((project: any) => {
-                                    const taskProgress = project.tasks.length > 0 
-                                        ? (project.tasks.filter((t: any) => t.status === 'COMPLETED').length / project.tasks.length) * 100 
-                                        : 0;
+                                {
+                                    data.projects.map((project: any) => {
+                                        const taskProgress = project.tasks.length > 0
+                                            ? (project.tasks.filter((t: any) => t.status === 'COMPLETED').length / project.tasks.length) * 100
+                                            : 0;
 
-                                    return (
-                                        <motion.div key={project.id} variants={item}>
-                                            <Card className="hover:shadow-lg transition-shadow">
-                                                <CardHeader>
-                                                    <div className="flex items-start justify-between">
-                                                        <div className="flex-1">
-                                                            <CardTitle className="text-xl mb-2">{project.title}</CardTitle>
-                                                            <CardDescription className="text-sm">
-                                                                Client: {project.user.name || project.user.email}
-                                                            </CardDescription>
+                                        return (
+                                            <motion.div key={project.id} variants={item}>
+                                                <Card className="hover:shadow-lg transition-shadow">
+                                                    <CardHeader>
+                                                        <div className="flex items-start justify-between">
+                                                            <div className="flex-1">
+                                                                <CardTitle className="text-xl mb-2">{project.title}</CardTitle>
+                                                                <CardDescription className="text-sm">
+                                                                    Client: {project.user.name || project.user.email}
+                                                                </CardDescription>
+                                                            </div>
+                                                            <Badge className={`${getTaskStatusColor(project.status)} border`}>
+                                                                {project.status.replace('_', ' ')}
+                                                            </Badge>
                                                         </div>
-                                                        <Badge className={`${getTaskStatusColor(project.status)} border`}>
-                                                            {project.status.replace('_', ' ')}
-                                                        </Badge>
-                                                    </div>
-                                                </CardHeader>
-                                                <CardContent className="space-y-4">
-                                                    <div className="space-y-2">
-                                                        <div className="flex justify-between items-center text-sm">
-                                                            <span className="text-gray-600 dark:text-gray-400">Your Tasks Progress</span>
-                                                            <span className="font-medium">{Math.round(taskProgress)}%</span>
+                                                    </CardHeader>
+                                                    <CardContent className="space-y-4">
+                                                        <div className="space-y-2">
+                                                            <div className="flex justify-between items-center text-sm">
+                                                                <span className="text-gray-600 dark:text-gray-400">Your Tasks Progress</span>
+                                                                <span className="font-medium">{Math.round(taskProgress)}%</span>
+                                                            </div>
+                                                            <Progress value={taskProgress} className="h-2" />
                                                         </div>
-                                                        <Progress value={taskProgress} className="h-2" />
-                                                    </div>
-                                                    <div className="grid grid-cols-3 gap-4 text-center">
-                                                        <div>
-                                                            <p className="text-lg font-bold text-blue-600">
-                                                                {project.tasks.filter((t: any) => t.status === 'IN_PROGRESS').length}
-                                                            </p>
-                                                            <p className="text-xs text-gray-500">In Progress</p>
+                                                        <div className="grid grid-cols-3 gap-4 text-center">
+                                                            <div>
+                                                                <p className="text-lg font-bold text-blue-600">
+                                                                    {project.tasks.filter((t: any) => t.status === 'IN_PROGRESS').length}
+                                                                </p>
+                                                                <p className="text-xs text-gray-500">In Progress</p>
+                                                            </div>
+                                                            <div>
+                                                                <p className="text-lg font-bold text-green-600">
+                                                                    {project.tasks.filter((t: any) => t.status === 'COMPLETED').length}
+                                                                </p>
+                                                                <p className="text-xs text-gray-500">Completed</p>
+                                                            </div>
+                                                            <div>
+                                                                <p className="text-lg font-bold text-orange-600">
+                                                                    {project.tasks.filter((t: any) => t.status === 'YET_TO_START').length}
+                                                                </p>
+                                                                <p className="text-xs text-gray-500">Pending</p>
+                                                            </div>
                                                         </div>
-                                                        <div>
-                                                            <p className="text-lg font-bold text-green-600">
-                                                                {project.tasks.filter((t: any) => t.status === 'COMPLETED').length}
-                                                            </p>
-                                                            <p className="text-xs text-gray-500">Completed</p>
+                                                        <div className="flex items-center justify-between pt-4">
+                                                            <div className="flex items-center gap-2">
+                                                                <Avatar className="h-6 w-6">
+                                                                    <AvatarImage src={project.user.image || "/placeholder.svg"} />
+                                                                    <AvatarFallback className="text-xs">
+                                                                        {project.user.name?.charAt(0) || 'C'}
+                                                                    </AvatarFallback>
+                                                                </Avatar>
+                                                                <span className="text-sm text-gray-600 dark:text-gray-400">
+                                                                    {project.user.name || 'Client'}
+                                                                </span>
+                                                            </div>
+                                                            <Link href={`/projects/${project.slug}`}>
+                                                                <Button variant="outline" size="sm">
+                                                                    View Project
+                                                                </Button>
+                                                            </Link>
                                                         </div>
-                                                        <div>
-                                                            <p className="text-lg font-bold text-orange-600">
-                                                                {project.tasks.filter((t: any) => t.status === 'YET_TO_START').length}
-                                                            </p>
-                                                            <p className="text-xs text-gray-500">Pending</p>
-                                                        </div>
-                                                    </div>
-                                                    <div className="flex items-center justify-between pt-4">
-                                                        <div className="flex items-center gap-2">
-                                                            <Avatar className="h-6 w-6">
-                                                                <AvatarImage src={project.user.image || "/placeholder.svg"} />
-                                                                <AvatarFallback className="text-xs">
-                                                                    {project.user.name?.charAt(0) || 'C'}
-                                                                </AvatarFallback>
-                                                            </Avatar>
-                                                            <span className="text-sm text-gray-600 dark:text-gray-400">
-                                                                {project.user.name || 'Client'}
-                                                            </span>
-                                                        </div>
-                                                        <Link href={`/projects/${project.slug}`}>
-                                                            <Button variant="outline" size="sm">
-                                                                View Project
-                                                            </Button>
-                                                        </Link>
-                                                    </div>
-                                                </CardContent>
-                                            </Card>
-                                        </motion.div>
-                                    );
-                                })}
+                                                    </CardContent>
+                                                </Card>
+                                            </motion.div>
+                                        );
+                                    })
+                                }
                             </div>
                         </div>
-
-                        {/* Quick Info & Recent Tasks */}
                         <div className="space-y-6">
-                            {/* Developer Info */}
                             <Card>
                                 <CardHeader>
                                     <CardTitle className="flex items-center gap-2">
@@ -254,14 +248,16 @@ export function DeveloperDashboard({ data, userRole }: DeveloperDashboardProps) 
                                             {userRole}
                                         </Badge>
                                     </div>
-                                    {data.user.skills && (
-                                        <div>
-                                            <div className="text-sm font-medium text-gray-900 dark:text-white mb-2">Skills</div>
-                                            <p className="text-sm text-gray-600 dark:text-gray-400">
-                                                {data.user.skills}
-                                            </p>
-                                        </div>
-                                    )}
+                                    {
+                                        data.user.skills && (
+                                            <div>
+                                                <div className="text-sm font-medium text-gray-900 dark:text-white mb-2">Skills</div>
+                                                <p className="text-sm text-gray-600 dark:text-gray-400">
+                                                    {data.user.skills}
+                                                </p>
+                                            </div>
+                                        )
+                                    }
                                     <div className="grid grid-cols-2 gap-4 pt-4 border-t">
                                         <div className="text-center">
                                             <p className="text-lg font-bold text-blue-600">{data.projectStats.total}</p>
@@ -274,8 +270,6 @@ export function DeveloperDashboard({ data, userRole }: DeveloperDashboardProps) 
                                     </div>
                                 </CardContent>
                             </Card>
-
-                            {/* Recent Tasks */}
                             <Card>
                                 <CardHeader>
                                     <CardTitle className="flex items-center gap-2">
@@ -285,33 +279,36 @@ export function DeveloperDashboard({ data, userRole }: DeveloperDashboardProps) 
                                 </CardHeader>
                                 <CardContent>
                                     <div className="space-y-3">
-                                        {data.projects.slice(0, 3).map((project: any) => (
-                                            project.tasks.slice(0, 2).map((task: any) => (
-                                                <div key={task.id} className="flex items-center gap-3 p-3 rounded-lg border">
-                                                    <div className={`w-2 h-2 rounded-full ${
-                                                        task.status === 'COMPLETED' ? 'bg-green-500' :
-                                                        task.status === 'IN_PROGRESS' ? 'bg-blue-500' :
-                                                        'bg-gray-400'
-                                                    }`} />
-                                                    <div className="flex-1 min-w-0">
-                                                        <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
-                                                            {task.title}
-                                                        </p>
-                                                        <p className="text-xs text-gray-500">
-                                                            {project.title}
-                                                        </p>
+                                        {
+                                            data.projects.slice(0, 3).map((project: any) => (
+                                                project.tasks.slice(0, 2).map((task: any) => (
+                                                    <div key={task.id} className="flex items-center gap-3 p-3 rounded-lg border">
+                                                        <div className={`w-2 h-2 rounded-full ${task.status === 'COMPLETED' ? 'bg-green-500' :
+                                                                task.status === 'IN_PROGRESS' ? 'bg-blue-500' :
+                                                                    'bg-gray-400'
+                                                            }`} />
+                                                        <div className="flex-1 min-w-0">
+                                                            <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                                                                {task.title}
+                                                            </p>
+                                                            <p className="text-xs text-gray-500">
+                                                                {project.title}
+                                                            </p>
+                                                        </div>
+                                                        <Badge className={`${getTaskStatusColor(task.status)} border text-xs`}>
+                                                            {task.status.replace('_', ' ')}
+                                                        </Badge>
                                                     </div>
-                                                    <Badge className={`${getTaskStatusColor(task.status)} border text-xs`}>
-                                                        {task.status.replace('_', ' ')}
-                                                    </Badge>
-                                                </div>
+                                                ))
                                             ))
-                                        ))}
-                                        {data.projects.length === 0 && (
-                                            <p className="text-sm text-gray-500 text-center py-4">
-                                                No recent tasks
-                                            </p>
-                                        )}
+                                        }
+                                        {
+                                            data.projects.length === 0 && (
+                                                <p className="text-sm text-gray-500 text-center py-4">
+                                                    No recent tasks
+                                                </p>
+                                            )
+                                        }
                                     </div>
                                 </CardContent>
                             </Card>

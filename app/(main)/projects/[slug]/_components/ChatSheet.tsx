@@ -308,8 +308,8 @@ export function ChatSheet({ projectId, projectTitle, initialMessages = [] }: Cha
 					side="right"
 					className="w-full h-full sm:w-[80vw] md:w-[55vw] sm:max-w-[80vw] p-6 overflow-y-auto"
 					style={{ maxWidth: '90vw' }}
-					onPointerDownOutside={(e) => e.preventDefault()}
-					onEscapeKeyDown={(e) => e.preventDefault()}
+					// onPointerDownOutside={(e) => e.preventDefault()}
+					// onEscapeKeyDown={(e) => e.preventDefault()}
 				>
 					<SheetHeader className="p-6 pb-4 border-b">
 						<div className="flex items-center justify-between">

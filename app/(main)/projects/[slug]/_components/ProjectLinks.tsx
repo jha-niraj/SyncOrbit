@@ -45,11 +45,11 @@ export function ProjectLinks({ project }: ProjectLinksProps) {
 
 	if (activeLinks.length === 0 && !hasOtherLinks) {
 		return (
-			<Card className="bg-gray-50 border-gray-200">
+			<Card className="border-gray-200">
 				<CardContent className="pt-6">
-					<div className="text-center text-gray-500 py-4">
-						<Link className="mx-auto h-8 w-8 mb-2 text-gray-300" />
-						<p className="text-sm">No project links available yet</p>
+					<div className="text-center text-gray-700 dark:text-gray-300 py-4">
+						<Link className="mx-auto h-8 w-8 mb-2 text-gray-700 dark:text-gray-300" />
+						<p className="text-sm text-gray-700 dark:text-gray-300">No project links available yet</p>
 					</div>
 				</CardContent>
 			</Card>
@@ -57,7 +57,7 @@ export function ProjectLinks({ project }: ProjectLinksProps) {
 	}
 
 	return (
-		<Card className="bg-white border-gray-200">
+		<Card className="border-gray-200">
 			<CardHeader>
 				<CardTitle className="flex items-center gap-2">
 					<Link className="h-5 w-5" />

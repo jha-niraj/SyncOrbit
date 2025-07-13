@@ -174,7 +174,6 @@ export function ProfileForm({ user }: ProfileFormProps) {
                     </div>
                 </CardContent>
             </Card>
-            
             <div className="space-y-2">
                 <Label htmlFor="name">Full Name</Label>
                 <Input
@@ -186,7 +185,6 @@ export function ProfileForm({ user }: ProfileFormProps) {
                     required
                 />
             </div>
-            
             <div className="space-y-2">
                 <Label htmlFor="bio">Bio</Label>
                 <Textarea
@@ -198,29 +196,29 @@ export function ProfileForm({ user }: ProfileFormProps) {
                     rows={4}
                 />
             </div>
-            
-            {isDeveloper && (
-                <div className="space-y-2">
-                    <Label htmlFor="skills">
-                        Technical Skills
-                        <span className="text-xs text-muted-foreground ml-2">
-                            (e.g., JavaScript, React, Node.js, Python, etc.)
-                        </span>
-                    </Label>
-                    <Textarea
-                        id="skills"
-                        name="skills"
-                        value={formData.skills}
-                        onChange={handleChange}
-                        placeholder="List your technical skills, programming languages, frameworks, and tools..."
-                        rows={3}
-                    />
-                    <p className="text-xs text-muted-foreground">
-                        This helps clients and project managers understand your expertise when assigning tasks.
-                    </p>
-                </div>
-            )}
-            
+            {
+                isDeveloper && (
+                    <div className="space-y-2">
+                        <Label htmlFor="skills">
+                            Technical Skills
+                            <span className="text-xs text-muted-foreground ml-2">
+                                (e.g., JavaScript, React, Node.js, Python, etc.)
+                            </span>
+                        </Label>
+                        <Textarea
+                            id="skills"
+                            name="skills"
+                            value={formData.skills}
+                            onChange={handleChange}
+                            placeholder="List your technical skills, programming languages, frameworks, and tools..."
+                            rows={3}
+                        />
+                        <p className="text-xs text-muted-foreground">
+                            This helps clients and project managers understand your expertise when assigning tasks.
+                        </p>
+                    </div>
+                )
+            }
             <Button type="submit" disabled={isLoading || imageUploading} className="w-full">
                 {
                     isLoading ? (
