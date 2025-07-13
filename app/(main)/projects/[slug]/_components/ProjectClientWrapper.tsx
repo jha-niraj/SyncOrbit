@@ -37,12 +37,14 @@ export function ProjectClientWrapper({
 				projectTitle={projectTitle}
 				initialMessages={initialMessages}
 			/>
-			{userRole === 'CLIENT' && (
-				<FeedbackSheet
-					projectId={projectId}
-					onFeedbackAdded={onFeedbackAdded}
-				/>
-			)}
+			{
+				userRole === 'CLIENT' && (
+					<FeedbackSheet
+						projectId={projectId}
+						onFeedbackAdded={onFeedbackAdded}
+					/>
+				)
+			}
 		</>
 	)
 } 

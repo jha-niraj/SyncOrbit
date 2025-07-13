@@ -29,7 +29,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
     const [imageUploading, setImageUploading] = useState(false)
     const imageInputRef = useRef<HTMLInputElement>(null)
     const { updateProfileImage } = useUser()
-    
+
     const [formData, setFormData] = useState({
         name: user.name || "",
         bio: user.bio || "",
@@ -46,16 +46,15 @@ export function ProfileForm({ user }: ProfileFormProps) {
         try {
             const uploadFormData = new FormData()
             uploadFormData.append('image', file)
-            
+
             const result = await uploadProfileImage(uploadFormData)
-            
+
             if (result.success) {
                 const newImageUrl = result.imageUrl || ""
                 setFormData(prev => ({
                     ...prev,
                     image: newImageUrl
                 }))
-                // Update the store for instant reflection across the app
                 await updateProfileImage(newImageUrl)
                 toast.success("Profile image uploaded successfully!")
             } else {
@@ -74,17 +73,14 @@ export function ProfileForm({ user }: ProfileFormProps) {
         setIsLoading(true)
 
         try {
-            // Only include skills if user is not a CLIENT
-            const dataToUpdate = user.role === 'CLIENT' 
+            const dataToUpdate = user.role === 'CLIENT'
                 ? { name: formData.name, bio: formData.bio, image: formData.image }
                 : formData
 
             const result = await updateProfile(dataToUpdate)
-            
+
             if (result.success) {
                 toast.success("Profile updated successfully!")
-                // Refresh the page to show updated data
-                window.location.reload()
             } else {
                 toast.error(result.error || "Failed to update profile")
             }
@@ -112,7 +108,6 @@ export function ProfileForm({ user }: ProfileFormProps) {
 
     return (
         <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Profile Image Upload */}
             <Card>
                 <CardContent className="pt-6">
                     <div className="flex items-center gap-6">
@@ -137,29 +132,33 @@ export function ProfileForm({ user }: ProfileFormProps) {
                                     onClick={() => imageInputRef.current?.click()}
                                     disabled={imageUploading}
                                 >
-                                    {imageUploading ? (
-                                        <>
-                                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                            Uploading...
-                                        </>
-                                    ) : (
-                                        <>
-                                            <Upload className="mr-2 h-4 w-4" />
-                                            Upload Image
-                                        </>
-                                    )}
+                                    {
+                                        imageUploading ? (
+                                            <>
+                                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                                Uploading...
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Upload className="mr-2 h-4 w-4" />
+                                                Upload Image
+                                            </>
+                                        )
+                                    }
                                 </Button>
-                                {formData.image && (
-                                    <Button
-                                        type="button"
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={handleRemoveImage}
-                                    >
-                                        <X className="mr-2 h-4 w-4" />
-                                        Remove
-                                    </Button>
-                                )}
+                                {
+                                    formData.image && (
+                                        <Button
+                                            type="button"
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={handleRemoveImage}
+                                        >
+                                            <X className="mr-2 h-4 w-4" />
+                                            Remove
+                                        </Button>
+                                    )
+                                }
                             </div>
                         </div>
                         <input
@@ -172,8 +171,6 @@ export function ProfileForm({ user }: ProfileFormProps) {
                     </div>
                 </CardContent>
             </Card>
-
-            {/* Name Field */}
             <div className="space-y-2">
                 <Label htmlFor="name">Full Name</Label>
                 <Input
@@ -185,8 +182,6 @@ export function ProfileForm({ user }: ProfileFormProps) {
                     required
                 />
             </div>
-
-            {/* Bio Field */}
             <div className="space-y-2">
                 <Label htmlFor="bio">Bio</Label>
                 <Textarea
@@ -198,31 +193,32 @@ export function ProfileForm({ user }: ProfileFormProps) {
                     rows={4}
                 />
             </div>
-
-            {/* Skills Field - Only show for non-CLIENT users */}
-            {user.role !== 'CLIENT' && (
-                <div className="space-y-2">
-                    <Label htmlFor="skills">Skills</Label>
-                    <Textarea
-                        id="skills"
-                        name="skills"
-                        value={formData.skills}
-                        onChange={handleChange}
-                        placeholder="List your skills (e.g., JavaScript, React, Node.js)"
-                        rows={3}
-                    />
-                </div>
-            )}
-
+            {
+                user.role !== 'CLIENT' && (
+                    <div className="space-y-2">
+                        <Label htmlFor="skills">Skills</Label>
+                        <Textarea
+                            id="skills"
+                            name="skills"
+                            value={formData.skills}
+                            onChange={handleChange}
+                            placeholder="List your skills (e.g., JavaScript, React, Node.js)"
+                            rows={3}
+                        />
+                    </div>
+                )
+            }
             <Button type="submit" disabled={isLoading || imageUploading} className="w-full">
-                {isLoading ? (
-                    <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Updating Profile...
-                    </>
-                ) : (
-                    "Update Profile"
-                )}
+                {
+                    isLoading ? (
+                        <>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            Updating Profile...
+                        </>
+                    ) : (
+                        "Update Profile"
+                    )
+                }
             </Button>
         </form>
     )

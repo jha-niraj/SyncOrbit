@@ -13,6 +13,7 @@ import { useSession } from "next-auth/react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { useProjectStore } from "@/store/useProjectStore"
 import Image from "next/image"
+import Link from "next/link"
 
 interface Message {
 	id: string
@@ -67,7 +68,6 @@ export function ChatSheet({ projectId, projectTitle, initialMessages = [] }: Cha
 		scrollToBottom()
 	}, [messages])
 
-	// Scroll to bottom when sheet opens
 	useEffect(() => {
 		if (isOpen) {
 			setTimeout(() => {
@@ -100,8 +100,8 @@ export function ChatSheet({ projectId, projectTitle, initialMessages = [] }: Cha
 		try {
 			const result = await sendMessage(projectId, newMessage)
 			if (result.success && result.message) {
-				setMessages(prev => 
-					prev.map(msg => 
+				setMessages(prev =>
+					prev.map(msg =>
 						msg.id === optimisticMessage.id ? result.message! : msg
 					)
 				)
@@ -246,12 +246,14 @@ export function ChatSheet({ projectId, projectTitle, initialMessages = [] }: Cha
 		if (message.imageUrl) {
 			return (
 				<div className="space-y-2">
-					{message.content && message.content !== "Image" && (
-						<p className="text-sm">{message.content}</p>
-					)}
+					{
+						message.content && message.content !== "Image" && (
+							<p className="text-sm">{message.content}</p>
+						)
+					}
 					<Image
-						src={message.imageUrl} 
-						alt="Shared image" 
+						src={message.imageUrl}
+						alt="Shared image"
 						className="max-w-full h-auto rounded-lg cursor-pointer"
 						onClick={() => window.open(message.imageUrl!, '_blank')}
 						width={100}
@@ -264,12 +266,14 @@ export function ChatSheet({ projectId, projectTitle, initialMessages = [] }: Cha
 		if (message.linkUrl) {
 			return (
 				<div className="space-y-2">
-					{message.content && message.content !== "Link" && (
-						<p className="text-sm">{message.content}</p>
-					)}
-					<a 
-						href={message.linkUrl} 
-						target="_blank" 
+					{
+						message.content && message.content !== "Link" && (
+							<p className="text-sm">{message.content}</p>
+						)
+					}
+					<Link
+						href={message.linkUrl}
+						target="_blank"
 						rel="noopener noreferrer"
 						className="inline-flex items-center gap-2 p-2 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors"
 					>
@@ -283,7 +287,7 @@ export function ChatSheet({ projectId, projectTitle, initialMessages = [] }: Cha
 							</p>
 						</div>
 						<ExternalLink className="h-3 w-3 text-blue-600" />
-					</a>
+					</Link>
 				</div>
 			)
 		}
@@ -300,7 +304,7 @@ export function ChatSheet({ projectId, projectTitle, initialMessages = [] }: Cha
 						Chat with Team
 					</Button>
 				</SheetTrigger>
-				<SheetContent 
+				<SheetContent
 					side="right"
 					className="w-full h-full sm:w-[80vw] md:w-[55vw] sm:max-w-[80vw] p-6 overflow-y-auto"
 					style={{ maxWidth: '90vw' }}
@@ -317,65 +321,68 @@ export function ChatSheet({ projectId, projectTitle, initialMessages = [] }: Cha
 							</div>
 						</div>
 					</SheetHeader>
-
-					{/* Messages */}
 					<div className="flex-1 overflow-y-auto p-4 space-y-4 max-h-[calc(100vh-200px)]">
-						{messages.length === 0 ? (
-							<div className="text-center text-muted-foreground py-8">
-								<MessageCircle className="h-12 w-12 mx-auto mb-4 opacity-50" />
-								<p>No messages yet. Start the conversation!</p>
-							</div>
-						) : (
-							messages.map((message) => (
-								<div
-									key={message.id}
-									className={`flex gap-3 ${isOwnMessage(message) ? 'justify-end' : 'justify-start'}`}
-								>
-									{!isOwnMessage(message) && (
-										<Avatar className="h-8 w-8 mt-1">
-											<AvatarImage src={message.user.image || "/placeholder.svg"} alt={message.user.name || "User"} />
-											<AvatarFallback className="text-xs">
-												{message.user.name?.charAt(0) || "U"}
-											</AvatarFallback>
-										</Avatar>
-									)}
-									<div className={`max-w-[70%] ${isOwnMessage(message) ? 'text-right' : 'text-left'}`}>
-										{!isOwnMessage(message) && (
-											<div className="flex items-center gap-2 mb-1">
-												<span className="text-xs font-medium text-foreground">
-													{message.user.name || "Unknown"}
-												</span>
-												<span className={`text-xs px-2 py-0.5 rounded-full ${getRoleColor(message.user.role)}`}>
-													{message.user.role}
-												</span>
-											</div>
-										)}
-										<div className={`rounded-lg p-3 ${
-											isOwnMessage(message)
-												? 'bg-black text-white'
-												: 'bg-muted text-foreground'
-										}`}>
-											{renderMessageContent(message)}
-										</div>
-										<p className="text-xs text-muted-foreground mt-1">
-											{formatDistanceToNow(new Date(message.createdAt), { addSuffix: true })}
-										</p>
-									</div>
-									{isOwnMessage(message) && (
-										<Avatar className="h-8 w-8 mt-1">
-											<AvatarImage src={message.user.image || "/placeholder.svg"} alt={message.user.name || "User"} />
-											<AvatarFallback className="text-xs">
-												{message.user.name?.charAt(0) || "U"}
-											</AvatarFallback>
-										</Avatar>
-									)}
+						{
+							messages.length === 0 ? (
+								<div className="text-center text-muted-foreground py-8">
+									<MessageCircle className="h-12 w-12 mx-auto mb-4 opacity-50" />
+									<p>No messages yet. Start the conversation!</p>
 								</div>
-							))
-						)}
+							) : (
+								messages.map((message) => (
+									<div
+										key={message.id}
+										className={`flex gap-3 ${isOwnMessage(message) ? 'justify-end' : 'justify-start'}`}
+									>
+										{
+											!isOwnMessage(message) && (
+												<Avatar className="h-8 w-8 mt-1">
+													<AvatarImage src={message.user.image || "/placeholder.svg"} alt={message.user.name || "User"} />
+													<AvatarFallback className="text-xs">
+														{message.user.name?.charAt(0) || "U"}
+													</AvatarFallback>
+												</Avatar>
+											)
+										}
+										<div className={`max-w-[70%] ${isOwnMessage(message) ? 'text-right' : 'text-left'}`}>
+											{
+												!isOwnMessage(message) && (
+													<div className="flex items-center gap-2 mb-1">
+														<span className="text-xs font-medium text-foreground">
+															{message.user.name || "Unknown"}
+														</span>
+														<span className={`text-xs px-2 py-0.5 rounded-full ${getRoleColor(message.user.role)}`}>
+															{message.user.role}
+														</span>
+													</div>
+												)
+											}
+											<div className={`rounded-lg p-3 ${isOwnMessage(message)
+													? 'bg-black text-white'
+													: 'bg-muted text-foreground'
+												}`}>
+												{renderMessageContent(message)}
+											</div>
+											<p className="text-xs text-muted-foreground mt-1">
+												{formatDistanceToNow(new Date(message.createdAt), { addSuffix: true })}
+											</p>
+										</div>
+										{
+											isOwnMessage(message) && (
+												<Avatar className="h-8 w-8 mt-1">
+													<AvatarImage src={message.user.image || "/placeholder.svg"} alt={message.user.name || "User"} />
+													<AvatarFallback className="text-xs">
+														{message.user.name?.charAt(0) || "U"}
+													</AvatarFallback>
+												</Avatar>
+											)
+										}
+									</div>
+								))
+							)
+						}
 						<div ref={messagesEndRef} />
 					</div>
-
-					{/* Message Input */}
 					<div className="p-4 border-t">
 						<form onSubmit={handleSendMessage} className="flex gap-2">
 							<Input
@@ -402,11 +409,13 @@ export function ChatSheet({ projectId, projectTitle, initialMessages = [] }: Cha
 								onClick={() => imageInputRef.current?.click()}
 								disabled={isLoading || isUploading}
 							>
-								{isUploading ? (
-									<Loader2 className="h-4 w-4 animate-spin" />
-								) : (
-									<ImageIcon className="h-4 w-4" />
-								)}
+								{
+									isUploading ? (
+										<Loader2 className="h-4 w-4 animate-spin" />
+									) : (
+										<ImageIcon className="h-4 w-4" />
+									)
+								}
 							</Button>
 							<Button type="submit" disabled={isLoading || isUploading || !newMessage.trim()}>
 								<Send className="h-4 w-4" />
@@ -422,25 +431,25 @@ export function ChatSheet({ projectId, projectTitle, initialMessages = [] }: Cha
 					</div>
 				</SheetContent>
 			</Sheet>
-
-			{/* Image Preview Dialog */}
 			<Dialog open={showImageDialog} onOpenChange={setShowImageDialog}>
 				<DialogContent className="sm:max-w-md">
 					<DialogHeader>
 						<DialogTitle>Send Image</DialogTitle>
 					</DialogHeader>
 					<div className="space-y-4">
-						{imagePreview && (
-							<div className="flex justify-center">
-								<Image 
-									src={imagePreview} 
-									alt="Preview" 
-									className="max-w-full max-h-64 rounded-lg"
-									width={100}
-									height={100}
-								/>
-							</div>
-						)}
+						{
+							imagePreview && (
+								<div className="flex justify-center">
+									<Image
+										src={imagePreview}
+										alt="Preview"
+										className="max-w-full max-h-64 rounded-lg"
+										width={100}
+										height={100}
+									/>
+								</div>
+							)
+						}
 						<Input
 							value={newMessage}
 							onChange={(e) => setNewMessage(e.target.value)}
@@ -451,21 +460,21 @@ export function ChatSheet({ projectId, projectTitle, initialMessages = [] }: Cha
 								Cancel
 							</Button>
 							<Button onClick={handleSendImage} disabled={isUploading}>
-								{isUploading ? (
-									<>
-										<Loader2 className="h-4 w-4 mr-2 animate-spin" />
-										Sending...
-									</>
-								) : (
-									"Send Image"
-								)}
+								{
+									isUploading ? (
+										<>
+											<Loader2 className="h-4 w-4 mr-2 animate-spin" />
+											Sending...
+										</>
+									) : (
+										"Send Image"
+									)
+								}
 							</Button>
 						</div>
 					</div>
 				</DialogContent>
 			</Dialog>
-
-			{/* Link Dialog */}
 			<Dialog open={showLinkDialog} onOpenChange={setShowLinkDialog}>
 				<DialogContent className="sm:max-w-md">
 					<DialogHeader>
@@ -493,14 +502,16 @@ export function ChatSheet({ projectId, projectTitle, initialMessages = [] }: Cha
 								Cancel
 							</Button>
 							<Button onClick={handleSendLink} disabled={isUploading || !linkUrl.trim()}>
-								{isUploading ? (
-									<>
-										<Loader2 className="h-4 w-4 mr-2 animate-spin" />
-										Sending...
-									</>
-								) : (
-									"Send Link"
-								)}
+								{
+									isUploading ? (
+										<>
+											<Loader2 className="h-4 w-4 mr-2 animate-spin" />
+											Sending...
+										</>
+									) : (
+										"Send Link"
+									)
+								}
 							</Button>
 						</div>
 					</div>

@@ -35,13 +35,13 @@ export function FeedbackSheet({ projectId, onFeedbackAdded }: FeedbackSheetProps
 			if (result.success && result.feedback) {
 				toast.success("Feedback added successfully!")
 				setFormData({ title: "", description: "" })
-				
+
 				// Add to store for real-time update
 				addFeedbackToStore(result.feedback)
-				
+
 				// Close the sheet
 				setIsOpen(false)
-				
+
 				// Call the callback to handle tab switching and scrolling
 				if (onFeedbackAdded) {
 					onFeedbackAdded()
@@ -73,8 +73,8 @@ export function FeedbackSheet({ projectId, onFeedbackAdded }: FeedbackSheetProps
 					Add Feedback
 				</Button>
 			</SheetTrigger>
-			<SheetContent 
-				side="right" 
+			<SheetContent
+				side="right"
 				className="w-full sm:max-w-md"
 				onPointerDownOutside={(e) => e.preventDefault()}
 				onEscapeKeyDown={(e) => e.preventDefault()}
@@ -89,7 +89,6 @@ export function FeedbackSheet({ projectId, onFeedbackAdded }: FeedbackSheetProps
 						</div>
 					</div>
 				</SheetHeader>
-
 				<div className="p-6">
 					<form onSubmit={handleSubmit} className="space-y-6">
 						<div className="space-y-2">
@@ -104,7 +103,6 @@ export function FeedbackSheet({ projectId, onFeedbackAdded }: FeedbackSheetProps
 								disabled={isLoading}
 							/>
 						</div>
-
 						<div className="space-y-2">
 							<Label htmlFor="description">Description *</Label>
 							<Textarea
@@ -118,23 +116,24 @@ export function FeedbackSheet({ projectId, onFeedbackAdded }: FeedbackSheetProps
 								disabled={isLoading}
 							/>
 						</div>
-
-						<Button 
-							type="submit" 
+						<Button
+							type="submit"
 							disabled={isLoading || !formData.title.trim() || !formData.description.trim()}
 							className="w-full bg-black text-white hover:bg-gray-800"
 						>
-							{isLoading ? (
-								<>
-									<Loader2 className="h-4 w-4 mr-2 animate-spin" />
-									Adding Feedback...
-								</>
-							) : (
-								<>
-									<Send className="h-4 w-4 mr-2" />
-									Add Feedback
-								</>
-							)}
+							{
+								isLoading ? (
+									<>
+										<Loader2 className="h-4 w-4 mr-2 animate-spin" />
+										Adding Feedback...
+									</>
+								) : (
+									<>
+										<Send className="h-4 w-4 mr-2" />
+										Add Feedback
+									</>
+								)
+							}
 						</Button>
 					</form>
 				</div>

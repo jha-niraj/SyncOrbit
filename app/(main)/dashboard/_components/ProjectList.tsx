@@ -47,56 +47,58 @@ export function ProjectList({ projects }: ProjectListProps) {
 
     return (
         <div className="grid gap-4">
-            {projects.map((project) => (
-                <Card key={project.id}>
-                    <CardHeader>
-                        <div className="flex items-center justify-between">
-                            <CardTitle className="text-xl">{project.title}</CardTitle>
-                            <Badge className={getStatusColor(project.status)}>
-                                {project.status.replace("_", " ")}
-                            </Badge>
-                        </div>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="grid gap-4">
-                            <div>
-                                <p className="text-sm text-muted-foreground">{project.description}</p>
+            {
+                projects.map((project) => (
+                    <Card key={project.id}>
+                        <CardHeader>
+                            <div className="flex items-center justify-between">
+                                <CardTitle className="text-xl">{project.title}</CardTitle>
+                                <Badge className={getStatusColor(project.status)}>
+                                    {project.status.replace("_", " ")}
+                                </Badge>
                             </div>
-                            <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+                        </CardHeader>
+                        <CardContent>
+                            <div className="grid gap-4">
                                 <div>
-                                    <p className="text-sm font-medium">Budget</p>
-                                    <p className="text-sm text-muted-foreground">
-                                        {formatCurrency(project.budget)}
-                                    </p>
+                                    <p className="text-sm text-muted-foreground">{project.description}</p>
                                 </div>
-                                <div>
-                                    <p className="text-sm font-medium">Start Date</p>
-                                    <p className="text-sm text-muted-foreground">
-                                        {formatDate(project.startDate)}
-                                    </p>
+                                <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+                                    <div>
+                                        <p className="text-sm font-medium">Budget</p>
+                                        <p className="text-sm text-muted-foreground">
+                                            {formatCurrency(project.budget)}
+                                        </p>
+                                    </div>
+                                    <div>
+                                        <p className="text-sm font-medium">Start Date</p>
+                                        <p className="text-sm text-muted-foreground">
+                                            {formatDate(project.startDate)}
+                                        </p>
+                                    </div>
+                                    <div>
+                                        <p className="text-sm font-medium">Tasks</p>
+                                        <p className="text-sm text-muted-foreground">
+                                            {project.tasks.length} total
+                                        </p>
+                                    </div>
+                                    <div>
+                                        <p className="text-sm font-medium">Completion</p>
+                                        <p className="text-sm text-muted-foreground">
+                                            {Math.round((project.tasks.filter(t => t.status === "COMPLETED").length / project.tasks.length) * 100)}%
+                                        </p>
+                                    </div>
                                 </div>
-                                <div>
-                                    <p className="text-sm font-medium">Tasks</p>
-                                    <p className="text-sm text-muted-foreground">
-                                        {project.tasks.length} total
-                                    </p>
-                                </div>
-                                <div>
-                                    <p className="text-sm font-medium">Completion</p>
-                                    <p className="text-sm text-muted-foreground">
-                                        {Math.round((project.tasks.filter(t => t.status === "COMPLETED").length / project.tasks.length) * 100)}%
-                                    </p>
+                                <div className="flex justify-end">
+                                    <Link href={`/projects/${project.id}`}>
+                                        <Button variant="outline">View Details</Button>
+                                    </Link>
                                 </div>
                             </div>
-                            <div className="flex justify-end">
-                                <Link href={`/projects/${project.id}`}>
-                                    <Button variant="outline">View Details</Button>
-                                </Link>
-                            </div>
-                        </div>
-                    </CardContent>
-                </Card>
-            ))}
+                        </CardContent>
+                    </Card>
+                ))
+            }
         </div>
     );
 } 

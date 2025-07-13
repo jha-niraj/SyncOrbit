@@ -115,59 +115,59 @@ export default function DeveloperDashboard() {
                 <h2 className="text-xl font-semibold mb-4">Assigned Projects</h2>
                 <motion.div className="grid gap-6 md:grid-cols-2 mb-8" variants={container} initial="hidden" animate="show">
                     {
-                    projects.map((project) => (
-                        <motion.div key={project.id} variants={item}>
-                            <Card className="overflow-hidden h-full flex flex-col">
-                                <div className="relative h-40 w-full">
-                                    <Image
-                                        src={project.image || "/placeholder.svg"}
-                                        alt={project.title}
-                                        className="object-cover w-full h-full"
-                                        height={30}
-                                        width={30}
-                                    />
-                                    <div className="absolute top-2 right-2">
-                                        <div className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold bg-blue-500/10 text-blue-500 border border-blue-500/20">
-                                            {project.status}
+                        projects.map((project) => (
+                            <motion.div key={project.id} variants={item}>
+                                <Card className="overflow-hidden h-full flex flex-col">
+                                    <div className="relative h-40 w-full">
+                                        <Image
+                                            src={project.image || "/placeholder.svg"}
+                                            alt={project.title}
+                                            className="object-cover w-full h-full"
+                                            height={30}
+                                            width={30}
+                                        />
+                                        <div className="absolute top-2 right-2">
+                                            <div className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold bg-blue-500/10 text-blue-500 border border-blue-500/20">
+                                                {project.status}
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                                <CardHeader>
-                                    <CardTitle>{project.title}</CardTitle>
-                                    <CardDescription>
-                                        <div className="flex justify-between text-sm mt-1">
-                                            <span>Progress</span>
-                                            <span>{project.completion}%</span>
+                                    <CardHeader>
+                                        <CardTitle>{project.title}</CardTitle>
+                                        <CardDescription>
+                                            <div className="flex justify-between text-sm mt-1">
+                                                <span>Progress</span>
+                                                <span>{project.completion}%</span>
+                                            </div>
+                                            <Progress value={project.completion} className="h-2 mt-1" />
+                                        </CardDescription>
+                                    </CardHeader>
+                                    <CardContent className="flex-1">
+                                        <div className="grid grid-cols-3 gap-2 text-center">
+                                            <div className="bg-yellow-500/10 rounded-md p-2">
+                                                <p className="text-lg font-bold text-yellow-500">{project.tasks.yetToStart}</p>
+                                                <p className="text-xs text-muted-foreground">To Start</p>
+                                            </div>
+                                            <div className="bg-blue-500/10 rounded-md p-2">
+                                                <p className="text-lg font-bold text-blue-500">{project.tasks.inProgress}</p>
+                                                <p className="text-xs text-muted-foreground">In Progress</p>
+                                            </div>
+                                            <div className="bg-green-500/10 rounded-md p-2">
+                                                <p className="text-lg font-bold text-green-500">{project.tasks.completed}</p>
+                                                <p className="text-xs text-muted-foreground">Completed</p>
+                                            </div>
                                         </div>
-                                        <Progress value={project.completion} className="h-2 mt-1" />
-                                    </CardDescription>
-                                </CardHeader>
-                                <CardContent className="flex-1">
-                                    <div className="grid grid-cols-3 gap-2 text-center">
-                                        <div className="bg-yellow-500/10 rounded-md p-2">
-                                            <p className="text-lg font-bold text-yellow-500">{project.tasks.yetToStart}</p>
-                                            <p className="text-xs text-muted-foreground">To Start</p>
-                                        </div>
-                                        <div className="bg-blue-500/10 rounded-md p-2">
-                                            <p className="text-lg font-bold text-blue-500">{project.tasks.inProgress}</p>
-                                            <p className="text-xs text-muted-foreground">In Progress</p>
-                                        </div>
-                                        <div className="bg-green-500/10 rounded-md p-2">
-                                            <p className="text-lg font-bold text-green-500">{project.tasks.completed}</p>
-                                            <p className="text-xs text-muted-foreground">Completed</p>
-                                        </div>
-                                    </div>
-                                </CardContent>
-                                <CardFooter>
-                                    <Link href={`/projects/${project.id}`} className="w-full">
-                                        <Button variant="outline" className="w-full">
-                                            View Project
-                                        </Button>
-                                    </Link>
-                                </CardFooter>
-                            </Card>
-                        </motion.div>
-                    ))
+                                    </CardContent>
+                                    <CardFooter>
+                                        <Link href={`/projects/${project.id}`} className="w-full">
+                                            <Button variant="outline" className="w-full">
+                                                View Project
+                                            </Button>
+                                        </Link>
+                                    </CardFooter>
+                                </Card>
+                            </motion.div>
+                        ))
                     }
                 </motion.div>
                 <div className="mb-8">

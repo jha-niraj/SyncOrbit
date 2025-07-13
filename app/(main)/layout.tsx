@@ -16,7 +16,6 @@ const Layout = ({ children }: LayoutProps) => {
 	const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
 	const { data: session, status } = useSession();
 
-	// Load sidebar state from localStorage on mount
 	useEffect(() => {
 		const savedState = localStorage.getItem('mainSidebarCollapsed');
 		if (savedState !== null) {
@@ -27,7 +26,6 @@ const Layout = ({ children }: LayoutProps) => {
 	const toggleSidebar = () => {
 		const newState = !sidebarCollapsed;
 		setSidebarCollapsed(newState);
-		// Save to localStorage
 		localStorage.setItem('mainSidebarCollapsed', JSON.stringify(newState));
 	};
 

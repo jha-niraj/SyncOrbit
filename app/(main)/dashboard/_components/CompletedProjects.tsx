@@ -53,50 +53,50 @@ export function CompletedProjects({ projects }: CompletedProjectsProps) {
 
 	return (
 		<div className="space-y-4">
-			{projects.map((project) => (
-				<Card key={project.id} className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
-					<CardHeader className="pb-3">
-						<div className="flex items-start justify-between">
-							<div className="flex-1">
-								<CardTitle className="text-sm font-semibold text-gray-900 dark:text-white mb-1">
-									{project.title}
-								</CardTitle>
-								<CardDescription className="text-xs text-gray-600 dark:text-gray-400 line-clamp-2">
-									{project.description || "No description provided"}
-								</CardDescription>
+			{
+				projects.map((project) => (
+					<Card key={project.id} className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+						<CardHeader className="pb-3">
+							<div className="flex items-start justify-between">
+								<div className="flex-1">
+									<CardTitle className="text-sm font-semibold text-gray-900 dark:text-white mb-1">
+										{project.title}
+									</CardTitle>
+									<CardDescription className="text-xs text-gray-600 dark:text-gray-400 line-clamp-2">
+										{project.description || "No description provided"}
+									</CardDescription>
+								</div>
+								<Badge className="bg-green-100 text-green-700 border-green-200 text-xs">
+									<CheckCircle className="w-3 h-3 mr-1" />
+									Done
+								</Badge>
 							</div>
-							<Badge className="bg-green-100 text-green-700 border-green-200 text-xs">
-								<CheckCircle className="w-3 h-3 mr-1" />
-								Done
-							</Badge>
-						</div>
-					</CardHeader>
-
-					<CardContent className="space-y-3">
-						<div className="grid grid-cols-2 gap-3 text-xs">
-							<div className="flex items-center gap-2">
-								<DollarSign className="h-3 w-3 text-green-600" />
-								<span className="text-gray-900 dark:text-white font-medium">
-									{formatCurrencyAmount(project.budget, project.currency)}
-								</span>
+						</CardHeader>
+						<CardContent className="space-y-3">
+							<div className="grid grid-cols-2 gap-3 text-xs">
+								<div className="flex items-center gap-2">
+									<DollarSign className="h-3 w-3 text-green-600" />
+									<span className="text-gray-900 dark:text-white font-medium">
+										{formatCurrencyAmount(project.budget, project.currency)}
+									</span>
+								</div>
+								<div className="flex items-center gap-2">
+									<Calendar className="h-3 w-3 text-gray-500" />
+									<span className="text-gray-600 dark:text-gray-400">
+										{formatDate(project.startDate)}
+									</span>
+								</div>
 							</div>
-							<div className="flex items-center gap-2">
-								<Calendar className="h-3 w-3 text-gray-500" />
-								<span className="text-gray-600 dark:text-gray-400">
-									{formatDate(project.startDate)}
-								</span>
-							</div>
-						</div>
-
-						<Link href={`/projects/${project.slug}`}>
-							<Button variant="outline" size="sm" className="w-full text-xs">
-								View Details
-								<ArrowRight className="ml-1 h-3 w-3" />
-							</Button>
-						</Link>
-					</CardContent>
-				</Card>
-			))}
+							<Link href={`/projects/${project.slug}`}>
+								<Button variant="outline" size="sm" className="w-full text-xs">
+									View Details
+									<ArrowRight className="ml-1 h-3 w-3" />
+								</Button>
+							</Link>
+						</CardContent>
+					</Card>
+				))
+			}
 		</div>
 	);
 } 

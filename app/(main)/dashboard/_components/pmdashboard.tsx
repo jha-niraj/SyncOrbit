@@ -68,48 +68,48 @@ export default function ProductManagerDashboard() {
                 <h2 className="text-xl font-semibold mb-4">Ongoing Projects</h2>
                 <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mb-8">
                     {
-                    projects.map((project) => (
-                        <Card key={project.id} className="flex flex-col">
-                            <CardHeader>
-                                <CardTitle>{project.title}</CardTitle>
-                                <CardDescription>Status: {project.status}</CardDescription>
-                            </CardHeader>
-                            <CardContent className="flex-1">
-                                <div className="mb-4">
-                                    <div className="flex justify-between mb-1">
-                                        <span className="text-sm font-medium">Completion</span>
-                                        <span className="text-sm font-medium">{project.completion}%</span>
+                        projects.map((project) => (
+                            <Card key={project.id} className="flex flex-col">
+                                <CardHeader>
+                                    <CardTitle>{project.title}</CardTitle>
+                                    <CardDescription>Status: {project.status}</CardDescription>
+                                </CardHeader>
+                                <CardContent className="flex-1">
+                                    <div className="mb-4">
+                                        <div className="flex justify-between mb-1">
+                                            <span className="text-sm font-medium">Completion</span>
+                                            <span className="text-sm font-medium">{project.completion}%</span>
+                                        </div>
+                                        <Progress value={project.completion} className="h-2" />
                                     </div>
-                                    <Progress value={project.completion} className="h-2" />
-                                </div>
-                                <div>
-                                    <h4 className="text-sm font-medium mb-2">Team Members</h4>
-                                    <div className="space-y-2">
-                                        {
-                                        project.team.map((member) => (
-                                            <div key={member.id} className="flex items-center text-sm">
-                                                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center mr-2">
-                                                    {member.name.charAt(0)}
-                                                </div>
-                                                <div>
-                                                    <p className="font-medium">{member.name}</p>
-                                                    <p className="text-xs text-muted-foreground">{member.role}</p>
-                                                </div>
-                                            </div>
-                                        ))
-                                        }
+                                    <div>
+                                        <h4 className="text-sm font-medium mb-2">Team Members</h4>
+                                        <div className="space-y-2">
+                                            {
+                                                project.team.map((member) => (
+                                                    <div key={member.id} className="flex items-center text-sm">
+                                                        <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center mr-2">
+                                                            {member.name.charAt(0)}
+                                                        </div>
+                                                        <div>
+                                                            <p className="font-medium">{member.name}</p>
+                                                            <p className="text-xs text-muted-foreground">{member.role}</p>
+                                                        </div>
+                                                    </div>
+                                                ))
+                                            }
+                                        </div>
                                     </div>
-                                </div>
-                            </CardContent>
-                            <CardFooter>
-                                <Link href={`/projects/${project.id}`} className="w-full">
-                                    <Button variant="outline" className="w-full">
-                                        View Project
-                                    </Button>
-                                </Link>
-                            </CardFooter>
-                        </Card>
-                    ))
+                                </CardContent>
+                                <CardFooter>
+                                    <Link href={`/projects/${project.id}`} className="w-full">
+                                        <Button variant="outline" className="w-full">
+                                            View Project
+                                        </Button>
+                                    </Link>
+                                </CardFooter>
+                            </Card>
+                        ))
                     }
                 </div>
                 <h2 className="text-xl font-semibold mb-4">Team Performance</h2>

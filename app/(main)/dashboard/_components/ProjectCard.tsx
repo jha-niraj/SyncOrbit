@@ -82,9 +82,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
 					</CardDescription>
 				</div>
 			</CardHeader>
-
 			<CardContent className="space-y-6">
-				{/* Key Info */}
 				<div className="grid grid-cols-1 gap-4">
 					<div className="flex items-center justify-between py-2 border-b border-gray-100">
 						<div className="flex items-center gap-2">
@@ -95,7 +93,6 @@ export function ProjectCard({ project }: ProjectCardProps) {
 							{formatCurrencyAmount(project.budget, project.currency)}
 						</span>
 					</div>
-
 					<div className="flex items-center justify-between py-2 border-b border-gray-100">
 						<div className="flex items-center gap-2">
 							<Calendar className="h-4 w-4 text-gray-500" />
@@ -105,21 +102,20 @@ export function ProjectCard({ project }: ProjectCardProps) {
 							{formatDate(project.startDate)}
 						</span>
 					</div>
-
-					{project.endDate && (
-						<div className="flex items-center justify-between py-2 border-b border-gray-100">
-							<div className="flex items-center gap-2">
-								<Clock className="h-4 w-4 text-gray-500" />
-								<span className="text-sm font-medium text-gray-700">Due Date</span>
+					{
+						project.endDate && (
+							<div className="flex items-center justify-between py-2 border-b border-gray-100">
+								<div className="flex items-center gap-2">
+									<Clock className="h-4 w-4 text-gray-500" />
+									<span className="text-sm font-medium text-gray-700">Due Date</span>
+								</div>
+								<span className="text-sm font-bold text-black">
+									{formatDate(project.endDate)}
+								</span>
 							</div>
-							<span className="text-sm font-bold text-black">
-								{formatDate(project.endDate)}
-							</span>
-						</div>
-					)}
+						)
+					}
 				</div>
-
-				{/* Progress Section */}
 				<div className="space-y-3">
 					<div className="flex items-center justify-between">
 						<div className="flex items-center gap-2">
@@ -143,40 +139,42 @@ export function ProjectCard({ project }: ProjectCardProps) {
 						</div>
 					</div>
 				</div>
-
-				{/* Team Section */}
-				{assignedDevelopers.length > 0 && (
-					<div className="space-y-3">
-						<div className="flex items-center justify-between">
-							<div className="flex items-center gap-2">
-								<Users className="h-4 w-4 text-gray-500" />
-								<span className="text-sm font-medium text-gray-700">Team</span>
-							</div>
-							<span className="text-sm font-bold text-black">
-								{assignedDevelopers.length} member{assignedDevelopers.length !== 1 ? 's' : ''}
-							</span>
-						</div>
-						<div className="flex items-center gap-2">
-							{assignedDevelopers.slice(0, 4).map((developer) => (
-								<Avatar key={developer?.id} className="h-8 w-8 border-2 border-white ring-2 ring-gray-200">
-									<AvatarImage src={developer?.image || "/placeholder.svg"} alt={developer?.name || "Developer"} />
-									<AvatarFallback className="text-xs bg-gray-100 text-gray-800 font-medium">
-										{developer?.name?.split(" ").map(n => n[0]).join("") || "D"}
-									</AvatarFallback>
-								</Avatar>
-							))}
-							{assignedDevelopers.length > 4 && (
-								<div className="h-8 w-8 rounded-full bg-gray-100 border-2 border-white ring-2 ring-gray-200 flex items-center justify-center">
-									<span className="text-xs font-medium text-gray-700">
-										+{assignedDevelopers.length - 4}
-									</span>
+				{
+					assignedDevelopers.length > 0 && (
+						<div className="space-y-3">
+							<div className="flex items-center justify-between">
+								<div className="flex items-center gap-2">
+									<Users className="h-4 w-4 text-gray-500" />
+									<span className="text-sm font-medium text-gray-700">Team</span>
 								</div>
-							)}
+								<span className="text-sm font-bold text-black">
+									{assignedDevelopers.length} member{assignedDevelopers.length !== 1 ? 's' : ''}
+								</span>
+							</div>
+							<div className="flex items-center gap-2">
+								{
+									assignedDevelopers.slice(0, 4).map((developer) => (
+										<Avatar key={developer?.id} className="h-8 w-8 border-2 border-white ring-2 ring-gray-200">
+											<AvatarImage src={developer?.image || "/placeholder.svg"} alt={developer?.name || "Developer"} />
+											<AvatarFallback className="text-xs bg-gray-100 text-gray-800 font-medium">
+												{developer?.name?.split(" ").map(n => n[0]).join("") || "D"}
+											</AvatarFallback>
+										</Avatar>
+									))
+								}
+								{
+									assignedDevelopers.length > 4 && (
+										<div className="h-8 w-8 rounded-full bg-gray-100 border-2 border-white ring-2 ring-gray-200 flex items-center justify-center">
+											<span className="text-xs font-medium text-gray-700">
+												+{assignedDevelopers.length - 4}
+											</span>
+										</div>
+									)
+								}
+							</div>
 						</div>
-					</div>
-				)}
-
-				{/* Action Button */}
+					)
+				}
 				<div className="pt-4 border-t border-gray-100">
 					<Link href={`/projects/${project.slug}`}>
 						<Button className="w-full bg-black hover:bg-gray-800 text-white transition-colors group-hover:bg-gray-900">

@@ -33,7 +33,6 @@ export default function ProjectPage({ params }: ProjectPageProps) {
 	const { data: session } = useSession()
 	const { project: storeProject } = useProjectStore()
 
-	// Use store project if available, otherwise use initial project
 	const project = storeProject || initialProject
 
 	useEffect(() => {
@@ -53,7 +52,7 @@ export default function ProjectPage({ params }: ProjectPageProps) {
 		setActiveTab("feedback")
 		// Scroll to feedback section with longer delay to ensure DOM is updated
 		setTimeout(() => {
-			feedbackSectionRef.current?.scrollIntoView({ 
+			feedbackSectionRef.current?.scrollIntoView({
 				behavior: 'smooth',
 				block: 'start',
 				inline: 'nearest'
@@ -133,11 +132,9 @@ export default function ProjectPage({ params }: ProjectPageProps) {
 	return (
 		<ProjectStoreProvider initialProject={initialProject}>
 			<div className="min-h-screen bg-gradient-to-bl dark:from-black dark:via-gray-900 dark:to-black">
-				{/* Hero Section */}
 				<div className="bg-black text-white">
 					<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 						<div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
-							{/* Project Info */}
 							<div className="space-y-8">
 								<div>
 									<h1 className="text-5xl font-bold text-white mb-6">
@@ -146,11 +143,9 @@ export default function ProjectPage({ params }: ProjectPageProps) {
 									<p className="text-xl text-gray-300 leading-relaxed mb-8">
 										{project.description || "No description provided"}
 									</p>
-									
-									{/* Action Buttons */}
 									<div className="flex items-center gap-4">
-										<ProjectClientWrapper 
-											projectId={project.id} 
+										<ProjectClientWrapper
+											projectId={project.id}
 											projectTitle={project.title}
 											initialMessages={project.messages || []}
 											userRole={session?.user?.role}
@@ -158,8 +153,6 @@ export default function ProjectPage({ params }: ProjectPageProps) {
 										/>
 									</div>
 								</div>
-
-								{/* Project Stats */}
 								<div className="grid grid-cols-2 gap-8">
 									<div className="flex items-center gap-4">
 										<div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center">
@@ -172,7 +165,6 @@ export default function ProjectPage({ params }: ProjectPageProps) {
 											</p>
 										</div>
 									</div>
-
 									<div className="flex items-center gap-4">
 										<div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center">
 											<CreditCard className="h-6 w-6 text-black" />
@@ -184,7 +176,6 @@ export default function ProjectPage({ params }: ProjectPageProps) {
 											</p>
 										</div>
 									</div>
-
 									<div className="flex items-center gap-4">
 										<div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center">
 											<Target className="h-6 w-6 text-black" />
@@ -196,7 +187,6 @@ export default function ProjectPage({ params }: ProjectPageProps) {
 											</p>
 										</div>
 									</div>
-
 									<div className="flex items-center gap-4">
 										<div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center">
 											<Users className="h-6 w-6 text-black" />
@@ -209,8 +199,6 @@ export default function ProjectPage({ params }: ProjectPageProps) {
 										</div>
 									</div>
 								</div>
-
-								{/* Progress Overview */}
 								<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 									<div className="bg-white/10 rounded-xl p-6 backdrop-blur-sm">
 										<h3 className="text-lg font-semibold text-white mb-4">Payment Progress</h3>
@@ -222,7 +210,7 @@ export default function ProjectPage({ params }: ProjectPageProps) {
 												</span>
 											</div>
 											<div className="w-full bg-gray-700 rounded-full h-3">
-												<div 
+												<div
 													className="bg-gradient-to-r from-green-400 to-green-600 h-3 rounded-full transition-all duration-500"
 													style={{ width: `${Math.min(paymentProgress, 100)}%` }}
 												/>
@@ -235,7 +223,6 @@ export default function ProjectPage({ params }: ProjectPageProps) {
 											</div>
 										</div>
 									</div>
-
 									<div className="bg-white/10 rounded-xl p-6 backdrop-blur-sm">
 										<h3 className="text-lg font-semibold text-white mb-4">Project Progress</h3>
 										<div className="space-y-3">
@@ -246,7 +233,7 @@ export default function ProjectPage({ params }: ProjectPageProps) {
 												</span>
 											</div>
 											<div className="w-full bg-gray-700 rounded-full h-3">
-												<div 
+												<div
 													className="bg-gradient-to-r from-blue-400 to-blue-600 h-3 rounded-full transition-all duration-500"
 													style={{ width: `${Math.min(progressPercentage, 100)}%` }}
 												/>
@@ -261,12 +248,8 @@ export default function ProjectPage({ params }: ProjectPageProps) {
 									</div>
 								</div>
 							</div>
-
-							{/* Project Resources */}
 							<div className="space-y-6">
 								<ProjectLinks project={project} />
-								
-								{/* Payment Information */}
 								<div className="bg-white rounded-xl p-6">
 									<h3 className="text-lg font-semibold text-gray-900 mb-4">
 										Payment Information
@@ -292,8 +275,6 @@ export default function ProjectPage({ params }: ProjectPageProps) {
 										</div>
 									</div>
 								</div>
-
-								{/* Client Info */}
 								<div className="bg-white rounded-xl p-6">
 									<h3 className="text-lg font-semibold text-gray-900 mb-4">
 										Client Information
@@ -335,13 +316,9 @@ export default function ProjectPage({ params }: ProjectPageProps) {
 						</div>
 					</div>
 				</div>
-
-				{/* Project Content */}
 				<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
 					<div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-						{/* Main Content */}
 						<div className="lg:col-span-2">
-							{/* Progress Overview */}
 							<Card className="mb-8">
 								<CardHeader>
 									<CardTitle className="flex items-center gap-2">
@@ -372,8 +349,6 @@ export default function ProjectPage({ params }: ProjectPageProps) {
 									</div>
 								</CardContent>
 							</Card>
-
-							{/* Tasks and Feedback Tabs */}
 							<div ref={feedbackSectionRef}>
 								<Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
 									<TabsList className="grid w-full grid-cols-2">
@@ -386,7 +361,6 @@ export default function ProjectPage({ params }: ProjectPageProps) {
 											Feedback ({(storeProject?.feedbacks || project?.feedbacks || []).length})
 										</TabsTrigger>
 									</TabsList>
-									
 									<TabsContent value="tasks" className="mt-6">
 										<Card>
 											<CardHeader>
@@ -397,57 +371,64 @@ export default function ProjectPage({ params }: ProjectPageProps) {
 											</CardHeader>
 											<CardContent>
 												<div className="space-y-4">
-													{project.tasks.length > 0 ? (
-														project.tasks.map((task: any) => (
-															<div key={task.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors">
-																<div className="flex items-center gap-4">
-																	<div className="flex-shrink-0">
-																		<div className={`w-3 h-3 rounded-full ${task.status === TaskStatus.COMPLETED ? "bg-green-500" :
+													{
+														project.tasks.length > 0 ? (
+															project.tasks.map((task: any) => (
+																<div key={task.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors">
+																	<div className="flex items-center gap-4">
+																		<div className="flex-shrink-0">
+																			<div className={`w-3 h-3 rounded-full ${task.status === TaskStatus.COMPLETED ? "bg-green-500" :
 																				task.status === TaskStatus.IN_PROGRESS ? "bg-blue-500" :
 																					"bg-gray-400"
-																			}`} />
-																	</div>
-																	<div className="flex-1">
-																		<h4 className="font-medium text-foreground">
-																			{task.title}
-																		</h4>
-																		{task.description && (
-																			<p className="text-sm text-muted-foreground mt-1">
-																				{task.description}
-																			</p>
-																		)}
-																		<div className="flex items-center gap-3 mt-2">
-																			<Badge className={`${getTaskStatusColor(task.status)} border text-xs`}>
-																				{task.status.replace('_', ' ')}
-																			</Badge>
-																			{task.assignedDeveloper && (
-																				<span className="text-xs text-muted-foreground">
-																					Assigned to {task.assignedDeveloper.name}
-																				</span>
-																			)}
+																				}`} />
+																		</div>
+																		<div className="flex-1">
+																			<h4 className="font-medium text-foreground">
+																				{task.title}
+																			</h4>
+																			{
+																				task.description && (
+																					<p className="text-sm text-muted-foreground mt-1">
+																						{task.description}
+																					</p>
+																				)
+																			}
+																			<div className="flex items-center gap-3 mt-2">
+																				<Badge className={`${getTaskStatusColor(task.status)} border text-xs`}>
+																					{task.status.replace('_', ' ')}
+																				</Badge>
+																				{
+																					task.assignedDeveloper && (
+																						<span className="text-xs text-muted-foreground">
+																							Assigned to {task.assignedDeveloper.name}
+																						</span>
+																					)
+																				}
+																			</div>
 																		</div>
 																	</div>
+																	{
+																		task.assignedDeveloper && (
+																			<Avatar className="h-8 w-8">
+																				<AvatarImage src={task.assignedDeveloper.image || "/placeholder.svg"} alt={task.assignedDeveloper.name || "Developer"} />
+																				<AvatarFallback className="text-xs">
+																					{task.assignedDeveloper.name?.split(" ").map((n: string) => n[0]).join("") || "D"}
+																				</AvatarFallback>
+																			</Avatar>
+																		)
+																	}
 																</div>
-																{task.assignedDeveloper && (
-																	<Avatar className="h-8 w-8">
-																		<AvatarImage src={task.assignedDeveloper.image || "/placeholder.svg"} alt={task.assignedDeveloper.name || "Developer"} />
-																		<AvatarFallback className="text-xs">
-																			{task.assignedDeveloper.name?.split(" ").map((n: string) => n[0]).join("") || "D"}
-																		</AvatarFallback>
-																	</Avatar>
-																)}
-															</div>
-														))
-													) : (
-														<p className="text-muted-foreground text-center py-8">
-															No tasks assigned to this project yet
-														</p>
-													)}
+															))
+														) : (
+															<p className="text-muted-foreground text-center py-8">
+																No tasks assigned to this project yet
+															</p>
+														)
+													}
 												</div>
 											</CardContent>
 										</Card>
 									</TabsContent>
-									
 									<TabsContent value="feedback" className="mt-6">
 										<Card>
 											<CardHeader>
@@ -464,10 +445,7 @@ export default function ProjectPage({ params }: ProjectPageProps) {
 								</Tabs>
 							</div>
 						</div>
-
-						{/* Sidebar */}
 						<div className="space-y-6">
-							{/* Team Members */}
 							<Card>
 								<CardHeader>
 									<CardTitle className="flex items-center gap-2">
@@ -477,35 +455,35 @@ export default function ProjectPage({ params }: ProjectPageProps) {
 								</CardHeader>
 								<CardContent>
 									<div className="space-y-4">
-										{assignedDevelopers.length > 0 ? (
-											assignedDevelopers.map((developer: any) => (
-												<div key={developer?.id} className="flex items-center gap-3">
-													<Avatar className="h-10 w-10 border-2 border-gray-200">
-														<AvatarImage src={developer?.image || "/placeholder.svg"} alt={developer?.name || "Developer"} />
-														<AvatarFallback className="bg-black text-white text-sm font-bold">
-															{developer?.name?.split(" ").map((n: string) => n[0]).join("") || "D"}
-														</AvatarFallback>
-													</Avatar>
-													<div className="flex-1">
-														<h4 className="font-medium text-foreground">
-															{developer?.name || "Unknown Developer"}
-														</h4>
-														<p className="text-sm text-muted-foreground">
-															Developer
-														</p>
+										{
+											assignedDevelopers.length > 0 ? (
+												assignedDevelopers.map((developer: any) => (
+													<div key={developer?.id} className="flex items-center gap-3">
+														<Avatar className="h-10 w-10 border-2 border-gray-200">
+															<AvatarImage src={developer?.image || "/placeholder.svg"} alt={developer?.name || "Developer"} />
+															<AvatarFallback className="bg-black text-white text-sm font-bold">
+																{developer?.name?.split(" ").map((n: string) => n[0]).join("") || "D"}
+															</AvatarFallback>
+														</Avatar>
+														<div className="flex-1">
+															<h4 className="font-medium text-foreground">
+																{developer?.name || "Unknown Developer"}
+															</h4>
+															<p className="text-sm text-muted-foreground">
+																Developer
+															</p>
+														</div>
 													</div>
-												</div>
-											))
-										) : (
-											<p className="text-sm text-muted-foreground">
-												No team members assigned yet
-											</p>
-										)}
+												))
+											) : (
+												<p className="text-sm text-muted-foreground">
+													No team members assigned yet
+												</p>
+											)
+										}
 									</div>
 								</CardContent>
 							</Card>
-
-							{/* Quick Stats */}
 							<Card>
 								<CardHeader>
 									<CardTitle>Quick Stats</CardTitle>

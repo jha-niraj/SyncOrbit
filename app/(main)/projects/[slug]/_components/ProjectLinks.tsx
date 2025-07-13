@@ -68,45 +68,46 @@ export function ProjectLinks({ project }: ProjectLinksProps) {
 				</CardDescription>
 			</CardHeader>
 			<CardContent className="space-y-4">
-				{/* Main Links */}
 				<div className="grid grid-cols-1 gap-3">
-					{activeLinks.map((link, index) => (
-						<div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border">
-							<div className="flex items-center gap-3">
-								<div className={`p-2 rounded-md ${link.color}`}>
-									{link.icon}
+					{
+						activeLinks.map((link, index) => (
+							<div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border">
+								<div className="flex items-center gap-3">
+									<div className={`p-2 rounded-md ${link.color}`}>
+										{link.icon}
+									</div>
+									<div>
+										<p className="font-medium text-gray-900">{link.label}</p>
+										<p className="text-sm text-gray-500 truncate max-w-[200px]">
+											{link.url}
+										</p>
+									</div>
 								</div>
-								<div>
-									<p className="font-medium text-gray-900">{link.label}</p>
-									<p className="text-sm text-gray-500 truncate max-w-[200px]">
-										{link.url}
-									</p>
-								</div>
+								<Button
+									variant="outline"
+									size="sm"
+									onClick={() => window.open(link.url!, '_blank')}
+									className="border-gray-300 hover:border-gray-400"
+								>
+									<ExternalLink className="h-3 w-3 mr-1" />
+									Visit
+								</Button>
 							</div>
-							<Button
-								variant="outline"
-								size="sm"
-								onClick={() => window.open(link.url!, '_blank')}
-								className="border-gray-300 hover:border-gray-400"
-							>
-								<ExternalLink className="h-3 w-3 mr-1" />
-								Visit
-							</Button>
-						</div>
-					))}
+						))
+					}
 				</div>
-
-				{/* Other Links */}
-				{hasOtherLinks && (
-					<div className="pt-4 border-t">
-						<h4 className="font-medium text-gray-900 mb-3">Additional Resources</h4>
-						<div className="bg-gray-50 rounded-lg p-3">
-							<p className="text-sm text-gray-700 whitespace-pre-wrap">
-								{project.otherLinks}
-							</p>
+				{
+					hasOtherLinks && (
+						<div className="pt-4 border-t">
+							<h4 className="font-medium text-gray-900 mb-3">Additional Resources</h4>
+							<div className="bg-gray-50 rounded-lg p-3">
+								<p className="text-sm text-gray-700 whitespace-pre-wrap">
+									{project.otherLinks}
+								</p>
+							</div>
 						</div>
-					</div>
-				)}
+					)
+				}
 			</CardContent>
 		</Card>
 	)

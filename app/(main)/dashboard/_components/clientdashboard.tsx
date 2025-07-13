@@ -14,7 +14,6 @@ import { Textarea } from "@/components/ui/textarea"
 import Image from "next/image"
 
 export default function ClientDashboard() {
-    // Mock data - in a real app, this would come from an API or database
     const projects = [
         {
             id: "1",
@@ -63,7 +62,6 @@ export default function ClientDashboard() {
     const [newFeedback, setNewFeedback] = useState({ title: "", description: "" })
 
     const handleAddFeedback = () => {
-        // In a real app, this would send the feedback to an API
         console.log("Adding feedback:", newFeedback)
         setNewFeedback({ title: "", description: "" })
     }
@@ -131,58 +129,59 @@ export default function ClientDashboard() {
                 </motion.div>
                 <h2 className="text-xl font-semibold mb-4">Your Projects</h2>
                 <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mb-8">
-                    {projects.map((project, index) => (
-                        <motion.div
-                            key={project.id}
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: index * 0.1 }}
-                        >
-                            <Card className="overflow-hidden h-full flex flex-col">
-                                <div className="relative h-40 w-full">
-                                    <Image
-                                        src={project.image || "/placeholder.svg"}
-                                        alt={project.title}
-                                        className="object-cover w-full h-full"
-                                        height={30}
-                                        width={30}
-                                    />
-                                    <div className="absolute top-2 right-2">
-                                        <div
-                                            className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${project.status === "Completed"
+                    {
+                        projects.map((project, index) => (
+                            <motion.div
+                                key={project.id}
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: index * 0.1 }}
+                            >
+                                <Card className="overflow-hidden h-full flex flex-col">
+                                    <div className="relative h-40 w-full">
+                                        <Image
+                                            src={project.image || "/placeholder.svg"}
+                                            alt={project.title}
+                                            className="object-cover w-full h-full"
+                                            height={30}
+                                            width={30}
+                                        />
+                                        <div className="absolute top-2 right-2">
+                                            <div
+                                                className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${project.status === "Completed"
                                                     ? "bg-green-500/10 text-green-500 border border-green-500/20"
                                                     : "bg-blue-500/10 text-blue-500 border border-blue-500/20"
-                                                }`}
-                                        >
-                                            {project.status}
+                                                    }`}
+                                            >
+                                                {project.status}
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                                <CardHeader>
-                                    <CardTitle>{project.title}</CardTitle>
-                                    <CardDescription>
-                                        Duration: {project.duration} • Price: {project.price}
-                                    </CardDescription>
-                                </CardHeader>
-                                <CardContent className="flex-1">
-                                    <div className="space-y-2">
-                                        <div className="flex justify-between text-sm">
-                                            <span>Progress</span>
-                                            <span>{project.completion}%</span>
+                                    <CardHeader>
+                                        <CardTitle>{project.title}</CardTitle>
+                                        <CardDescription>
+                                            Duration: {project.duration} • Price: {project.price}
+                                        </CardDescription>
+                                    </CardHeader>
+                                    <CardContent className="flex-1">
+                                        <div className="space-y-2">
+                                            <div className="flex justify-between text-sm">
+                                                <span>Progress</span>
+                                                <span>{project.completion}%</span>
+                                            </div>
+                                            <Progress value={project.completion} className="h-2" />
                                         </div>
-                                        <Progress value={project.completion} className="h-2" />
-                                    </div>
-                                </CardContent>
-                                <CardFooter>
-                                    <Link href={`/projects/${project.id}`} className="w-full">
-                                        <Button variant="outline" className="w-full">
-                                            View Details
-                                        </Button>
-                                    </Link>
-                                </CardFooter>
-                            </Card>
-                        </motion.div>
-                    ))
+                                    </CardContent>
+                                    <CardFooter>
+                                        <Link href={`/projects/${project.id}`} className="w-full">
+                                            <Button variant="outline" className="w-full">
+                                                View Details
+                                            </Button>
+                                        </Link>
+                                    </CardFooter>
+                                </Card>
+                            </motion.div>
+                        ))
                     }
                 </div>
                 <h2 className="text-xl font-semibold mb-4">Feedback</h2>
@@ -239,17 +238,17 @@ export default function ClientDashboard() {
                             </SheetHeader>
                             <div className="mt-6 space-y-4">
                                 {
-                                feedbacks.map((feedback) => (
-                                    <Card key={feedback.id}>
-                                        <CardHeader>
-                                            <CardTitle className="text-base">{feedback.title}</CardTitle>
-                                            <CardDescription>{new Date(feedback.date).toLocaleString()}</CardDescription>
-                                        </CardHeader>
-                                        <CardContent>
-                                            <p className="text-sm text-muted-foreground">{feedback.description}</p>
-                                        </CardContent>
-                                    </Card>
-                                ))
+                                    feedbacks.map((feedback) => (
+                                        <Card key={feedback.id}>
+                                            <CardHeader>
+                                                <CardTitle className="text-base">{feedback.title}</CardTitle>
+                                                <CardDescription>{new Date(feedback.date).toLocaleString()}</CardDescription>
+                                            </CardHeader>
+                                            <CardContent>
+                                                <p className="text-sm text-muted-foreground">{feedback.description}</p>
+                                            </CardContent>
+                                        </Card>
+                                    ))
                                 }
                             </div>
                         </SheetContent>

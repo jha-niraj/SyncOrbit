@@ -84,7 +84,6 @@ export default async function AdminDashboard() {
 		<div className="flex min-h-screen flex-col">
 			<main className="flex-1 p-6">
 				<div className="max-w-7xl mx-auto space-y-8">
-					{/* Header */}
 					<div className="flex items-center justify-between">
 						<div>
 							<h1 className="text-3xl font-bold text-gray-900 dark:text-white">
@@ -100,8 +99,6 @@ export default async function AdminDashboard() {
 							</Button>
 						</Link>
 					</div>
-
-					{/* System Overview */}
 					<div className="grid gap-6 md:grid-cols-3">
 						<Card>
 							<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -115,7 +112,6 @@ export default async function AdminDashboard() {
 								</p>
 							</CardContent>
 						</Card>
-
 						<Card>
 							<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
 								<CardTitle className="text-sm font-medium">Total Projects</CardTitle>
@@ -128,7 +124,6 @@ export default async function AdminDashboard() {
 								</p>
 							</CardContent>
 						</Card>
-
 						<Card>
 							<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
 								<CardTitle className="text-sm font-medium">Total Feedback</CardTitle>
@@ -142,8 +137,6 @@ export default async function AdminDashboard() {
 							</CardContent>
 						</Card>
 					</div>
-
-					{/* Recent Projects */}
 					<Card>
 						<CardHeader>
 							<CardTitle className="flex items-center gap-2">
@@ -169,72 +162,72 @@ export default async function AdminDashboard() {
 										</TableRow>
 									</TableHeader>
 									<TableBody>
-										{projects.length > 0 ? (
-											projects.map((project: Project) => (
-												<TableRow key={project.id}>
-													<TableCell className="font-medium">
-														<Link
-															href={`/projects/${project.slug}`}
-															className="hover:text-blue-600 transition-colors"
-														>
-															{project.title}
-														</Link>
-													</TableCell>
-													<TableCell>
-														<div>
+										{
+											projects.length > 0 ? (
+												projects.map((project: Project) => (
+													<TableRow key={project.id}>
+														<TableCell className="font-medium">
+															<Link
+																href={`/projects/${project.slug}`}
+																className="hover:text-blue-600 transition-colors"
+															>
+																{project.title}
+															</Link>
+														</TableCell>
+														<TableCell>
+															<div>
+																<div className="font-medium">
+																	{project.user.name || "Unknown"}
+																</div>
+																<div className="text-sm text-gray-500">
+																	{project.user.email}
+																</div>
+															</div>
+														</TableCell>
+														<TableCell>
+															<Badge className={`${getStatusColor(project.status)} border text-xs`}>
+																{project.status.replace('_', ' ')}
+															</Badge>
+														</TableCell>
+														<TableCell>
 															<div className="font-medium">
-																{project.user.name || "Unknown"}
+																{formatCurrencyAmount(project.budget, project.currency)}
 															</div>
+														</TableCell>
+														<TableCell>
+															<div className="text-sm">
+																{project._count.tasks} tasks
+															</div>
+														</TableCell>
+														<TableCell>
 															<div className="text-sm text-gray-500">
-																{project.user.email}
+																{formatDate(project.createdAt)}
 															</div>
+														</TableCell>
+														<TableCell>
+															<Link href={`/projects/${project.slug}`}>
+																<Button variant="outline" size="sm">
+																	View
+																</Button>
+															</Link>
+														</TableCell>
+													</TableRow>
+												))
+											) : (
+												<TableRow>
+													<TableCell colSpan={7} className="text-center py-8">
+														<div className="text-gray-500 dark:text-gray-400">
+															No projects found
 														</div>
-													</TableCell>
-													<TableCell>
-														<Badge className={`${getStatusColor(project.status)} border text-xs`}>
-															{project.status.replace('_', ' ')}
-														</Badge>
-													</TableCell>
-													<TableCell>
-														<div className="font-medium">
-															{formatCurrencyAmount(project.budget, project.currency)}
-														</div>
-													</TableCell>
-													<TableCell>
-														<div className="text-sm">
-															{project._count.tasks} tasks
-														</div>
-													</TableCell>
-													<TableCell>
-														<div className="text-sm text-gray-500">
-															{formatDate(project.createdAt)}
-														</div>
-													</TableCell>
-													<TableCell>
-														<Link href={`/projects/${project.slug}`}>
-															<Button variant="outline" size="sm">
-																View
-															</Button>
-														</Link>
 													</TableCell>
 												</TableRow>
-											))
-										) : (
-											<TableRow>
-												<TableCell colSpan={7} className="text-center py-8">
-													<div className="text-gray-500 dark:text-gray-400">
-														No projects found
-													</div>
-												</TableCell>
-											</TableRow>
-										)}
+											)
+										}
 									</TableBody>
 								</Table>
 							</div>
 						</CardContent>
 					</Card>
-
-					{/* User Management */}
 					<Card>
 						<CardHeader>
 							<CardTitle className="flex items-center gap-2">
@@ -258,39 +251,41 @@ export default async function AdminDashboard() {
 										</TableRow>
 									</TableHeader>
 									<TableBody>
-										{users.length > 0 ? (
-											users.map((user: User) => (
-												<TableRow key={user.id}>
-													<TableCell className="font-medium">
-														{user.name || "Unknown"}
-													</TableCell>
-													<TableCell>{user.email}</TableCell>
-													<TableCell>
-														<Badge variant="outline" className="text-xs">
-															{user.role}
-														</Badge>
-													</TableCell>
-													<TableCell>
-														<div className="text-sm">
-															{user._count.projects} projects
-														</div>
-													</TableCell>
-													<TableCell>
-														<div className="text-sm text-gray-500">
-															{formatDate(user.createdAt)}
+										{
+											users.length > 0 ? (
+												users.map((user: User) => (
+													<TableRow key={user.id}>
+														<TableCell className="font-medium">
+															{user.name || "Unknown"}
+														</TableCell>
+														<TableCell>{user.email}</TableCell>
+														<TableCell>
+															<Badge variant="outline" className="text-xs">
+																{user.role}
+															</Badge>
+														</TableCell>
+														<TableCell>
+															<div className="text-sm">
+																{user._count.projects} projects
+															</div>
+														</TableCell>
+														<TableCell>
+															<div className="text-sm text-gray-500">
+																{formatDate(user.createdAt)}
+															</div>
+														</TableCell>
+													</TableRow>
+												))
+											) : (
+												<TableRow>
+													<TableCell colSpan={5} className="text-center py-8">
+														<div className="text-gray-500 dark:text-gray-400">
+															No users found
 														</div>
 													</TableCell>
 												</TableRow>
-											))
-										) : (
-											<TableRow>
-												<TableCell colSpan={5} className="text-center py-8">
-													<div className="text-gray-500 dark:text-gray-400">
-														No users found
-													</div>
-												</TableCell>
-											</TableRow>
-										)}
+											)
+										}
 									</TableBody>
 								</Table>
 							</div>

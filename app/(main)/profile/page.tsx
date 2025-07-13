@@ -10,7 +10,7 @@ import { ProfileForm } from "./_components/profileform"
 
 export default async function ProfilePage() {
     const profileData = await getProfile()
-    
+
     if (!profileData.success || !profileData.user) {
         return (
             <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
@@ -28,7 +28,6 @@ export default async function ProfilePage() {
         <div className="min-h-screen bg-gradient-to-bl dark:from-black dark:via-gray-900 dark:to-black">
             <div className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
                 <div className="flex flex-col lg:flex-row gap-8">
-                    {/* Profile Sidebar */}
                     <div className="lg:w-1/3">
                         <Card className="sticky top-8">
                             <CardHeader className="text-center">
@@ -50,9 +49,9 @@ export default async function ProfilePage() {
                                         {user.role}
                                     </Badge>
                                 </div>
-                                
+
                                 <Separator />
-                                
+
                                 <div className="space-y-3">
                                     <div className="flex items-center gap-3 text-sm text-muted-foreground">
                                         <Mail className="h-4 w-4" />
@@ -82,8 +81,6 @@ export default async function ProfilePage() {
                             </CardContent>
                         </Card>
                     </div>
-
-                    {/* Main Content */}
                     <div className="lg:w-2/3">
                         <Tabs defaultValue="profile" className="w-full">
                             <TabsList className="grid w-full grid-cols-2">
@@ -96,7 +93,6 @@ export default async function ProfilePage() {
                                     Settings
                                 </TabsTrigger>
                             </TabsList>
-                            
                             <TabsContent value="profile" className="mt-6">
                                 <Card>
                                     <CardHeader>
@@ -110,7 +106,6 @@ export default async function ProfilePage() {
                                     </CardContent>
                                 </Card>
                             </TabsContent>
-                            
                             <TabsContent value="settings" className="mt-6">
                                 <Card>
                                     <CardHeader>

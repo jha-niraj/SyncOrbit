@@ -26,13 +26,13 @@ export function SettingsForm({ user }: SettingsFormProps) {
     const [isChangingPassword, setIsChangingPassword] = useState(false)
     const [isDeletingAccount, setIsDeletingAccount] = useState(false)
     const [showDeleteDialog, setShowDeleteDialog] = useState(false)
-    
+
     const [passwordData, setPasswordData] = useState({
         currentPassword: "",
         newPassword: "",
         confirmPassword: ""
     })
-    
+
     const [deleteConfirmation, setDeleteConfirmation] = useState("")
 
     const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -49,7 +49,7 @@ export function SettingsForm({ user }: SettingsFormProps) {
 
         try {
             const result = await changePassword(passwordData)
-            
+
             if (result.success) {
                 toast.success("Password changed successfully!")
                 setPasswordData({
@@ -72,7 +72,7 @@ export function SettingsForm({ user }: SettingsFormProps) {
 
         try {
             const result = await deleteAccount(deleteConfirmation)
-            
+
             if (result.success) {
                 toast.success("Account deleted successfully")
                 // Sign out the user
@@ -91,7 +91,6 @@ export function SettingsForm({ user }: SettingsFormProps) {
 
     return (
         <div className="space-y-6">
-            {/* Account Information */}
             <Card>
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2">
@@ -115,8 +114,6 @@ export function SettingsForm({ user }: SettingsFormProps) {
                     </div>
                 </CardContent>
             </Card>
-
-            {/* Change Password */}
             <Card>
                 <CardHeader>
                     <CardTitle>Change Password</CardTitle>
@@ -138,7 +135,6 @@ export function SettingsForm({ user }: SettingsFormProps) {
                                 required
                             />
                         </div>
-
                         <div className="space-y-2">
                             <Label htmlFor="newPassword">New Password</Label>
                             <Input
@@ -151,7 +147,6 @@ export function SettingsForm({ user }: SettingsFormProps) {
                                 required
                             />
                         </div>
-
                         <div className="space-y-2">
                             <Label htmlFor="confirmPassword">Confirm New Password</Label>
                             <Input
@@ -164,28 +159,26 @@ export function SettingsForm({ user }: SettingsFormProps) {
                                 required
                             />
                         </div>
-
-                        <Button 
-                            type="submit" 
+                        <Button
+                            type="submit"
                             disabled={isChangingPassword || !passwordData.currentPassword || !passwordData.newPassword || !passwordData.confirmPassword}
                             className="w-full md:w-auto"
                         >
-                            {isChangingPassword ? (
-                                <>
-                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                    Changing Password...
-                                </>
-                            ) : (
-                                "Change Password"
-                            )}
+                            {
+                                isChangingPassword ? (
+                                    <>
+                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                        Changing Password...
+                                    </>
+                                ) : (
+                                    "Change Password"
+                                )
+                            }
                         </Button>
                     </form>
                 </CardContent>
             </Card>
-
             <Separator />
-
-            {/* Danger Zone */}
             <Card className="border-red-200">
                 <CardHeader>
                     <CardTitle className="text-red-600 flex items-center gap-2">
@@ -203,7 +196,6 @@ export function SettingsForm({ user }: SettingsFormProps) {
                             Once you delete your account, there is no going back. Please be certain.
                         </AlertDescription>
                     </Alert>
-
                     <div className="mt-4">
                         <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
                             <DialogTrigger asChild>
@@ -237,19 +229,21 @@ export function SettingsForm({ user }: SettingsFormProps) {
                                     <Button variant="outline" onClick={() => setShowDeleteDialog(false)}>
                                         Cancel
                                     </Button>
-                                    <Button 
-                                        variant="destructive" 
+                                    <Button
+                                        variant="destructive"
                                         onClick={handleDeleteAccount}
                                         disabled={isDeletingAccount || deleteConfirmation !== "DELETE"}
                                     >
-                                        {isDeletingAccount ? (
-                                            <>
-                                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                                Deleting...
-                                            </>
-                                        ) : (
-                                            "Delete Account"
-                                        )}
+                                        {
+                                            isDeletingAccount ? (
+                                                <>
+                                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                                    Deleting...
+                                                </>
+                                            ) : (
+                                                "Delete Account"
+                                            )
+                                        }
                                     </Button>
                                 </DialogFooter>
                             </DialogContent>

@@ -36,8 +36,8 @@ export function FeedbackDisplay({ feedbacks }: FeedbackDisplayProps) {
 	const { data: session } = useSession()
 
 	const displayFeedbacks = (project?.feedbacks || feedbacks)
-		.slice() // Create a copy to avoid mutating the original array
-		.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()) // Sort by createdAt descending (most recent first)
+		.slice()
+		.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
 
 	const handleStatusUpdate = async (feedbackId: string, newStatus: FeedbackStatus) => {
 		setLoadingStates(prev => ({ ...prev, [feedbackId]: true }))
