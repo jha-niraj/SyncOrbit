@@ -74,10 +74,10 @@ export default function Navbar() {
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ duration: 0.6, ease: "easeOut" }}
                 className={cn(
-                    "w-[100%] w-full md:w-[96%] md:max-w-7xl mx-auto rounded-2xl transition-all duration-300 border border-teal-200/20 dark:border-teal-800/30",
+                    "w-[100%] w-full md:w-[96%] md:max-w-7xl mx-auto rounded-2xl transition-all duration-300",
                     scrolled
-                        ? "bg-white/80 dark:bg-gray-950/80 backdrop-blur-xl shadow-xl shadow-teal-100/20 dark:shadow-teal-900/20"
-                        : "bg-white/70 dark:bg-gray-950/70 backdrop-blur-lg shadow-lg shadow-teal-50/30 dark:shadow-teal-900/30",
+                        ? "bg-white/80 dark:bg-gray-950/80 backdrop-blur-xl"
+                        : "bg-white/70 dark:bg-gray-950/70 backdrop-blur-lg",
                 )}
             >
                 <nav className="px-6" aria-label="Global">

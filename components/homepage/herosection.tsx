@@ -8,8 +8,10 @@ import {
 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Card } from "@/components/ui/card"
+import { BackgroundPaths } from "../ui/backgroundpaths"
+import { WordRotate } from "../ui/wordrotate"
 
-const services = [
+const productsServices = [
 	{
 		icon: Users,
 		title: "Client Services",
@@ -54,6 +56,8 @@ const productFeatures = [
 ]
 
 export default function HeroSection() {
+	const rotatingWords = ["Build.", "Ship.", "Scale."]
+	const services = ["SaaS Platform", "Custom Development", "AI Integration", "Enterprise Solutions"]
 
 	return (
 		<div className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-slate-50 via-emerald-50/30 to-teal-50 dark:from-slate-950 dark:via-emerald-950/10 dark:to-teal-950/10">
@@ -85,178 +89,157 @@ export default function HeroSection() {
 					className="absolute bottom-1/4 right-1/6 w-80 h-80 bg-gradient-to-r from-teal-400/20 to-emerald-400/20 rounded-full blur-3xl"
 				/>
 			</div>
-			<div className="relative max-w-7xl mx-auto px-6 py-20 md:py-28 lg:py-32">
-				<div className="text-center mb-16">
-					<motion.div
-						initial={{ opacity: 0, y: 30 }}
-						animate={{ opacity: 1, y: 0 }}
-						transition={{ duration: 0.8, ease: "easeOut" }}
-					>
-						<motion.div
-							initial={{ opacity: 0, scale: 0.8 }}
-							animate={{ opacity: 1, scale: 1 }}
-							transition={{ duration: 0.6, delay: 0.2 }}
-							className="relative inline-block mb-4"
-						>
-							<div className="absolute inset-0 bg-gradient-to-r from-emerald-500/20 via-teal-500/20 to-emerald-500/20 rounded-full blur-xl" />
-							<Badge className="relative inline-flex items-center gap-2 px-6 py-3 rounded-full bg-gradient-to-r from-slate-900/90 to-slate-800/90 dark:from-slate-100/90 dark:to-slate-200/90 text-white dark:text-slate-900 text-sm font-medium border border-emerald-500/20 backdrop-blur-sm shadow-2xl">
-								<div className="w-2 h-2 bg-gradient-to-r from-emerald-400 to-teal-400 rounded-full animate-pulse" />
-								Platform + Agency Excellence
-							</Badge>
-						</motion.div>
-						<div className="space-y-4">
-							<motion.h1
-								className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-black tracking-tight"
-								initial={{ opacity: 0, y: 50 }}
+			<div className="relative w-full bg-white dark:bg-neutral-950">
+				<div className="relative min-h-screen w-full flex items-center justify-center overflow-hidden">
+					<BackgroundPaths />
+
+					<div className="relative z-10 py-20 px-6">
+						<div className="text-center">
+							<motion.div
+								initial={{ opacity: 0, y: 30 }}
 								animate={{ opacity: 1, y: 0 }}
-								transition={{ duration: 0.8, delay: 0.3 }}
+								transition={{ duration: 0.8, ease: "easeOut" }}
 							>
-								<motion.span
-									className="block text-slate-900 dark:text-white"
-									initial={{ opacity: 0, x: -30 }}
-									animate={{ opacity: 1, x: 0 }}
-									transition={{ duration: 0.6, delay: 0.5 }}
-								>
-									Build.
-								</motion.span>
-								<motion.span
-									className="block"
-									initial={{ opacity: 0, x: 30 }}
-									animate={{ opacity: 1, x: 0 }}
-									transition={{ duration: 0.6, delay: 0.7 }}
-								>
-									<span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 dark:from-emerald-400 dark:via-teal-400 dark:to-emerald-500">
-										Ship.
-									</span>
-									<span className="text-slate-900 dark:text-white"> </span>
-									<span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-600 via-emerald-600 to-teal-700 dark:from-teal-400 dark:via-emerald-400 dark:to-teal-500">
-										Scale.
-									</span>
-								</motion.span>
-							</motion.h1>
-						</div>
-						<motion.div
-							initial={{ opacity: 0, y: 30 }}
-							animate={{ opacity: 1, y: 0 }}
-							transition={{ duration: 0.8, delay: 1 }}
-							className="mt-6"
-						>
-							<p className="text-lg md:text-xl lg:text-2xl text-slate-600 dark:text-slate-300 max-w-2xl mx-auto leading-relaxed font-light">
-								We&apos;re{" "}
-								<motion.span
-									className="text-emerald-700 dark:text-emerald-400 font-medium relative"
-									initial={{ opacity: 0 }}
-									animate={{ opacity: 1 }}
-									transition={{ delay: 1.2 }}
-								>
-									engineering our own platform
-									<motion.div
-										className="absolute -bottom-1 left-0 w-full h-0.5 bg-gradient-to-r from-emerald-500 to-teal-500"
-										initial={{ scaleX: 0 }}
-										animate={{ scaleX: 1 }}
-										transition={{ delay: 1.4, duration: 0.6 }}
-									/>
-								</motion.span>
-								{" "}while delivering{" "}
-								<motion.span
-									className="text-teal-700 dark:text-teal-400 font-medium relative"
-									initial={{ opacity: 0 }}
-									animate={{ opacity: 1 }}
-									transition={{ delay: 1.6 }}
-								>
-									world-class solutions
-									<motion.div
-										className="absolute -bottom-1 left-0 w-full h-0.5 bg-gradient-to-r from-teal-500 to-emerald-500"
-										initial={{ scaleX: 0 }}
-										animate={{ scaleX: 1 }}
-										transition={{ delay: 1.8, duration: 0.6 }}
-									/>
-								</motion.span>
-								{" "}for forward-thinking clients.
-							</p>
-						</motion.div>
-						<motion.div
-							initial={{ opacity: 0, y: 20 }}
-							animate={{ opacity: 1, y: 0 }}
-							transition={{ duration: 0.6, delay: 1.4 }}
-							className="mt-8 flex flex-wrap justify-center gap-3"
-						>
-							{
-								['SaaS Platform', 'Custom Development', 'AI Integration', 'Enterprise Solutions'].map((item, index) => (
-									<motion.span
-										key={item}
-										initial={{ opacity: 0, scale: 0.8 }}
-										animate={{ opacity: 1, scale: 1 }}
-										transition={{ delay: 1.6 + index * 0.1 }}
-										className="px-4 py-2 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-full text-sm font-medium border border-slate-200 dark:border-slate-700 hover:border-emerald-300 dark:hover:border-emerald-600 transition-colors duration-300"
-									>
-										{item}
-									</motion.span>
-								))
-							}
-						</motion.div>
-					</motion.div>
-					<motion.div
-						className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-6"
-						initial={{ opacity: 0, y: 40 }}
-						animate={{ opacity: 1, y: 0 }}
-						transition={{ duration: 0.8, delay: 1.8 }}
-					>
-						<motion.div
-							whileHover={{ scale: 1.02 }}
-							whileTap={{ scale: 0.98 }}
-							className="w-full sm:w-auto"
-						>
-							<Link href="/contact">
-								<Button className="group relative w-full sm:w-auto bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white shadow-2xl hover:shadow-emerald-500/25 transition-all duration-500 rounded-2xl px-10 py-6 text-lg font-semibold overflow-hidden border border-emerald-500/20">
-									<span className="relative z-10 flex items-center">
-										Explore Our Platform
-										<motion.div
-											className="ml-3"
-											animate={{ x: [0, 5, 0] }}
-											transition={{ duration: 1.5, repeat: Infinity }}
-										>
-											<ArrowRight className="h-5 w-5" />
-										</motion.div>
-									</span>
-									<div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-									<motion.div
-										className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent"
-										initial={{ x: '-100%' }}
-										whileHover={{ x: '100%' }}
-										transition={{ duration: 0.6 }}
-									/>
-								</Button>
-							</Link>
-						</motion.div>
-						<motion.div
-							whileHover={{ scale: 1.02 }}
-							whileTap={{ scale: 0.98 }}
-							className="w-full sm:w-auto"
-						>
-							<Link
-								href="https://cal.com/niraj-jha/30min"
-								target="_blank"
-								className="group flex items-center justify-center border-2 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:border-emerald-300 dark:hover:border-emerald-600 hover:text-emerald-700 dark:hover:text-emerald-400 px-8 py-4 rounded-2xl text-lg font-semibold bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm transition-all duration-300 w-full sm:w-auto shadow-lg hover:shadow-xl"
-							>
-								<Calendar className="mr-3 h-5 w-5 group-hover:scale-110 transition-transform duration-300" />
-								<span>Schedule Discovery</span>
 								<motion.div
-									className="ml-2 w-2 h-2 bg-emerald-500 rounded-full"
-									animate={{ scale: [1, 1.2, 1] }}
-									transition={{ duration: 2, repeat: Infinity }}
-								/>
-							</Link>
-						</motion.div>
-					</motion.div>
+									initial={{ opacity: 0, scale: 0.8 }}
+									animate={{ opacity: 1, scale: 1 }}
+									transition={{ duration: 0.6, delay: 0.2 }}
+									className="relative inline-block mb-4"
+								>
+									<div className="absolute inset-0 bg-gradient-to-r from-neutral-500/20 via-slate-500/20 to-neutral-500/20 rounded-full blur-xl" />
+									<Badge className="relative inline-flex items-center gap-2 px-6 py-3 rounded-full bg-neutral-100 dark:bg-neutral-800 text-neutral-800 dark:text-neutral-200 text-sm font-medium border border-neutral-200 dark:border-neutral-700 shadow-lg">
+										<div className="w-2 h-2 bg-neutral-500 dark:bg-neutral-400 rounded-full animate-pulse" />
+										Platform + Agency Excellence
+									</Badge>
+								</motion.div>
+
+								<div className="space-y-4">
+									<motion.div
+										className="text-5xl sm:text-7xl md:text-8xl font-bold tracking-tighter"
+										initial={{ opacity: 0, y: 50 }}
+										animate={{ opacity: 1, y: 0 }}
+										transition={{ duration: 0.8, delay: 0.3 }}
+									>
+										<WordRotate
+											words={rotatingWords}
+											duration={3000}
+											className="text-transparent bg-clip-text bg-gradient-to-r from-neutral-900 to-neutral-700/80 dark:from-white dark:to-white/80"
+										/>
+									</motion.div>
+								</div>
+
+								<motion.div
+									initial={{ opacity: 0, y: 30 }}
+									animate={{ opacity: 1, y: 0 }}
+									transition={{ duration: 0.8, delay: 1 }}
+									className="mt-6"
+								>
+									<p className="text-lg md:text-xl lg:text-2xl text-slate-600 dark:text-slate-300 max-w-2xl mx-auto leading-relaxed font-light">
+										We&apos;re{" "}
+										<motion.span
+											className="text-neutral-700 dark:text-neutral-300 font-medium relative"
+											initial={{ opacity: 0 }}
+											animate={{ opacity: 1 }}
+											transition={{ delay: 1.2 }}
+										>
+											engineering our own products
+											<motion.div
+												className="absolute -bottom-1 left-0 w-full h-0.5 bg-neutral-400 dark:bg-neutral-500"
+												initial={{ scaleX: 0 }}
+												animate={{ scaleX: 1 }}
+												transition={{ delay: 1.4, duration: 0.6 }}
+											/>
+										</motion.span>{" "}
+										while delivering{" "}
+										<motion.span
+											className="text-slate-700 dark:text-slate-300 font-medium relative"
+											initial={{ opacity: 0 }}
+											animate={{ opacity: 1 }}
+											transition={{ delay: 1.6 }}
+										>
+											world-class solutions
+											<motion.div
+												className="absolute -bottom-1 left-0 w-full h-0.5 bg-neutral-500 dark:bg-neutral-400"
+												initial={{ scaleX: 0 }}
+												animate={{ scaleX: 1 }}
+												transition={{ delay: 1.8, duration: 0.6 }}
+											/>
+										</motion.span>{" "}
+										for forward-thinking clients.
+									</p>
+								</motion.div>
+
+								<motion.div
+									initial={{ opacity: 0, y: 20 }}
+									animate={{ opacity: 1, y: 0 }}
+									transition={{ duration: 0.6, delay: 1.4 }}
+									className="mt-8 flex flex-wrap justify-center gap-3"
+								>
+									{services.map((item, index) => (
+										<motion.span
+											key={item}
+											initial={{ opacity: 0, scale: 0.8 }}
+											animate={{ opacity: 1, scale: 1 }}
+											transition={{ delay: 1.6 + index * 0.1 }}
+											className="px-4 py-2 bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 rounded-full text-sm font-medium border border-neutral-200 dark:border-neutral-700 hover:border-neutral-300 dark:hover:border-neutral-600 hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-all duration-300"
+										>
+											{item}
+										</motion.span>
+									))}
+								</motion.div>
+							</motion.div>
+
+							<motion.div
+								className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-6"
+								initial={{ opacity: 0, y: 40 }}
+								animate={{ opacity: 1, y: 0 }}
+								transition={{ duration: 0.8, delay: 1.8 }}
+							>
+								<motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="w-full sm:w-auto">
+									<Link href="/signin">
+										<Button className="group relative w-full sm:w-64 bg-gradient-to-r from-neutral-900 to-slate-900 hover:from-neutral-800 hover:to-slate-800 dark:from-white dark:to-slate-100 dark:hover:from-slate-100 dark:hover:to-white text-white dark:text-black shadow-lg hover:shadow-xl transition-all duration-300 rounded-xl px-8 py-4 text-lg font-semibold overflow-hidden border border-neutral-200 dark:border-neutral-700">
+											<span className="relative z-10 flex items-center justify-center">
+												Our Latest Product
+												<motion.div
+													className="ml-3"
+													animate={{ x: [0, 5, 0] }}
+													transition={{ duration: 1.5, repeat: Number.POSITIVE_INFINITY }}
+												>
+													<ArrowRight className="h-5 w-5" />
+												</motion.div>
+											</span>
+											<motion.div className="absolute inset-0 bg-gradient-to-r from-neutral-800 to-slate-800 dark:from-slate-200 dark:to-neutral-200 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+										</Button>
+									</Link>
+								</motion.div>
+
+								<motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="w-full sm:w-auto">
+									<Link href="https://cal.com/niraj-jha/30min" target="_blank">
+										<Button
+											variant="outline"
+											className="group w-full sm:w-64 border-2 border-neutral-300 dark:border-neutral-600 text-neutral-700 dark:text-neutral-300 hover:border-neutral-400 dark:hover:border-neutral-500 hover:text-neutral-900 dark:hover:text-white hover:bg-neutral-50 dark:hover:bg-neutral-800 px-8 py-4 rounded-xl text-lg font-semibold transition-all duration-300 shadow-lg hover:shadow-xl bg-transparent"
+										>
+											<Calendar className="mr-3 h-5 w-5 group-hover:scale-110 transition-transform duration-300" />
+											<span>Schedule Discovery</span>
+											<motion.div
+												className="ml-2 w-2 h-2 bg-neutral-500 dark:bg-neutral-400 rounded-full"
+												animate={{ scale: [1, 1.2, 1] }}
+												transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY }}
+											/>
+										</Button>
+									</Link>
+								</motion.div>
+							</motion.div>
+						</div>
+					</div>
 				</div>
 				<motion.div
 					initial={{ opacity: 0, y: 50 }}
 					animate={{ opacity: 1, y: 0 }}
 					transition={{ duration: 0.8, delay: 0.4 }}
-					className="mb-16 w-full"
+					className="mb-8 max-w-7xl mx-auto px-6"
 				>
-					<div className="max-w-7xl mx-autorelative overflow-hidden rounded-3xl bg-gradient-to-br from-emerald-500/10 via-teal-500/10 to-emerald-600/10 border border-emerald-200/50 dark:border-emerald-800/50 backdrop-blur-xl">
+					<div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-black via-gray-950 to-black border border-emerald-200/50 dark:border-emerald-800/50 backdrop-blur-xl">
 						<div className="absolute inset-0 bg-gradient-to-r from-emerald-500/5 to-teal-500/5" />
 						<div className="relative p-8 md:p-12">
 							<div className="text-center mb-8">
@@ -291,7 +274,7 @@ export default function HeroSection() {
 											<div className="flex flex-col items-center justify-center bg-white/80 dark:bg-black/80 backdrop-blur-xl rounded-2xl p-6 border border-emerald-100 dark:border-emerald-900 hover:border-emerald-300 dark:hover:border-emerald-700 transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-lg">
 												<feature.icon className="w-8 h-8 text-emerald-600 dark:text-emerald-400 mb-4 group-hover:scale-110 transition-transform duration-300" />
 												<h3 className="font-semibold text-slate-900 dark:text-white mb-2">{feature.title}</h3>
-												<p className="text-sm text-slate-600 dark:text-slate-400">{feature.description}</p>
+												<p className="text-sm text-center text-slate-600 dark:text-slate-400">{feature.description}</p>
 											</div>
 										</motion.div>
 									))
@@ -317,7 +300,7 @@ export default function HeroSection() {
 					initial={{ opacity: 0, y: 40 }}
 					animate={{ opacity: 1, y: 0 }}
 					transition={{ duration: 0.8, delay: 0.6 }}
-					className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16"
+					className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-6 mb-8 px-6"
 				>
 					{
 						stats.map((stat, index) => (
@@ -341,10 +324,10 @@ export default function HeroSection() {
 					initial={{ opacity: 0, y: 50 }}
 					animate={{ opacity: 1, y: 0 }}
 					transition={{ duration: 1, delay: 0.8 }}
-					className="grid lg:grid-cols-2 gap-8 mb-16"
+					className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-8 mb-8 px-6"
 				>
 					{
-						services.map((service, index) => (
+						productsServices.map((service, index) => (
 							<motion.div
 								key={service.title}
 								initial={{ opacity: 0, x: index === 0 ? -50 : 50 }}
@@ -395,7 +378,7 @@ export default function HeroSection() {
 					initial={{ opacity: 0, y: 40 }}
 					animate={{ opacity: 1, y: 0 }}
 					transition={{ duration: 0.8, delay: 1.2 }}
-					className="mt-8"
+					className="mt-8 max-w-7xl mx-auto mb-8 px-6"
 				>
 					<div className="text-center mb-12">
 						<h2 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white mb-4">Why Choose Us?</h2>
