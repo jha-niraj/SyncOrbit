@@ -112,7 +112,6 @@ export default function HeroSection() {
 										Platform + Agency Excellence
 									</Badge>
 								</motion.div>
-
 								<div className="space-y-4">
 									<motion.div
 										className="text-5xl sm:text-7xl md:text-8xl font-bold tracking-tighter"
@@ -127,7 +126,6 @@ export default function HeroSection() {
 										/>
 									</motion.div>
 								</div>
-
 								<motion.div
 									initial={{ opacity: 0, y: 30 }}
 									animate={{ opacity: 1, y: 0 }}
@@ -168,27 +166,27 @@ export default function HeroSection() {
 										for forward-thinking clients.
 									</p>
 								</motion.div>
-
 								<motion.div
 									initial={{ opacity: 0, y: 20 }}
 									animate={{ opacity: 1, y: 0 }}
 									transition={{ duration: 0.6, delay: 1.4 }}
 									className="mt-8 flex flex-wrap justify-center gap-3"
 								>
-									{services.map((item, index) => (
-										<motion.span
-											key={item}
-											initial={{ opacity: 0, scale: 0.8 }}
-											animate={{ opacity: 1, scale: 1 }}
-											transition={{ delay: 1.6 + index * 0.1 }}
-											className="px-4 py-2 bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 rounded-full text-sm font-medium border border-neutral-200 dark:border-neutral-700 hover:border-neutral-300 dark:hover:border-neutral-600 hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-all duration-300"
-										>
-											{item}
-										</motion.span>
-									))}
+									{
+										services.map((item, index) => (
+											<motion.span
+												key={item}
+												initial={{ opacity: 0, scale: 0.8 }}
+												animate={{ opacity: 1, scale: 1 }}
+												transition={{ delay: 1.6 + index * 0.1 }}
+												className="px-4 py-2 bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 rounded-full text-sm font-medium border border-neutral-200 dark:border-neutral-700 hover:border-neutral-300 dark:hover:border-neutral-600 hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-all duration-300"
+											>
+												{item}
+											</motion.span>
+										))
+									}
 								</motion.div>
 							</motion.div>
-
 							<motion.div
 								className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-6"
 								initial={{ opacity: 0, y: 40 }}
@@ -212,7 +210,6 @@ export default function HeroSection() {
 										</Button>
 									</Link>
 								</motion.div>
-
 								<motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="w-full sm:w-auto">
 									<Link href="https://cal.com/niraj-jha/30min" target="_blank">
 										<Button
