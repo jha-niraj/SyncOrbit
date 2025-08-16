@@ -1,260 +1,330 @@
-"use client"
+'use client'
 
-import { useState, useEffect } from "react";
-import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import { motion } from "framer-motion";
-import { signOut, useSession } from "next-auth/react";
-import { useTheme } from "next-themes";
-import {
-    Menu, Briefcase, Code, Lightbulb, Users, Sun, Moon, Rocket
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { cn } from "@/lib/utils";
-import Image from "next/image";
+import Link from 'next/link'
+import { Equal, Moon, Sun, LogOut } from 'lucide-react'
+import React, { useEffect, useState } from 'react'
+import { cn } from '@/lib/utils'
+import { Button } from '@/components/ui/liquid-glass-button'
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetClose } from '@/components/ui/sheet'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+import Image from 'next/image'
+import { useTheme } from 'next-themes'
+import { useSession, signOut } from 'next-auth/react'
 
-const navigation = [
-    { name: "Services", href: "/#services", icon: Code, isSection: true },
-    { name: "Projects", href: "/projectsdelivered", icon: Briefcase, isSection: false },
-    { name: "Approach", href: "/#approach", icon: Lightbulb, isSection: true },
-    { name: "About Us", href: "/aboutus", icon: Users, isSection: false },
-    { name: "Pricing", href: "/#pricing", icon: Rocket, isSection: true },
-];
+const menuItems = [
+    { name: 'Features', href: '#features' },
+    { name: 'How it Works', href: '#how-it-works' },
+    { name: 'Pricing', href: '#pricing' },
+    { name: 'About', href: '#about' },
+]
 
-export default function Navbar() {
-    const [scrolled, setScrolled] = useState(false);
-    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-    const pathname = usePathname();
-    const { data: session, status } = useSession();
+export const Header = () => {
+    const [isScrolled, setIsScrolled] = useState(false);
     const { theme, setTheme } = useTheme();
-    const router = useRouter();
+    const { data: session, status } = useSession();
 
     useEffect(() => {
         const handleScroll = () => {
-            const isScrolled = window.scrollY > 50;
-            setScrolled(isScrolled);
-        };
-
-        window.addEventListener("scroll", handleScroll);
-        return () => window.removeEventListener("scroll", handleScroll);
-    }, []);
-
-    const isActive = (href: string) => {
-        if (href.startsWith("/#")) {
-            return false;
+            setIsScrolled(window.scrollY > 50)
         }
-        return pathname === href;
+        window.addEventListener('scroll', handleScroll)
+        return () => window.removeEventListener('scroll', handleScroll)
+    }, [])
+
+    const handleSignOut = () => {
+        signOut({ callbackUrl: '/' });
     };
 
-    const handleNavigation = (href: string, isSection: boolean) => {
-        if (isSection) {
-            if (pathname !== "/") {
-                router.push(href);
-            } else {
-                const sectionId = href.split("#")[1];
-                const element = document.getElementById(sectionId);
-                if (element) {
-                    element.scrollIntoView({ behavior: "smooth" });
-                }
+    const handleLinkClick = (href: string) => {
+        if (href.startsWith('#')) {
+            const element = document.querySelector(href);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth' });
             }
-        } else {
-            router.push(href);
+        }
+    };
+
+    const renderAuthButtons = () => {
+        if (status === 'loading') {
+            return (
+                <div className="hidden lg:flex items-center gap-4">
+                    <div className="h-8 w-16 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+                    <div className="h-8 w-20 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+                </div>
+            );
         }
 
-        setMobileMenuOpen(false);
+        if (session?.user) {
+            return (
+                <div className="hidden lg:flex items-center gap-4">
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" className="relative h-8 w-8 rounded-full p-0">
+                                <Avatar className="h-8 w-8">
+                                    <AvatarImage src={session.user.image || undefined} alt={session.user.name || "User"} />
+                                    <AvatarFallback className="bg-gradient-to-r from-blue-500 to-purple-600 text-white text-sm">
+                                        {session.user.name?.split(" ").map((n: string) => n[0]).join("") || session.user.email?.[0].toUpperCase() || "U"}
+                                    </AvatarFallback>
+                                </Avatar>
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent className="w-56" align="end" forceMount>
+                            <div className="flex items-center justify-start gap-2 p-2">
+                                <div className="flex flex-col space-y-1 leading-none">
+                                    {session.user.name && <p className="font-medium">{session.user.name}</p>}
+                                    {session.user.email && (
+                                        <p className="w-[200px] truncate text-sm text-muted-foreground">
+                                            {session.user.email}
+                                        </p>
+                                    )}
+                                </div>
+                            </div>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem asChild>
+                                <Link href="/dashboard">Dashboard</Link>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem asChild>
+                                <Link href="/profile">Profile</Link>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem asChild>
+                                <Link href="/projects">Projects</Link>
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer">
+                                <LogOut className="mr-2 h-4 w-4" />
+                                Sign out
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                </div>
+            );
+        }
+
+        return (
+            <div className="hidden lg:flex items-center gap-4">
+                <Button
+                    asChild
+                    variant="outline"
+                    size="sm"
+                    className={cn(isScrolled && 'lg:hidden', 'rounded-xl border-2 hover:scale-105 transition-all duration-300')}>  
+                    <Link href="/signin">
+                        <span>Login</span>
+                    </Link>
+                </Button>
+                <Button
+                    asChild
+                    size="sm"
+                    className={cn(isScrolled && 'lg:hidden', 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-xl shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300')}>
+                    <Link href="/signup">
+                        <span>Sign Up</span>
+                    </Link>
+                </Button>
+                <Button
+                    asChild
+                    size="sm"
+                    className={cn(isScrolled ? 'lg:inline-flex' : 'hidden', 'bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white rounded-xl shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300')}>
+                    <Link href="/signup">
+                        <span>Get Started</span>
+                    </Link>
+                </Button>
+            </div>
+        );
+    };
+
+    const renderMobileAuthButtons = () => {
+        if (session?.user) {
+            return (
+                <div className="flex flex-col gap-4 pt-4 border-t">
+                    <div className="flex items-center gap-3">
+                        <Avatar className="h-10 w-10">
+                            <AvatarImage src={session.user.image || undefined} alt={session.user.name || "User"} />
+                            <AvatarFallback className="bg-gradient-to-r from-blue-500 to-purple-600 text-white">
+                                {session.user.name?.split(" ").map((n: string) => n[0]).join("") || session.user.email?.[0].toUpperCase() || "U"}
+                            </AvatarFallback>
+                        </Avatar>
+                        <div className="flex flex-col">
+                            <p className="font-medium text-sm">{session.user.name}</p>
+                            <p className="text-xs text-muted-foreground">{session.user.email}</p>
+                        </div>
+                    </div>
+                    <div className="flex flex-col gap-2">
+                        <SheetClose asChild>
+                            <Button asChild variant="outline" size="sm" className="w-full justify-start rounded-xl hover:scale-105 transition-all duration-300">
+                                <Link href="/dashboard">Dashboard</Link>
+                            </Button>
+                        </SheetClose>
+                        <SheetClose asChild>
+                            <Button asChild variant="outline" size="sm" className="w-full justify-start rounded-xl hover:scale-105 transition-all duration-300">
+                                <Link href="/profile">Profile</Link>
+                            </Button>
+                        </SheetClose>
+                        <SheetClose asChild>
+                            <Button asChild variant="outline" size="sm" className="w-full justify-start rounded-xl hover:scale-105 transition-all duration-300">
+                                <Link href="/projects">Projects</Link>
+                            </Button>
+                        </SheetClose>
+                        <Button 
+                            onClick={handleSignOut} 
+                            variant="outline" 
+                            size="sm" 
+                            className="w-full justify-start text-red-600 hover:text-red-700 rounded-xl hover:scale-105 transition-all duration-300"
+                        >
+                            <LogOut className="mr-2 h-4 w-4" />
+                            Sign out
+                        </Button>
+                    </div>
+                </div>
+            );
+        }
+
+        return (
+            <div className="flex gap-4 pt-4 border-t">
+                <SheetClose asChild>
+                    <Button
+                        asChild
+                        variant="outline"
+                        size="sm"
+                        className="w-full rounded-xl border-2 hover:scale-105 transition-all duration-300"
+                    >
+                        <Link href="/signin">
+                            Login
+                        </Link>
+                    </Button>
+                </SheetClose>
+                <SheetClose asChild>
+                    <Button
+                        asChild
+                        size="sm"
+                        className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-xl shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300"
+                    >
+                        <Link href="/signup">
+                            Get Started
+                        </Link>
+                    </Button>
+                </SheetClose>
+            </div>
+        );
     };
 
     return (
-        <div className="w-full h-20 flex items-center justify-center fixed top-0 z-50 mt-1">
-            <motion.header
-                initial={{ y: 0, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ duration: 0.6, ease: "easeOut" }}
-                className={cn(
-                    "w-[100%] w-full md:w-[96%] md:max-w-7xl mx-auto rounded-2xl transition-all duration-300",
-                    scrolled
-                        ? "bg-white/80 dark:bg-gray-950/80 backdrop-blur-xl"
-                        : "bg-white/70 dark:bg-gray-950/70 backdrop-blur-lg",
-                )}
-            >
-                <nav className="px-6" aria-label="Global">
-                    <div className="flex items-center justify-between h-16">
-                        <motion.div className="flex lg:flex-1" whileHover={{ scale: 1.02 }} transition={{ duration: 0.2 }}>
-                            <Link href="/" className="flex items-center group gap-2">
+        <header>
+            <nav className="fixed left-0 w-full z-20 px-2">
+                <div className={cn('mx-auto mt-2 max-w-6xl px-6 transition-all duration-300 lg:px-12', isScrolled && 'bg-background/50 max-w-4xl rounded-2xl border backdrop-blur-lg lg:px-5')}>
+                    <div className="relative flex flex-wrap items-center justify-between gap-6 lg:gap-0 py-2">
+                        <div className="flex w-full justify-between lg:w-auto">
+                            <Link
+                                href="/"
+                                aria-label="home"
+                                className="flex gap-2 items-center"
+                            >
                                 <Image
                                     src="/shunyatech.png"
-                                    alt="ShunyaTech"
+                                    alt="ProjectCentral"
                                     width={32}
                                     height={32}
-                                    className="bg-black rounded-full"
+                                    className='w-10 h-10 rounded-full scale-110 bg-black'
                                 />
-                                <span className="text-xl font-bold bg-gradient-to-r from-teal-600 to-emerald-700 bg-clip-text text-transparent">
-                                    ShunyaTech
-                                </span>
+                                <p className='font-semibold text-xl tracking-tighter text-black dark:text-white'>ProjectCentral</p>
                             </Link>
-                        </motion.div>
-                        <div className="hidden lg:flex lg:gap-x-1 items-center">
-                            {
-                                navigation.map((item) => (
-                                    <button
-                                        key={item.name}
-                                        onClick={() => handleNavigation(item.href, item.isSection)}
-                                        className={cn(
-                                            "relative flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-xl transition-all duration-300",
-                                            isActive(item.href)
-                                                ? "text-teal-700 dark:text-teal-300 bg-teal-50 dark:bg-teal-950/50 shadow-sm"
-                                                : "text-teal-800 dark:text-teal-200 hover:text-teal-700 dark:hover:text-teal-300 hover:bg-teal-50/50 dark:hover:bg-teal-950/30",
-                                        )}
+                            <Sheet>
+                                <SheetTrigger asChild>
+                                    <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        className="lg:hidden p-2"
                                     >
-                                        <item.icon className="h-4 w-4" />
-                                        {item.name}
+                                        <Equal className="size-6" />
+                                        <span className="sr-only">Open menu</span>
+                                    </Button>
+                                </SheetTrigger>
+                                <SheetContent side="top" className="w-full h-[50vh]">
+                                    <SheetHeader>
+                                        <SheetTitle className="text-left">Menu</SheetTitle>
+                                    </SheetHeader>
+                                    <div className="flex flex-col space-y-6 mt-8">
                                         {
-                                            isActive(item.href) && (
-                                                <motion.div
-                                                    layoutId="activeTab"
-                                                    className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-teal-500 rounded-full"
-                                                    initial={false}
-                                                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                                                />
-                                            )
+                                            menuItems.map((item, index) => (
+                                                <SheetClose asChild key={index}>
+                                                    <Link
+                                                        href={item.href}
+                                                        onClick={() => handleLinkClick(item.href)}
+                                                        className="text-lg font-medium text-muted-foreground hover:text-accent-foreground transition-colors"
+                                                    >
+                                                        {item.name}
+                                                    </Link>
+                                                </SheetClose>
+                                            ))
                                         }
-                                    </button>
-                                ))
-                            }
+                                        <div className="flex items-center gap-2 pt-4 border-t">
+                                            <span className="text-sm text-muted-foreground">Theme:</span>
+                                            <div className="flex items-center bg-gradient-to-r from-slate-100/80 to-slate-200/80 dark:from-slate-800/80 dark:to-slate-700/80 backdrop-blur-sm rounded-2xl p-1.5 border border-slate-300/30 dark:border-slate-600/30 shadow-lg">
+                                                <Button
+                                                    variant="ghost"
+                                                    size="sm"
+                                                    className={`h-8 w-8 p-0 rounded-xl transition-all cursor-pointer duration-300 hover:scale-110 ${theme === 'light' ? 'bg-gradient-to-br from-white to-amber-50 shadow-md border border-amber-200/50' : 'hover:bg-slate-600/50'}`}
+                                                    onClick={() => setTheme('light')}
+                                                >
+                                                    <Sun className="h-4 w-4 text-amber-500" />
+                                                </Button>
+                                                <Button
+                                                    variant="ghost"
+                                                    size="sm"
+                                                    className={`h-8 w-8 p-0 rounded-xl transition-all cursor-pointer duration-300 hover:scale-110 ${theme === 'dark' ? 'bg-gradient-to-br from-slate-700 to-slate-800 shadow-md border border-blue-400/30' : 'hover:bg-slate-100/50'}`}
+                                                    onClick={() => setTheme('dark')}
+                                                >
+                                                    <Moon className="h-4 w-4 text-blue-500" />
+                                                </Button>
+                                            </div>
+                                        </div>
+                                        {renderMobileAuthButtons()}
+                                    </div>
+                                </SheetContent>
+                            </Sheet>
                         </div>
-                        <div className="hidden lg:flex lg:flex-1 lg:justify-end lg:items-center lg:space-x-2">
-                            <div className="hidden md:flex items-center bg-stone-100/50 dark:bg-stone-800/50 rounded-xl p-1 border border-stone-200/50 dark:border-stone-700/50">
+                        <div className="absolute inset-0 m-auto hidden size-fit lg:block">
+                            <ul className="flex gap-8 text-sm">
+                                {
+                                    menuItems.map((item, index) => (
+                                        <li key={index}>
+                                            <Link
+                                                href={item.href}
+                                                onClick={() => handleLinkClick(item.href)}
+                                                className="text-muted-foreground hover:text-accent-foreground block duration-150">
+                                                <span>{item.name}</span>
+                                            </Link>
+                                        </li>
+                                    ))
+                                }
+                            </ul>
+                        </div>
+                        <div className="hidden lg:flex items-center gap-4">
+                            <div className="flex items-center bg-gradient-to-r from-slate-100/80 to-slate-200/80 dark:from-slate-800/80 dark:to-slate-700/80 backdrop-blur-sm rounded-2xl p-1.5 border border-slate-300/30 dark:border-slate-600/30 shadow-lg">
                                 <Button
                                     variant="ghost"
                                     size="sm"
-                                    className={`h-7 w-7 p-0 rounded-lg transition-all cursor-pointer ${theme === 'light' ? 'bg-white shadow-sm' : 'hover:bg-stone-700'}`}
+                                    className={`h-8 w-8 p-0 rounded-xl transition-all cursor-pointer duration-300 hover:scale-110 ${theme === 'light' ? 'bg-gradient-to-br from-white to-amber-50 shadow-md border border-amber-200/50' : 'hover:bg-slate-600/50'}`}
                                     onClick={() => setTheme('light')}
                                 >
-                                    <Sun className="h-3 w-3 text-amber-500" />
+                                    <Sun className="h-4 w-4 text-amber-500" />
                                 </Button>
                                 <Button
                                     variant="ghost"
                                     size="sm"
-                                    className={`h-7 w-7 p-0 rounded-lg transition-all cursor-pointer ${theme === 'dark' ? 'bg-stone-700 shadow-sm' : 'hover:bg-stone-100'}`}
+                                    className={`h-8 w-8 p-0 rounded-xl transition-all cursor-pointer duration-300 hover:scale-110 ${theme === 'dark' ? 'bg-gradient-to-br from-slate-700 to-slate-800 shadow-md border border-blue-400/30' : 'hover:bg-slate-100/50'}`}
                                     onClick={() => setTheme('dark')}
                                 >
-                                    <Moon className="h-3 w-3 text-blue-500" />
+                                    <Moon className="h-4 w-4 text-blue-500" />
                                 </Button>
                             </div>
-                            {
-                                status !== "authenticated" ? (
-                                    <>
-                                        <Link href="/signin">
-                                            <Button
-                                                variant="outline"
-                                                size="sm"
-                                                className="rounded-xl border-teal-200 dark:border-teal-800 text-teal-700 dark:text-teal-300 hover:bg-teal-50 dark:hover:bg-teal-950/30"
-                                            >
-                                                Sign In
-                                            </Button>
-                                        </Link>
-                                        <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                                            <Link href="/signup">
-                                                <Button
-                                                    size="sm"
-                                                    className="bg-gradient-to-r from-teal-500 to-emerald-600 hover:from-teal-600 hover:to-emerald-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 rounded-xl"
-                                                >
-                                                    Get Started Free
-                                                </Button>
-                                            </Link>
-                                        </motion.div>
-                                    </>
-                                ) : (
-                                    <div className="flex items-center space-x-4">
-                                        <Link href="/dashboard">
-                                            <Button
-                                                variant="outline"
-                                                size="sm"
-                                                className="rounded-xl border-teal-200 dark:border-teal-800 text-teal-700 dark:text-teal-300 hover:bg-teal-50 dark:hover:bg-teal-950/30"
-                                            >
-                                                Dashboard
-                                            </Button>
-                                        </Link>
-                                        <DropdownMenu>
-                                            <DropdownMenuTrigger asChild>
-                                                <Avatar className="h-9 w-9 cursor-pointer hover:ring-2 hover:ring-teal-200 dark:hover:ring-teal-800 transition-all">
-                                                    <AvatarImage src={session?.user?.image || undefined} />
-                                                    <AvatarFallback className="bg-gradient-to-br from-teal-500 to-emerald-600 text-white">
-                                                        {session?.user?.name?.charAt(0) || 'U'}
-                                                    </AvatarFallback>
-                                                </Avatar>
-                                            </DropdownMenuTrigger>
-                                            <DropdownMenuContent align="end" className="w-56 p-2 rounded-xl">
-                                                <Link href="/profile">
-                                                    <DropdownMenuItem className="cursor-pointer">Profile</DropdownMenuItem>
-                                                </Link>
-                                                <DropdownMenuItem onClick={() => signOut()} className="cursor-pointer text-red-500">Sign Out</DropdownMenuItem>
-                                            </DropdownMenuContent>
-                                        </DropdownMenu>
-                                    </div>
-                                )
-                            }
+                            {renderAuthButtons()}
                         </div>
-                        <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
-                            <SheetTrigger asChild>
-                                <Button variant="ghost" size="sm" className="lg:hidden text-teal-700 dark:text-teal-300 hover:bg-teal-50 dark:hover:bg-teal-950/30 rounded-xl">
-                                    <Menu className="h-6 w-6" />
-                                </Button>
-                            </SheetTrigger>
-                            <SheetContent side="right" className="w-80 p-0 bg-gradient-to-b from-teal-50 to-white dark:from-teal-950/50 dark:to-gray-950">
-                                <SheetHeader className="p-6 border-b border-teal-100 dark:border-teal-900">
-                                    <SheetTitle className="text-left text-teal-800 dark:text-teal-200">Navigation</SheetTitle>
-                                </SheetHeader>
-                                <div className="flex flex-col h-full">
-                                    <div className="flex-1 py-6">
-                                        <div className="space-y-2 px-6">
-                                            {
-                                                navigation.map((item) => (
-                                                    <button
-                                                        key={item.name}
-                                                        onClick={() => handleNavigation(item.href, item.isSection)}
-                                                        className="flex items-center gap-3 px-4 py-3 text-base font-medium text-teal-800 dark:text-teal-200 hover:bg-teal-100 dark:hover:bg-teal-900/50 rounded-xl transition-colors w-full"
-                                                    >
-                                                        <item.icon className="h-5 w-5" />
-                                                        {item.name}
-                                                    </button>
-                                                ))
-                                            }
-                                        </div>
-                                    </div>
-                                    <div className="border-t border-teal-100 dark:border-teal-900 p-6 space-y-4">
-                                        {
-                                            status !== "authenticated" ? (
-                                                <>
-                                                    <Link href="/signin" onClick={() => setMobileMenuOpen(false)}>
-                                                        <Button variant="outline" className="w-full rounded-xl border-teal-200 dark:border-teal-800 text-teal-700 dark:text-teal-300">
-                                                            Sign In
-                                                        </Button>
-                                                    </Link>
-                                                    <Link href="/signup" onClick={() => setMobileMenuOpen(false)}>
-                                                        <Button className="w-full bg-gradient-to-r from-teal-500 to-emerald-600 text-white rounded-xl">
-                                                            Get Started Free
-                                                        </Button>
-                                                    </Link>
-                                                </>
-                                            ) : (
-                                                <Link href="/dashboard" onClick={() => setMobileMenuOpen(false)}>
-                                                    <Button className="w-full bg-gradient-to-r from-teal-500 to-emerald-600 text-white rounded-xl">
-                                                        Dashboard
-                                                    </Button>
-                                                </Link>
-                                            )
-                                        }
-                                    </div>
-                                </div>
-                            </SheetContent>
-                        </Sheet>
                     </div>
-                </nav>
-            </motion.header>
-        </div>
-    );
+                </div>
+            </nav>
+        </header>
+    )
 }
+
+// Export as default to maintain compatibility
+export default Header;
