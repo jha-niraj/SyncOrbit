@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import { motion } from "framer-motion";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -63,7 +63,7 @@ interface FormData {
     country: string;
 }
 
-export default function CheckoutPage() {
+function Checkout() {
     const searchParams = useSearchParams();
     const router = useRouter();
     const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>("card");
@@ -442,15 +442,15 @@ export default function CheckoutPage() {
                                                 <div
                                                     key={method.id}
                                                     className={`p-4 border-2 rounded-lg cursor-pointer transition-all ${selectedPaymentMethod === method.id
-                                                            ? "border-blue-500 bg-blue-50 dark:bg-blue-950/20"
-                                                            : "border-gray-200 dark:border-gray-700 hover:border-gray-300"
+                                                        ? "border-blue-500 bg-blue-50 dark:bg-blue-950/20"
+                                                        : "border-gray-200 dark:border-gray-700 hover:border-gray-300"
                                                         }`}
                                                     onClick={() => setSelectedPaymentMethod(method.id)}
                                                 >
                                                     <div className="flex items-center gap-3">
                                                         <div className={`w-4 h-4 rounded-full border-2 ${selectedPaymentMethod === method.id
-                                                                ? "border-blue-500 bg-blue-500"
-                                                                : "border-gray-300"
+                                                            ? "border-blue-500 bg-blue-500"
+                                                            : "border-gray-300"
                                                             }`}>
                                                             {
                                                                 selectedPaymentMethod === method.id && (
@@ -652,4 +652,14 @@ export default function CheckoutPage() {
             </div>
         </div>
     );
+}
+
+export default function CheckoutPage() {
+    return (
+        <Suspense fallback={<div className="flex items-center justify-center h-screen">
+            <div className="loader" />
+        </div>}>
+            <Checkout />
+        </Suspense>
+    )
 }
