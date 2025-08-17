@@ -226,7 +226,6 @@ export default function CheckoutPage() {
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-gray-950 dark:via-gray-900 dark:to-gray-800">
             <div className="container mx-auto px-4 py-8">
-                {/* Header */}
                 <div className="flex items-center gap-4 mb-8">
                     <Link href="/pricing">
                         <Button variant="ghost" size="sm">
@@ -243,9 +242,7 @@ export default function CheckoutPage() {
                         </p>
                     </div>
                 </div>
-
                 <div className="grid lg:grid-cols-2 gap-8">
-                    {/* Left Column - Order Summary */}
                     <div className="space-y-6">
                         <Card className="border-2 border-blue-200 dark:border-blue-800">
                             <CardHeader>
@@ -258,17 +255,18 @@ export default function CheckoutPage() {
                                             {selectedPlan.description}
                                         </CardDescription>
                                     </div>
-                                    {selectedPlan.popular && (
-                                        <Badge className="bg-blue-500 text-white">
-                                            <Star className="w-3 h-3 mr-1" />
-                                            Popular
-                                        </Badge>
-                                    )}
+                                    {
+                                        selectedPlan.popular && (
+                                            <Badge className="bg-blue-500 text-white">
+                                                <Star className="w-3 h-3 mr-1" />
+                                                Popular
+                                            </Badge>
+                                        )
+                                    }
                                 </div>
                             </CardHeader>
                             <CardContent>
                                 <div className="space-y-4">
-                                    {/* Billing Cycle Toggle */}
                                     <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
                                         <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
                                             Billing Cycle
@@ -280,34 +278,35 @@ export default function CheckoutPage() {
                                             <span className={`text-sm ${billingCycle === 'annual' ? 'font-semibold text-gray-900 dark:text-white' : 'text-gray-500'}`}>
                                                 Annual
                                             </span>
-                                            {savings > 0 && (
-                                                <Badge variant="secondary" className="ml-2">
-                                                    Save {savings}%
-                                                </Badge>
-                                            )}
+                                            {
+                                                savings > 0 && (
+                                                    <Badge variant="secondary" className="ml-2">
+                                                        Save {savings}%
+                                                    </Badge>
+                                                )
+                                            }
                                         </div>
                                     </div>
-
-                                    {/* Key Features */}
                                     <div className="space-y-3">
                                         <h4 className="font-semibold text-gray-900 dark:text-white">
                                             Plan Includes:
                                         </h4>
                                         <div className="grid grid-cols-2 gap-3">
-                                            {planFeatures.map((feature) => (
-                                                <div key={feature.key} className="flex items-center gap-2">
-                                                    <feature.icon className="w-4 h-4 text-blue-500" />
-                                                    <span className="text-sm text-gray-700 dark:text-gray-300">
-                                                        {selectedPlan.features[feature.key as keyof PlanFeatures]} {feature.label}
-                                                    </span>
-                                                </div>
-                                            ))}
+                                            {
+                                                planFeatures.map((feature) => (
+                                                    <div key={feature.key} className="flex items-center gap-2">
+                                                        <feature.icon className="w-4 h-4 text-blue-500" />
+                                                        <span className="text-sm text-gray-700 dark:text-gray-300">
+                                                            {selectedPlan.features[feature.key as keyof PlanFeatures]} {feature.label}
+                                                        </span>
+                                                    </div>
+                                                ))
+                                            }
                                         </div>
                                     </div>
 
                                     <Separator />
 
-                                    {/* Pricing Breakdown */}
                                     <div className="space-y-3">
                                         <div className="flex justify-between">
                                             <span className="text-gray-600 dark:text-gray-400">
@@ -318,16 +317,18 @@ export default function CheckoutPage() {
                                                 {billingCycle === "annual" ? "/year" : "/month"}
                                             </span>
                                         </div>
-                                        {billingCycle === "annual" && (
-                                            <div className="flex justify-between text-sm">
-                                                <span className="text-gray-500">
-                                                    Billed annually
-                                                </span>
-                                                <span className="text-green-600 font-medium">
-                                                    Save {formatPrice(planPrice.monthly * 12 - planPrice.annual * 12)}
-                                                </span>
-                                            </div>
-                                        )}
+                                        {
+                                            billingCycle === "annual" && (
+                                                <div className="flex justify-between text-sm">
+                                                    <span className="text-gray-500">
+                                                        Billed annually
+                                                    </span>
+                                                    <span className="text-green-600 font-medium">
+                                                        Save {formatPrice(planPrice.monthly * 12 - planPrice.annual * 12)}
+                                                    </span>
+                                                </div>
+                                            )
+                                        }
                                         <Separator />
                                         <div className="flex justify-between text-lg font-bold">
                                             <span className="text-gray-900 dark:text-white">Total</span>
@@ -340,8 +341,6 @@ export default function CheckoutPage() {
                                 </div>
                             </CardContent>
                         </Card>
-
-                        {/* Security Features */}
                         <Card>
                             <CardHeader>
                                 <CardTitle className="flex items-center gap-2 text-gray-900 dark:text-white">
@@ -371,11 +370,8 @@ export default function CheckoutPage() {
                             </CardContent>
                         </Card>
                     </div>
-
-                    {/* Right Column - Payment Form */}
                     <div className="space-y-6">
                         <form onSubmit={handleSubmit} className="space-y-6">
-                            {/* Contact Information */}
                             <Card>
                                 <CardHeader>
                                     <CardTitle className="text-gray-900 dark:text-white">
@@ -433,8 +429,6 @@ export default function CheckoutPage() {
                                     </div>
                                 </CardContent>
                             </Card>
-
-                            {/* Payment Method Selection */}
                             <Card>
                                 <CardHeader>
                                     <CardTitle className="text-gray-900 dark:text-white">
@@ -443,124 +437,126 @@ export default function CheckoutPage() {
                                 </CardHeader>
                                 <CardContent className="space-y-4">
                                     <div className="grid gap-3">
-                                        {paymentMethods.map((method) => (
-                                            <div
-                                                key={method.id}
-                                                className={`p-4 border-2 rounded-lg cursor-pointer transition-all ${
-                                                    selectedPaymentMethod === method.id
-                                                        ? "border-blue-500 bg-blue-50 dark:bg-blue-950/20"
-                                                        : "border-gray-200 dark:border-gray-700 hover:border-gray-300"
-                                                }`}
-                                                onClick={() => setSelectedPaymentMethod(method.id)}
-                                            >
-                                                <div className="flex items-center gap-3">
-                                                    <div className={`w-4 h-4 rounded-full border-2 ${
-                                                        selectedPaymentMethod === method.id
-                                                            ? "border-blue-500 bg-blue-500"
-                                                            : "border-gray-300"
-                                                    }`}>
-                                                        {selectedPaymentMethod === method.id && (
-                                                            <div className="w-2 h-2 bg-white rounded-full m-0.5" />
-                                                        )}
-                                                    </div>
-                                                    <method.icon className="w-5 h-5 text-gray-600 dark:text-gray-400" />
-                                                    <div>
-                                                        <div className="font-medium text-gray-900 dark:text-white">
-                                                            {method.name}
+                                        {
+                                            paymentMethods.map((method) => (
+                                                <div
+                                                    key={method.id}
+                                                    className={`p-4 border-2 rounded-lg cursor-pointer transition-all ${selectedPaymentMethod === method.id
+                                                            ? "border-blue-500 bg-blue-50 dark:bg-blue-950/20"
+                                                            : "border-gray-200 dark:border-gray-700 hover:border-gray-300"
+                                                        }`}
+                                                    onClick={() => setSelectedPaymentMethod(method.id)}
+                                                >
+                                                    <div className="flex items-center gap-3">
+                                                        <div className={`w-4 h-4 rounded-full border-2 ${selectedPaymentMethod === method.id
+                                                                ? "border-blue-500 bg-blue-500"
+                                                                : "border-gray-300"
+                                                            }`}>
+                                                            {
+                                                                selectedPaymentMethod === method.id && (
+                                                                    <div className="w-2 h-2 bg-white rounded-full m-0.5" />
+                                                                )
+                                                            }
                                                         </div>
-                                                        <div className="text-sm text-gray-500 dark:text-gray-400">
-                                                            {method.description}
+                                                        <method.icon className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+                                                        <div>
+                                                            <div className="font-medium text-gray-900 dark:text-white">
+                                                                {method.name}
+                                                            </div>
+                                                            <div className="text-sm text-gray-500 dark:text-gray-400">
+                                                                {method.description}
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                        ))}
+                                            ))
+                                        }
                                     </div>
-
-                                    {/* Payment Details */}
-                                    {selectedPaymentMethod === "card" && (
-                                        <motion.div
-                                            initial={{ opacity: 0, height: 0 }}
-                                            animate={{ opacity: 1, height: "auto" }}
-                                            className="space-y-4"
-                                        >
-                                            <div>
-                                                <Label htmlFor="cardNumber">Card Number</Label>
-                                                <Input
-                                                    id="cardNumber"
-                                                    placeholder="1234 5678 9012 3456"
-                                                    value={formData.cardNumber}
-                                                    onChange={(e) => handleInputChange("cardNumber", e.target.value)}
-                                                    required
-                                                />
-                                            </div>
-                                            <div className="grid grid-cols-2 gap-4">
+                                    {
+                                        selectedPaymentMethod === "card" && (
+                                            <motion.div
+                                                initial={{ opacity: 0, height: 0 }}
+                                                animate={{ opacity: 1, height: "auto" }}
+                                                className="space-y-4"
+                                            >
                                                 <div>
-                                                    <Label htmlFor="expiryDate">Expiry Date</Label>
+                                                    <Label htmlFor="cardNumber">Card Number</Label>
                                                     <Input
-                                                        id="expiryDate"
-                                                        placeholder="MM/YY"
-                                                        value={formData.expiryDate}
-                                                        onChange={(e) => handleInputChange("expiryDate", e.target.value)}
+                                                        id="cardNumber"
+                                                        placeholder="1234 5678 9012 3456"
+                                                        value={formData.cardNumber}
+                                                        onChange={(e) => handleInputChange("cardNumber", e.target.value)}
                                                         required
                                                     />
                                                 </div>
+                                                <div className="grid grid-cols-2 gap-4">
+                                                    <div>
+                                                        <Label htmlFor="expiryDate">Expiry Date</Label>
+                                                        <Input
+                                                            id="expiryDate"
+                                                            placeholder="MM/YY"
+                                                            value={formData.expiryDate}
+                                                            onChange={(e) => handleInputChange("expiryDate", e.target.value)}
+                                                            required
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <Label htmlFor="cvv">CVV</Label>
+                                                        <Input
+                                                            id="cvv"
+                                                            placeholder="123"
+                                                            value={formData.cvv}
+                                                            onChange={(e) => handleInputChange("cvv", e.target.value)}
+                                                            required
+                                                        />
+                                                    </div>
+                                                </div>
                                                 <div>
-                                                    <Label htmlFor="cvv">CVV</Label>
+                                                    <Label htmlFor="cardName">Name on Card</Label>
                                                     <Input
-                                                        id="cvv"
-                                                        placeholder="123"
-                                                        value={formData.cvv}
-                                                        onChange={(e) => handleInputChange("cvv", e.target.value)}
+                                                        id="cardName"
+                                                        value={formData.cardName}
+                                                        onChange={(e) => handleInputChange("cardName", e.target.value)}
                                                         required
                                                     />
                                                 </div>
-                                            </div>
-                                            <div>
-                                                <Label htmlFor="cardName">Name on Card</Label>
-                                                <Input
-                                                    id="cardName"
-                                                    value={formData.cardName}
-                                                    onChange={(e) => handleInputChange("cardName", e.target.value)}
-                                                    required
-                                                />
-                                            </div>
-                                        </motion.div>
-                                    )}
-
-                                    {selectedPaymentMethod === "upi" && (
-                                        <motion.div
-                                            initial={{ opacity: 0, height: 0 }}
-                                            animate={{ opacity: 1, height: "auto" }}
-                                            className="space-y-4"
-                                        >
-                                            <Alert>
-                                                <Smartphone className="h-4 w-4" />
-                                                <AlertDescription>
-                                                    You will be redirected to your UPI app to complete the payment.
-                                                </AlertDescription>
-                                            </Alert>
-                                        </motion.div>
-                                    )}
-
-                                    {selectedPaymentMethod === "netbanking" && (
-                                        <motion.div
-                                            initial={{ opacity: 0, height: 0 }}
-                                            animate={{ opacity: 1, height: "auto" }}
-                                            className="space-y-4"
-                                        >
-                                            <Alert>
-                                                <Building2 className="h-4 w-4" />
-                                                <AlertDescription>
-                                                    You will be redirected to your bank&apos;s secure website to complete the payment.
-                                                </AlertDescription>
-                                            </Alert>
-                                        </motion.div>
-                                    )}
+                                            </motion.div>
+                                        )
+                                    }
+                                    {
+                                        selectedPaymentMethod === "upi" && (
+                                            <motion.div
+                                                initial={{ opacity: 0, height: 0 }}
+                                                animate={{ opacity: 1, height: "auto" }}
+                                                className="space-y-4"
+                                            >
+                                                <Alert>
+                                                    <Smartphone className="h-4 w-4" />
+                                                    <AlertDescription>
+                                                        You will be redirected to your UPI app to complete the payment.
+                                                    </AlertDescription>
+                                                </Alert>
+                                            </motion.div>
+                                        )
+                                    }
+                                    {
+                                        selectedPaymentMethod === "netbanking" && (
+                                            <motion.div
+                                                initial={{ opacity: 0, height: 0 }}
+                                                animate={{ opacity: 1, height: "auto" }}
+                                                className="space-y-4"
+                                            >
+                                                <Alert>
+                                                    <Building2 className="h-4 w-4" />
+                                                    <AlertDescription>
+                                                        You will be redirected to your bank&apos;s secure website to complete the payment.
+                                                    </AlertDescription>
+                                                </Alert>
+                                            </motion.div>
+                                        )
+                                    }
                                 </CardContent>
                             </Card>
-
-                            {/* Billing Address */}
                             <Card>
                                 <CardHeader>
                                     <CardTitle className="text-gray-900 dark:text-white">
@@ -619,27 +615,26 @@ export default function CheckoutPage() {
                                     </div>
                                 </CardContent>
                             </Card>
-
-                            {/* Submit Button */}
                             <Button
                                 type="submit"
                                 className="w-full h-12 text-lg font-semibold"
                                 disabled={isProcessing}
                             >
-                                {isProcessing ? (
-                                    <div className="flex items-center gap-2">
-                                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                                        Processing Payment...
-                                    </div>
-                                ) : (
-                                    <div className="flex items-center gap-2">
-                                        <Lock className="w-4 h-4" />
-                                        Complete Purchase - {formatPrice(currentPrice)}
-                                        {billingCycle === "annual" ? "/year" : "/month"}
-                                    </div>
-                                )}
+                                {
+                                    isProcessing ? (
+                                        <div className="flex items-center gap-2">
+                                            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                            Processing Payment...
+                                        </div>
+                                    ) : (
+                                        <div className="flex items-center gap-2">
+                                            <Lock className="w-4 h-4" />
+                                            Complete Purchase - {formatPrice(currentPrice)}
+                                            {billingCycle === "annual" ? "/year" : "/month"}
+                                        </div>
+                                    )
+                                }
                             </Button>
-
                             <p className="text-sm text-center text-gray-500 dark:text-gray-400">
                                 By completing your purchase, you agree to our{" "}
                                 <Link href="/terms" className="text-blue-600 hover:underline">

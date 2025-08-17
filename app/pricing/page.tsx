@@ -233,8 +233,8 @@ export default function PricingPage() {
                                 <button
                                     onClick={() => setCurrency('USD')}
                                     className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${currency === 'USD'
-                                            ? 'bg-blue-500 text-white shadow-lg'
-                                            : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
+                                        ? 'bg-blue-500 text-white shadow-lg'
+                                        : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
                                         }`}
                                 >
                                     USD ($)
@@ -242,8 +242,8 @@ export default function PricingPage() {
                                 <button
                                     onClick={() => setCurrency('INR')}
                                     className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${currency === 'INR'
-                                            ? 'bg-blue-500 text-white shadow-lg'
-                                            : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
+                                        ? 'bg-blue-500 text-white shadow-lg'
+                                        : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
                                         }`}
                                 >
                                     INR (₹)

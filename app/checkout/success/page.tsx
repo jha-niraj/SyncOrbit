@@ -26,7 +26,6 @@ export default function CheckoutSuccessPage() {
                         >
                             <CheckCircle className="w-10 h-10 text-green-600 dark:text-green-400" />
                         </motion.div>
-                        
                         <motion.h1
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
@@ -35,7 +34,6 @@ export default function CheckoutSuccessPage() {
                         >
                             Payment Successful!
                         </motion.h1>
-                        
                         <motion.p
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
@@ -45,7 +43,6 @@ export default function CheckoutSuccessPage() {
                             Welcome to ProjectCentral! Your account has been successfully activated.
                         </motion.p>
                     </div>
-
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -70,7 +67,6 @@ export default function CheckoutSuccessPage() {
                                         </p>
                                     </div>
                                 </div>
-                                
                                 <div className="flex items-start gap-4 text-left">
                                     <Download className="w-6 h-6 text-green-500 mt-1" />
                                     <div>
@@ -82,7 +78,6 @@ export default function CheckoutSuccessPage() {
                                         </p>
                                     </div>
                                 </div>
-                                
                                 <div className="flex items-start gap-4 text-left">
                                     <Star className="w-6 h-6 text-purple-500 mt-1" />
                                     <div>
@@ -96,7 +91,6 @@ export default function CheckoutSuccessPage() {
                                 </div>
                             </CardContent>
                         </Card>
-
                         <div className="flex flex-col sm:flex-row gap-4 justify-center">
                             <Link href="/dashboard">
                                 <Button size="lg" className="w-full sm:w-auto">
@@ -104,14 +98,12 @@ export default function CheckoutSuccessPage() {
                                     <ArrowRight className="w-4 h-4 ml-2" />
                                 </Button>
                             </Link>
-                            
                             <Link href="/pricing">
                                 <Button variant="outline" size="lg" className="w-full sm:w-auto">
                                     View All Features
                                 </Button>
                             </Link>
                         </div>
-
                         <div className="pt-8 border-t border-gray-200 dark:border-gray-700">
                             <p className="text-sm text-gray-500 dark:text-gray-400">
                                 Need help? Contact our support team at{" "}
