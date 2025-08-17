@@ -33,7 +33,7 @@ const navigation = {
 
 export default function Footer() {
 	return (
-		<footer className="bg-gradient-to-br from-slate-50 via-indigo-50 to-purple-50 dark:from-slate-900 dark:via-black dark:to-slate-900">
+		<footer className="bg-gradient-to-br from-gray-200 via-gray-100 to-gray-50 dark:from-black dark:via-neutral-950 dark:to-black text-gray-900 dark:text-white">
 			<div className="max-w-7xl mx-auto py-12 px-6 lg:px-8">
 				<div className="grid grid-cols-2 md:grid-cols-4 gap-8">
 					<motion.div
