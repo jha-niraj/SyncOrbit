@@ -1,5 +1,5 @@
 import Footer from "@/components/footer";
-import Navbar from "@/components/homepage/navbar";
+import { Navbar } from "@/components/navbar";
 
 export default function LegalLayout({
     children,

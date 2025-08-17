@@ -1,16 +1,15 @@
 "use client"
 
 import Link from "next/link"
-import Image from "next/image"
 import { motion } from "framer-motion"
 import { Facebook, Twitter, Linkedin, Instagram } from "lucide-react"
 
 const navigation = {
 	solutions: [
-		{ name: "Web Development", href: "#" },
-		{ name: "Mobile Apps", href: "#" },
-		{ name: "Cloud Solutions", href: "#" },
-		{ name: "API Development", href: "#" },
+		{ name: "Project Management", href: "#" },
+		{ name: "Team Collaboration", href: "#" },
+		{ name: "Analytics & Reporting", href: "#" },
+		{ name: "API Integration", href: "#" },
 	],
 	company: [
 		{ name: "About", href: "/about" },
@@ -45,18 +44,15 @@ export default function Footer() {
 						className="col-span-2 md:col-span-1"
 					>
 						<Link href="/" className="flex items-center gap-2">
-							<Image
-								src="/shunyatech.png"
-								alt="ShunyaTech"
-								width={32}
-								height={32}
-							/>
-							<span className="text-xl font-bold bg-gradient-to-r from-teal-600 to-emerald-700 bg-clip-text text-transparent">
-								ShunyaTech
+							<div className="w-8 h-8 bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-600 rounded-lg flex items-center justify-center">
+								<span className="text-white font-bold text-sm">PC</span>
+							</div>
+							<span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+								ProjectCentral
 							</span>
 						</Link>
 						<p className="mt-4 text-sm text-gray-600 dark:text-gray-300">
-							Transforming ideas into digital reality through innovative technology solutions and expert consulting.
+							Streamline your project management with powerful collaboration tools, analytics, and automation to deliver exceptional results.
 						</p>
 					</motion.div>
 					<motion.div
@@ -155,7 +151,7 @@ export default function Footer() {
 							transition={{ duration: 0.5, delay: 0.5 }}
 							className="mt-8 md:mt-0 text-sm text-gray-600 dark:text-gray-300"
 						>
-							&copy; {new Date().getFullYear()} ShunyaTech. All rights reserved.
+							&copy; {new Date().getFullYear()} ProjectCentral. All rights reserved.
 						</motion.p>
 					</div>
 				</div>
