@@ -8,12 +8,10 @@ import { WordRotate } from "@/components/ui/wordrotate";
 import Link from "next/link";
 import {
     ArrowRight, Monitor, Users, Zap, Shield, Globe, Smartphone,
-    Rocket, TrendingUp, Award, Star,
-    Bell, BarChart3, Play, Check,
-    Sparkles,
-    Building2, Calendar, Clock, Target, Layers, Settings,
-    MessageSquare, Eye, Code, Heart, Lock, ArrowUp,
-    ChevronRight, Activity, FileText, DollarSign
+    Rocket, TrendingUp, Award, Star, BarChart3, Play, Check,
+    Sparkles, Building2, Calendar, Clock, Target, Settings,
+    MessageSquare, Eye, Code, Heart, Lock, ChevronRight, Activity,
+    Edit3, Kanban, MessagesSquare, ThumbsUp, Video
 } from "lucide-react";
 import Footer from "@/components/footer";
 import { Navbar } from "@/components/navbar";
@@ -37,8 +35,8 @@ export default function LandingPage() {
                     {/* Overlay to ensure content is readable */}
                     <div className="absolute inset-0 bg-white/40 dark:bg-neutral-900/60 z-10"></div>
 
-                    <div className="max-w-7xl mx-auto px-6 relative z-20 pt-20 pb-32">
-                        <div className="flex items-center justify-center min-h-[80vh]">
+                    <div className="max-w-7xl mx-auto px-6 relative z-20 pt-12 pb-32">
+                        <div className="flex items-center justify-center min-h-screen">
                             {/* Centered Content */}
                             <motion.div
                                 className="text-center max-w-4xl mx-auto"
@@ -51,7 +49,7 @@ export default function LandingPage() {
                                     initial={{ opacity: 0, scale: 0.8 }}
                                     animate={{ opacity: 1, scale: 1 }}
                                     transition={{ delay: 0.2, duration: 0.5 }}
-                                    className="inline-flex items-center gap-2 px-4 py-2 mb-8 bg-white/80 dark:bg-neutral-800/80 backdrop-blur-sm border border-blue-200/50 dark:border-blue-700/50 rounded-full text-sm font-medium text-blue-700 dark:text-blue-300 shadow-lg"
+                                    className="inline-flex items-center gap-2 px-4 py-2 mb-4 bg-white/80 dark:bg-neutral-800/80 backdrop-blur-sm border border-blue-200/50 dark:border-blue-700/50 rounded-full text-sm font-medium text-blue-700 dark:text-blue-300 shadow-lg"
                                 >
                                     <Sparkles className="w-4 h-4" />
                                     <span>New: Advanced AI Project Analytics</span>
@@ -60,7 +58,7 @@ export default function LandingPage() {
 
                                 {/* Main Heading */}
                                 <motion.h1
-                                    className="text-5xl lg:text-7xl font-bold mb-6 leading-tight"
+                                    className="text-5xl lg:text-7xl font-bold leading-tight"
                                     initial={{ opacity: 0, y: 30 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: 0.3, duration: 0.8 }}
@@ -122,7 +120,7 @@ export default function LandingPage() {
 
                                 {/* Trust Indicators */}
                                 <motion.div
-                                    className="mt-16 pt-8 border-t border-gray-300/50 dark:border-gray-600/50"
+                                    className="mt-8 pt-8 border-t border-gray-300/50 dark:border-gray-600/50"
                                     initial={{ opacity: 0 }}
                                     animate={{ opacity: 1 }}
                                     transition={{ delay: 0.6, duration: 0.8 }}
@@ -366,6 +364,231 @@ export default function LandingPage() {
                                 </motion.div>
                             ))}
                         </div>
+                    </div>
+                </section>
+
+                {/* Phase 1 Features */}
+                <section className="py-20">
+                    <div className="max-w-7xl mx-auto px-6">
+                        <motion.div
+                            initial={{ opacity: 0, y: 30 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.8 }}
+                            viewport={{ once: true }}
+                            className="text-center mb-16"
+                        >
+                            <Badge className="mb-4 px-4 py-2 bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200">
+                                Phase 1 Features
+                            </Badge>
+                            <h2 className="text-4xl lg:text-5xl font-bold mb-6 bg-gradient-to-r from-gray-900 to-emerald-800 dark:from-gray-100 dark:to-emerald-300 bg-clip-text text-transparent">
+                                Coming Soon: Next-Level Collaboration
+                            </h2>
+                            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+                                Experience the future of project management with our upcoming Phase 1 features, designed for seamless collaboration between teams and clients.
+                            </p>
+                        </motion.div>
+
+                        <div className="grid lg:grid-cols-2 gap-16">
+                            {/* For Product Managers & Developers */}
+                            <motion.div
+                                initial={{ opacity: 0, x: -30 }}
+                                whileInView={{ opacity: 1, x: 0 }}
+                                transition={{ duration: 0.8 }}
+                                viewport={{ once: true }}
+                                className="relative"
+                            >
+                                <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20 rounded-3xl p-8 border border-blue-200/50 dark:border-blue-800/50">
+                                    <div className="flex items-center gap-4 mb-8">
+                                        <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-2xl shadow-lg">
+                                            <Code className="w-8 h-8 text-white" />
+                                        </div>
+                                        <div>
+                                            <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
+                                                For Product Managers & Developers
+                                            </h3>
+                                            <p className="text-blue-600 dark:text-blue-400 font-medium">
+                                                Advanced project management tools
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-6">
+                                        {[
+                                            {
+                                                icon: Activity,
+                                                title: "Real-time Project Changes View",
+                                                description: "Track every project update instantly with live notifications and change logs",
+                                                gradient: "from-blue-500 to-cyan-500"
+                                            },
+                                            {
+                                                icon: MessagesSquare,
+                                                title: "Advanced Chat Functionalities",
+                                                description: "Collaborate seamlessly with threaded conversations, file sharing, and @mentions",
+                                                gradient: "from-indigo-500 to-purple-500"
+                                            },
+                                            {
+                                                icon: Edit3,
+                                                title: "Smart Edit & Task Management",
+                                                description: "Edit, delete, and mark projects/tasks as complete with intelligent workflow automation",
+                                                gradient: "from-purple-500 to-pink-500"
+                                            },
+                                            {
+                                                icon: Kanban,
+                                                title: "Kanban-Style Todo Lists",
+                                                description: "Visualize your workflow with drag-and-drop boards and customizable columns",
+                                                gradient: "from-pink-500 to-rose-500"
+                                            }
+                                        ].map((feature, index) => (
+                                            <motion.div
+                                                key={index}
+                                                initial={{ opacity: 0, y: 20 }}
+                                                whileInView={{ opacity: 1, y: 0 }}
+                                                transition={{ delay: index * 0.1, duration: 0.6 }}
+                                                viewport={{ once: true }}
+                                                className="flex items-start gap-4 p-4 bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-xl border border-white/50 dark:border-gray-700/50 hover:shadow-lg transition-all duration-300 group"
+                                            >
+                                                <div className={`flex-shrink-0 w-12 h-12 bg-gradient-to-r ${feature.gradient} rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg`}>
+                                                    <feature.icon className="w-6 h-6 text-white" />
+                                                </div>
+                                                <div className="flex-1">
+                                                    <h4 className="font-bold text-gray-900 dark:text-white mb-2">
+                                                        {feature.title}
+                                                    </h4>
+                                                    <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">
+                                                        {feature.description}
+                                                    </p>
+                                                </div>
+                                            </motion.div>
+                                        ))}
+                                    </div>
+
+                                    {/* Floating decoration */}
+                                    <motion.div 
+                                        className="absolute -top-4 -right-4 bg-gradient-to-r from-blue-500 to-indigo-500 text-white p-3 rounded-xl shadow-lg"
+                                        animate={{ rotate: [0, 5, -5, 0] }}
+                                        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                                    >
+                                        <Rocket className="w-6 h-6" />
+                                    </motion.div>
+                                </div>
+                            </motion.div>
+
+                            {/* For Clients */}
+                            <motion.div
+                                initial={{ opacity: 0, x: 30 }}
+                                whileInView={{ opacity: 1, x: 0 }}
+                                transition={{ duration: 0.8 }}
+                                viewport={{ once: true }}
+                                className="relative"
+                            >
+                                <div className="bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-950/20 dark:to-teal-950/20 rounded-3xl p-8 border border-emerald-200/50 dark:border-emerald-800/50">
+                                    <div className="flex items-center gap-4 mb-8">
+                                        <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-2xl shadow-lg">
+                                            <Users className="w-8 h-8 text-white" />
+                                        </div>
+                                        <div>
+                                            <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
+                                                For Clients
+                                            </h3>
+                                            <p className="text-emerald-600 dark:text-emerald-400 font-medium">
+                                                Transparent project visibility
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-6">
+                                        {[
+                                            {
+                                                icon: Eye,
+                                                title: "Real-time Project Status View",
+                                                description: "Monitor project progress with live updates, milestones, and detailed status reports",
+                                                gradient: "from-emerald-500 to-teal-500"
+                                            },
+                                            {
+                                                icon: ThumbsUp,
+                                                title: "Interactive Feedback System",
+                                                description: "Provide feedback, suggestions, and approvals directly within the project interface",
+                                                gradient: "from-teal-500 to-cyan-500"
+                                            },
+                                            {
+                                                icon: Video,
+                                                title: "Live Developer-Client Chat",
+                                                description: "Direct communication channel with developers for instant clarifications and updates",
+                                                gradient: "from-cyan-500 to-blue-500"
+                                            }
+                                        ].map((feature, index) => (
+                                            <motion.div
+                                                key={index}
+                                                initial={{ opacity: 0, y: 20 }}
+                                                whileInView={{ opacity: 1, y: 0 }}
+                                                transition={{ delay: index * 0.1, duration: 0.6 }}
+                                                viewport={{ once: true }}
+                                                className="flex items-start gap-4 p-4 bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-xl border border-white/50 dark:border-gray-700/50 hover:shadow-lg transition-all duration-300 group"
+                                            >
+                                                <div className={`flex-shrink-0 w-12 h-12 bg-gradient-to-r ${feature.gradient} rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg`}>
+                                                    <feature.icon className="w-6 h-6 text-white" />
+                                                </div>
+                                                <div className="flex-1">
+                                                    <h4 className="font-bold text-gray-900 dark:text-white mb-2">
+                                                        {feature.title}
+                                                    </h4>
+                                                    <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">
+                                                        {feature.description}
+                                                    </p>
+                                                </div>
+                                            </motion.div>
+                                        ))}
+                                    </div>
+
+                                    {/* Floating decoration */}
+                                    <motion.div 
+                                        className="absolute -top-4 -right-4 bg-gradient-to-r from-emerald-500 to-teal-500 text-white p-3 rounded-xl shadow-lg"
+                                        animate={{ y: [-5, 5, -5] }}
+                                        transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                                    >
+                                        <Heart className="w-6 h-6" />
+                                    </motion.div>
+                                </div>
+                            </motion.div>
+                        </div>
+
+                        {/* Call to Action */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 30 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.6, duration: 0.8 }}
+                            viewport={{ once: true }}
+                            className="text-center mt-16"
+                        >
+                            <div className="bg-gradient-to-r from-blue-50 to-emerald-50 dark:from-blue-950/20 dark:to-emerald-950/20 rounded-2xl p-8 border border-blue-200/50 dark:border-blue-800/50">
+                                <div className="flex items-center justify-center gap-3 mb-6">
+                                    <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-emerald-500 rounded-full flex items-center justify-center">
+                                        <Sparkles className="w-4 h-4 text-white" />
+                                    </div>
+                                    <Badge className="bg-gradient-to-r from-blue-100 to-emerald-100 text-blue-800 dark:from-blue-900 dark:to-emerald-900 dark:text-blue-200 border-0">
+                                        Coming Q2 2025
+                                    </Badge>
+                                </div>
+                                <h3 className="text-2xl lg:text-3xl font-bold text-gray-900 dark:text-white mb-4">
+                                    Be the First to Experience These Features
+                                </h3>
+                                <p className="text-gray-600 dark:text-gray-300 mb-8 max-w-2xl mx-auto">
+                                    Join our early access program and get exclusive access to these powerful features before they&apos;re available to the public.
+                                </p>
+                                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                                    <Button 
+                                        size="lg" 
+                                        className="group bg-gradient-to-r from-blue-600 to-emerald-600 hover:from-blue-700 hover:to-emerald-700 text-white px-8 py-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
+                                        asChild
+                                    >
+                                        <Link href="/signup">
+                                            Join Early Access
+                                            <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                                        </Link>
+                                    </Button>
+                                </div>
+                            </div>
+                        </motion.div>
                     </div>
                 </section>
 
