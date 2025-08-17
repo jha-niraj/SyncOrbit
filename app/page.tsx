@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -19,6 +20,21 @@ import SmoothScroll from "@/components/smoothscroll";
 import { BeamsBackground } from "@/components/ui/beamsbackground";
 
 export default function LandingPage() {
+    const [currency, setCurrency] = useState<'USD' | 'INR'>('USD');
+    
+    const pricingData = {
+        USD: {
+            professional: 19,
+            enterprise: 'Custom',
+            symbol: '$'
+        },
+        INR: {
+            professional: 1599,
+            enterprise: 'Custom',
+            symbol: '₹'
+        }
+    };
+
     return (
         <SmoothScroll>
             <div className="min-h-screen bg-white dark:bg-neutral-900 text-gray-900 dark:text-gray-100">
@@ -859,8 +875,38 @@ export default function LandingPage() {
                             <h2 className="text-4xl lg:text-5xl font-bold mb-6 bg-gradient-to-r from-gray-900 to-green-800 dark:from-gray-100 dark:to-green-300 bg-clip-text text-transparent">
                                 Choose Your Plan
                             </h2>
-                            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+                            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto mb-8">
                                 Start free and scale as you grow. All plans include our core features with no hidden fees.
+                            </p>
+                            
+                            {/* Currency Toggle */}
+                            <div className="inline-flex items-center p-1 bg-gray-100 dark:bg-gray-800 rounded-lg mb-8">
+                                <button
+                                    onClick={() => setCurrency('USD')}
+                                    className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
+                                        currency === 'USD'
+                                            ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm'
+                                            : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+                                    }`}
+                                >
+                                    USD ($)
+                                </button>
+                                <button
+                                    onClick={() => setCurrency('INR')}
+                                    className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
+                                        currency === 'INR'
+                                            ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm'
+                                            : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+                                    }`}
+                                >
+                                    INR (₹)
+                                </button>
+                            </div>
+                            
+                            <p className="text-sm text-gray-500 dark:text-gray-400">
+                                <Link href="/pricing" className="text-blue-600 dark:text-blue-400 hover:underline">
+                                    View detailed pricing →
+                                </Link>
                             </p>
                         </motion.div>
                         <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
@@ -876,7 +922,7 @@ export default function LandingPage() {
                                     },
                                     {
                                         name: "Professional",
-                                        price: "$19",
+                                        price: `${pricingData[currency].symbol}${pricingData[currency].professional}`,
                                         description: "For growing teams that need more power",
                                         features: ["Up to 50 team members", "Unlimited projects", "Advanced analytics", "Priority support", "Automation"],
                                         cta: "Start Free Trial",
@@ -946,7 +992,11 @@ export default function LandingPage() {
                                                     size="lg"
                                                     asChild
                                                 >
-                                                    <Link href="/signup">
+                                                    <Link href={
+                                                        plan.name === 'Professional' ? `/checkout?plan=${plan.name.toLowerCase()}&currency=${currency}` :
+                                                        plan.name === 'Enterprise' ? '/contact' :
+                                                        '/signup'
+                                                    }>
                                                         {plan.cta}
                                                     </Link>
                                                 </Button>
