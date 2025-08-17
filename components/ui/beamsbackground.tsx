@@ -26,16 +26,16 @@ interface Beam {
 function createBeam(width: number, height: number): Beam {
     const angle = -35 + Math.random() * 10;
     return {
-        x: Math.random() * width * 1.5 - width * 0.25,
-        y: Math.random() * height * 1.5 - height * 0.25,
-        width: 30 + Math.random() * 60,
-        length: height * 2.5,
+        x: Math.random() * width * 1.2 - width * 0.1, // Reduced spread for performance
+        y: Math.random() * height * 1.2 - height * 0.1,
+        width: 25 + Math.random() * 50, // Slightly smaller beams
+        length: height * 2,
         angle: angle,
-        speed: 0.6 + Math.random() * 1.2,
-        opacity: 0.12 + Math.random() * 0.16,
-        hue: 190 + Math.random() * 70,
+        speed: 0.4 + Math.random() * 0.8, // Slightly slower for smoothness
+        opacity: 0.1 + Math.random() * 0.12,
+        hue: 190 + Math.random() * 60, // Reduced color range
         pulse: Math.random() * Math.PI * 2,
-        pulseSpeed: 0.02 + Math.random() * 0.03,
+        pulseSpeed: 0.015 + Math.random() * 0.02, // Slower pulse for smoothness
     };
 }
 
@@ -46,7 +46,11 @@ export function BeamsBackground({
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const beamsRef = useRef<Beam[]>([]);
     const animationFrameRef = useRef<number>(0);
-    const MINIMUM_BEAMS = 20;
+    const lastFrameTimeRef = useRef<number>(0);
+    const isVisibleRef = useRef<boolean>(true);
+    const MINIMUM_BEAMS = 15; // Reduced for better performance
+    const TARGET_FPS = 30; // Limit frame rate for better scroll performance
+    const FRAME_INTERVAL = 1000 / TARGET_FPS;
 
     useEffect(() => {
         const canvas = canvasRef.current;
@@ -62,14 +66,14 @@ export function BeamsBackground({
         };
 
         const updateCanvasSize = () => {
-            const dpr = window.devicePixelRatio || 1;
+            const dpr = Math.min(window.devicePixelRatio || 1, 2); // Limit DPR for performance
             canvas.width = window.innerWidth * dpr;
             canvas.height = window.innerHeight * dpr;
             canvas.style.width = `${window.innerWidth}px`;
             canvas.style.height = `${window.innerHeight}px`;
             ctx.scale(dpr, dpr);
 
-            const totalBeams = MINIMUM_BEAMS * 1.5;
+            const totalBeams = Math.min(MINIMUM_BEAMS * 1.2, 25); // Cap max beams
             beamsRef.current = Array.from({ length: totalBeams }, () =>
                 createBeam(canvas.width, canvas.height)
             );
@@ -78,21 +82,33 @@ export function BeamsBackground({
         updateCanvasSize();
         window.addEventListener("resize", updateCanvasSize);
 
+        // Add Intersection Observer to pause animation when not visible
+        const observer = new IntersectionObserver(
+            (entries) => {
+                isVisibleRef.current = entries[0].isIntersecting;
+            },
+            { threshold: 0.1 }
+        );
+
+        if (canvas) {
+            observer.observe(canvas);
+        }
+
         function resetBeam(beam: Beam, index: number, totalBeams: number) {
             if (!canvas) return beam;
             
             const column = index % 3;
             const spacing = canvas.width / 3;
 
-            beam.y = canvas.height + 100;
+            beam.y = canvas.height + 50; // Reduced offset
             beam.x =
                 column * spacing +
                 spacing / 2 +
-                (Math.random() - 0.5) * spacing * 0.5;
-            beam.width = 100 + Math.random() * 100;
-            beam.speed = 0.5 + Math.random() * 0.4;
-            beam.hue = 190 + (index * 70) / totalBeams;
-            beam.opacity = 0.2 + Math.random() * 0.1;
+                (Math.random() - 0.5) * spacing * 0.3; // Reduced randomness
+            beam.width = 80 + Math.random() * 60; // Smaller beams
+            beam.speed = 0.4 + Math.random() * 0.3; // Slower speed
+            beam.hue = 190 + (index * 50) / totalBeams; // Smoother color transition
+            beam.opacity = 0.15 + Math.random() * 0.08;
             return beam;
         }
 
@@ -134,11 +150,27 @@ export function BeamsBackground({
             ctx.restore();
         }
 
-        function animate() {
+        function animate(currentTime: number = 0) {
             if (!canvas || !ctx) return;
 
+            // Frame rate limiting
+            if (currentTime - lastFrameTimeRef.current < FRAME_INTERVAL) {
+                animationFrameRef.current = requestAnimationFrame(animate);
+                return;
+            }
+
+            lastFrameTimeRef.current = currentTime;
+
+            // Pause animation when not visible for performance
+            if (!isVisibleRef.current) {
+                animationFrameRef.current = requestAnimationFrame(animate);
+                return;
+            }
+
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.filter = "blur(35px)";
+            
+            // Reduce blur for better performance
+            ctx.filter = "blur(25px)";
 
             const totalBeams = beamsRef.current.length;
             beamsRef.current.forEach((beam, index) => {
@@ -159,6 +191,7 @@ export function BeamsBackground({
         animate();
 
         return () => {
+            observer.disconnect();
             window.removeEventListener("resize", updateCanvasSize);
             if (animationFrameRef.current) {
                 cancelAnimationFrame(animationFrameRef.current);
@@ -176,21 +209,26 @@ export function BeamsBackground({
             <canvas
                 ref={canvasRef}
                 className="absolute inset-0 w-full h-full"
-                style={{ filter: "blur(20px)" }}
+                style={{ 
+                    filter: "blur(15px)",
+                    willChange: "auto", // Optimize for performance
+                    transform: "translateZ(0)" // Force hardware acceleration
+                }}
             />
 
             <motion.div
-                className="absolute inset-0 bg-white/20 dark:bg-neutral-900/20"
+                className="absolute inset-0 bg-white/15 dark:bg-neutral-900/15"
                 animate={{
-                    opacity: [0.1, 0.2, 0.1],
+                    opacity: [0.08, 0.15, 0.08],
                 }}
                 transition={{
-                    duration: 8,
+                    duration: 10, // Slower transition for smoothness
                     ease: "easeInOut",
                     repeat: Number.POSITIVE_INFINITY,
                 }}
                 style={{
-                    backdropFilter: "blur(30px)",
+                    backdropFilter: "blur(20px)", // Reduced blur
+                    willChange: "opacity", // Optimize for opacity changes only
                 }}
             />
         </div>

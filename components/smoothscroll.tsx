@@ -80,15 +80,15 @@ function SmoothScroll({ children }: LenisProps) {
         <ReactLenis
             root
             options={{
-                duration: 1,
+                duration: 1.2, // Slightly longer duration for smoother scrolling
                 easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
                 orientation: "vertical",
                 gestureOrientation: "vertical",
                 smoothWheel: true,
-                wheelMultiplier: 1,
-                touchMultiplier: 1,
+                wheelMultiplier: 0.8, // Reduced for smoother scrolling
+                touchMultiplier: 0.8, // Reduced for smoother scrolling
                 syncTouch: true,
-                syncTouchLerp: 0.075,
+                syncTouchLerp: 0.1, // Slightly higher for better responsiveness
                 infinite: false,
                 autoResize: true,
                 // @ts-expect-error - smoothTouch is not defined in the type

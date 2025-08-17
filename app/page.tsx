@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import Footer from "@/components/footer";
 import { Navbar } from "@/components/navbar";
-// import SmoothScroll from "@/components/smoothscroll";
+import SmoothScroll from "@/components/smoothscroll";
 import { BeamsBackground } from "@/components/ui/beamsbackground";
 
 export default function LandingPage() {
@@ -36,7 +36,7 @@ export default function LandingPage() {
     };
 
     return (
-        // <SmoothScroll>
+        <SmoothScroll>
             <div className="min-h-screen bg-white dark:bg-neutral-900 text-gray-900 dark:text-gray-100">
                 <Navbar />
                 <section className="relative overflow-hidden">
@@ -900,6 +900,7 @@ export default function LandingPage() {
                                     INR (₹)
                                 </button>
                             </div>
+
                             <p className="text-sm text-gray-500 dark:text-gray-400">
                                 <Link href="/pricing" className="text-blue-600 dark:text-blue-400 hover:underline">
                                     View detailed pricing →
@@ -1213,6 +1214,6 @@ export default function LandingPage() {
                 </section>
                 <Footer />
             </div>
-        // </SmoothScroll>
+        </SmoothScroll>
     );
 }
