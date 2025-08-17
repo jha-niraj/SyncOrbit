@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import Footer from "@/components/footer";
 import { Navbar } from "@/components/navbar";
-import SmoothScroll from "@/components/smoothscroll";
+// import SmoothScroll from "@/components/smoothscroll";
 import { BeamsBackground } from "@/components/ui/beamsbackground";
 
 export default function LandingPage() {
@@ -36,7 +36,7 @@ export default function LandingPage() {
     };
 
     return (
-        <SmoothScroll>
+        // <SmoothScroll>
             <div className="min-h-screen bg-white dark:bg-neutral-900 text-gray-900 dark:text-gray-100">
                 <Navbar />
                 <section className="relative overflow-hidden">
@@ -878,9 +878,7 @@ export default function LandingPage() {
                             <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto mb-8">
                                 Start free and scale as you grow. All plans include our core features with no hidden fees.
                             </p>
-                            
-                            {/* Currency Toggle */}
-                            <div className="inline-flex items-center p-1 bg-gray-100 dark:bg-gray-800 rounded-lg mb-8">
+                                                        <div className="inline-flex items-center p-1 bg-gray-100 dark:bg-gray-800 rounded-lg mb-8">
                                 <button
                                     onClick={() => setCurrency('USD')}
                                     className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
@@ -902,7 +900,6 @@ export default function LandingPage() {
                                     INR (₹)
                                 </button>
                             </div>
-                            
                             <p className="text-sm text-gray-500 dark:text-gray-400">
                                 <Link href="/pricing" className="text-blue-600 dark:text-blue-400 hover:underline">
                                     View detailed pricing →
@@ -1216,6 +1213,6 @@ export default function LandingPage() {
                 </section>
                 <Footer />
             </div>
-        </SmoothScroll>
+        // </SmoothScroll>
     );
 }
