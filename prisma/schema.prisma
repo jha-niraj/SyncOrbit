@@ -45,51 +45,88 @@ enum FeedbackStatus {
     CANCELLED
 }
 
+enum ReferralCodeStatus {
+    ACTIVE
+    USED
+    EXPIRED
+    DISABLED
+}
+
+enum InvitationStatus {
+    PENDING
+    ACCEPTED
+    DECLINED
+    EXPIRED
+}
+
+enum InvitationType {
+    COMPANY_MEMBER
+    PROJECT_MEMBER
+}
+
 model User {
-    id                String     @id @default(cuid())
+    id                String    @id @default(cuid())
     name              String?
-    email             String?    @unique
+    email             String?   @unique
     emailVerified     DateTime?
     hashedPassword    String?
     image             String?
-    bio               String?    @db.Text
-    skills            String?    @db.Text
-    role              Role       @default(CLIENT)
+    bio               String?   @db.Text
+    skills            String?   @db.Text
+    role              Role      @default(CLIENT)
     verifyToken       String?
     verifyTokenExpiry DateTime?
     resetToken        String?
     resetTokenExpiry  DateTime?
-    createdAt         DateTime   @default(now())
-    updatedAt         DateTime   @updatedAt
-    totalSpent        Float      @default(0)
+    createdAt         DateTime  @default(now())
+    updatedAt         DateTime  @updatedAt
+    totalSpent        Float     @default(0)
+
     // Company-related fields
-    companyId         String?
-    company           Company?   @relation("CompanyUsers", fields: [companyId], references: [id])
-    referralCode      String?    // The referral code used during registration
-    managedCompany    Company?   @relation("CompanyManager")
-    projects          Project[]
-    accounts          Account[]
-    sessions          Session[]
-    managedTeam       Team?      @relation("TeamLead")
-    memberOfTeams     Team[]     @relation("TeamMembers")
-    assignedTasks     Task[]     @relation("AssignedDeveloper")
-    feedbacks         Feedback[]
-    messages          Message[]
+    companyId      String?
+    company        Company? @relation("CompanyUsers", fields: [companyId], references: [id])
+    referralCode   String? // The referral code used during registration
+    managedCompany Company? @relation("CompanyManager")
+
+    // Referral relationships
+    generatedReferralCodes ReferralCode[] @relation("GeneratedBy")
+    usedReferralCodeId     String?
+    usedReferralCode       ReferralCode?  @relation("UsedBy", fields: [usedReferralCodeId], references: [id])
+
+    // Relations
+    projects            Project[]
+    accounts            Account[]
+    sessions            Session[]
+    managedTeam         Team?           @relation("TeamLead")
+    memberOfTeams       Team[]          @relation("TeamMembers")
+    assignedTasks       Task[]          @relation("AssignedDeveloper")
+    feedbacks           Feedback[]
+    messages            Message[]
+
+    // Invitations
+    sentInvitations     Invitation[]    @relation("InvitationSender")
+    receivedInvitations Invitation[]    @relation("InvitationReceiver")
+    
+    // Project memberships
+    projectMemberships  ProjectMember[]
+    addedProjectMembers ProjectMember[] @relation("ProjectMemberAdder")
 }
 
 model Company {
-    id                String   @id @default(cuid())
-    name              String   @unique
-    shortName         String   @unique // For referral codes
-    logo              String?  // Company logo URL
-    devReferralCode   String   @unique // For developer signup
-    clientReferralCode String  @unique // For client signup
-    productManagerId  String   @unique
-    productManager    User     @relation("CompanyManager", fields: [productManagerId], references: [id])
-    users             User[]   @relation("CompanyUsers")
-    createdAt         DateTime @default(now())
-    updatedAt         DateTime @updatedAt
-    
+    id                 String         @id @default(cuid())
+    name               String         @unique
+    shortName          String         @unique // For referral codes
+    logo               String? // Company logo URL
+    devReferralCode    String         @unique // For developer signup (legacy)
+    clientReferralCode String         @unique // For client signup (legacy)
+    productManagerId   String         @unique
+    productManager     User           @relation("CompanyManager", fields: [productManagerId], references: [id])
+    users              User[]         @relation("CompanyUsers")
+    referralCodes      ReferralCode[] @relation("CompanyReferralCodes")
+    invitations        Invitation[]   @relation("CompanyInvitations")
+    createdAt          DateTime       @default(now())
+    updatedAt          DateTime       @updatedAt
+
     @@map("companies")
 }
 
@@ -104,32 +141,34 @@ model Team {
 }
 
 model Project {
-    id             String     @id @default(cuid())
+    id             String          @id @default(cuid())
     title          String
     description    String?
-    slug           String     @unique
-    clientType     ClientType @default(EXTERNAL)
-    status         Status     @default(IN_PROGRESS)
+    slug           String          @unique
+    clientType     ClientType      @default(EXTERNAL)
+    status         Status          @default(IN_PROGRESS)
     budget         Float
-    currency       Currency   @default(USD)
-    startDate      DateTime   @default(now())
+    currency       Currency        @default(USD)
+    startDate      DateTime        @default(now())
     endDate        DateTime?
     // Payment tracking
-    paidAmount     Float      @default(0)
-    paymentStatus  String     @default("PENDING") // PENDING, PARTIAL, COMPLETED
+    paidAmount     Float           @default(0)
+    paymentStatus  String          @default("PENDING") // PENDING, PARTIAL, COMPLETED
     // Project links
     livePreviewUrl String?
     figmaUrl       String?
     githubUrl      String?
     documentsUrl   String?
-    otherLinks     String?    @db.Text
+    otherLinks     String?         @db.Text
     userId         String
-    user           User       @relation(fields: [userId], references: [id])
-    createdAt      DateTime   @default(now())
-    updatedAt      DateTime   @updatedAt
+    user           User            @relation(fields: [userId], references: [id])
+    createdAt      DateTime        @default(now())
+    updatedAt      DateTime        @updatedAt
     tasks          Task[]
     feedbacks      Feedback[]
     messages       Message[]
+    invitations    Invitation[]    @relation("ProjectInvitations")
+    members        ProjectMember[]
 }
 
 model Task {
@@ -226,4 +265,88 @@ model Message {
     user      User     @relation(fields: [userId], references: [id])
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
+}
+
+model ReferralCode {
+    id          String             @id @default(cuid())
+    code        String             @unique
+    role        Role // The role this referral code is for
+    status      ReferralCodeStatus @default(ACTIVE)
+    maxUses     Int                @default(1) // How many times this code can be used
+    usedCount   Int                @default(0) // How many times it has been used
+    expiresAt   DateTime? // Optional expiration date
+    description String? // Optional description/note about the code
+
+    // Who generated this code (should be a PRODUCTMANAGER)
+    generatedById String
+    generatedBy   User   @relation("GeneratedBy", fields: [generatedById], references: [id])
+
+    // Company this code belongs to
+    companyId String?
+    company   Company? @relation("CompanyReferralCodes", fields: [companyId], references: [id])
+
+    // Users who used this code
+    usedBy User[] @relation("UsedBy")
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@index([code])
+    @@index([generatedById])
+    @@index([status])
+}
+
+model Invitation {
+    id        String           @id @default(cuid())
+    email     String // Email of the person being invited
+    type      InvitationType // COMPANY_MEMBER or PROJECT_MEMBER
+    status    InvitationStatus @default(PENDING)
+    message   String? // Optional message from sender
+    expiresAt DateTime // When the invitation expires
+
+    // Who sent the invitation (should be a PM or admin)
+    senderId String
+    sender   User   @relation("InvitationSender", fields: [senderId], references: [id])
+
+    // Who received the invitation (may not exist yet if user not registered)
+    receiverId String?
+    receiver   User?   @relation("InvitationReceiver", fields: [receiverId], references: [id])
+
+    // Company invitation is for
+    companyId String?
+    company   Company? @relation("CompanyInvitations", fields: [companyId], references: [id])
+
+    // Project invitation is for (if type is PROJECT_MEMBER)
+    projectId String?
+    project   Project? @relation("ProjectInvitations", fields: [projectId], references: [id])
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@index([email])
+    @@index([senderId])
+    @@index([status])
+}
+
+model ProjectMember {
+    id       String   @id @default(cuid())
+    role     String // "CLIENT", "DEVELOPER", "VIEWER", etc.
+    joinedAt DateTime @default(now())
+
+    // User and Project relation
+    userId    String
+    user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+    projectId String
+    project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+    // Who added this member (usually a PM)
+    addedById String?
+    addedBy   User?   @relation("ProjectMemberAdder", fields: [addedById], references: [id])
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@unique([userId, projectId])
+    @@index([userId])
+    @@index([projectId])
 }

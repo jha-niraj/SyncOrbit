@@ -217,4 +217,141 @@ export const WelcomeEmailTemplate = ({ name }: { name: string }): React.ReactNod
 			<p>Transform your digital dreams into reality</p>
 		</div>
 	</div>
-); 
+);
+
+interface InvitationEmailTemplateProps {
+	recipientName: string;
+	senderName: string;
+	invitationType: 'company' | 'project';
+	targetName: string; // Company name or Project title
+	message?: string;
+	acceptUrl: string;
+	declineUrl: string;
+}
+
+export const InvitationEmailTemplate = ({ 
+	recipientName, 
+	senderName, 
+	invitationType, 
+	targetName, 
+	message, 
+	acceptUrl, 
+	declineUrl 
+}: InvitationEmailTemplateProps): React.ReactNode => (
+	<div style={{ fontFamily: 'Arial, sans-serif', maxWidth: '600px', margin: '0 auto' }}>
+		<div style={{ backgroundColor: '#1a1a1a', color: '#ffffff', padding: '30px 20px', textAlign: 'center' }}>
+			{/* eslint-disable-next-line @next/next/no-img-element */}
+			<img
+				src="https://shunyatech.in/shunyatech.png"
+				alt="ShunyaTech"
+				width={100}
+				height={100}
+				style={{ borderRadius: '8px', marginBottom: '15px' }}
+			/>
+			<h1 style={{ margin: '0', fontWeight: '500', fontSize: '24px' }}>
+				You&apos;re Invited to Join {invitationType === 'company' ? 'a Company' : 'a Project'}!
+			</h1>
+		</div>
+		<div style={{ padding: '35px 30px', backgroundColor: '#ffffff' }}>
+			<p style={{ fontSize: '16px', lineHeight: '1.5', color: '#333333' }}>
+				Hi {recipientName},
+			</p>
+			<p style={{ fontSize: '16px', lineHeight: '1.5', color: '#333333' }}>
+				{senderName} has invited you to join{' '}
+				<strong style={{ color: '#1a1a1a' }}>
+					{targetName}
+				</strong>{' '}
+				on Project Central.
+			</p>
+			
+			{message && (
+				<div style={{
+					backgroundColor: '#f8f9fa',
+					padding: '20px',
+					borderRadius: '8px',
+					margin: '20px 0',
+					borderLeft: '4px solid #007bff'
+				}}>
+					<p style={{ margin: '0', fontSize: '16px', lineHeight: '1.5', color: '#333333' }}>
+						<strong>Personal Message:</strong>
+					</p>
+					<p style={{ margin: '10px 0 0 0', fontSize: '16px', lineHeight: '1.5', color: '#555555' }}>
+						&ldquo;{message}&rdquo;
+					</p>
+				</div>
+			)}
+
+			<p style={{ fontSize: '16px', lineHeight: '1.5', color: '#333333' }}>
+				As a member, you&apos;ll be able to collaborate on projects, track progress, and work together with the team.
+			</p>
+
+			<div style={{ textAlign: 'center', margin: '40px 0' }}>
+				<a
+					href={acceptUrl}
+					style={{
+						display: 'inline-block',
+						backgroundColor: '#28a745',
+						color: '#ffffff',
+						padding: '15px 30px',
+						fontSize: '16px',
+						fontWeight: 'bold',
+						textDecoration: 'none',
+						borderRadius: '8px',
+						margin: '0 10px 10px 0'
+					}}
+				>
+					Accept Invitation
+				</a>
+				<a
+					href={declineUrl}
+					style={{
+						display: 'inline-block',
+						backgroundColor: '#dc3545',
+						color: '#ffffff',
+						padding: '15px 30px',
+						fontSize: '16px',
+						fontWeight: 'bold',
+						textDecoration: 'none',
+						borderRadius: '8px',
+						margin: '0 10px 10px 0'
+					}}
+				>
+					Decline
+				</a>
+			</div>
+
+			<div style={{
+				backgroundColor: '#fff3cd',
+				padding: '15px',
+				borderRadius: '8px',
+				border: '1px solid #ffeaa7',
+				marginTop: '30px'
+			}}>
+				<p style={{ margin: '0', fontSize: '14px', color: '#856404' }}>
+					<strong>Note:</strong> This invitation will expire in 7 days. If you don&apos;t have an account yet, 
+					you&apos;ll need to sign up first before you can accept this invitation.
+				</p>
+			</div>
+
+			<div style={{
+				marginTop: '30px',
+				paddingTop: '20px',
+				borderTop: '1px solid #eeeeee',
+				fontSize: '14px',
+				color: '#6c757d'
+			}}>
+				<p>Need help? Contact our support team at support@shunyatech.com</p>
+			</div>
+		</div>
+		<div style={{
+			backgroundColor: '#f8f9fa',
+			textAlign: 'center',
+			padding: '20px',
+			fontSize: '13px',
+			color: '#6c757d'
+		}}>
+			<p>&copy; 2024 ShunyaTech. You think we&apos;ll deliver.</p>
+			<p>Transform your digital dreams into reality</p>
+		</div>
+	</div>
+);

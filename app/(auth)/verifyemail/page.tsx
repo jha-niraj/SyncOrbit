@@ -1,31 +1,23 @@
 "use client"
 
+import type React from "react"
+
 import { useState, useRef, useEffect, Suspense } from "react"
-import { useRouter, useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { ArrowRight, CheckCircle, RefreshCw } from "lucide-react"
+import { useRouter, useSearchParams } from "next/navigation"
 import { toast } from "sonner"
-import { signIn } from "next-auth/react"
-import { CheckCircle, Loader2 } from "lucide-react"
-import { Separator } from "@/components/ui/separator"
-import Image from "next/image"
-import { motion } from "framer-motion"
 import axios from "axios"
 
-function VerifyEmail() {
+function VerifyContent() {
 	const [isLoading, setIsLoading] = useState(false)
 	const [isVerified, setIsVerified] = useState(false)
-	const [timer, setTimer] = useState(60)
+	const [timer, setTimer] = useState(30)
 	const [canResend, setCanResend] = useState(false)
+	const [email, setEmail] = useState<string | null>(null)
 	const router = useRouter()
 	const searchParams = useSearchParams()
-	const email = searchParams.get("email")
-	const callbackUrl = searchParams.get("callbackUrl")
-	const [signupData, setSignupData] = useState<{
-		name: string;
-		email: string;
-		password: string;
-	} | null>(null)
 
 	const inputRefs = [
 		useRef<HTMLInputElement>(null),
@@ -39,14 +31,14 @@ function VerifyEmail() {
 	const [code, setCode] = useState(["", "", "", "", "", ""])
 
 	useEffect(() => {
-		const data = sessionStorage.getItem('signupData')
-		if (data) {
-			const parsedData = JSON.parse(data)
-			setSignupData(parsedData)
-		} else if (!email) {
+		const emailParam = searchParams.get('email')
+
+		if (emailParam) {
+			setEmail(emailParam)
+		} else {
 			router.push('/signup')
 		}
-	}, [router, email])
+	}, [searchParams, router])
 
 	useEffect(() => {
 		if (timer > 0 && !canResend) {
@@ -69,14 +61,6 @@ function VerifyEmail() {
 		if (value && index < 5) {
 			inputRefs[index + 1].current?.focus()
 		}
-
-		if (value && index === 5) {
-			const fullCode = [...newCode]
-			fullCode[index] = value
-			if (fullCode.every(digit => digit !== "")) {
-				handleSubmit(null, fullCode.join(""))
-			}
-		}
 	}
 
 	const handleKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -92,111 +76,65 @@ function VerifyEmail() {
 		if (/^\d{6}$/.test(pastedData)) {
 			const digits = pastedData.split("")
 			setCode(digits)
+
 			inputRefs[5].current?.focus()
-			handleSubmit(null, pastedData)
 		}
 	}
 
-	const handleResendOtp = async () => {
-		if (!email && !signupData?.email) return
-
-		setIsLoading(true)
-		setCanResend(false)
-		setTimer(60)
+	const handleResend = async () => {
+		if (!email) return
 
 		try {
-			const response = await axios.post('/api/resend-otp', {
-				email: email || signupData?.email
-			})
+			const response = await axios.post('/api/auth/resend-verification', { email })
 
 			if (response.status === 200) {
+				toast.success('Verification code resent!')
+				setCanResend(false)
+				setTimer(30)
 				setCode(["", "", "", "", "", ""])
-				inputRefs[0].current?.focus()
-				toast.success(response.data.message)
-			} else {
-				toast.error(response.data.message)
-				setCanResend(true)
-				setTimer(0)
 			}
 		} catch (error) {
-			console.error("Failed to resend verification code:", error)
+			console.error("Resend error:", error)
 			toast.error("Failed to resend verification code")
-			setCanResend(true)
-			setTimer(0)
-		} finally {
-			setIsLoading(false)
 		}
 	}
 
-	const handleSubmit = async (e: React.FormEvent | null, otpCode?: string) => {
-		if (e) e.preventDefault()
+	const handleSubmit = async (e: React.FormEvent) => {
+		e.preventDefault()
 
-		const codeToVerify = otpCode || code.join("")
-
-		if (codeToVerify.length !== 6) {
-			toast.error("Please enter the complete 6-digit code")
+		if (!email) {
+			toast.error("Email not found. Please go back to signup.")
 			return
 		}
 
-		if (!email && !signupData?.email) {
-			toast.error("Email not found. Please try signing up again.")
-			router.push('/signup')
+		if (code.join("").length !== 6) {
+			toast.error("Please enter all 6 digits")
 			return
 		}
 
 		setIsLoading(true)
 
 		try {
-			const response = await axios.post('/api/verify-email', {
-				email: email || signupData?.email,
-				otp: codeToVerify
+			const otp = code.join("")
+			const response = await axios.post('/api/auth/verify-email', {
+				email,
+				otp
 			})
 
 			if (response.status === 200) {
 				setIsVerified(true)
-				toast.success("Email verified successfully! Signing you in...")
+				toast.success("Email verified successfully!")
 
-				sessionStorage.removeItem('signupData')
-
-				if (signupData?.password) {
-					const signInResult = await signIn('credentials', {
-						email: email || signupData?.email,
-						password: signupData?.password,
-						redirect: false
-					})
-
-					if (signInResult?.ok) {
-						setTimeout(() => {
-							const redirectUrl = callbackUrl || '/dashboard'
-							router.push(redirectUrl)
-						}, 2000)
-					} else {
-						setTimeout(() => {
-							const redirectUrl = callbackUrl
-								? `/signin?callbackUrl=${encodeURIComponent(callbackUrl)}&verified=true`
-								: '/signin?verified=true'
-							router.push(redirectUrl)
-						}, 2000)
-					}
-				} else {
-					setTimeout(() => {
-						const redirectUrl = callbackUrl
-							? `/signin?callbackUrl=${encodeURIComponent(callbackUrl)}&verified=true`
-							: '/signin?verified=true'
-						router.push(redirectUrl)
-					}, 2000)
-				}
-			} else {
-				toast.error("Invalid verification code")
-				setCode(["", "", "", "", "", ""])
-				inputRefs[0].current?.focus()
+                setTimeout(() => {
+                    router.push('/signin?verified=true')
+                }, 2000)
 			}
 		} catch (error) {
 			if (axios.isAxiosError(error) && error.response) {
-				const errorMessage = error.response.data.message || "Invalid verification code"
+				const errorMessage = error.response.data.message || 'Invalid verification code'
 				toast.error(errorMessage)
 			} else {
-				toast.error("Verification failed. Please try again.")
+				toast.error("Failed to verify code")
 			}
 			setCode(["", "", "", "", "", ""])
 			inputRefs[0].current?.focus()
@@ -205,214 +143,115 @@ function VerifyEmail() {
 		}
 	}
 
-	if (!email && !signupData) {
-		return (
-			<div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-slate-50 via-emerald-50/30 to-teal-50 dark:from-slate-950 dark:via-emerald-950/10 dark:to-teal-950/10">
-				<motion.div
-					className="text-center"
-					initial={{ opacity: 0, scale: 0.9 }}
-					animate={{ opacity: 1, scale: 1 }}
-					transition={{ duration: 0.5 }}
+	return (
+		<div className="min-h-screen w-full bg-white dark:bg-neutral-950 flex flex-col relative overflow-hidden">
+			<div className="absolute inset-0 pointer-events-none">
+				<svg
+					className="w-full h-full text-neutral-950 dark:text-white opacity-[0.02]"
+					viewBox="0 0 696 316"
+					fill="none"
 				>
-					<div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-full animate-pulse mx-auto mb-4"></div>
-					<p className="text-slate-600 dark:text-slate-300">Loading...</p>
-				</motion.div>
+					<path
+						d="M-380 -189C-380 -189 -312 216 152 343C616 470 684 875 684 875"
+						stroke="currentColor"
+						strokeWidth="0.5"
+					/>
+					<path
+						d="M-375 -183C-375 -183 -307 222 157 349C621 476 689 881 689 881"
+						stroke="currentColor"
+						strokeWidth="0.6"
+					/>
+					<path
+						d="M-370 -177C-370 -177 -302 228 162 355C626 482 694 887 694 887"
+						stroke="currentColor"
+						strokeWidth="0.7"
+					/>
+				</svg>
 			</div>
-		)
-	}
-
-	if (isVerified) {
-		return (
-			<div className="bg-gradient-to-br from-slate-50 via-emerald-50/30 to-teal-50 dark:from-slate-950 dark:via-emerald-950/10 dark:to-teal-950/10 flex h-screen w-screen flex-col items-center justify-center">
-				<motion.div
-					className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[400px]"
-					initial={{ opacity: 0, y: 20 }}
-					animate={{ opacity: 1, y: 0 }}
-					transition={{ duration: 0.6 }}
-				>
-					<div className="flex flex-col space-y-6 text-center">
-						<motion.div
-							className="mx-auto flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-br from-emerald-100 to-teal-100 dark:from-emerald-900/30 dark:to-teal-900/30"
-							initial={{ scale: 0 }}
-							animate={{ scale: 1 }}
-							transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-						>
-							<CheckCircle className="h-12 w-12 text-emerald-600 dark:text-emerald-400" />
-						</motion.div>
-						<div className="space-y-2">
-							<h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
-								Email Verified!
-							</h1>
-							<p className="text-slate-600 dark:text-slate-300">
-								Welcome to ShunyaTech! Redirecting you to the dashboard...
+			<div className="flex-1 flex items-center justify-center p-4">
+				<div className="w-full max-w-md relative z-10">
+					<div className="text-center mb-8">
+						<h1 className="text-4xl font-bold mb-2 text-transparent bg-clip-text bg-gradient-to-r from-neutral-900 to-neutral-700 dark:from-white dark:to-neutral-300">
+							Project Central
+						</h1>
+						<div className="w-12 h-0.5 bg-gradient-to-r from-neutral-900 to-neutral-700 dark:from-white dark:to-neutral-300 mx-auto"></div>
+					</div>
+					<div className="bg-white/80 dark:bg-black/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-neutral-200/20 dark:border-neutral-800/20 p-8">
+						<div className="text-center mb-8">
+							<h2 className="text-2xl font-bold text-neutral-900 dark:text-white">
+								{isVerified ? "Verification Successful" : "Verify your email"}
+							</h2>
+							<p className="text-neutral-600 dark:text-neutral-400 mt-2">
+								{isVerified ? "Signing you in and redirecting to sign in page..." : "We've sent a 6-digit code to your email"}
 							</p>
 						</div>
-						<motion.div
-							className="flex justify-center"
-							animate={{ rotate: 360 }}
-							transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-						>
-							<Loader2 className="h-6 w-6 text-emerald-600" />
-						</motion.div>
-					</div>
-				</motion.div>
-			</div>
-		)
-	}
 
-	return (
-		<div className="bg-gradient-to-br from-slate-50 via-emerald-50/30 to-teal-50 dark:from-slate-950 dark:via-emerald-950/10 dark:to-teal-950/10 flex h-screen w-screen flex-col items-center justify-center">
-			<motion.div
-				className="mx-auto flex w-full flex-col justify-center space-y-8 sm:w-[420px] p-6"
-				initial={{ opacity: 0, y: 20 }}
-				animate={{ opacity: 1, y: 0 }}
-				transition={{ duration: 0.6 }}
-			>
-				<div className="flex flex-col items-center space-y-6">
-					<motion.div
-						initial={{ opacity: 0, scale: 0.8 }}
-						animate={{ opacity: 1, scale: 1 }}
-						transition={{ duration: 0.5 }}
-					>
-						<Image
-							src="/shunyatech.png"
-							alt="ShunyaTech Logo"
-							width={80}
-							height={80}
-							className="rounded-2xl shadow-lg"
-						/>
-					</motion.div>
-					<div className="flex flex-col space-y-3 text-center">
-						<h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
-							Verify your email
-						</h1>
-						<p className="text-slate-600 dark:text-slate-300 max-w-sm mx-auto leading-relaxed">
-							Enter the 6-digit verification code sent to{" "}
-							<span className="font-semibold text-emerald-600 dark:text-emerald-400">
-								{email || signupData?.email}
-							</span>
-						</p>
+						{
+							isVerified ? (
+								<div className="flex flex-col items-center justify-center py-8">
+									<div className="w-20 h-20 bg-gradient-to-br from-teal-500 to-emerald-600 rounded-full flex items-center justify-center mb-6">
+										<CheckCircle className="w-10 h-10 text-white" />
+									</div>
+									<p className="text-teal-600 font-medium">Your email has been verified!</p>
+								</div>
+							) : (
+								<form onSubmit={handleSubmit} className="space-y-6">
+									<div className="flex justify-center space-x-2">
+										{
+											code.map((digit, index) => (
+												<Input
+													key={index}
+													ref={inputRefs[index]}
+													type="text"
+													maxLength={1}
+													value={digit}
+													onChange={(e) => handleInputChange(index, e.target.value)}
+													onKeyDown={(e) => handleKeyDown(index, e)}
+													onPaste={index === 0 ? handlePaste : undefined}
+													className="w-12 h-12 text-center text-lg font-bold rounded-xl border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 focus:border-neutral-400 dark:focus:border-neutral-500 focus:ring-0"
+												/>
+											))
+										}
+									</div>
+									<Button
+										type="submit"
+										className="w-full h-12 bg-neutral-900 hover:bg-neutral-800 dark:bg-white dark:hover:bg-neutral-100 text-white dark:text-black rounded-2xl font-semibold transition-all duration-200 hover:shadow-lg"
+										disabled={isLoading || code.join("").length !== 6}
+									>
+										{isLoading ? "Verifying..." : "Verify Email"}
+										{!isLoading && <ArrowRight className="ml-2 h-4 w-4" />}
+									</Button>
+									<div className="text-center">
+										<p className="text-sm text-neutral-600 dark:text-neutral-400 mb-2">Didn&apos;t receive the code?</p>
+										<Button
+											type="button"
+											variant="ghost"
+											onClick={handleResend}
+											disabled={!canResend}
+											className="text-neutral-900 dark:text-white hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-xl text-sm"
+										>
+											<RefreshCw className={`mr-2 h-3 w-3 ${!canResend && "animate-spin"}`} />
+											{canResend ? "Resend Code" : `Resend in ${timer}s`}
+										</Button>
+									</div>
+								</form>
+							)
+						}
 					</div>
 				</div>
-				<motion.div
-					className="sm:w-[350px] bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl border border-slate-200/50 dark:border-slate-700/50 p-8 shadow-xl"
-					initial={{ opacity: 0, y: 20 }}
-					animate={{ opacity: 1, y: 0 }}
-					transition={{ delay: 0.2, duration: 0.6 }}
-				>
-					<form onSubmit={handleSubmit} className="space-y-6">
-						<div className="space-y-4">
-							<div className="flex justify-center gap-3">
-								{
-									code.map((digit, index) => (
-										<motion.div
-											key={index}
-											initial={{ opacity: 0, scale: 0.8 }}
-											animate={{ opacity: 1, scale: 1 }}
-											transition={{ delay: 0.3 + index * 0.1 }}
-										>
-											<Input
-												ref={inputRefs[index]}
-												type="text"
-												inputMode="numeric"
-												maxLength={1}
-												value={digit}
-												onChange={(e) => handleInputChange(index, e.target.value)}
-												onKeyDown={(e) => handleKeyDown(index, e)}
-												onPaste={index === 0 ? handlePaste : undefined}
-												className="w-14 h-14 text-center text-2xl font-mono font-bold rounded-xl border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-900 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 dark:focus:ring-emerald-800 transition-all duration-200 shadow-sm"
-												disabled={isLoading}
-											/>
-										</motion.div>
-									))
-								}
-							</div>
-							<p className="text-xs text-slate-500 dark:text-slate-400 text-center">
-								Code expires in 10 minutes
-							</p>
-						</div>
-						<Button
-							type="submit"
-							className="w-full h-12 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
-							disabled={isLoading || code.join("").length !== 6}
-						>
-							{isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-							Verify Email
-						</Button>
-					</form>
-				</motion.div>
-				<motion.div
-					className="text-center space-y-4"
-					initial={{ opacity: 0 }}
-					animate={{ opacity: 1 }}
-					transition={{ delay: 0.4, duration: 0.6 }}
-				>
-					<Button
-						variant="link"
-						onClick={handleResendOtp}
-						disabled={!canResend || isLoading}
-						className="text-sm text-slate-600 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors duration-200"
-					>
-						{canResend ? "Didn't receive the code? Resend" : `Resend code in ${timer}s`}
-					</Button>
-					<div className="relative">
-						<div className="absolute inset-0 flex items-center">
-							<Separator className="w-full" />
-						</div>
-						<div className="relative flex justify-center text-xs uppercase">
-							<span className="bg-gradient-to-br from-slate-50 via-emerald-50/30 to-teal-50 dark:from-slate-950 dark:via-emerald-950/10 dark:to-teal-950/10 px-4 text-slate-500 dark:text-slate-400">
-								Or continue with
-							</span>
-						</div>
-					</div>
-					<div className="flex justify-center gap-4">
-						<Button
-							variant="outline"
-							onClick={() => {
-								const redirectUrl = callbackUrl
-									? `/signup?callbackUrl=${encodeURIComponent(callbackUrl)}`
-									: '/signup'
-								router.push(redirectUrl)
-							}}
-							className="text-sm text-slate-600 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 border-slate-200 dark:border-slate-700 hover:border-emerald-300 dark:hover:border-emerald-600 transition-colors duration-200"
-						>
-							Back to Sign Up
-						</Button>
-						<Button
-							variant="outline"
-							onClick={() => {
-								const redirectUrl = callbackUrl
-									? `/signin?callbackUrl=${encodeURIComponent(callbackUrl)}`
-									: '/signin'
-								router.push(redirectUrl)
-							}}
-							className="text-sm text-slate-600 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 border-slate-200 dark:border-slate-700 hover:border-emerald-300 dark:hover:border-emerald-600 transition-colors duration-200"
-						>
-							Sign In Instead
-						</Button>
-					</div>
-				</motion.div>
-			</motion.div>
+			</div>
 		</div>
 	)
 }
 
-export default function VerifyEmailPage() {
+export default function Verify() {
 	return (
 		<Suspense fallback={
-			<div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-slate-50 via-emerald-50/30 to-teal-50 dark:from-slate-950 dark:via-emerald-950/10 dark:to-teal-950/10">
-				<motion.div
-					className="text-center"
-					initial={{ opacity: 0, scale: 0.9 }}
-					animate={{ opacity: 1, scale: 1 }}
-					transition={{ duration: 0.5 }}
-				>
-					<div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-full animate-pulse mx-auto mb-4"></div>
-					<p className="text-slate-600 dark:text-slate-300">Loading...</p>
-				</motion.div>
+			<div className="flex min-h-screen items-center justify-center bg-white dark:bg-neutral-950">
+				<div className="text-neutral-600 dark:text-neutral-400">Loading...</div>
 			</div>
 		}>
-			<VerifyEmail />
+			<VerifyContent />
 		</Suspense>
 	)
 }

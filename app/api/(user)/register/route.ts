@@ -11,7 +11,7 @@ export async function POST(request: NextRequest) {
         const body: RequestBody = await request.json();
         const { name, email, password, role, companyName, companyShortName, referralCode, companyId } = body;
 
-        if (!name || !email || !password) {
+        if (!name || !email || password) {
             return NextResponse.json(
                 { success: false, error: "Missing required fields" },
                 { status: 400 }
@@ -37,7 +37,58 @@ export async function POST(request: NextRequest) {
 
         // Validate role if provided
         const validRoles = ['CLIENT', 'DEVELOPER', 'PRODUCTMANAGER', 'ADMIN'];
-        const userRole = role && validRoles.includes(role) ? role : 'CLIENT';
+        let userRole = role && validRoles.includes(role) ? role : 'CLIENT';
+        let companyIdToUse = companyId;
+
+        // Validate referral code if provided
+        let referralCodeData = null;
+        if (referralCode) {
+            try {
+                const referralCodeRecord = await prisma.referralCode.findUnique({
+                    where: { code: referralCode },
+                    include: { company: true }
+                });
+
+                if (!referralCodeRecord) {
+                    return NextResponse.json(
+                        { success: false, error: "Invalid referral code" },
+                        { status: 400 }
+                    );
+                }
+
+                if (referralCodeRecord.status !== "ACTIVE") {
+                    return NextResponse.json(
+                        { success: false, error: "Referral code is not active" },
+                        { status: 400 }
+                    );
+                }
+
+                if (referralCodeRecord.expiresAt && new Date() > referralCodeRecord.expiresAt) {
+                    return NextResponse.json(
+                        { success: false, error: "Referral code has expired" },
+                        { status: 400 }
+                    );
+                }
+
+                if (referralCodeRecord.usedCount >= referralCodeRecord.maxUses) {
+                    return NextResponse.json(
+                        { success: false, error: "Referral code has reached maximum uses" },
+                        { status: 400 }
+                    );
+                }
+
+                // Use the role from the referral code
+                userRole = referralCodeRecord.role;
+                companyIdToUse = referralCodeRecord.companyId!;
+                referralCodeData = referralCodeRecord;
+            } catch (error) {
+                console.error("Referral code validation error:", error);
+                return NextResponse.json(
+                    { success: false, error: "Failed to validate referral code" },
+                    { status: 500 }
+                );
+            }
+        }
 
         // Special validation for PRODUCTMANAGER
         if (userRole === 'PRODUCTMANAGER') {
@@ -76,13 +127,42 @@ export async function POST(request: NextRequest) {
             verifyTokenExpiry: otpExpiry,
             role: userRole as Role,
             ...(referralCode && { referralCode }),
-            ...(companyId && { companyId })
+            ...(companyIdToUse && { companyId: companyIdToUse })
         };
 
         // Create user first
         const user = await prisma.user.create({
             data: userData
         });
+
+        // Update referral code usage if one was used
+        if (referralCodeData) {
+            try {
+                await prisma.referralCode.update({
+                    where: { id: referralCodeData.id },
+                    data: {
+                        usedCount: { increment: 1 },
+                        // Mark as USED if reached max uses
+                        status: referralCodeData.usedCount + 1 >= referralCodeData.maxUses ? "USED" : "ACTIVE",
+                        // Connect user to referral code
+                        usedBy: {
+                            connect: { id: user.id }
+                        }
+                    }
+                });
+
+                // Also update the user with the referral code relation
+                await prisma.user.update({
+                    where: { id: user.id },
+                    data: {
+                        usedReferralCodeId: referralCodeData.id
+                    }
+                });
+            } catch (referralError) {
+                console.error("Failed to update referral code usage:", referralError);
+                // Note: We don't fail the registration for this, just log the error
+            }
+        }
 
         // Handle company creation for Product Manager
         if (userRole === 'PRODUCTMANAGER' && companyName && companyShortName) {

@@ -1,36 +1,39 @@
 "use client"
 
+import type React from "react"
+
 import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
-import Image from "next/image";
-import { motion } from "framer-motion";
-import { Loader2, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { ArrowRight } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { toast } from "sonner";
-import { useRouter, useSearchParams } from "next/navigation";
 
-function SignIn() {
-	const [email, setEmail] = useState("");
-	const [password, setPassword] = useState("");
-	const [isSubmitting, setIsSubmitting] = useState(false);
-	const [googleSignIn, setGoogleSignIn] = useState(false);
-	const router = useRouter();
-	const searchParams = useSearchParams();
-	const callbackUrl = searchParams.get("callbackUrl") || "/dashboard";
-	const verified = searchParams.get("verified");
+function SignInContent() {
+	const [email, setEmail] = useState("")
+	const [password, setPassword] = useState("")
+	const [isLoading, setIsLoading] = useState(false)
+	const [isGoogleLoading, setIsGoogleLoading] = useState(false)
+	const router = useRouter()
+	const searchParams = useSearchParams()
+	const callbackUrl = searchParams.get('callbackUrl') || '/dashboard'
 
+	// Handle verified email parameter and URL errors
 	useEffect(() => {
-		// Check for verification success
-		if (verified === "true") {
-			toast.success("Email verified successfully!", {
-				description: "You can now sign in to your account."
-			});
+		const verified = searchParams.get('verified')
+		const emailParam = searchParams.get('email')
+
+		if (verified === 'true') {
+			toast.success('Email verified successfully! Please sign in.')
+			if (emailParam) {
+				setEmail(decodeURIComponent(emailParam))
+			}
 		}
 
-		// Check for error or success in URL
+		// Check for error in URL
 		const error = searchParams.get("error");
 		if (error === "OAuthAccountNotLinked") {
 			toast.error("Email already in use with a different provider", {
@@ -41,46 +44,19 @@ function SignIn() {
 				description: "Please verify your email before signing in."
 			});
 		}
-	}, [searchParams, verified]);
+	}, [searchParams])
 
-	const handleSignInWithGoogle = async () => {
-		try {
-			setGoogleSignIn(true);
-			const result = await signIn("google", {
-				callbackUrl,
-				redirect: false
-			});
-
-			if (result?.error) {
-				if (result.error === "EmailNotVerified") {
-					toast.error("Email not verified");
-					const verifyUrl = `/verifyemail${callbackUrl ? `?callbackUrl=${encodeURIComponent(callbackUrl)}` : ''}`;
-					router.push(verifyUrl);
-				} else {
-					toast.error("Failed to sign in with Google");
-				}
-			} else if (result?.url) {
-				router.push(result.url);
-			}
-		} catch (error) {
-			console.error("Google sign-in error:", error);
-			toast.error("Failed to sign in with Google");
-		} finally {
-			setGoogleSignIn(false);
-		}
-	};
-
-	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-		e.preventDefault();
-		setIsSubmitting(true);
+	const handleSubmit = async (e: React.FormEvent) => {
+		e.preventDefault()
+		setIsLoading(true)
 
 		try {
-			const result = await signIn("credentials", {
+			const result = await signIn('credentials', {
 				email,
 				password,
 				redirect: false,
 				callbackUrl
-			});
+			})
 
 			if (result?.error) {
 				switch (result.error) {
@@ -103,192 +79,178 @@ function SignIn() {
 				router.push(result.url);
 			}
 		} catch (error) {
-			console.error("Sign-in error:", error);
-			toast.error("An unexpected error occurred");
+			console.error('Sign-in error:', error)
+			toast.error("An unexpected error occurred")
 		} finally {
-			setIsSubmitting(false);
+			setIsLoading(false)
 		}
-	};
+	}
+
+	const handleGoogleSignIn = async () => {
+		setIsGoogleLoading(true)
+		try {
+			const result = await signIn("google", {
+				callbackUrl,
+				redirect: false
+			});
+
+			if (result?.error) {
+				if (result.error === "EmailNotVerified") {
+					toast.error("Email not verified");
+					const verifyUrl = `/verifyemail${callbackUrl ? `?callbackUrl=${encodeURIComponent(callbackUrl)}` : ''}`;
+					router.push(verifyUrl);
+				} else {
+					toast.error("Failed to sign in with Google");
+				}
+			} else if (result?.url) {
+				router.push(result.url);
+			}
+		} catch (error) {
+			console.error("Google sign-in error:", error);
+			toast.error("Failed to sign in with Google");
+		} finally {
+			setIsGoogleLoading(false);
+		}
+	}
 
 	return (
-		<div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-50 via-emerald-50/30 to-teal-50 dark:from-slate-950 dark:via-emerald-950/10 dark:to-teal-950/10">
-			<div className="flex-1 flex flex-col items-center justify-center p-6">
-				<motion.div
-					className="mx-auto flex w-full flex-col justify-center space-y-8 sm:w-[420px]"
-					initial={{ opacity: 0, y: 20 }}
-					animate={{ opacity: 1, y: 0 }}
-					transition={{ duration: 0.6 }}
+		<div className="min-h-screen py-20 w-full bg-white dark:bg-neutral-950 flex flex-col relative overflow-hidden">
+			<div className="absolute inset-0 pointer-events-none">
+				<svg
+					className="w-full h-full text-neutral-950 dark:text-white opacity-[0.02]"
+					viewBox="0 0 696 316"
+					fill="none"
 				>
-					<div className="flex flex-col items-center space-y-6">
-						<motion.div
-							initial={{ opacity: 0, scale: 0.8 }}
-							animate={{ opacity: 1, scale: 1 }}
-							transition={{ duration: 0.5 }}
-							className="rounded-2xl bg-black"
-						>
-							<Image
-								src="/shunyatech.png"
-								alt="ShunyaTech Logo"
-								width={80}
-								height={80}
-								className="rounded-2xl"
-							/>
-						</motion.div>
-						<div className="flex flex-col space-y-3 text-center">
-							<h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
-								Welcome back
-							</h1>
-							<p className="text-slate-600 dark:text-slate-300 max-w-sm mx-auto leading-relaxed">
-								Sign in to your account to continue your journey with ShunyaTech
-							</p>
-							{
-								callbackUrl && callbackUrl !== "/dashboard" && (
-									<p className="text-sm text-emerald-600 dark:text-emerald-400">
-										You&apos;ll be redirected back after signin
-									</p>
-								)
-							}
-						</div>
+					<path
+						d="M-380 -189C-380 -189 -312 216 152 343C616 470 684 875 684 875"
+						stroke="currentColor"
+						strokeWidth="0.5"
+					/>
+					<path
+						d="M-375 -183C-375 -183 -307 222 157 349C621 476 689 881 689 881"
+						stroke="currentColor"
+						strokeWidth="0.6"
+					/>
+					<path
+						d="M-370 -177C-370 -177 -302 228 162 355C626 482 694 887 694 887"
+						stroke="currentColor"
+						strokeWidth="0.7"
+					/>
+				</svg>
+			</div>
+			<div className="flex-1 flex items-center justify-center p-4">
+				<div className="w-full max-w-md relative z-10">
+					<div className="text-center">
+						<h1 className="text-4xl font-bold mb-2 text-transparent bg-clip-text bg-gradient-to-r from-neutral-900 to-neutral-700 dark:from-white dark:to-neutral-300">
+							Project Central
+						</h1>
+						<div className="w-12 h-0.5 bg-gradient-to-r from-neutral-900 to-neutral-700 dark:from-white dark:to-neutral-300 mx-auto"></div>
 					</div>
-					<motion.div
-						className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl border border-slate-200/50 dark:border-slate-700/50 p-8 shadow-xl"
-						initial={{ opacity: 0, y: 20 }}
-						animate={{ opacity: 1, y: 0 }}
-						transition={{ delay: 0.2, duration: 0.6 }}
-					>
+					<div className="bg-white/80 dark:bg-black/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-neutral-200/20 dark:border-neutral-800/20 p-8">
+						<div className="text-center mb-4">
+							<h2 className="text-2xl font-bold text-neutral-900 dark:text-white">Welcome back</h2>
+							<p className="text-neutral-600 dark:text-neutral-400 mt-2">Sign in to your Project Central account</p>
+						</div>
 						<form onSubmit={handleSubmit} className="space-y-6">
-							<div className="space-y-4">
-								<div className="space-y-2">
-									<Label htmlFor="email" className="text-slate-700 dark:text-slate-200 font-medium">Email</Label>
-									<Input
-										id="email"
-										placeholder="name@example.com"
-										type="email"
-										autoCapitalize="none"
-										autoComplete="email"
-										autoCorrect="off"
-										disabled={isSubmitting}
-										value={email}
-										onChange={(e) => setEmail(e.target.value)}
-										className="h-12 border-slate-200 dark:border-slate-600 focus:border-emerald-500 focus:ring-emerald-200 dark:focus:ring-emerald-800 transition-all duration-200"
-										required
-									/>
+							<div className="space-y-2">
+								<Label htmlFor="email" className="text-neutral-700 dark:text-neutral-300 font-medium">Email</Label>
+								<Input
+									id="email"
+									type="email"
+									placeholder="you@example.com"
+									value={email}
+									onChange={(e) => setEmail(e.target.value)}
+									required
+									disabled={isLoading}
+									className="h-12 rounded-2xl border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 focus:border-neutral-400 dark:focus:border-neutral-500 focus:ring-0 placeholder:text-neutral-400 dark:placeholder:text-neutral-500"
+								/>
+							</div>
+							<div className="space-y-2">
+								<div className="flex items-center justify-between">
+									<Label htmlFor="password" className="text-neutral-700 dark:text-neutral-300 font-medium">Password</Label>
+									<Link 
+										href={callbackUrl ? `/forgotpassword?callbackUrl=${encodeURIComponent(callbackUrl)}` : '/forgotpassword'}
+										className="text-sm text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white hover:underline"
+									>
+										Forgot password?
+									</Link>
 								</div>
-								<div className="space-y-2">
-									<div className="flex items-center justify-between">
-										<Label htmlFor="password" className="text-slate-700 dark:text-slate-200 font-medium">Password</Label>
-										<Link
-											href={callbackUrl ? `/forgotpassword?callbackUrl=${encodeURIComponent(callbackUrl)}` : '/forgotpassword'}
-											className="text-sm font-medium text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors"
-										>
-											Forgot password?
-										</Link>
-									</div>
-									<Input
-										id="password"
-										placeholder="••••••••"
-										type="password"
-										autoCapitalize="none"
-										autoComplete="current-password"
-										disabled={isSubmitting}
-										value={password}
-										onChange={(e) => setPassword(e.target.value)}
-										className="h-12 border-slate-200 dark:border-slate-600 focus:border-emerald-500 focus:ring-emerald-200 dark:focus:ring-emerald-800 transition-all duration-200"
-										required
-									/>
-								</div>
+								<Input
+									id="password"
+									type="password"
+									placeholder="••••••••"
+									value={password}
+									onChange={(e) => setPassword(e.target.value)}
+									required
+									disabled={isLoading}
+									className="h-12 rounded-2xl border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 focus:border-neutral-400 dark:focus:border-neutral-500 focus:ring-0 placeholder:text-neutral-400 dark:placeholder:text-neutral-500"
+								/>
 							</div>
 							<Button
-								disabled={isSubmitting}
-								className="w-full h-12 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
+								type="submit"
+								className="w-full h-12 bg-neutral-900 hover:bg-neutral-800 dark:bg-white dark:hover:bg-neutral-100 text-white dark:text-black rounded-2xl font-semibold transition-all duration-200 hover:shadow-lg"
+								disabled={isLoading}
 							>
-								{isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-								Sign In
-								<ArrowRight className="ml-2 h-4 w-4" />
+								{isLoading ? "Signing in..." : "Sign In"}
+								{!isLoading && <ArrowRight className="ml-2 h-4 w-4" />}
 							</Button>
 						</form>
-						<div className="relative mt-8">
-							<div className="absolute inset-0 flex items-center">
-								<div className="w-full border-t border-slate-200 dark:border-slate-700" />
-							</div>
-							<div className="relative flex justify-center text-xs uppercase">
-								<span className="bg-white dark:bg-slate-800 px-4 text-slate-500 dark:text-slate-400">
-									Or continue with
-								</span>
-							</div>
+						<div className="mt-8 text-center">
+							<p className="text-sm text-neutral-600 dark:text-neutral-400">
+								Don&apos;t have an account?{" "}
+								<Link 
+									href={callbackUrl ? `/signup?callbackUrl=${encodeURIComponent(callbackUrl)}` : '/signup'}
+									className="text-neutral-900 dark:text-white hover:underline font-medium"
+								>
+									Sign up
+								</Link>
+							</p>
 						</div>
-						<Button
-							variant="outline"
-							type="button"
-							disabled={isSubmitting || googleSignIn}
-							onClick={handleSignInWithGoogle}
-							className="w-full h-12 mt-6 border-slate-200 dark:border-slate-700 hover:border-emerald-300 dark:hover:border-emerald-600 transition-colors duration-200"
-						>
-							{
-								googleSignIn ? (
-									<Loader2 className="mr-2 h-4 w-4 animate-spin" />
-								) : (
-									<svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
-										<path
-											d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-											fill="#4285F4"
-										/>
-										<path
-											d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-											fill="#34A853"
-										/>
-										<path
-											d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
-											fill="#FBBC05"
-										/>
-										<path
-											d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-											fill="#EA4335"
-										/>
-									</svg>
-								)
-							}
-							Sign in with Google
-						</Button>
-					</motion.div>
-					<motion.div
-						className="text-center"
-						initial={{ opacity: 0 }}
-						animate={{ opacity: 1 }}
-						transition={{ delay: 0.4, duration: 0.6 }}
-					>
-						<p className="text-sm text-slate-600 dark:text-slate-300">
-							Don&apos;t have an account?{" "}
-							<Link
-								href={callbackUrl ? `/signup?callbackUrl=${encodeURIComponent(callbackUrl)}` : '/signup'}
-								className="text-emerald-600 dark:text-emerald-400 underline underline-offset-4 hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors font-medium"
+						<div className="mt-8 pt-6 border-t border-neutral-200 dark:border-neutral-700">
+							<p className="text-xs text-center text-neutral-500 dark:text-neutral-400 mb-4">Or continue with</p>
+							<Button
+								type="button"
+								variant="outline"
+								className="w-full h-12 rounded-2xl border-neutral-200 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors"
+								onClick={handleGoogleSignIn}
+								disabled={isLoading || isGoogleLoading}
 							>
-								Sign up
-							</Link>
-						</p>
-					</motion.div>
-				</motion.div>
+								<svg className="w-5 h-5 mr-3" viewBox="0 0 24 24">
+									<path
+										d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+										fill="#4285F4"
+									/>
+									<path
+										d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+										fill="#34A853"
+									/>
+									<path
+										d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+										fill="#FBBC05"
+									/>
+									<path
+										d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+										fill="#EA4335"
+									/>
+								</svg>
+								{isGoogleLoading ? "Signing in..." : "Continue with Google"}
+							</Button>
+						</div>
+					</div>
+				</div>
 			</div>
 		</div>
-	);
+	)
 }
 
-export default function SignInPage() {
+export default function SignIn() {
 	return (
 		<Suspense fallback={
-			<div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-slate-50 via-emerald-50/30 to-teal-50 dark:from-slate-950 dark:via-emerald-950/10 dark:to-teal-950/10">
-				<motion.div
-					className="text-center"
-					initial={{ opacity: 0, scale: 0.9 }}
-					animate={{ opacity: 1, scale: 1 }}
-					transition={{ duration: 0.5 }}
-				>
-					<div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-full animate-pulse mx-auto mb-4"></div>
-					<p className="text-slate-600 dark:text-slate-300">Loading...</p>
-				</motion.div>
+			<div className="flex min-h-screen items-center justify-center bg-white dark:bg-neutral-950">
+				<div className="text-neutral-600 dark:text-neutral-400">Loading...</div>
 			</div>
 		}>
-			<SignIn />
+			<SignInContent />
 		</Suspense>
 	)
 }

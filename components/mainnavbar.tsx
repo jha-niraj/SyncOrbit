@@ -3,7 +3,7 @@
 import { useTheme } from "next-themes"
 import { usePathname, useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
-import { Moon, Sun, Home, User, LogOut, Shield, LogIn } from "lucide-react"
+import { Moon, Sun, Home, User, LogOut, Shield, LogIn, Users } from "lucide-react"
 import { Button } from "./ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
@@ -14,6 +14,7 @@ import { signOut, useSession } from "next-auth/react"
 import { toast } from "sonner"
 import Link from "next/link"
 import { Badge } from "./ui/badge"
+import { cn } from "@/lib/utils"
 
 const MainNavbar = ({ isCollapsed }: { isCollapsed: boolean }) => {
     const { data: session } = useSession();
@@ -50,6 +51,8 @@ const MainNavbar = ({ isCollapsed }: { isCollapsed: boolean }) => {
                 return "Profile"
             case "settings":
                 return "Settings"
+            case "chat":
+                return "Chat"
             default:
                 return currentPath.charAt(0).toUpperCase() + currentPath.slice(1)
         }
@@ -66,14 +69,20 @@ const MainNavbar = ({ isCollapsed }: { isCollapsed: boolean }) => {
 
     return (
         <nav
-            className={`fixed top-0 right-0 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 transition-all duration-300 z-10 ${scrolled ? "shadow-sm" : ""} ${isCollapsed ? "left-0 sm:left-[60px]" : "left-0 sm:left-[240px]"} left-0`}
+            className={cn(
+                "fixed top-0 right-0 transition-all duration-300 z-10",
+                isCollapsed ? "left-0 sm:left-[60px]" : "left-0 sm:left-[240px]",
+                scrolled 
+                    ? "bg-background/80 backdrop-blur-xl border-b border-border/50 shadow-sm" 
+                    : "bg-background/50 backdrop-blur-sm border-b border-border/20"
+            )}
         >
             <div className="px-3 sm:px-6 py-3 sm:py-4">
                 <div className="flex justify-between items-center">
                     <div className="flex items-center gap-2 sm:gap-4">
                         <div className="flex items-center gap-2 sm:gap-3">
                             <motion.h1
-                                className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white truncate"
+                                className="text-lg sm:text-xl font-bold text-foreground truncate"
                                 initial={{ opacity: 0, x: -20 }}
                                 animate={{ opacity: 1, x: 0 }}
                                 key={pathname}
@@ -82,7 +91,10 @@ const MainNavbar = ({ isCollapsed }: { isCollapsed: boolean }) => {
                             </motion.h1>
                             {
                                 session?.user && (
-                                    <Badge variant="secondary" className="hidden sm:flex bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700">
+                                    <Badge 
+                                        variant="secondary" 
+                                        className="hidden sm:flex bg-primary/10 text-primary border-primary/20"
+                                    >
                                         <Shield className="h-3 w-3 mr-1" />
                                         {session.user.role}
                                     </Badge>
@@ -91,32 +103,42 @@ const MainNavbar = ({ isCollapsed }: { isCollapsed: boolean }) => {
                         </div>
                     </div>
                     <div className="flex items-center gap-2 sm:gap-3">
-                        <div className="hidden md:flex items-center bg-gray-100 dark:bg-gray-800 rounded-lg p-1 border border-gray-200 dark:border-gray-700">
+                        <div className="hidden md:flex items-center bg-muted/50 rounded-xl p-1 border border-border/50">
                             <Button
                                 variant="ghost"
                                 size="sm"
-                                className={`h-7 w-7 p-0 rounded-md transition-all cursor-pointer ${theme === "light" ? "bg-white dark:bg-gray-900 shadow-sm" : "hover:bg-gray-200 dark:hover:bg-gray-700"}`}
+                                className={cn(
+                                    "h-8 w-8 p-0 rounded-lg transition-all cursor-pointer",
+                                    theme === "light" 
+                                        ? "bg-background shadow-sm border border-border/50" 
+                                        : "hover:bg-muted"
+                                )}
                                 onClick={() => setTheme("light")}
                             >
-                                <Sun className="h-3 w-3 text-gray-700 dark:text-gray-300" />
+                                <Sun className="h-4 w-4 text-foreground" />
                             </Button>
                             <Button
                                 variant="ghost"
                                 size="sm"
-                                className={`h-7 w-7 p-0 rounded-md transition-all cursor-pointer ${theme === "dark" ? "bg-white dark:bg-gray-900 shadow-sm" : "hover:bg-gray-200 dark:hover:bg-gray-700"}`}
+                                className={cn(
+                                    "h-8 w-8 p-0 rounded-lg transition-all cursor-pointer",
+                                    theme === "dark" 
+                                        ? "bg-background shadow-sm border border-border/50" 
+                                        : "hover:bg-muted"
+                                )}
                                 onClick={() => setTheme("dark")}
                             >
-                                <Moon className="h-3 w-3 text-gray-700 dark:text-gray-300" />
+                                <Moon className="h-4 w-4 text-foreground" />
                             </Button>
                         </div>
                         {
                             session?.user ? (
                                 <DropdownMenu>
                                     <DropdownMenuTrigger asChild>
-                                        <Button variant="ghost" className="relative h-8 w-8 rounded-full p-0">
-                                            <Avatar className="h-8 w-8 border-2 border-gray-200 dark:border-gray-700">
+                                        <Button variant="ghost" className="relative h-9 w-9 rounded-xl p-0 hover:bg-muted/50 transition-all">
+                                            <Avatar className="h-9 w-9 border-2 border-border/50 shadow-sm">
                                                 <AvatarImage src={session?.user?.image || "/placeholder.svg"} alt={session?.user?.name || "User"} />
-                                                <AvatarFallback className="bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-xs font-bold">
+                                                <AvatarFallback className="bg-primary text-primary-foreground text-xs font-bold">
                                                     {
                                                         session.user.name
                                                             ?.split(" ")
@@ -127,14 +149,16 @@ const MainNavbar = ({ isCollapsed }: { isCollapsed: boolean }) => {
                                             </Avatar>
                                         </Button>
                                     </DropdownMenuTrigger>
-                                    <DropdownMenuContent className="w-56" align="end" forceMount>
+                                    <DropdownMenuContent className="w-64 mr-2 border border-border/50 shadow-xl bg-background/95 backdrop-blur-xl" align="end" forceMount>
                                         <DropdownMenuLabel className="font-normal">
                                             <div className="flex flex-col space-y-1">
-                                                <p className="text-sm font-medium leading-none">{session.user.name}</p>
+                                                <p className="text-sm font-semibold leading-none text-foreground">{session.user.name}</p>
                                                 <p className="text-xs leading-none text-muted-foreground">{session.user.email}</p>
-                                                <div className="flex items-center gap-1 mt-1">
-                                                    <Shield className="w-3 h-3 text-gray-600 dark:text-gray-400" />
-                                                    <span className="text-xs text-gray-600 dark:text-gray-400 font-medium">{session.user.role}</span>
+                                                <div className="flex items-center gap-1 mt-2">
+                                                    <Badge variant="outline" className="text-xs border-primary/20 bg-primary/10 text-primary">
+                                                        <Shield className="w-3 h-3 mr-1" />
+                                                        {session.user.role}
+                                                    </Badge>
                                                 </div>
                                             </div>
                                         </DropdownMenuLabel>
@@ -161,13 +185,16 @@ const MainNavbar = ({ isCollapsed }: { isCollapsed: boolean }) => {
                                                 )
                                             }
                                         </DropdownMenuItem>
-                                        <DropdownMenuSeparator className="md:hidden" />
-                                        <DropdownMenuItem className="cursor-pointer" onClick={() => router.push("/profile")}>
-                                            <User className="mr-2 h-4 w-4" />
-                                            <span>Profile</span>
-                                        </DropdownMenuItem>
-                                        <DropdownMenuSeparator />
-                                        <DropdownMenuItem className="cursor-pointer text-red-600 dark:text-red-400" onClick={handleSignOut}>
+                                        <DropdownMenuSeparator className="md:hidden" />                        <DropdownMenuItem className="cursor-pointer" onClick={() => router.push("/profile")}>
+                            <User className="mr-2 h-4 w-4" />
+                            <span>Profile</span>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem className="cursor-pointer" onClick={() => router.push("/associations")}>
+                            <Users className="mr-2 h-4 w-4" />
+                            <span>Associations</span>
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                                        <DropdownMenuItem className="cursor-pointer text-destructive hover:text-destructive focus:text-destructive" onClick={handleSignOut}>
                                             <LogOut className="mr-2 h-4 w-4" />
                                             <span>Sign Out</span>
                                         </DropdownMenuItem>
@@ -176,7 +203,7 @@ const MainNavbar = ({ isCollapsed }: { isCollapsed: boolean }) => {
                             ) : (
                                 <Link href="/signin">
                                     <Button
-                                        className="bg-gray-900 dark:bg-white text-white dark:text-gray-900 hover:bg-gray-800 dark:hover:bg-gray-100 hover:shadow-sm transition-all duration-200"
+                                        className="bg-primary hover:bg-primary/90 text-primary-foreground hover:shadow-lg transition-all duration-200 rounded-xl"
                                         size="sm"
                                     >
                                         <LogIn className="h-4 w-4 mr-2" />

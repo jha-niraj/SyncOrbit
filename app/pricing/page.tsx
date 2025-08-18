@@ -192,14 +192,14 @@ export default function PricingPage() {
         <SmoothScroll>
             <div className="min-h-screen bg-white dark:bg-neutral-900">
                 <Navbar />
-                <section className="pt-20 pb-16 bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-neutral-900 dark:via-neutral-900 dark:to-neutral-800">
+                <section className="pt-28 pb-4 bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-neutral-900 dark:via-neutral-900 dark:to-neutral-800">
                     <div className="max-w-7xl mx-auto px-6 text-center">
                         <motion.div
                             initial={{ opacity: 0, y: 30 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.8 }}
                         >
-                            <Badge className="mb-6 px-4 py-2 bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                            <Badge className="mb-3 px-4 py-2 bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
                                 Simple, Transparent Pricing
                             </Badge>
                             <h1 className="text-5xl lg:text-6xl font-bold mb-6 bg-gradient-to-r from-gray-900 via-blue-800 to-purple-800 dark:from-gray-100 dark:via-blue-300 dark:to-purple-300 bg-clip-text text-transparent">
@@ -299,7 +299,7 @@ export default function PricingPage() {
                                                 <Button
                                                     className={`w-full ${plan.popular
                                                         ? 'bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white'
-                                                        : 'border-2 border-gray-300 dark:border-gray-600 hover:border-blue-500 dark:hover:border-blue-400 bg-white dark:bg-gray-800'
+                                                        : 'text-white border-2 border-gray-300 dark:border-gray-600 hover:border-blue-500 dark:hover:border-blue-400 bg-white dark:bg-gray-800'
                                                         }`}
                                                     size="lg"
                                                     asChild
@@ -468,7 +468,7 @@ export default function PricingPage() {
                         </div>
                     </div>
                 </section>
-                <section className="py-20 bg-gradient-to-r from-blue-600 to-purple-600">
+                <section className="py-20 bg-gradient-to-r from-teal-200 via-emerald-950 to-teal-200 dark:from-teal-900 dark:via-emerald-800 dark:to-teal-900">
                     <div className="max-w-4xl mx-auto px-6 text-center">
                         <motion.div
                             initial={{ opacity: 0, y: 30 }}
@@ -496,7 +496,7 @@ export default function PricingPage() {
                                 <Button
                                     size="lg"
                                     variant="outline"
-                                    className="border-white text-white hover:bg-white hover:text-blue-600"
+                                    className="border-white text-black dark:text-white hover:bg-white hover:text-blue-600"
                                     asChild
                                 >
                                     <Link href="/contact">

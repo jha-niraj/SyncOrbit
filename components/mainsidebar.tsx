@@ -2,7 +2,7 @@
 
 import type React from "react"
 import { usePathname, useRouter } from "next/navigation"
-import { LogOut, ChevronRight, UserPlus, Users, Briefcase, BarChart3, MessageSquare, Settings, Home } from "lucide-react"
+import { LogOut, ChevronRight, UserPlus, Users, Briefcase, BarChart3, Settings, Home } from "lucide-react"
 import Link from "next/link"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { toast } from "sonner"
@@ -10,7 +10,52 @@ import { Button } from "./ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { motion } from "framer-motion"
 import { signOut, useSession } from "next-auth/react"
-import Image from "next/image"
+import { cn } from "@/lib/utils"
+
+const Logo = ({ className }: { className?: string }) => {
+    return (
+        <svg
+            viewBox="0 0 120 40"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            className={cn('h-8 w-auto', className)}>
+            <rect width="40" height="40" rx="8" fill="url(#logo-gradient)" />
+            <path
+                d="M12 16h16M12 20h12M12 24h16"
+                stroke="white"
+                strokeWidth="2"
+                strokeLinecap="round"
+            />
+            <text
+                x="50"
+                y="16"
+                className="fill-current text-lg font-bold"
+                dominantBaseline="middle">
+                Project
+            </text>
+            <text
+                x="50"
+                y="28"
+                className="fill-current text-lg font-bold"
+                dominantBaseline="middle">
+                Central
+            </text>
+            <defs>
+                <linearGradient
+                    id="logo-gradient"
+                    x1="0"
+                    y1="0"
+                    x2="40"
+                    y2="40"
+                    gradientUnits="userSpaceOnUse">
+                    <stop stopColor="#3B82F6" />
+                    <stop offset="0.5" stopColor="#8B5CF6" />
+                    <stop offset="1" stopColor="#06B6D4" />
+                </linearGradient>
+            </defs>
+        </svg>
+    )
+}
 
 export interface Route {
     path: string
@@ -60,23 +105,26 @@ const Sidebar = ({ isCollapsed, toggleSidebar }: SidebarProps) => {
             status: "active"
         },
         {
-            path: "team",
-            name: "Team",
-            icon: <Users className="h-5 w-5" />,
+            path: "associations",
+            name: "Associations",
+            icon: <UserPlus className="h-5 w-5" />,
             status: "active"
         },
-        {
-            path: "analytics",
-            name: "Analytics",
-            icon: <BarChart3 className="h-5 w-5" />,
-            status: "active"
-        },
-        {
-            path: "feedback",
-            name: "Feedback",
-            icon: <MessageSquare className="h-5 w-5" />,
-            status: "active"
-        },
+        // Hide team and analytics from clients
+        ...(session?.user?.role !== 'CLIENT' ? [
+            {
+                path: "team",
+                name: "Team",
+                icon: <Users className="h-5 w-5" />,
+                status: "active"
+            },
+            {
+                path: "analytics",
+                name: "Analytics",
+                icon: <BarChart3 className="h-5 w-5" />,
+                status: "active"
+            }
+        ] : []),
         {
             path: "settings",
             name: "Settings",
@@ -90,40 +138,23 @@ const Sidebar = ({ isCollapsed, toggleSidebar }: SidebarProps) => {
     return (
         <TooltipProvider>
             <motion.div
-                className="fixed top-0 left-0 h-full bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 shadow-sm z-20 sm:block hidden"
+                className={cn(
+                    "fixed top-0 left-0 h-full border-r shadow-lg z-20 sm:block hidden",
+                    "bg-background/80 backdrop-blur-xl border-border/50"
+                )}
                 animate={{ width: isCollapsed ? 60 : 240 }}
                 transition={{ duration: 0.3, ease: "easeInOut" }}
             >
                 <div className="flex flex-col h-full relative">
-                    <div className="flex items-center justify-center p-4 h-[80px] border-b border-gray-200 dark:border-gray-800">
-                        <Link href={session ? "/dashboard" : "/"} className="flex gap-2 items-center justify-center group cursor-pointer">
-                            <Image
-                                src="/shunyatech.png"
-                                alt="ShunyaTech"
-                                width={32}
-                                height={32}
-                            />
-                            <motion.div
-                                animate={{
-                                    opacity: isCollapsed ? 0 : 1,
-                                    x: isCollapsed ? -20 : 0,
-                                    width: isCollapsed ? 0 : "auto",
-                                }}
-                                transition={{ duration: 0.3, ease: "easeInOut" }}
-                                style={{ overflow: "hidden" }}
-                            >
-                                <div className="whitespace-nowrap">
-                                    <h1 className="text-xl font-bold text-gray-900 dark:text-white">
-                                        ShunyaTech
-                                    </h1>
-                                </div>
-                            </motion.div>
+                    <div className="flex items-center justify-center p-4 h-[80px] border-b border-border/20">
+                        <Link href={session ? "/dashboard" : "/"} className="flex gap-3 items-center justify-center group cursor-pointer">
+                            <Logo />
                         </Link>
                     </div>
                     <div className="flex-grow overflow-y-auto py-6">
                         {
                             session ? (
-                                <div className={`space-y-2 ${isCollapsed ? "px-2" : "px-4"}`}>
+                                <div className={`space-y-1 ${isCollapsed ? "px-2" : "px-4"}`}>
                                     {
                                         displayRoutes.map((route, index) => {
                                             const isActive = isActiveRoute(route.path)
@@ -133,20 +164,19 @@ const Sidebar = ({ isCollapsed, toggleSidebar }: SidebarProps) => {
                                                     <TooltipTrigger asChild>
                                                         <motion.button
                                                             onClick={() => handleNavigation(route.path)}
-                                                            className="block w-full cursor-pointer"
-                                                            whileHover={{ x: isCollapsed ? 0 : 4 }}
+                                                            className="block w-full cursor-pointer group"
+                                                            whileHover={{ x: isCollapsed ? 0 : 2 }}
                                                             whileTap={{ scale: 0.98 }}
-                                                            transition={{ duration: 0.1 }}
+                                                            transition={{ duration: 0.2 }}
                                                         >
                                                             <div
-                                                                className={`
-                                                        ${isActive
-                                                                        ? "bg-gray-900 dark:bg-white text-white dark:text-gray-900"
-                                                                        : "hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
-                                                                    } 
-                                                        flex items-center rounded-lg transition-all duration-200 cursor-pointer
-                                                        ${isCollapsed ? "justify-center px-3 py-4" : "px-4 py-3"}
-                                                    `}
+                                                                className={cn(
+                                                                    "flex items-center rounded-xl transition-all duration-200 cursor-pointer",
+                                                                    isCollapsed ? "justify-center px-3 py-4" : "px-4 py-3",
+                                                                    isActive
+                                                                        ? "bg-primary/10 text-primary border border-primary/20 shadow-sm"
+                                                                        : "hover:bg-muted/50 text-muted-foreground hover:text-foreground border border-transparent"
+                                                                )}
                                                             >
                                                                 {
                                                                     isCollapsed ? (
@@ -189,17 +219,17 @@ const Sidebar = ({ isCollapsed, toggleSidebar }: SidebarProps) => {
                                                 initial={{ opacity: 0, y: 20 }}
                                                 animate={{ opacity: 1, y: 0 }}
                                                 transition={{ duration: 0.5 }}
-                                                className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6 mb-4 border border-gray-200 dark:border-gray-700"
+                                                className="bg-muted/50 rounded-xl p-6 mb-4 border border-border/50"
                                             >
-                                                <div className="w-12 h-12 bg-gray-900 dark:bg-white rounded-lg flex items-center justify-center mx-auto mb-4">
-                                                    <UserPlus className="w-6 h-6 text-white dark:text-gray-900" />
+                                                <div className="w-12 h-12 bg-primary rounded-xl flex items-center justify-center mx-auto mb-4">
+                                                    <UserPlus className="w-6 h-6 text-primary-foreground" />
                                                 </div>
-                                                <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">Join ShunyaTech</h3>
-                                                <p className="text-sm text-gray-600 dark:text-gray-400 mb-4 leading-relaxed">
+                                                <h3 className="text-lg font-bold text-foreground mb-2">Join Project Central</h3>
+                                                <p className="text-sm text-muted-foreground mb-4 leading-relaxed">
                                                     Sign in to access your projects, manage team, and track development progress.
                                                 </p>
                                                 <Link href="/signin">
-                                                    <Button className="w-full bg-gray-900 dark:bg-white text-white dark:text-gray-900 hover:bg-gray-800 dark:hover:bg-gray-100 rounded-lg">
+                                                    <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl">
                                                         Sign In
                                                     </Button>
                                                 </Link>
@@ -210,12 +240,14 @@ const Sidebar = ({ isCollapsed, toggleSidebar }: SidebarProps) => {
                                         isCollapsed && (
                                             <Tooltip>
                                                 <TooltipTrigger asChild>
-                                                    <Button
-                                                        size="sm"
-                                                        className="w-10 h-10 p-0 bg-gray-900 dark:bg-white text-white dark:text-gray-900 hover:bg-gray-800 dark:hover:bg-gray-100 rounded-lg"
-                                                    >
-                                                        <UserPlus className="w-4 h-4" />
-                                                    </Button>
+                                                    <Link href="/signin">
+                                                        <Button
+                                                            size="sm"
+                                                            className="w-10 h-10 p-0 bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl"
+                                                        >
+                                                            <UserPlus className="w-4 h-4" />
+                                                        </Button>
+                                                    </Link>
                                                 </TooltipTrigger>
                                                 <TooltipContent side="right">
                                                     <p>Sign In</p>
@@ -229,21 +261,24 @@ const Sidebar = ({ isCollapsed, toggleSidebar }: SidebarProps) => {
                     </div>
                     <motion.button
                         onClick={toggleSidebar}
-                        className="absolute top-1/2 -translate-y-1/2 -right-4 p-2 bg-white dark:bg-gray-900 rounded-full hover:bg-gray-50 dark:hover:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-all duration-200 z-30 cursor-pointer"
+                        className={cn(
+                            "absolute top-1/2 -translate-y-1/2 -right-4 p-2 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 z-30 cursor-pointer",
+                            "bg-background/95 backdrop-blur-sm border border-border/50 hover:bg-muted/50"
+                        )}
                         aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
                         animate={{ rotate: isCollapsed ? 0 : 180 }}
                         transition={{ duration: 0.3, ease: "easeInOut" }}
                     >
-                        <ChevronRight className="h-4 w-4 text-gray-600 dark:text-gray-400" />
+                        <ChevronRight className="h-4 w-4 text-muted-foreground" />
                     </motion.button>
                     {
                         session?.user && (
-                            <div className="border-t border-gray-200 dark:border-gray-800 p-4 mt-auto bg-gray-50 dark:bg-gray-800">
-                                <div className={`flex items-center justify-between ${isCollapsed ? "flex-col" : "flex-row"}`}>
+                            <div className="border-t border-border/20 p-4 mt-auto bg-muted/30 backdrop-blur-sm">
+                                <div className={`flex items-center justify-between ${isCollapsed ? "flex-col gap-2" : "flex-row"}`}>
                                     <div className="flex items-center space-x-3">
-                                        <Avatar className="h-10 w-10 border-2 border-gray-200 dark:border-gray-700">
+                                        <Avatar className="h-10 w-10 border-2 border-border/50 shadow-sm">
                                             <AvatarImage src={session.user.image || "/placeholder.svg"} alt={session.user.name || "User"} />
-                                            <AvatarFallback className="bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-sm font-bold">
+                                            <AvatarFallback className="bg-primary text-primary-foreground text-sm font-bold">
                                                 {
                                                     session.user.name
                                                         ?.split(" ")
@@ -252,6 +287,16 @@ const Sidebar = ({ isCollapsed, toggleSidebar }: SidebarProps) => {
                                                 }
                                             </AvatarFallback>
                                         </Avatar>
+                                        {!isCollapsed && (
+                                            <div className="flex-1 min-w-0">
+                                                <p className="text-sm font-medium text-foreground truncate">
+                                                    {session.user.name}
+                                                </p>
+                                                <p className="text-xs text-muted-foreground truncate">
+                                                    {session.user.role}
+                                                </p>
+                                            </div>
+                                        )}
                                     </div>
                                     <Tooltip>
                                         <TooltipTrigger asChild>
@@ -259,7 +304,11 @@ const Sidebar = ({ isCollapsed, toggleSidebar }: SidebarProps) => {
                                                 variant="ghost"
                                                 size="sm"
                                                 onClick={handleSignOut}
-                                                className={`${isCollapsed ? "h-10 w-10 p-0" : "px-3"} hover:bg-red-50 dark:hover:bg-red-950 text-red-600 dark:text-red-400 cursor-pointer transition-all duration-200`}
+                                                className={cn(
+                                                    "cursor-pointer transition-all duration-200 rounded-xl",
+                                                    isCollapsed ? "h-10 w-10 p-0" : "px-3",
+                                                    "hover:bg-destructive/10 text-destructive hover:text-destructive"
+                                                )}
                                             >
                                                 <LogOut className="h-4 w-4" />
                                                 {!isCollapsed && <span className="ml-2 text-sm">Sign Out</span>}
@@ -275,19 +324,25 @@ const Sidebar = ({ isCollapsed, toggleSidebar }: SidebarProps) => {
                     }
                 </div>
             </motion.div>
-            <div className="mt-6 sm:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 shadow-sm z-20">
-                <div className="flex justify-around py-2">
+            {/* Mobile Navigation */}
+            <div className="sm:hidden fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-xl border-t border-border/50 shadow-lg z-20">
+                <div className="flex justify-around py-3">
                     {
-                        displayRoutes.slice(0, 5).map((route) => {
+                        displayRoutes.slice(0, 4).map((route) => {
                             const isActive = isActiveRoute(route.path)
                             return (
                                 <button
                                     key={route.path}
                                     onClick={() => handleNavigation(route.path)}
-                                    className={`flex flex-col items-center gap-1 text-xs ${isActive ? 'text-gray-900 dark:text-white' : 'text-gray-500 dark:text-gray-400'} focus:outline-none`}
+                                    className={cn(
+                                        "flex flex-col items-center gap-1 text-xs transition-colors duration-200 focus:outline-none px-2 py-1 rounded-lg",
+                                        isActive 
+                                            ? 'text-primary bg-primary/10' 
+                                            : 'text-muted-foreground hover:text-foreground'
+                                    )}
                                 >
                                     {route.icon}
-                                    <span>{route.name}</span>
+                                    <span className="text-xs font-medium">{route.name}</span>
                                 </button>
                             )
                         })

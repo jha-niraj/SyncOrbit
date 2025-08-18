@@ -25,10 +25,7 @@ const publicRoutes = [
 	'/accelerator',
 	'/budgetestimator',
 	'/nexinvoice',
-	'/projectsdelivered',
-	// Developer routes
-	'/devs/signin',
-	'/devs/signup'
+	'/projectsdelivered'
 ]
 
 const apiRoutes = [
@@ -86,7 +83,7 @@ export default auth((req) => {
 	}
 
 	// If user is logged in and trying to access auth pages, redirect based on role
-	if (isLoggedIn && (nextUrl.pathname === '/signin' || nextUrl.pathname === '/signup' || nextUrl.pathname === '/register' || nextUrl.pathname === '/devs/signin' || nextUrl.pathname === '/devs/signup')) {
+	if (isLoggedIn && (nextUrl.pathname === '/signin' || nextUrl.pathname === '/signup' || nextUrl.pathname === '/register')) {
 		return NextResponse.redirect(new URL('/dashboard', nextUrl.origin))
 	}
 

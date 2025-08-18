@@ -3,6 +3,7 @@ import {
 	VerificationEmailTemplate,
 	PasswordResetEmailTemplate,
 	WelcomeEmailTemplate,
+	InvitationEmailTemplate,
 } from '@/lib/email-templates';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
@@ -82,6 +83,47 @@ export async function sendWelcomeEmail(email: string, name: string) {
 	}
 }
 
+export async function sendInvitationEmail(
+	email: string,
+	recipientName: string,
+	senderName: string,
+	invitationType: 'company' | 'project',
+	targetName: string,
+	message?: string,
+	invitationId?: string
+) {
+	try {
+		const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000'
+		const acceptUrl = `${baseUrl}/api/invitations/accept?id=${invitationId}`
+		const declineUrl = `${baseUrl}/api/invitations/decline?id=${invitationId}`
+
+		const { data, error } = await resend.emails.send({
+			from: 'ShunyaTech <noreply@setu.nirajjha.xyz>',
+			to: [email],
+			subject: `You're invited to join ${targetName} on Project Central`,
+			react: InvitationEmailTemplate({
+				recipientName,
+				senderName,
+				invitationType,
+				targetName,
+				message,
+				acceptUrl,
+				declineUrl
+			}),
+		});
+
+		if (error) {
+			console.error('Error sending invitation email:', error);
+			throw new Error('Failed to send invitation email');
+		}
+
+		return data;
+	} catch (error) {
+		console.error('Error in sendInvitationEmail:', error);
+		throw error;
+	}
+}
+
 // Verify OTP
 export function verifyOTP(providedOTP: string, storedOTP: string | null, expiry: Date | null): boolean {
 	if (!storedOTP || !expiry) {
@@ -93,4 +135,4 @@ export function verifyOTP(providedOTP: string, storedOTP: string | null, expiry:
 	}
 
 	return providedOTP === storedOTP;
-} 
+}
