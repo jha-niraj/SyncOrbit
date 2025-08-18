@@ -89,11 +89,11 @@ export default function AssociationsPage() {
             ])
 
             if (associationsResult.success) {
-                setAssociations(associationsResult.data)
+                setAssociations(associationsResult.data as UserAssociations)
             }
 
             if (invitationsResult.success) {
-                setInvitations(invitationsResult.invitations)
+                setInvitations(invitationsResult.invitations as Invitation[])
             }
         } catch (error) {
             console.error("Error loading data:", error)

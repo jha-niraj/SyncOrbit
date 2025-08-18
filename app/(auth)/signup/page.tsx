@@ -190,12 +190,6 @@ function SignUp() {
             </div>
             <div className="flex-1 flex items-center justify-center py-24">
                 <div className="w-full max-w-lg relative z-10">
-                    <div className="text-center mb-2">
-                        <h1 className="text-4xl font-bold mb-2 text-transparent bg-clip-text bg-gradient-to-r from-neutral-900 to-neutral-700 dark:from-white dark:to-neutral-300">
-                            Project Central
-                        </h1>
-                        <div className="w-12 h-0.5 bg-gradient-to-r from-neutral-900 to-neutral-700 dark:from-white dark:to-neutral-300 mx-auto"></div>
-                    </div>
                     <div className="bg-white/80 dark:bg-black/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-neutral-200/20 dark:border-neutral-800/20 p-8">
                         <div className="text-center mb-8">
                             <h2 className="text-2xl font-bold text-neutral-900 dark:text-white">Create your account</h2>
@@ -228,7 +222,7 @@ function SignUp() {
 
                         <form onSubmit={handleSubmit} className="space-y-6 w-full">
                             <div className="flex gap-4 w-full">
-                                <div className={`space-y-2 ${role === "PRODUCTMANAGER" ? "w-full" : "w/1/3"}`}>
+                                <div className={`space-y-2 ${role === "PRODUCTMANAGER" ? "w-full" : ""}`}>
                                     <Label htmlFor="role" className="text-neutral-700 dark:text-neutral-300 font-medium">Role</Label>
                                     <Select value={role} onValueChange={(value: 'CLIENT' | 'DEVELOPER' | 'PRODUCTMANAGER') => setRole(value)}>
                                         <SelectTrigger className="h-12 rounded-2xl border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 focus:border-neutral-400 dark:focus:border-neutral-500 focus:ring-0">
@@ -244,7 +238,7 @@ function SignUp() {
 
                                 {/* Referral Code Field (for developers and clients) */}
                                 {role !== 'PRODUCTMANAGER' && (
-                                    <div className="space-y-2 w-2/3">
+                                    <div className="space-y-2 w-full">
                                         <Label htmlFor="referralCode" className="text-neutral-700 dark:text-neutral-300 font-medium">
                                             Referral Code <span className="text-neutral-500">(Optional)</span>
                                         </Label>

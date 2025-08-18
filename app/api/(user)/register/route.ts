@@ -11,7 +11,9 @@ export async function POST(request: NextRequest) {
         const body: RequestBody = await request.json();
         const { name, email, password, role, companyName, companyShortName, referralCode, companyId } = body;
 
-        if (!name || !email || password) {
+        console.log(name, email, password, role, companyName, companyShortName, referralCode, companyId);
+
+        if (!name || !email || !password) {
             return NextResponse.json(
                 { success: false, error: "Missing required fields" },
                 { status: 400 }
@@ -23,7 +25,7 @@ export async function POST(request: NextRequest) {
         if (!emailRegex.test(email)) {
             return NextResponse.json(
                 { success: false, error: "Invalid email format" },
-                { status: 400 }
+                { status: 401 }
             );
         }
 
@@ -31,7 +33,7 @@ export async function POST(request: NextRequest) {
         if (password.length < 8) {
             return NextResponse.json(
                 { success: false, error: "Password must be at least 8 characters long" },
-                { status: 400 }
+                { status: 402 }
             );
         }
 
@@ -52,28 +54,28 @@ export async function POST(request: NextRequest) {
                 if (!referralCodeRecord) {
                     return NextResponse.json(
                         { success: false, error: "Invalid referral code" },
-                        { status: 400 }
+                        { status: 404 }
                     );
                 }
 
                 if (referralCodeRecord.status !== "ACTIVE") {
                     return NextResponse.json(
                         { success: false, error: "Referral code is not active" },
-                        { status: 400 }
+                        { status: 405 }
                     );
                 }
 
                 if (referralCodeRecord.expiresAt && new Date() > referralCodeRecord.expiresAt) {
                     return NextResponse.json(
                         { success: false, error: "Referral code has expired" },
-                        { status: 400 }
+                        { status: 406 }
                     );
                 }
 
                 if (referralCodeRecord.usedCount >= referralCodeRecord.maxUses) {
                     return NextResponse.json(
                         { success: false, error: "Referral code has reached maximum uses" },
-                        { status: 400 }
+                        { status: 407 }
                     );
                 }
 
@@ -95,7 +97,7 @@ export async function POST(request: NextRequest) {
             if (!companyName || !companyShortName) {
                 return NextResponse.json(
                     { success: false, error: "Company name and short name are required for Product Manager registration" },
-                    { status: 400 }
+                    { status: 408 }
                 );
             }
         }
@@ -182,7 +184,7 @@ export async function POST(request: NextRequest) {
                     });
                     return NextResponse.json(
                         { success: false, error: companyResult.error },
-                        { status: 400 }
+                        { status: 409 }
                     );
                 }
             } catch (companyError) {
