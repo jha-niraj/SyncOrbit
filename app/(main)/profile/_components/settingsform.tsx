@@ -104,12 +104,12 @@ export function SettingsForm({ user }: SettingsFormProps) {
                 <CardContent className="space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <Label className="text-sm font-medium text-gray-600">Email</Label>
-                            <p className="text-sm text-gray-900">{user.email}</p>
+                            <Label className="text-sm font-medium text-gray-800 dark:text-gray-200">Email</Label>
+                            <p className="text-sm text-black dark:text-white">{user.email}</p>
                         </div>
                         <div>
-                            <Label className="text-sm font-medium text-gray-600">Role</Label>
-                            <p className="text-sm text-gray-900">{user.role}</p>
+                            <Label className="text-sm font-medium text-gray-800 dark:text-gray-200">Role</Label>
+                            <p className="text-sm text-black dark:text-white">{user.role}</p>
                         </div>
                     </div>
                 </CardContent>

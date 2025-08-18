@@ -90,17 +90,22 @@ export async function uploadProfileImage(formData: FormData) {
 		const imageFile = formData.get('image') as File;
 		
 		if (!imageFile) {
-			throw new Error("No image file provided");
+			return { success: false, error: "No image file provided" };
 		}
 
 		// Validate file type
 		if (!imageFile.type.startsWith('image/')) {
-			throw new Error("Please select an image file");
+			return { success: false, error: "Please select an image file" };
 		}
 
 		// Validate file size (5MB limit)
-		if (imageFile.size > 5 * 1024 * 1024) {
-			throw new Error("Image size must be less than 5MB");
+		const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+		if (imageFile.size > maxSize) {
+			const sizeMB = (imageFile.size / (1024 * 1024)).toFixed(2);
+			return { 
+				success: false, 
+				error: `Image size (${sizeMB}MB) exceeds the 5MB limit. Please choose a smaller image.` 
+			};
 		}
 
 		const result = await uploadToCloudinary(imageFile);

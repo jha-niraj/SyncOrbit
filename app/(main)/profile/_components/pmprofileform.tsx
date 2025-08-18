@@ -366,12 +366,12 @@ export function PMProfileForm({ user }: PMProfileFormProps) {
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <Label className="text-sm font-medium text-gray-600">Short Name</Label>
-                            <p className="text-sm text-gray-900">{user.managedCompany?.shortName}</p>
+                            <Label className="text-sm font-medium text-gray-800 dark:text-gray-200">Short Name</Label>
+                            <p className="text-sm text-black dark:text-white">{user.managedCompany?.shortName}</p>
                         </div>
                         <div>
-                            <Label className="text-sm font-medium text-gray-600">Team Members</Label>
-                            <p className="text-sm text-gray-900">{user.managedCompany?.users?.length || 0} members</p>
+                            <Label className="text-sm font-medium text-gray-800 dark:text-gray-200">Team Members</Label>
+                            <p className="text-sm text-black dark:text-white">{user.managedCompany?.users?.length || 0} members</p>
                         </div>
                     </div>
                 </CardContent>

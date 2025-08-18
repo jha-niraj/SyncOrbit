@@ -2,7 +2,7 @@
 
 import type React from "react"
 import { usePathname, useRouter } from "next/navigation"
-import { LogOut, ChevronRight, UserPlus, Users, Briefcase, BarChart3, Settings, Home } from "lucide-react"
+import { LogOut, ChevronRight, UserPlus, Users, Briefcase, BarChart3, Settings, Home, Building2 } from "lucide-react"
 import Link from "next/link"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { toast } from "sonner"
@@ -11,51 +11,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { motion } from "framer-motion"
 import { signOut, useSession } from "next-auth/react"
 import { cn } from "@/lib/utils"
-
-const Logo = ({ className }: { className?: string }) => {
-    return (
-        <svg
-            viewBox="0 0 120 40"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            className={cn('h-8 w-auto', className)}>
-            <rect width="40" height="40" rx="8" fill="url(#logo-gradient)" />
-            <path
-                d="M12 16h16M12 20h12M12 24h16"
-                stroke="white"
-                strokeWidth="2"
-                strokeLinecap="round"
-            />
-            <text
-                x="50"
-                y="16"
-                className="fill-current text-lg font-bold"
-                dominantBaseline="middle">
-                Project
-            </text>
-            <text
-                x="50"
-                y="28"
-                className="fill-current text-lg font-bold"
-                dominantBaseline="middle">
-                Central
-            </text>
-            <defs>
-                <linearGradient
-                    id="logo-gradient"
-                    x1="0"
-                    y1="0"
-                    x2="40"
-                    y2="40"
-                    gradientUnits="userSpaceOnUse">
-                    <stop stopColor="#3B82F6" />
-                    <stop offset="0.5" stopColor="#8B5CF6" />
-                    <stop offset="1" stopColor="#06B6D4" />
-                </linearGradient>
-            </defs>
-        </svg>
-    )
-}
+import Image from "next/image"
 
 export interface Route {
     path: string
@@ -104,6 +60,15 @@ const Sidebar = ({ isCollapsed, toggleSidebar }: SidebarProps) => {
             icon: <Briefcase className="h-5 w-5" />,
             status: "active"
         },
+        // Show companies only for clients
+        ...(session?.user?.role === 'CLIENT' ? [
+            {
+                path: "companies",
+                name: "Companies",
+                icon: <Building2 className="h-5 w-5" />,
+                status: "active"
+            }
+        ] : []),
         {
             path: "associations",
             name: "Associations",
@@ -142,13 +107,23 @@ const Sidebar = ({ isCollapsed, toggleSidebar }: SidebarProps) => {
                     "fixed top-0 left-0 h-full border-r shadow-lg z-20 sm:block hidden",
                     "bg-background/80 backdrop-blur-xl border-border/50"
                 )}
-                animate={{ width: isCollapsed ? 60 : 240 }}
+                animate={{ width: isCollapsed ? 60 : 180 }}
                 transition={{ duration: 0.3, ease: "easeInOut" }}
             >
                 <div className="flex flex-col h-full relative">
                     <div className="flex items-center justify-center p-4 h-[80px] border-b border-border/20">
                         <Link href={session ? "/dashboard" : "/"} className="flex gap-3 items-center justify-center group cursor-pointer">
-                            <Logo />
+                            <Image
+                                src="/projectcentral.png"
+                                alt="Project Central Main Logo"
+                                height={20}
+                                width={20}
+                            />
+                            {
+                                isCollapsed ? ""
+                                    :
+                                    <h1>Project Central</h1>
+                            }
                         </Link>
                     </div>
                     <div className="flex-grow overflow-y-auto py-6">
@@ -336,8 +311,8 @@ const Sidebar = ({ isCollapsed, toggleSidebar }: SidebarProps) => {
                                     onClick={() => handleNavigation(route.path)}
                                     className={cn(
                                         "flex flex-col items-center gap-1 text-xs transition-colors duration-200 focus:outline-none px-2 py-1 rounded-lg",
-                                        isActive 
-                                            ? 'text-primary bg-primary/10' 
+                                        isActive
+                                            ? 'text-primary bg-primary/10'
                                             : 'text-muted-foreground hover:text-foreground'
                                     )}
                                 >

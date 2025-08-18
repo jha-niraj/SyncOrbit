@@ -74,9 +74,12 @@ function SignInContent() {
 					default:
 						toast.error("Failed to sign in");
 				}
-			} else if (result?.url) {
+			} else if (result?.ok) {
 				toast.success("Signed in successfully!");
-				router.push(result.url);
+				// Use window.location for reliable redirect
+				window.location.href = callbackUrl;
+			} else {
+				toast.error("Failed to sign in");
 			}
 		} catch (error) {
 			console.error('Sign-in error:', error)

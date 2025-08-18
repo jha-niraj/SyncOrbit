@@ -9,6 +9,7 @@ import { ArrowRight, CheckCircle, RefreshCw } from "lucide-react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { toast } from "sonner"
 import axios from "axios"
+import { signIn } from "next-auth/react"
 
 function VerifyContent() {
 	const [isLoading, setIsLoading] = useState(false)
@@ -116,7 +117,7 @@ function VerifyContent() {
 
 		try {
 			const otp = code.join("")
-			const response = await axios.post('/api/auth/verify-email', {
+			const response = await axios.post('/api/verify-email', {
 				email,
 				otp
 			})
@@ -125,11 +126,24 @@ function VerifyContent() {
 				setIsVerified(true)
 				toast.success("Email verified successfully!")
 
-                setTimeout(() => {
-                    router.push('/signin?verified=true')
-                }, 2000)
+				const signInResult = await signIn('credentials', {
+                    email: email,
+                    password: "verified", // Use "verified" to trigger special case in auth.ts
+					redirect: false
+				})
+
+				if (signInResult?.ok) {
+                    setTimeout(() => {
+                        router.push('/onboarding')
+                    }, 2000)
+                } else {
+                    setTimeout(() => {
+                        router.push('/signin?verified=true')
+                    }, 2000)
+                }
 			}
 		} catch (error) {
+			console.log(error);
 			if (axios.isAxiosError(error) && error.response) {
 				const errorMessage = error.response.data.message || 'Invalid verification code'
 				toast.error(errorMessage)

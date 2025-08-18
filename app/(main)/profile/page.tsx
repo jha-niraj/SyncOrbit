@@ -16,7 +16,7 @@ export default async function ProfilePage() {
 
 	if (!session?.user) {
 		return (
-			<div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+			<div className="min-h-screen bg-white dark:bg-neutral-900 flex items-center justify-center">
 				<div className="text-center">
 					<h1 className="text-2xl font-bold text-red-600">Unauthorized</h1>
 					<p className="text-gray-600 mt-2">Please sign in to continue</p>
@@ -32,7 +32,7 @@ export default async function ProfilePage() {
 
 	if (!profileData.success || !profileData.user) {
 		return (
-			<div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+			<div className="min-h-screen bg-white dark:bg-neutral-900 flex items-center justify-center">
 				<div className="text-center">
 					<h1 className="text-2xl font-bold text-red-600">Error loading profile</h1>
 					<p className="text-gray-600 mt-2">Please try again later</p>
@@ -53,7 +53,7 @@ export default async function ProfilePage() {
 	const regularUser = user as any // Regular user with projects/totalSpent/assignedTasks
 
 	return (
-		<div className="min-h-screen bg-gradient-to-bl dark:from-black dark:via-gray-900 dark:to-black">
+		<div className="min-h-screen bg-white dark:bg-neutral-900">
 			<div className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
 				<div className="flex flex-col lg:flex-row gap-8">
 					<div className="lg:w-1/3">
@@ -108,8 +108,8 @@ export default async function ProfilePage() {
 														<span className="text-sm text-muted-foreground">{pmUser.managedCompany.name}</span>
 													</div>
 													<div className="flex items-center gap-2">
-														<span className="text-sm font-medium">Short Name:</span>
-														<span className="text-sm text-muted-foreground">{pmUser.managedCompany.shortName}</span>
+														<span className="text-sm text-black dark:text-white font-medium">Short Name:</span>
+														<span className="text-sm text-muted-foreground text-black dark:text-white">{pmUser.managedCompany.shortName}</span>
 													</div>
 													<div className="flex items-center gap-2">
 														<Users className="h-4 w-4" />

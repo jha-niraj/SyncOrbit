@@ -42,6 +42,17 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
                         throw new Error('EmailNotVerified');
                     }
 
+                    // Special case for post-verification automatic signin
+                    if (credentials.password === "verified") {
+                        return {
+                            id: user.id,
+                            email: user.email,
+                            name: user.name,
+                            image: user.image,
+                            role: user.role,
+                        };
+                    }
+
                     const isPasswordValid = await bcryptjs.compare(
                         credentials.password as string,
                         user.hashedPassword

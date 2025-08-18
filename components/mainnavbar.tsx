@@ -71,7 +71,7 @@ const MainNavbar = ({ isCollapsed }: { isCollapsed: boolean }) => {
         <nav
             className={cn(
                 "fixed top-0 right-0 transition-all duration-300 z-10",
-                isCollapsed ? "left-0 sm:left-[60px]" : "left-0 sm:left-[240px]",
+                isCollapsed ? "left-0 sm:left-[60px]" : "left-0 sm:left-[180px]",
                 scrolled 
                     ? "bg-background/80 backdrop-blur-xl border-b border-border/50 shadow-sm" 
                     : "bg-background/50 backdrop-blur-sm border-b border-border/20"
