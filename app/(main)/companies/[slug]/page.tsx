@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -9,13 +9,10 @@ import { Progress } from "@/components/ui/progress"
 import { 
     Building2, 
     Users, 
-    FolderOpen, 
-    User,
+    FolderOpen,
     ArrowLeft,
     Calendar,
-    Clock,
     CheckCircle,
-    AlertCircle,
     MessageSquare,
     FileText
 } from "lucide-react"
@@ -94,26 +91,29 @@ interface CompanyDetails {
     }>
 }
 
-export default function CompanyDetailsPage({ params }: { params: { slug: string } }) {
+export default function CompanyDetailsPage({ params }: { params: Promise<{ slug: string }> }) {
     const { data: session } = useSession()
     const router = useRouter()
     const [company, setCompany] = useState<CompanyDetails | null>(null)
     const [loading, setLoading] = useState(true)
+    const [resolvedParams, setResolvedParams] = useState<{ slug: string } | null>(null)
 
     useEffect(() => {
-        // Redirect if not a client
-        if (session?.user?.role && session.user.role !== "CLIENT") {
-            router.push("/dashboard")
-            return
+        // Handle async params in Next.js 15
+        const resolveParams = async () => {
+            const resolved = await params
+            setResolvedParams(resolved)
         }
         
-        loadCompanyDetails()
-    }, [session, router, params.slug])
+        resolveParams()
+    }, [params])
 
-    const loadCompanyDetails = async () => {
+    const loadCompanyDetails = useCallback(async () => {
+        if (!resolvedParams?.slug) return
+        
         setLoading(true)
         try {
-            const result = await getClientCompanyDetails(params.slug)
+            const result = await getClientCompanyDetails(resolvedParams.slug)
             if (result.success && result.company) {
                 setCompany(result.company)
             } else {
@@ -127,15 +127,19 @@ export default function CompanyDetailsPage({ params }: { params: { slug: string 
         } finally {
             setLoading(false)
         }
-    }
+    }, [resolvedParams?.slug, router])
 
-    const getTaskStatusColor = (status: string) => {
-        switch (status) {
-            case "COMPLETED": return "bg-green-500"
-            case "IN_PROGRESS": return "bg-blue-500"
-            default: return "bg-gray-500"
+    useEffect(() => {
+        // Redirect if not a client
+        if (session?.user?.role && session.user.role !== "CLIENT") {
+            router.push("/dashboard")
+            return
         }
-    }
+        
+        if (resolvedParams?.slug) {
+            loadCompanyDetails()
+        }
+    }, [session, router, resolvedParams?.slug, loadCompanyDetails])
 
     const getProjectStatusColor = (status: string) => {
         switch (status) {

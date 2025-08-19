@@ -76,25 +76,25 @@ export async function getClientCompanies() {
         const projectCompanies = userProjects
             .map(project => project.user.managedCompany)
             .filter(company => company !== null)
-            .reduce((unique, company) => {
-                if (!unique.find(c => c.id === company.id)) {
+            .reduce((unique: any[], company) => {
+                if (!unique.find((c: any) => c.id === company.id)) {
                     unique.push(company)
                 }
                 return unique
-            }, [] as any[])
+            }, [])
 
         // Combine and deduplicate companies
         const allCompanies = [...memberCompanies, ...projectCompanies]
-            .reduce((unique, company) => {
-                if (!unique.find(c => c.id === company.id)) {
+            .reduce((unique: any[], company) => {
+                if (!unique.find((c: any) => c.id === company.id)) {
                     unique.push(company)
                 }
                 return unique
-            }, [] as any[])
+            }, [])
 
         // Get project counts for each company
         const companiesWithProjectCounts = await Promise.all(
-            allCompanies.map(async (company) => {
+            allCompanies.map(async (company: any) => {
                 const projectCount = await prisma.project.count({
                     where: {
                         userId: session.user.id,

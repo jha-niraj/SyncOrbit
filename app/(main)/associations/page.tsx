@@ -10,7 +10,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { 
     Building2, 
     Users, 
@@ -35,6 +35,47 @@ import {
     removeUserFromProject
 } from "@/actions/(productmanager)/associations.action"
 
+interface Company {
+    id: string
+    name: string
+    shortName: string
+    logo: string | null
+    productManager?: {
+        id: string
+        name: string | null
+        email: string | null
+    }
+    users?: User[]
+}
+
+interface User {
+    id: string
+    name: string | null
+    email: string | null
+    role: string
+}
+
+interface Project {
+    id: string
+    title: string
+    slug: string
+    status: string
+    members?: ProjectMember[]
+}
+
+interface ProjectMember {
+    id: string
+    role: string
+    user: User
+}
+
+interface ProjectMembership {
+    id: string
+    role: string
+    joinedAt: string
+    project: Project
+}
+
 interface UserAssociations {
     user: {
         id: string
@@ -42,10 +83,10 @@ interface UserAssociations {
         email: string | null
         role: string
     }
-    memberOfCompany: any
-    managedCompany: any
-    projectMemberships: any[]
-    ownedProjects: any[]
+    memberOfCompany: Company | null
+    managedCompany: Company | null
+    projectMemberships: ProjectMembership[]
+    ownedProjects: Project[]
 }
 
 interface Invitation {
@@ -89,7 +130,7 @@ export default function AssociationsPage() {
             ])
 
             if (associationsResult.success) {
-                setAssociations(associationsResult.data as UserAssociations)
+                setAssociations(associationsResult.data as unknown as UserAssociations)
             }
 
             if (invitationsResult.success) {
@@ -336,7 +377,7 @@ export default function AssociationsPage() {
                                         <div>
                                             <h5 className="font-medium mb-2">Team Members ({associations.managedCompany.users?.length || 0})</h5>
                                             <div className="space-y-2">
-                                                {associations.managedCompany.users?.map((user: any) => (
+                                                {associations.managedCompany.users?.map((user: User) => (
                                                     <div key={user.id} className="flex items-center justify-between p-2 border rounded">
                                                         <div className="flex items-center gap-2">
                                                             <Avatar className="h-8 w-8">
@@ -385,15 +426,9 @@ export default function AssociationsPage() {
                                             <div key={membership.id} className="p-2 border rounded">
                                                 <div className="flex items-center justify-between">
                                                     <div>
-                                                        <h5 className="font-medium">{membership.project.title}</h5>
-                                                        <p className="text-sm text-muted-foreground">
-                                                            Owner: {membership.project.user.name}
-                                                        </p>
-                                                        {membership.project.user.company && (
-                                                            <Badge variant="outline" className="text-xs">
-                                                                {membership.project.user.company.name}
-                                                            </Badge>
-                                                        )}
+                                                        <h5 className="font-medium">{membership.project.title}</h5>                                        <p className="text-sm text-muted-foreground">
+                                            Project ID: {membership.project.id}
+                                        </p>
                                                     </div>
                                                     <Badge>{membership.project.status}</Badge>
                                                 </div>
@@ -427,7 +462,7 @@ export default function AssociationsPage() {
                                                     <h6 className="text-sm font-medium mb-1">
                                                         Team Members ({project.members?.length || 0})
                                                     </h6>
-                                                    {project.members?.map((member: any) => (
+                                                    {project.members?.map((member: ProjectMember) => (
                                                         <div key={member.id} className="flex items-center justify-between p-1 text-sm">
                                                             <div className="flex items-center gap-2">
                                                                 <Avatar className="h-6 w-6">

@@ -8,9 +8,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { 
     Building2, 
     Users, 
-    FolderOpen, 
-    User,
-    ExternalLink,
+    FolderOpen,
     ArrowRight
 } from "lucide-react"
 import { toast } from "sonner"

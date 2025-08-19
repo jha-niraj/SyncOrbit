@@ -1,129 +1,153 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 import { 
     Users, 
     Search, 
     Filter, 
     Mail,
     Phone,
-    MapPin,
-    Star,
+    Calendar,
     Award,
     Activity,
     MoreVertical,
-    UserPlus
+    UserPlus,
+    Eye,
+    CheckCircle,
+    Clock
 } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { useSession } from "next-auth/react"
 import { formatDistanceToNow } from "date-fns"
-
-// Mock data - replace with actual data fetching
-const mockTeamMembers = [
-    {
-        id: "1",
-        name: "Alice Johnson",
-        email: "alice@projectcentral.com",
-        phone: "+1 (555) 123-4567",
-        role: "DEVELOPER",
-        specialization: "Frontend Developer",
-        image: "/placeholder.svg",
-        location: "San Francisco, CA",
-        joinedAt: new Date("2023-01-15"),
-        status: "ACTIVE",
-        skills: ["React", "TypeScript", "Tailwind CSS", "Next.js"],
-        projectsCount: 12,
-        tasksCompleted: 156,
-        rating: 4.8,
-        lastActive: new Date(Date.now() - 1000 * 60 * 30), // 30 minutes ago
-        bio: "Passionate frontend developer with 5+ years of experience in modern web technologies.",
-        projects: [
-            { id: "1", name: "E-commerce Platform", role: "Lead Frontend" },
-            { id: "2", name: "Mobile Banking App", role: "Frontend Developer" },
-            { id: "3", name: "CRM System", role: "UI Developer" }
-        ]
-    },
-    {
-        id: "2",
-        name: "Bob Chen",
-        email: "bob@projectcentral.com",
-        phone: "+1 (555) 234-5678",
-        role: "DEVELOPER",
-        specialization: "Backend Developer",
-        image: "/placeholder.svg",
-        location: "Seattle, WA",
-        joinedAt: new Date("2023-03-20"),
-        status: "ACTIVE",
-        skills: ["Node.js", "Python", "PostgreSQL", "AWS"],
-        projectsCount: 8,
-        tasksCompleted: 98,
-        rating: 4.9,
-        lastActive: new Date(Date.now() - 1000 * 60 * 60 * 2), // 2 hours ago
-        bio: "Backend specialist focused on scalable architectures and cloud solutions.",
-        projects: [
-            { id: "1", name: "E-commerce Platform", role: "Backend Lead" },
-            { id: "4", name: "Analytics Dashboard", role: "Backend Developer" }
-        ]
-    },
-    {
-        id: "3",
-        name: "Carol Martinez",
-        email: "carol@projectcentral.com",
-        phone: "+1 (555) 345-6789",
-        role: "DEVELOPER",
-        specialization: "Full Stack Developer",
-        image: "/placeholder.svg",
-        location: "Austin, TX",
-        joinedAt: new Date("2022-11-10"),
-        status: "ACTIVE",
-        skills: ["React", "Node.js", "MongoDB", "Docker"],
-        projectsCount: 15,
-        tasksCompleted: 203,
-        rating: 4.7,
-        lastActive: new Date(Date.now() - 1000 * 60 * 15), // 15 minutes ago
-        bio: "Full-stack developer with expertise in modern web applications and DevOps.",
-        projects: [
-            { id: "2", name: "Mobile Banking App", role: "Full Stack Developer" },
-            { id: "5", name: "Content Management", role: "Lead Developer" }
-        ]
-    },
-    {
-        id: "4",
-        name: "David Wilson",
-        email: "david@projectcentral.com",
-        phone: "+1 (555) 456-7890",
-        role: "DEVELOPER",
-        specialization: "DevOps Engineer",
-        image: "/placeholder.svg",
-        location: "New York, NY",
-        joinedAt: new Date("2023-02-05"),
-        status: "AWAY",
-        skills: ["AWS", "Docker", "Kubernetes", "CI/CD"],
-        projectsCount: 6,
-        tasksCompleted: 74,
-        rating: 4.6,
-        lastActive: new Date(Date.now() - 1000 * 60 * 60 * 24), // 1 day ago
-        bio: "DevOps engineer specializing in cloud infrastructure and automation.",
-        projects: [
-            { id: "1", name: "E-commerce Platform", role: "DevOps" },
-            { id: "3", name: "CRM System", role: "Infrastructure" }
-        ]
-    }
-]
+import { getTeamMembers, getDeveloperDetails } from "@/actions/(productmanager)/team.action"
+import { useToast } from "@/hooks/use-toast"
 
 export default function TeamPage() {
     const { data: session } = useSession()
-    const [teamMembers, setTeamMembers] = useState(mockTeamMembers)
+    const { toast } = useToast()
+    const [teamMembers, setTeamMembers] = useState<TeamMember[]>([])
     const [searchTerm, setSearchTerm] = useState("")
     const [roleFilter, setRoleFilter] = useState<string>("all")
     const [statusFilter, setStatusFilter] = useState<string>("all")
-    const [isLoading, setIsLoading] = useState(false)
+    const [isLoading, setIsLoading] = useState(true)
+    const [developerDetails, setDeveloperDetails] = useState<DeveloperDetails | null>(null)
+    const [loadingDetails, setLoadingDetails] = useState(false)
+
+    // Types
+    interface TeamMember {
+        id: string
+        name: string
+        email: string
+        image?: string
+        role: string
+        bio?: string
+        skills?: string[]
+        createdAt: string
+        stats?: {
+            projectCount: number
+            completedTasks: number
+            inProgressTasks: number
+            pendingTasks: number
+            totalTasks: number
+            completionRate: number
+        }
+        projects?: Project[]
+        tasks?: Task[]
+    }
+
+    interface DeveloperDetails extends TeamMember {
+        stats?: {
+            projectCount: number
+            completedTasks: number
+            inProgressTasks: number
+            pendingTasks: number
+            totalTasks: number
+            completionRate: number
+        }
+    }
+
+    interface Project {
+        id: string
+        title: string
+        slug: string
+        status: string
+    }
+
+    interface Task {
+        id: string
+        title: string
+        status: string
+        project: Project
+    }
+
+    // Load team members on component mount
+    const loadTeamMembers = useCallback(async () => {
+        if (session?.user?.role !== 'PRODUCTMANAGER') {
+            setIsLoading(false)
+            return
+        }
+
+        try {
+            setIsLoading(true)
+            const result = await getTeamMembers()
+            
+            if (result.success) {
+                setTeamMembers(result.teamMembers as TeamMember[])
+            } else {
+                toast({
+                    title: "Error",
+                    description: result.error || "Failed to load team members",
+                    variant: "destructive"
+                })
+            }
+        } catch (error) {
+            console.error("Error loading team members:", error)
+            toast({
+                title: "Error",
+                description: "Failed to load team members",
+                variant: "destructive"
+            })
+        } finally {
+            setIsLoading(false)
+        }
+    }, [session?.user?.role, toast])
+
+    useEffect(() => {
+        loadTeamMembers()
+    }, [loadTeamMembers])
+
+    const handleViewDeveloper = async (developerId: string) => {
+        try {
+            setLoadingDetails(true)
+            const result = await getDeveloperDetails(developerId)
+            
+            if (result.success) {
+                setDeveloperDetails(result.developer as unknown as DeveloperDetails)
+            } else {
+                toast({
+                    title: "Error",
+                    description: result.error || "Failed to load developer details",
+                    variant: "destructive"
+                })
+            }
+        } catch (error) {
+            console.error("Error loading developer details:", error)
+            toast({
+                title: "Error",
+                description: "Failed to load developer details",
+                variant: "destructive"
+            })
+        } finally {
+            setLoadingDetails(false)
+        }
+    }
 
     // Check if user has access to team page
     if (session?.user?.role === 'CLIENT') {
@@ -144,19 +168,6 @@ export default function TeamPage() {
         )
     }
 
-    const getStatusColor = (status: string) => {
-        switch (status) {
-            case 'ACTIVE':
-                return "bg-green-50 text-green-700 border-green-200 dark:bg-green-900/20 dark:text-green-300 dark:border-green-800"
-            case 'AWAY':
-                return "bg-yellow-50 text-yellow-700 border-yellow-200 dark:bg-yellow-900/20 dark:text-yellow-300 dark:border-yellow-800"
-            case 'OFFLINE':
-                return "bg-gray-50 text-gray-700 border-gray-200 dark:bg-gray-900/20 dark:text-gray-300 dark:border-gray-800"
-            default:
-                return "bg-gray-50 text-gray-700 border-gray-200 dark:bg-gray-900/20 dark:text-gray-300 dark:border-gray-800"
-        }
-    }
-
     const getRoleColor = (role: string) => {
         switch (role) {
             case 'PRODUCTMANAGER':
@@ -171,33 +182,17 @@ export default function TeamPage() {
     }
 
     const filteredMembers = teamMembers.filter(member => {
-        const matchesSearch = member.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                            member.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                            member.specialization.toLowerCase().includes(searchTerm.toLowerCase())
+        const matchesSearch = member.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                            member.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                            member.bio?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                            member.skills?.some((skill: string) => skill.toLowerCase().includes(searchTerm.toLowerCase()))
         const matchesRole = roleFilter === "all" || member.role === roleFilter
-        const matchesStatus = statusFilter === "all" || member.status === statusFilter
+        // For now, assume all members are active since we don't have status in real data
+        const matchesStatus = statusFilter === "all" || statusFilter === "ACTIVE"
         return matchesSearch && matchesRole && matchesStatus
     })
 
-    const renderStarRating = (rating: number) => {
-        return (
-            <div className="flex items-center gap-1">
-                {[1, 2, 3, 4, 5].map((star) => (
-                    <Star
-                        key={star}
-                        className={`h-3 w-3 ${
-                            star <= rating 
-                                ? "fill-yellow-400 text-yellow-400" 
-                                : "text-muted-foreground"
-                        }`}
-                    />
-                ))}
-                <span className="text-xs text-muted-foreground ml-1">{rating}</span>
-            </div>
-        )
-    }
-
-    const renderMemberCard = (member: any) => {
+    const renderMemberCard = (member: TeamMember) => {
         return (
             <motion.div
                 key={member.id}
@@ -211,17 +206,17 @@ export default function TeamPage() {
                         <div className="flex items-start justify-between">
                             <div className="flex items-start gap-4 flex-1">
                                 <Avatar className="h-16 w-16 border-2 border-border/50">
-                                    <AvatarImage src={member.image} alt={member.name} />
+                                    <AvatarImage src={member.image || ""} alt={member.name || ""} />
                                     <AvatarFallback className="text-lg font-semibold">
-                                        {member.name.split(' ').map((n: string) => n[0]).join('')}
+                                        {member.name?.split(' ').map((n: string) => n[0]).join('') || "??"}
                                     </AvatarFallback>
                                 </Avatar>
                                 
                                 <div className="space-y-2 flex-1 min-w-0">
                                     <div className="flex items-center gap-2">
-                                        <h3 className="font-semibold text-foreground truncate">{member.name}</h3>
-                                        <Badge className={`${getStatusColor(member.status)} border text-xs`}>
-                                            {member.status}
+                                        <h3 className="font-semibold text-foreground truncate">{member.name || "Unknown User"}</h3>
+                                        <Badge className="bg-green-50 text-green-700 border-green-200 dark:bg-green-900/20 dark:text-green-300 dark:border-green-800 border text-xs">
+                                            ACTIVE
                                         </Badge>
                                     </div>
                                     
@@ -229,67 +224,175 @@ export default function TeamPage() {
                                         <Badge className={`${getRoleColor(member.role)} border text-xs w-fit`}>
                                             {member.role}
                                         </Badge>
-                                        <p className="text-sm text-muted-foreground">{member.specialization}</p>
+                                        <p className="text-sm text-muted-foreground">{member.role === 'DEVELOPER' ? 'Developer' : member.role === 'CLIENT' ? 'Client' : 'Product Manager'}</p>
                                         <div className="flex items-center gap-1">
-                                            <MapPin className="h-3 w-3 text-muted-foreground" />
-                                            <span className="text-xs text-muted-foreground">{member.location}</span>
+                                            <Calendar className="h-3 w-3 text-muted-foreground" />
+                                            <span className="text-xs text-muted-foreground">
+                                                Joined {formatDistanceToNow(new Date(member.createdAt))} ago
+                                            </span>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                             
-                            <Button variant="ghost" size="sm" className="opacity-0 group-hover:opacity-100 transition-opacity">
-                                <MoreVertical className="h-4 w-4" />
-                            </Button>
+                            <div className="flex gap-2">
+                                {member.role === 'DEVELOPER' && (
+                                    <Sheet>
+                                        <SheetTrigger asChild>
+                                            <Button 
+                                                variant="ghost" 
+                                                size="sm"
+                                                onClick={() => handleViewDeveloper(member.id)}
+                                                className="opacity-0 group-hover:opacity-100 transition-opacity"
+                                            >
+                                                <Eye className="h-4 w-4" />
+                                            </Button>
+                                        </SheetTrigger>
+                                        <SheetContent className="w-[400px] sm:w-[540px]">
+                                            <SheetHeader>
+                                                <SheetTitle>Developer Details</SheetTitle>
+                                                <SheetDescription>
+                                                    Detailed information about {member.name}
+                                                </SheetDescription>
+                                            </SheetHeader>
+                                            {loadingDetails ? (
+                                                <div className="flex items-center justify-center py-8">
+                                                    <Activity className="h-6 w-6 animate-spin" />
+                                                </div>
+                                            ) : developerDetails ? (
+                                                <div className="mt-6 space-y-6">
+                                                    <div className="flex items-center gap-4">
+                                                        <Avatar className="h-20 w-20">
+                                                            <AvatarImage src={developerDetails.image || ""} alt={developerDetails.name || ""} />
+                                                            <AvatarFallback className="text-xl">
+                                                                {developerDetails.name?.split(' ').map((n: string) => n[0]).join('') || "??"}
+                                                            </AvatarFallback>
+                                                        </Avatar>
+                                                        <div>
+                                                            <h3 className="text-xl font-semibold">{developerDetails.name}</h3>
+                                                            <p className="text-muted-foreground">{developerDetails.email}</p>
+                                                            <Badge className={`${getRoleColor(developerDetails.role)} border text-xs mt-1`}>
+                                                                {developerDetails.role}
+                                                            </Badge>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    {developerDetails.bio && (
+                                                        <div>
+                                                            <h4 className="font-medium mb-2">Bio</h4>
+                                                            <p className="text-sm text-muted-foreground">{developerDetails.bio}</p>
+                                                        </div>
+                                                    )}
+
+                                                    {developerDetails?.skills && developerDetails?.skills?.length > 0 && (
+                                                        <div>
+                                                            <h4 className="font-medium mb-2">Skills</h4>
+                                                            <div className="flex flex-wrap gap-2">
+                                                                {developerDetails?.skills?.map((skill: string) => (
+                                                                    <Badge key={skill} variant="outline">{skill}</Badge>
+                                                                ))}
+                                                            </div>
+                                                        </div>
+                                                    )}
+
+                                                    <div>
+                                                        <h4 className="font-medium mb-2">Statistics</h4>
+                                                        <div className="grid grid-cols-2 gap-4">
+                                                            <div className="text-center p-3 bg-muted rounded-lg">
+                                                                <div className="text-2xl font-bold text-blue-600">{developerDetails.stats?.projectCount || 0}</div>
+                                                                <div className="text-xs text-muted-foreground">Projects</div>
+                                                            </div>
+                                                            <div className="text-center p-3 bg-muted rounded-lg">
+                                                                <div className="text-2xl font-bold text-green-600">{developerDetails.stats?.completedTasks || 0}</div>
+                                                                <div className="text-xs text-muted-foreground">Completed Tasks</div>
+                                                            </div>
+                                                            <div className="text-center p-3 bg-muted rounded-lg">
+                                                                <div className="text-2xl font-bold text-orange-600">{developerDetails.stats?.inProgressTasks || 0}</div>
+                                                                <div className="text-xs text-muted-foreground">In Progress</div>
+                                                            </div>
+                                                            <div className="text-center p-3 bg-muted rounded-lg">
+                                                                <div className="text-2xl font-bold text-gray-600">{developerDetails.stats?.pendingTasks || 0}</div>
+                                                                <div className="text-xs text-muted-foreground">Pending</div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    {developerDetails?.projects && developerDetails?.projects?.length > 0 && (
+                                                        <div>
+                                                            <h4 className="font-medium mb-2">Current Projects</h4>
+                                                            <div className="space-y-2">
+                                                                {developerDetails?.projects.map((project: Project) => (
+                                                                    <div key={project.id} className="flex items-center justify-between p-2 border rounded">
+                                                                        <span className="font-medium">{project.title}</span>
+                                                                        <Badge variant="outline">{project.status}</Badge>
+                                                                    </div>
+                                                                ))}
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            ) : null}
+                                        </SheetContent>
+                                    </Sheet>
+                                )}
+                                <Button variant="ghost" size="sm" className="opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <MoreVertical className="h-4 w-4" />
+                                </Button>
+                            </div>
                         </div>
                     </CardHeader>
                     
                     <CardContent className="space-y-4">
                         {/* Bio */}
-                        <p className="text-sm text-muted-foreground line-clamp-2">
-                            {member.bio}
-                        </p>
+                        {member.bio && (
+                            <p className="text-sm text-muted-foreground line-clamp-2">
+                                {member.bio}
+                            </p>
+                        )}
 
                         {/* Skills */}
-                        <div className="space-y-2">
-                            <span className="text-sm font-medium text-foreground">Skills:</span>
-                            <div className="flex flex-wrap gap-1">
-                                {member.skills.slice(0, 4).map((skill: string) => (
-                                    <Badge key={skill} variant="outline" className="text-xs">
-                                        {skill}
-                                    </Badge>
-                                ))}
-                                {member.skills.length > 4 && (
-                                    <Badge variant="outline" className="text-xs">
-                                        +{member.skills.length - 4} more
-                                    </Badge>
-                                )}
+                        {member.skills && member.skills.length > 0 && (
+                            <div className="space-y-2">
+                                <span className="text-sm font-medium text-foreground">Skills:</span>
+                                <div className="flex flex-wrap gap-1">
+                                    {member.skills.slice(0, 4).map((skill: string) => (
+                                        <Badge key={skill} variant="outline" className="text-xs">
+                                            {skill}
+                                        </Badge>
+                                    ))}
+                                    {member.skills.length > 4 && (
+                                        <Badge variant="outline" className="text-xs">
+                                            +{member.skills.length - 4} more
+                                        </Badge>
+                                    )}
+                                </div>
                             </div>
-                        </div>
+                        )}
 
                         {/* Stats */}
                         <div className="grid grid-cols-3 gap-4 pt-2 border-t border-border/50">
                             <div className="text-center">
                                 <div className="flex items-center justify-center gap-1 mb-1">
                                     <Award className="h-3 w-3 text-primary" />
-                                    <span className="text-sm font-semibold text-foreground">{member.projectsCount}</span>
+                                    <span className="text-sm font-semibold text-foreground">{member.stats?.projectCount || 0}</span>
                                 </div>
                                 <span className="text-xs text-muted-foreground">Projects</span>
                             </div>
                             
                             <div className="text-center">
                                 <div className="flex items-center justify-center gap-1 mb-1">
-                                    <Activity className="h-3 w-3 text-primary" />
-                                    <span className="text-sm font-semibold text-foreground">{member.tasksCompleted}</span>
+                                    <CheckCircle className="h-3 w-3 text-green-600" />
+                                    <span className="text-sm font-semibold text-foreground">{member.stats?.completedTasks || 0}</span>
                                 </div>
-                                <span className="text-xs text-muted-foreground">Tasks</span>
+                                <span className="text-xs text-muted-foreground">Completed</span>
                             </div>
                             
                             <div className="text-center">
-                                <div className="flex items-center justify-center mb-1">
-                                    {renderStarRating(member.rating)}
+                                <div className="flex items-center justify-center gap-1 mb-1">
+                                    <Clock className="h-3 w-3 text-orange-600" />
+                                    <span className="text-sm font-semibold text-foreground">{member.stats?.inProgressTasks || 0}</span>
                                 </div>
-                                <span className="text-xs text-muted-foreground">Rating</span>
+                                <span className="text-xs text-muted-foreground">In Progress</span>
                             </div>
                         </div>
 
@@ -308,12 +411,30 @@ export default function TeamPage() {
                         {/* Last Active */}
                         <div className="text-center pt-2 border-t border-border/50">
                             <span className="text-xs text-muted-foreground">
-                                Last active {formatDistanceToNow(member.lastActive, { addSuffix: true })}
+                                Member since {formatDistanceToNow(new Date(member.createdAt), { addSuffix: true })}
                             </span>
                         </div>
                     </CardContent>
                 </Card>
             </motion.div>
+        )
+    }
+
+    if (isLoading) {
+        return (
+            <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 flex items-center justify-center">
+                <Card className="max-w-md">
+                    <CardHeader className="text-center">
+                        <Activity className="h-12 w-12 text-muted-foreground mx-auto mb-4 animate-spin" />
+                        <CardTitle>Loading Team Members</CardTitle>
+                    </CardHeader>
+                    <CardContent className="text-center">
+                        <p className="text-muted-foreground">
+                            Please wait while we fetch your team data...
+                        </p>
+                    </CardContent>
+                </Card>
+            </div>
         )
     }
 
@@ -361,9 +482,9 @@ export default function TeamPage() {
                                 </div>
                                 <div>
                                     <p className="text-2xl font-bold text-foreground">
-                                        {teamMembers.filter(m => m.status === 'ACTIVE').length}
+                                        {teamMembers.filter(m => m.role === 'DEVELOPER').length}
                                     </p>
-                                    <p className="text-sm text-muted-foreground">Active Now</p>
+                                    <p className="text-sm text-muted-foreground">Developers</p>
                                 </div>
                             </div>
                         </CardContent>
@@ -377,7 +498,7 @@ export default function TeamPage() {
                                 </div>
                                 <div>
                                     <p className="text-2xl font-bold text-foreground">
-                                        {teamMembers.reduce((sum, m) => sum + m.projectsCount, 0)}
+                                        {teamMembers.reduce((sum, m) => sum + (m.stats?.projectCount || 0), 0)}
                                     </p>
                                     <p className="text-sm text-muted-foreground">Total Projects</p>
                                 </div>
@@ -389,13 +510,13 @@ export default function TeamPage() {
                         <CardContent className="p-4">
                             <div className="flex items-center gap-3">
                                 <div className="w-10 h-10 bg-yellow-500/10 rounded-lg flex items-center justify-center">
-                                    <Star className="h-5 w-5 text-yellow-500" />
+                                    <CheckCircle className="h-5 w-5 text-yellow-500" />
                                 </div>
                                 <div>
                                     <p className="text-2xl font-bold text-foreground">
-                                        {(teamMembers.reduce((sum, m) => sum + m.rating, 0) / teamMembers.length).toFixed(1)}
+                                        {teamMembers.reduce((sum, m) => sum + (m.stats?.completedTasks || 0), 0)}
                                     </p>
-                                    <p className="text-sm text-muted-foreground">Avg Rating</p>
+                                    <p className="text-sm text-muted-foreground">Completed Tasks</p>
                                 </div>
                             </div>
                         </CardContent>

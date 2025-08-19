@@ -23,76 +23,84 @@ import {
 import Link from "next/link"
 import { motion } from "framer-motion"
 import { useSession } from "next-auth/react"
-import { ProjectStatus, TaskStatus } from "@prisma/client"
+import { Status, TaskStatus } from "@prisma/client"
 import { formatCurrency, getCurrencySymbol } from "@/store/useProjectStore"
+import { getUserProjects } from "@/actions/(client)/projects.action"
+import { toast } from "sonner"
 
-// Mock data - replace with actual data fetching
-const mockProjects = [
-    {
-        id: "1",
-        title: "E-commerce Platform",
-        description: "A modern e-commerce platform with advanced features for online retail",
-        slug: "ecommerce-platform",
-        status: ProjectStatus.ACTIVE,
-        budget: 15000,
-        paidAmount: 4500,
-        currency: "USD",
-        startDate: new Date("2024-01-15"),
-        endDate: new Date("2024-06-15"),
-        client: {
-            id: "1",
-            name: "John Doe",
-            email: "john@example.com",
-            image: "/placeholder.svg"
-        },
-        tasks: [
-            { status: TaskStatus.COMPLETED },
-            { status: TaskStatus.COMPLETED },
-            { status: TaskStatus.IN_PROGRESS },
-            { status: TaskStatus.YET_TO_START },
-            { status: TaskStatus.YET_TO_START }
-        ],
-        teamMembers: [
-            { id: "1", name: "Alice Dev", image: "/placeholder.svg" },
-            { id: "2", name: "Bob Designer", image: "/placeholder.svg" }
-        ]
-    },
-    {
-        id: "2",
-        title: "Mobile Banking App",
-        description: "Secure mobile banking application with biometric authentication",
-        slug: "mobile-banking-app",
-        status: ProjectStatus.ACTIVE,
-        budget: 25000,
-        paidAmount: 7500,
-        currency: "USD",
-        startDate: new Date("2024-02-01"),
-        endDate: new Date("2024-08-01"),
-        client: {
-            id: "2",
-            name: "Jane Smith",
-            email: "jane@example.com",
-            image: "/placeholder.svg"
-        },
-        tasks: [
-            { status: TaskStatus.COMPLETED },
-            { status: TaskStatus.IN_PROGRESS },
-            { status: TaskStatus.IN_PROGRESS },
-            { status: TaskStatus.YET_TO_START }
-        ],
-        teamMembers: [
-            { id: "3", name: "Charlie Backend", image: "/placeholder.svg" },
-            { id: "4", name: "Dana Frontend", image: "/placeholder.svg" }
-        ]
+interface ProjectData {
+    id: string
+    title: string
+    description: string | null
+    slug: string
+    status: Status
+    budget: number
+    paidAmount: number
+    currency: string
+    startDate: Date
+    endDate: Date | null
+    user: {
+        id: string
+        name: string | null
+        email: string | null
+        image: string | null
+        managedCompany?: {
+            name: string
+            shortName: string
+        } | null
     }
-]
+    tasks: Array<{
+        id: string
+        status: TaskStatus
+        assignedDeveloper?: {
+            id: string
+            name: string | null
+            image: string | null
+        } | null
+    }>
+    members: Array<{
+        user: {
+            id: string
+            name: string | null
+            image: string | null
+            role: string
+        }
+    }>
+    _count: {
+        tasks: number
+        feedbacks: number
+        messages: number
+    }
+}
 
 export default function ProjectsPage() {
     const { data: session } = useSession()
-    const [projects, setProjects] = useState(mockProjects)
+    const [projects, setProjects] = useState<ProjectData[]>([])
     const [searchTerm, setSearchTerm] = useState("")
     const [statusFilter, setStatusFilter] = useState<string>("all")
-    const [isLoading, setIsLoading] = useState(false)
+    const [isLoading, setIsLoading] = useState(true)
+
+    useEffect(() => {
+        loadProjects()
+    }, [])
+
+    const loadProjects = async () => {
+        try {
+            setIsLoading(true)
+            const result = await getUserProjects()
+            
+            if (result.success) {
+                setProjects(result.projects)
+            } else {
+                toast.error(result.error || "Failed to load projects")
+            }
+        } catch (error) {
+            console.error("Load projects error:", error)
+            toast.error("Failed to load projects")
+        } finally {
+            setIsLoading(false)
+        }
+    }
 
     // Calculate project progress
     const getProjectProgress = (tasks: any[]) => {
@@ -107,15 +115,15 @@ export default function ProjectsPage() {
     }
 
     // Get status color
-    const getStatusColor = (status: ProjectStatus) => {
+    const getStatusColor = (status: Status) => {
         switch (status) {
-            case ProjectStatus.ACTIVE:
-                return "bg-green-50 text-green-700 border-green-200 dark:bg-green-900/20 dark:text-green-300 dark:border-green-800"
-            case ProjectStatus.PENDING:
-                return "bg-yellow-50 text-yellow-700 border-yellow-200 dark:bg-yellow-900/20 dark:text-yellow-300 dark:border-yellow-800"
-            case ProjectStatus.COMPLETED:
+            case Status.IN_PROGRESS:
                 return "bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-800"
-            case ProjectStatus.ON_HOLD:
+            case Status.COMPLETED:
+                return "bg-green-50 text-green-700 border-green-200 dark:bg-green-900/20 dark:text-green-300 dark:border-green-800"
+            case Status.ON_HOLD:
+                return "bg-yellow-50 text-yellow-700 border-yellow-200 dark:bg-yellow-900/20 dark:text-yellow-300 dark:border-yellow-800"
+            case Status.CANCELLED:
                 return "bg-red-50 text-red-700 border-red-200 dark:bg-red-900/20 dark:text-red-300 dark:border-red-800"
             default:
                 return "bg-gray-50 text-gray-700 border-gray-200 dark:bg-gray-900/20 dark:text-gray-300 dark:border-gray-800"
@@ -125,14 +133,21 @@ export default function ProjectsPage() {
     // Filter projects
     const filteredProjects = projects.filter(project => {
         const matchesSearch = project.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                            project.description.toLowerCase().includes(searchTerm.toLowerCase())
+                            (project.description && project.description.toLowerCase().includes(searchTerm.toLowerCase()))
         const matchesStatus = statusFilter === "all" || project.status === statusFilter
         return matchesSearch && matchesStatus
     })
 
-    const renderProjectCard = (project: any) => {
+    const renderProjectCard = (project: ProjectData) => {
         const progress = getProjectProgress(project.tasks)
         const paymentProgress = getPaymentProgress(project.paidAmount, project.budget)
+        
+        // Get team members from project members
+        const teamMembers = project.members.map(member => ({
+            id: member.user.id,
+            name: member.user.name || "Unknown",
+            image: member.user.image || "/placeholder.svg"
+        }))
         
         return (
             <motion.div
@@ -155,7 +170,7 @@ export default function ProjectsPage() {
                                     </Badge>
                                 </div>
                                 <CardDescription className="text-sm text-muted-foreground line-clamp-2">
-                                    {project.description}
+                                    {project.description || "No description available"}
                                 </CardDescription>
                             </div>
                             <Button variant="ghost" size="sm" className="opacity-0 group-hover:opacity-100 transition-opacity">
@@ -189,7 +204,7 @@ export default function ProjectsPage() {
                                 <div className="min-w-0 flex-1">
                                     <p className="text-xs text-muted-foreground">Budget</p>
                                     <p className="text-sm font-semibold text-foreground truncate">
-                                        {getCurrencySymbol(project.currency)}{formatCurrency(project.budget)}
+                                        {getCurrencySymbol(project.currency)}{formatCurrency(project.budget, project.currency)}
                                     </p>
                                 </div>
                             </div>
@@ -201,7 +216,7 @@ export default function ProjectsPage() {
                                 <div className="min-w-0 flex-1">
                                     <p className="text-xs text-muted-foreground">Team</p>
                                     <p className="text-sm font-semibold text-foreground">
-                                        {project.teamMembers.length} members
+                                        {teamMembers.length} members
                                     </p>
                                 </div>
                             </div>
@@ -212,7 +227,7 @@ export default function ProjectsPage() {
                             <div className="flex items-center gap-2">
                                 <span className="text-sm font-medium text-foreground">Team:</span>
                                 <div className="flex -space-x-2">
-                                    {project.teamMembers.slice(0, 3).map((member: any, index: number) => (
+                                    {teamMembers.slice(0, 3).map((member, index: number) => (
                                         <Avatar key={member.id} className="h-6 w-6 border-2 border-background">
                                             <AvatarImage src={member.image} alt={member.name} />
                                             <AvatarFallback className="text-xs">
@@ -220,10 +235,10 @@ export default function ProjectsPage() {
                                             </AvatarFallback>
                                         </Avatar>
                                     ))}
-                                    {project.teamMembers.length > 3 && (
+                                    {teamMembers.length > 3 && (
                                         <div className="h-6 w-6 bg-muted border-2 border-background rounded-full flex items-center justify-center">
                                             <span className="text-xs text-muted-foreground">
-                                                +{project.teamMembers.length - 3}
+                                                +{teamMembers.length - 3}
                                             </span>
                                         </div>
                                     )}
@@ -300,10 +315,10 @@ export default function ProjectsPage() {
                         </SelectTrigger>
                         <SelectContent>
                             <SelectItem value="all">All Projects</SelectItem>
-                            <SelectItem value="ACTIVE">Active</SelectItem>
-                            <SelectItem value="PENDING">Pending</SelectItem>
+                            <SelectItem value="IN_PROGRESS">In Progress</SelectItem>
                             <SelectItem value="COMPLETED">Completed</SelectItem>
                             <SelectItem value="ON_HOLD">On Hold</SelectItem>
+                            <SelectItem value="CANCELLED">Cancelled</SelectItem>
                         </SelectContent>
                     </Select>
                 </div>
