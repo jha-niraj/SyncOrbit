@@ -16,6 +16,7 @@ import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { getClientCompanies } from "@/actions/(client)/companies.action"
+import Image from "next/image"
 
 interface Company {
     id: string
@@ -125,10 +126,12 @@ export default function CompaniesPage() {
                                 <div className="flex items-start justify-between">
                                     <div className="flex items-center gap-3">
                                         {company.logo ? (
-                                            <img 
+                                            <Image
                                                 src={company.logo} 
                                                 alt={company.name}
                                                 className="h-12 w-12 rounded-lg object-cover border"
+                                                height={48}
+                                                width={48}
                                             />
                                         ) : (
                                             <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center">

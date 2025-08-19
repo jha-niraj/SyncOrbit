@@ -21,6 +21,7 @@ import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { getClientCompanyDetails } from "@/actions/(client)/companies.action"
+import Image from "next/image"
 
 interface CompanyDetails {
     id: string
@@ -203,10 +204,12 @@ export default function CompanyDetailsPage({ params }: { params: Promise<{ slug:
                     <div className="flex items-start justify-between">
                         <div className="flex items-center gap-4">
                             {company.logo ? (
-                                <img 
+                                <Image
                                     src={company.logo} 
                                     alt={company.name}
                                     className="h-16 w-16 rounded-lg object-cover border"
+                                    height={32}
+                                    width={32}
                                 />
                             ) : (
                                 <div className="h-16 w-16 rounded-lg bg-primary/10 flex items-center justify-center">

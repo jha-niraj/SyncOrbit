@@ -1,7 +1,7 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { useState, useEffect, useCallback } from "react"
+import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -12,19 +12,16 @@ import {
     ArrowLeft, 
     Plus,
     MessageSquare,
-    Star,
-    Filter,
     Search,
     Calendar,
     User,
     AlertCircle,
     CheckCircle,
     Clock,
-    MoreVertical
 } from "lucide-react"
 import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
-import { useSession } from "next-auth/react"
+// import { useSession } from "next-auth/react"
 import { formatDistanceToNow } from "date-fns"
 import {
     Dialog,
@@ -67,7 +64,7 @@ interface ProjectInfo {
 }
 
 export default function FeedbackPage({ params }: FeedbackPageProps) {
-    const { data: session } = useSession()
+    // const { data: session } = useSession()
     const [feedback, setFeedback] = useState<FeedbackItem[]>([])
     const [project, setProject] = useState<ProjectInfo | null>(null)
     const [loading, setLoading] = useState(true)
@@ -95,13 +92,7 @@ export default function FeedbackPage({ params }: FeedbackPageProps) {
         resolveParams()
     }, [params])
 
-    useEffect(() => {
-        if (slug) {
-            loadFeedback()
-        }
-    }, [slug])
-
-    const loadFeedback = async () => {
+    const loadFeedback = useCallback(async () => {
         try {
             setLoading(true)
             const result = await getProjectFeedback(slug)
@@ -118,7 +109,13 @@ export default function FeedbackPage({ params }: FeedbackPageProps) {
         } finally {
             setLoading(false)
         }
-    }
+    }, [slug])
+
+    useEffect(() => {
+        if (slug) {
+            loadFeedback()
+        }
+    }, [slug, loadFeedback])
 
     const handleCreateFeedback = async () => {
         if (!newFeedback.title.trim()) {
@@ -187,13 +184,13 @@ export default function FeedbackPage({ params }: FeedbackPageProps) {
     const getStatusBadgeVariant = (status: FeedbackStatus) => {
         switch (status) {
             case FeedbackStatus.PENDING:
-                return "secondary"
+                return "secondary" as const
             case FeedbackStatus.IN_PROGRESS:
-                return "default" 
+                return "default" as const
             case FeedbackStatus.COMPLETED:
-                return "success" as any
+                return "default" as const
             case FeedbackStatus.CANCELLED:
-                return "destructive"
+                return "destructive" as const
             default:
                 return "secondary"
         }

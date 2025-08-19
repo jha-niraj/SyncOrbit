@@ -28,6 +28,15 @@ import { formatCurrency, getCurrencySymbol } from "@/store/useProjectStore"
 import { getUserProjects } from "@/actions/(client)/projects.action"
 import { toast } from "sonner"
 
+interface TasksProps {
+    id: string
+    status: TaskStatus
+    assignedDeveloper?: {
+        id: string
+        name: string | null
+        image: string | null
+    } | null
+}
 interface ProjectData {
     id: string
     title: string
@@ -49,15 +58,7 @@ interface ProjectData {
             shortName: string
         } | null
     }
-    tasks: Array<{
-        id: string
-        status: TaskStatus
-        assignedDeveloper?: {
-            id: string
-            name: string | null
-            image: string | null
-        } | null
-    }>
+    tasks: TasksProps[]
     members: Array<{
         user: {
             id: string
@@ -103,7 +104,7 @@ export default function ProjectsPage() {
     }
 
     // Calculate project progress
-    const getProjectProgress = (tasks: any[]) => {
+    const getProjectProgress = (tasks: TasksProps[]) => {
         if (!tasks || tasks.length === 0) return 0
         const completed = tasks.filter(task => task.status === TaskStatus.COMPLETED).length
         return Math.round((completed / tasks.length) * 100)
@@ -227,7 +228,7 @@ export default function ProjectsPage() {
                             <div className="flex items-center gap-2">
                                 <span className="text-sm font-medium text-foreground">Team:</span>
                                 <div className="flex -space-x-2">
-                                    {teamMembers.slice(0, 3).map((member, index: number) => (
+                                    {teamMembers.slice(0, 3).map((member) => (
                                         <Avatar key={member.id} className="h-6 w-6 border-2 border-background">
                                             <AvatarImage src={member.image} alt={member.name} />
                                             <AvatarFallback className="text-xs">

@@ -197,7 +197,7 @@ export function BeamsBackground({
                 cancelAnimationFrame(animationFrameRef.current);
             }
         };
-    }, [intensity]);
+    }, [intensity, FRAME_INTERVAL]);
 
     return (
         <div

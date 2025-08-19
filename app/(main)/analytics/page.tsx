@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -16,7 +16,6 @@ import {
     Target,
     Award,
     Activity,
-    Calendar,
     Download,
     Filter
 } from "lucide-react"
@@ -59,9 +58,9 @@ const mockAnalytics = {
 
 export default function AnalyticsPage() {
     const { data: session } = useSession()
-    const [analytics, setAnalytics] = useState(mockAnalytics)
+    const [analytics, _setAnalytics] = useState(mockAnalytics)
     const [timeFilter, setTimeFilter] = useState("6months")
-    const [isLoading, setIsLoading] = useState(false)
+    // const [isLoading, setIsLoading] = useState(false)
 
     // Check if user has access to analytics page
     if (session?.user?.role === 'CLIENT') {
@@ -82,7 +81,20 @@ export default function AnalyticsPage() {
         )
     }
 
-    const StatCard = ({ title, value, change, icon: Icon, trend, description }: any) => (
+    const StatCard = ({ 
+        title, 
+        value, 
+        change, 
+        icon: Icon, 
+        trend, 
+        description 
+    } : { 
+        title: string, 
+        value: string | number, 
+        change?: number, icon: React.ElementType, 
+        trend?: 'up' | 'down', 
+        description?: string 
+    }) => (
         <Card className="bg-background/50 backdrop-blur-sm border-border/50">
             <CardContent className="p-6">
                 <div className="flex items-center justify-between">
@@ -114,7 +126,7 @@ export default function AnalyticsPage() {
         </Card>
     )
 
-    const ChartCard = ({ title, children }: any) => (
+    const ChartCard = ({ title, children } : { title: string, children: React.ReactNode }) => (
         <Card className="bg-background/50 backdrop-blur-sm border-border/50">
             <CardHeader className="pb-3">
                 <CardTitle className="text-lg font-semibold text-foreground">{title}</CardTitle>
@@ -200,7 +212,7 @@ export default function AnalyticsPage() {
                     {/* Project Progress Chart */}
                     <ChartCard title="Project Progress Over Time">
                         <div className="space-y-4">
-                            {analytics.projectStats.slice(-6).map((stat, index) => (
+                            {analytics.projectStats.slice(-6).map((stat) => (
                                 <div key={stat.month} className="space-y-2">
                                     <div className="flex justify-between items-center">
                                         <span className="text-sm font-medium text-foreground">{stat.month}</span>
