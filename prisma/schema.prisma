@@ -85,6 +85,7 @@ model User {
     // Company-related fields
     companyId      String?
     company        Company? @relation("CompanyUsers", fields: [companyId], references: [id])
+    companyEmail   String? // Optional company email for PM role
     referralCode   String? // The referral code used during registration
     managedCompany Company? @relation("CompanyManager")
 

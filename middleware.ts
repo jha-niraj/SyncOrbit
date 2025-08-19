@@ -19,6 +19,7 @@ const publicRoutes = [
 	'/forgot-password',
 	'/forgotpassword',
 	'/reset-password',
+	'/onboarding',
 	'/error',
 	'/aboutus',
 	'/contact',

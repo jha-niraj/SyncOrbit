@@ -77,7 +77,14 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
         }),
         GoogleProvider({
             clientId: process.env.GOOGLE_CLIENT_ID || "",
-            clientSecret: process.env.GOOGLE_SECRET_ID || ""
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
+            authorization: {
+                params: {
+                    prompt: "consent",
+                    access_type: "offline",
+                    response_type: "code"
+                }
+            }
         }),
     ],
     callbacks: {
@@ -85,6 +92,22 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
             if (user) {
                 token.id = user.id as string;
                 token.role = user.role;
+                
+                // Check if user needs onboarding (Google users without role)
+                if (!user.role && user.email) {
+                    const dbUser = await prisma.user.findUnique({
+                        where: { email: user.email }
+                    });
+                    
+                    if (!dbUser) {
+                        token.needsOnboarding = true;
+                        token.googleUser = {
+                            email: user.email,
+                            name: user.name,
+                            image: user.image
+                        };
+                    }
+                }
             }
             return token;
         },
@@ -112,14 +135,50 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
                         }
                     });
                     return true;
+                } else {
+                    // New Google user - they need to go through onboarding
+                    // Let them sign in, we'll handle onboarding in the redirect callback
+                    return true;
                 }
             }
             return true;
         },
         async redirect({ url, baseUrl }) {
-            if (url.startsWith("/")) return `${baseUrl}${url}`
-            if (new URL(url).origin === baseUrl) return url
-            return baseUrl
+            // If the URL already includes onboarding, allow it
+            if (url.includes('/onboarding')) {
+                return url;
+            }
+            
+            // Handle direct callbackUrl parameters
+            if (url.includes('callbackUrl')) {
+                const urlObj = new URL(url);
+                const callbackUrl = urlObj.searchParams.get('callbackUrl');
+                
+                if (callbackUrl?.includes('/onboarding')) {
+                    return callbackUrl;
+                }
+            }
+            
+            // Check if this is a Google auth success and determine redirect
+            // For new Google users, we need to check if they need onboarding
+            try {
+                if (url === baseUrl || url === `${baseUrl}/`) {
+                    // This is a successful auth callback, check if user needs onboarding
+                    const urlObj = new URL(url);
+                    
+                    // Default redirect logic
+                    if (url.startsWith("/")) return `${baseUrl}${url}`;
+                    if (new URL(url).origin === baseUrl) return url;
+                    return `${baseUrl}/dashboard`;
+                }
+            } catch (e) {
+                console.error("Redirect error:", e);
+            }
+            
+            // Default redirect logic
+            if (url.startsWith("/")) return `${baseUrl}${url}`;
+            if (new URL(url).origin === baseUrl) return url;
+            return baseUrl;
         },
     },
     pages: {

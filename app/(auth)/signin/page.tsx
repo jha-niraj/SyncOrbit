@@ -92,26 +92,29 @@ function SignInContent() {
 	const handleGoogleSignIn = async () => {
 		setIsGoogleLoading(true)
 		try {
+			// Get referral code from URL params
+			const ref = searchParams.get('ref')
+			
+			// Create callback URL with referral code if present
+			let redirectUrl = callbackUrl
+			if (ref) {
+				// If there's a referral code, we'll check in onboarding if user needs it
+				redirectUrl = `/onboarding?ref=${ref}`
+			}
+
 			const result = await signIn("google", {
-				callbackUrl,
-				redirect: false
+				callbackUrl: redirectUrl,
+				redirect: true // Let NextAuth handle the redirect
 			});
 
+			// This shouldn't execute if redirect: true works
 			if (result?.error) {
-				if (result.error === "EmailNotVerified") {
-					toast.error("Email not verified");
-					const verifyUrl = `/verifyemail${callbackUrl ? `?callbackUrl=${encodeURIComponent(callbackUrl)}` : ''}`;
-					router.push(verifyUrl);
-				} else {
-					toast.error("Failed to sign in with Google");
-				}
-			} else if (result?.url) {
-				router.push(result.url);
+				toast.error("Failed to sign in with Google");
+				setIsGoogleLoading(false);
 			}
 		} catch (error) {
 			console.error("Google sign-in error:", error);
 			toast.error("Failed to sign in with Google");
-		} finally {
 			setIsGoogleLoading(false);
 		}
 	}

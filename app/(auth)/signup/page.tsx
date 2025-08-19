@@ -153,8 +153,20 @@ function SignUp() {
     const handleGoogleSignUp = async () => {
         setIsGoogleLoading(true)
         try {
+            // Get referral code from URL params or form
+            const ref = urlReferralCode || referralCode
+            
+            // Create callback URL with referral code if present
+            let redirectUrl = callbackUrl
+            if (ref) {
+                redirectUrl = `/onboarding?ref=${ref}`
+            } else {
+                redirectUrl = '/onboarding'
+            }
+
             await signIn('google', {
-                callbackUrl
+                callbackUrl: redirectUrl,
+                redirect: true
             })
         } catch (error) {
             console.error('Google sign-up error:', error)
