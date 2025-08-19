@@ -115,7 +115,7 @@ export default function FeedbackPage({ params }: FeedbackPageProps) {
         if (slug) {
             loadFeedback()
         }
-    }, [slug, loadFeedback])
+    }, [slug])
 
     const handleCreateFeedback = async () => {
         if (!newFeedback.title.trim()) {
@@ -184,13 +184,13 @@ export default function FeedbackPage({ params }: FeedbackPageProps) {
     const getStatusBadgeVariant = (status: FeedbackStatus) => {
         switch (status) {
             case FeedbackStatus.PENDING:
-                return "secondary" as const
+                return "secondary" as "secondary"
             case FeedbackStatus.IN_PROGRESS:
-                return "default" as const
+                return "default" as "default"
             case FeedbackStatus.COMPLETED:
-                return "default" as const
+                return "default" as "default"
             case FeedbackStatus.CANCELLED:
-                return "destructive" as const
+                return "destructive" as "destructive"
             default:
                 return "secondary"
         }

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -16,51 +16,79 @@ import {
     Target,
     Award,
     Activity,
+    Calendar,
     Download,
     Filter
 } from "lucide-react"
 import { motion } from "framer-motion"
 import { useSession } from "next-auth/react"
+import { getAnalyticsData } from "@/actions/(client)/analytics.action"
+import { toast } from "sonner"
 
-// Mock data - replace with actual data fetching
-const mockAnalytics = {
+interface MonthlyStats {
+    month: string
+    completed: number
+    active: number
+    revenue: number
+}
+
+interface TeamMember {
+    name: string
+    projectsCompleted: number
+    tasksCompleted: number
+    rating: number
+    efficiency: number
+}
+
+interface ActivityItem {
+    type: string
+    message: string
+    time: string
+}
+
+interface AnalyticsData {
     overview: {
-        totalProjects: 24,
-        activeProjects: 8,
-        completedProjects: 16,
-        totalRevenue: 450000,
-        teamMembers: 12,
-        averageProjectDuration: 4.2,
-        clientSatisfaction: 4.7,
-        onTimeDelivery: 87
-    },
-    projectStats: [
-        { month: "Jan", completed: 3, active: 2, revenue: 45000 },
-        { month: "Feb", completed: 2, active: 3, revenue: 38000 },
-        { month: "Mar", completed: 4, active: 2, revenue: 62000 },
-        { month: "Apr", completed: 3, active: 1, revenue: 51000 },
-        { month: "May", completed: 2, active: 4, revenue: 47000 },
-        { month: "Jun", completed: 2, active: 3, revenue: 55000 }
-    ],
-    teamPerformance: [
-        { name: "Alice Johnson", projectsCompleted: 8, tasksCompleted: 156, rating: 4.8, efficiency: 94 },
-        { name: "Bob Chen", projectsCompleted: 6, tasksCompleted: 98, rating: 4.9, efficiency: 91 },
-        { name: "Carol Martinez", projectsCompleted: 10, tasksCompleted: 203, rating: 4.7, efficiency: 89 },
-        { name: "David Wilson", projectsCompleted: 4, tasksCompleted: 74, rating: 4.6, efficiency: 85 }
-    ],
-    recentActivity: [
-        { type: "project_completed", message: "E-commerce Platform completed", time: "2 hours ago" },
-        { type: "milestone_reached", message: "Mobile App reached 80% completion", time: "1 day ago" },
-        { type: "new_client", message: "New client onboarded", time: "2 days ago" },
-        { type: "team_added", message: "2 new developers joined", time: "3 days ago" }
-    ]
+        totalProjects: number
+        activeProjects: number
+        completedProjects: number
+        totalRevenue: number
+        teamMembers: number
+        averageProjectDuration: number
+        clientSatisfaction: number
+        onTimeDelivery: number
+    }
+    projectStats: MonthlyStats[]
+    teamPerformance: TeamMember[]
+    recentActivity: ActivityItem[]
 }
 
 export default function AnalyticsPage() {
     const { data: session } = useSession()
-    const [analytics, _setAnalytics] = useState(mockAnalytics)
+    const [analytics, setAnalytics] = useState<AnalyticsData | null>(null)
     const [timeFilter, setTimeFilter] = useState("6months")
-    // const [isLoading, setIsLoading] = useState(false)
+    const [isLoading, setIsLoading] = useState(true)
+
+    const loadAnalyticsData = async () => {
+        try {
+            setIsLoading(true)
+            const result = await getAnalyticsData()
+            
+            if (result.success && result.analytics) {
+                setAnalytics(result.analytics)
+            } else {
+                toast.error(result.error || "Failed to load analytics data")
+            }
+        } catch (error) {
+            console.error("Load analytics error:", error)
+            toast.error("Failed to load analytics data")
+        } finally {
+            setIsLoading(false)
+        }
+    }
+
+    useEffect(() => {
+        loadAnalyticsData()
+    }, [])
 
     // Check if user has access to analytics page
     if (session?.user?.role === 'CLIENT') {
@@ -81,20 +109,48 @@ export default function AnalyticsPage() {
         )
     }
 
-    const StatCard = ({ 
-        title, 
-        value, 
-        change, 
-        icon: Icon, 
-        trend, 
-        description 
-    } : { 
-        title: string, 
-        value: string | number, 
-        change?: number, icon: React.ElementType, 
-        trend?: 'up' | 'down', 
-        description?: string 
-    }) => (
+    if (isLoading) {
+        return (
+            <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 flex items-center justify-center">
+                <div className="animate-pulse space-y-4">
+                    <div className="h-8 bg-gray-200 rounded w-1/4"></div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <div className="h-32 bg-gray-200 rounded"></div>
+                        <div className="h-32 bg-gray-200 rounded"></div>
+                        <div className="h-32 bg-gray-200 rounded"></div>
+                        <div className="h-32 bg-gray-200 rounded"></div>
+                    </div>
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div className="h-64 bg-gray-200 rounded"></div>
+                        <div className="h-64 bg-gray-200 rounded"></div>
+                    </div>
+                </div>
+            </div>
+        )
+    }
+
+    if (!analytics) {
+        return (
+            <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 flex items-center justify-center">
+                <Card className="max-w-md">
+                    <CardHeader className="text-center">
+                        <BarChart3 className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                        <CardTitle>No Data Available</CardTitle>
+                    </CardHeader>
+                    <CardContent className="text-center">
+                        <p className="text-muted-foreground mb-4">
+                            Unable to load analytics data at this time.
+                        </p>
+                        <Button onClick={loadAnalyticsData}>
+                            Try Again
+                        </Button>
+                    </CardContent>
+                </Card>
+            </div>
+        )
+    }
+
+    const StatCard = ({ title, value, change, icon: Icon, trend, description }: any) => (
         <Card className="bg-background/50 backdrop-blur-sm border-border/50">
             <CardContent className="p-6">
                 <div className="flex items-center justify-between">
@@ -126,7 +182,7 @@ export default function AnalyticsPage() {
         </Card>
     )
 
-    const ChartCard = ({ title, children } : { title: string, children: React.ReactNode }) => (
+    const ChartCard = ({ title, children }: any) => (
         <Card className="bg-background/50 backdrop-blur-sm border-border/50">
             <CardHeader className="pb-3">
                 <CardTitle className="text-lg font-semibold text-foreground">{title}</CardTitle>
@@ -212,7 +268,7 @@ export default function AnalyticsPage() {
                     {/* Project Progress Chart */}
                     <ChartCard title="Project Progress Over Time">
                         <div className="space-y-4">
-                            {analytics.projectStats.slice(-6).map((stat) => (
+                            {analytics.projectStats.slice(-6).map((stat, index) => (
                                 <div key={stat.month} className="space-y-2">
                                     <div className="flex justify-between items-center">
                                         <span className="text-sm font-medium text-foreground">{stat.month}</span>

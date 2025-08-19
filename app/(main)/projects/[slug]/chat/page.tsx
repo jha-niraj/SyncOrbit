@@ -1,6 +1,7 @@
 "use client"
 
-import { useState, useEffect, useRef, useCallback } from "react"
+import { useState, useEffect, useRef } from "react"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -19,9 +20,8 @@ import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
 import { useSession } from "next-auth/react"
 import { formatDistanceToNow } from "date-fns"
-import { getProjectMessages, sendMessage, getProjectForChat } from "@/actions/(client)/chat.action"
+import { getProjectMessages, sendMessage } from "@/actions/(client)/chat.action"
 import { toast } from "sonner"
-import Image from "next/image"
 
 interface ChatPageProps {
     params: Promise<{
@@ -57,9 +57,8 @@ export default function ProjectChatPage({ params }: ChatPageProps) {
     const [project, setProject] = useState<ProjectInfo | null>(null)
     const [messages, setMessages] = useState<MessageData[]>([])
     const [newMessage, setNewMessage] = useState("")
-    const [isTyping, _setIsTyping] = useState(false)
+    const [isTyping, setIsTyping] = useState(false)
     const [loading, setLoading] = useState(true)
-    const [sending, setSending] = useState(false)
     const [slug, setSlug] = useState<string>("")
     const messagesEndRef = useRef<HTMLDivElement>(null)
 
@@ -71,52 +70,40 @@ export default function ProjectChatPage({ params }: ChatPageProps) {
         resolveParams()
     }, [params])
 
-    const loadProjectAndMessages = useCallback(async () => {
-        try {
-            setLoading(true)
-            
-            // Load project info and messages
-            const [projectResult, messagesResult] = await Promise.all([
-                getProjectForChat(slug),
-                getProjectMessages(slug)
-            ])
-            
-            if (projectResult.success && projectResult.project) {
-                setProject(projectResult.project)
-            } else {
-                toast.error(projectResult.error || "Failed to load project")
-                return
-            }
-
-            if (messagesResult.success) {
-                setMessages(messagesResult.messages)
-            } else {
-                toast.error(messagesResult.error || "Failed to load messages")
-            }
-        } catch (error) {
-            console.error("Load project and messages error:", error)
-            toast.error("Failed to load chat data")
-        } finally {
-            setLoading(false)
-        }
-    }, [slug])
-
     useEffect(() => {
         if (slug) {
-            loadProjectAndMessages()
+            loadMessages()
         }
-    }, [slug, loadProjectAndMessages])
+    }, [slug])
 
     useEffect(() => {
         // Scroll to bottom when new messages arrive
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
     }, [messages])
 
+    const loadMessages = async () => {
+        try {
+            setLoading(true)
+            const result = await getProjectMessages(slug)
+            
+            if (result.success) {
+                setMessages(result.messages)
+                setProject(result.project)
+            } else {
+                toast.error(result.error || "Failed to load messages")
+            }
+        } catch (error) {
+            console.error("Load messages error:", error)
+            toast.error("Failed to load messages")
+        } finally {
+            setLoading(false)
+        }
+    }
+
     const handleSendMessage = async () => {
-        if (!newMessage.trim() || !session?.user || sending) return
+        if (!newMessage.trim() || !session?.user || !slug) return
 
         try {
-            setSending(true)
             const result = await sendMessage({
                 projectSlug: slug,
                 content: newMessage.trim()
@@ -125,15 +112,13 @@ export default function ProjectChatPage({ params }: ChatPageProps) {
             if (result.success && result.message) {
                 setMessages(prev => [...prev, result.message!])
                 setNewMessage("")
-                toast.success("Message sent")
+                toast.success("Message sent successfully")
             } else {
                 toast.error(result.error || "Failed to send message")
             }
         } catch (error) {
             console.error("Send message error:", error)
             toast.error("Failed to send message")
-        } finally {
-            setSending(false)
         }
     }
 
@@ -201,32 +186,22 @@ export default function ProjectChatPage({ params }: ChatPageProps) {
                         }`}
                     >
                         <p className="text-sm whitespace-pre-wrap">{message.content}</p>
-                        
-                        {/* Show link preview if available */}
                         {message.linkUrl && (
-                            <div className="mt-2 p-2 border rounded-lg bg-background/50">
-                                <Link 
-                                    href={message.linkUrl} 
-                                    target="_blank" 
-                                    rel="noopener noreferrer"
-                                    className="text-primary hover:underline text-xs"
-                                >
-                                    {message.linkTitle || message.linkUrl}
-                                </Link>
-                            </div>
+                            <a 
+                                href={message.linkUrl} 
+                                target="_blank" 
+                                rel="noopener noreferrer"
+                                className="block mt-2 text-xs underline"
+                            >
+                                {message.linkTitle || message.linkUrl}
+                            </a>
                         )}
-                        
-                        {/* Show image if available */}
                         {message.imageUrl && (
-                            <div className="mt-2">
-                                <Image
-                                    src={message.imageUrl} 
-                                    alt="Shared image" 
-                                    className="max-w-full rounded-lg"
-                                    height={32}
-                                    width={32}
-                                />
-                            </div>
+                            <img 
+                                src={message.imageUrl} 
+                                alt="Shared image"
+                                className="mt-2 max-w-full rounded-lg"
+                            />
                         )}
                     </div>
                     
@@ -251,21 +226,25 @@ export default function ProjectChatPage({ params }: ChatPageProps) {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
-                <div className="flex flex-col h-screen max-w-4xl mx-auto">
-                    <div className="bg-background/80 backdrop-blur-xl border-b border-border/50 p-4">
-                        <div className="animate-pulse">
-                            <div className="h-6 bg-gray-200 rounded w-1/3 mb-2"></div>
-                            <div className="h-4 bg-gray-200 rounded w-1/4"></div>
-                        </div>
-                    </div>
-                    <div className="flex-1 p-4 space-y-4">
-                        <div className="animate-pulse space-y-4">
-                            <div className="h-16 bg-gray-200 rounded w-3/4"></div>
-                            <div className="h-16 bg-gray-200 rounded w-2/3 ml-auto"></div>
-                            <div className="h-16 bg-gray-200 rounded w-1/2"></div>
-                        </div>
-                    </div>
+            <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 flex items-center justify-center">
+                <div className="animate-pulse space-y-4">
+                    <div className="h-8 bg-gray-200 rounded w-1/4"></div>
+                    <div className="h-32 bg-gray-200 rounded"></div>
+                    <div className="h-32 bg-gray-200 rounded"></div>
+                </div>
+            </div>
+        )
+    }
+
+    if (!project) {
+        return (
+            <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 flex items-center justify-center">
+                <div className="text-center">
+                    <h2 className="text-2xl font-bold mb-2">Project not found</h2>
+                    <p className="text-muted-foreground mb-4">The project you're looking for doesn't exist or you don't have access to it.</p>
+                    <Button asChild>
+                        <Link href="/projects">Back to Projects</Link>
+                    </Button>
                 </div>
             </div>
         )
@@ -279,12 +258,12 @@ export default function ProjectChatPage({ params }: ChatPageProps) {
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
                             <Button variant="ghost" size="sm" asChild>
-                                <Link href={`/projects/${project?.slug || slug}`}>
+                                <Link href={`/projects/${project.slug}`}>
                                     <ArrowLeft className="h-4 w-4" />
                                 </Link>
                             </Button>
                             <div>
-                                <h1 className="text-lg font-semibold text-foreground">{project?.title || "Loading..."}</h1>
+                                <h1 className="text-lg font-semibold text-foreground">{project.title}</h1>
                                 <p className="text-sm text-muted-foreground">Project Chat</p>
                             </div>
                         </div>
@@ -308,23 +287,9 @@ export default function ProjectChatPage({ params }: ChatPageProps) {
 
                 {/* Messages */}
                 <div className="flex-1 overflow-y-auto p-4 space-y-4">
-                    {messages.length > 0 ? (
-                        <AnimatePresence>
-                            {messages.map((message, index) => renderMessage(message, index))}
-                        </AnimatePresence>
-                    ) : (
-                        <div className="flex-1 flex items-center justify-center">
-                            <div className="text-center">
-                                <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <Send className="h-8 w-8 text-muted-foreground" />
-                                </div>
-                                <h3 className="text-lg font-semibold text-foreground mb-2">No messages yet</h3>
-                                <p className="text-muted-foreground">
-                                    Start the conversation by sending the first message.
-                                </p>
-                            </div>
-                        </div>
-                    )}
+                    <AnimatePresence>
+                        {messages.map((message, index) => renderMessage(message, index))}
+                    </AnimatePresence>
                     
                     {isTyping && (
                         <motion.div
@@ -363,7 +328,6 @@ export default function ProjectChatPage({ params }: ChatPageProps) {
                                 onChange={(e) => setNewMessage(e.target.value)}
                                 onKeyPress={handleKeyPress}
                                 className="pr-12 min-h-10 resize-none"
-                                disabled={sending}
                             />
                             <Button
                                 variant="ghost"
@@ -376,15 +340,11 @@ export default function ProjectChatPage({ params }: ChatPageProps) {
                         
                         <Button 
                             onClick={handleSendMessage}
-                            disabled={!newMessage.trim() || sending}
+                            disabled={!newMessage.trim()}
                             size="sm"
                             className="flex-shrink-0"
                         >
-                            {sending ? (
-                                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                            ) : (
-                                <Send className="h-4 w-4" />
-                            )}
+                            <Send className="h-4 w-4" />
                         </Button>
                     </div>
                 </div>
