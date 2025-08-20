@@ -1,5 +1,6 @@
 import { DefaultSession, DefaultUser } from "next-auth"
 import { JWT, DefaultJWT } from "next-auth/jwt"
+import { UserRole } from "@prisma/client"
 
 declare module "next-auth" {
     interface Session {
@@ -9,6 +10,7 @@ declare module "next-auth" {
             name: string
             image?: string | null
             role: "CLIENT" | "DEVELOPER" | "PRODUCTMANAGER" | "ADMIN"
+            userRole?: UserRole | null
             bio?: string | null
             emailVerified?: Date | null
         } & DefaultSession["user"]
@@ -20,6 +22,7 @@ declare module "next-auth" {
         name: string
         image?: string | null
         role: "CLIENT" | "DEVELOPER" | "PRODUCTMANAGER" | "ADMIN"
+        userRole?: UserRole | null
         bio?: string | null,
         emailVerified?: Date | null
     }
@@ -32,6 +35,7 @@ declare module "next-auth/jwt" {
         name: string
         image?: string | null
         role: "CLIENT" | "DEVELOPER" | "PRODUCTMANAGER" | "ADMIN"
+        userRole?: UserRole | null
         roleExplicitlyChosen: boolean
         bio?: string | null,
         emailVerified?: Date | null

@@ -6,7 +6,6 @@ import Sidebar from '@/components/mainsidebar';
 import MainNavbar from '@/components/mainnavbar';
 import LoadingScreen from '@/components/loading-screen';
 import { redirect } from 'next/navigation';
-import { Toaster } from 'sonner';
 
 interface LayoutProps {
 	children: React.ReactNode
@@ -51,7 +50,6 @@ const Layout = ({ children }: LayoutProps) => {
 					</div>
 				</main>
 			</div>
-			<Toaster />
 		</div>
 	);
 };

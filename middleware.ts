@@ -6,7 +6,9 @@ const protectedRoutes = [
 	'/profile',
 	'/team',
 	'/admin',
-	'/settings'
+	'/settings',
+	'/notifications',
+	'/role-settings'
 ]
 
 const publicRoutes = [

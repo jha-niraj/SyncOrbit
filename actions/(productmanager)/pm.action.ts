@@ -293,6 +293,7 @@ export async function getPMProfile() {
 						id: true,
 						name: true,
 						shortName: true,
+						logo: true,
 						devReferralCode: true,
 						clientReferralCode: true,
 						createdAt: true,
@@ -407,7 +408,18 @@ export async function uploadCompanyLogo(formData: FormData) {
 		}
 
 		const result = await uploadToCloudinary(imageFile);
+
+		if(!result.secure_url) {
+			return { success: false, error: "Failed to upload logo" }
+		}
 		
+		// Update company logo in database
+		await prisma.company.update({
+			where: { productManagerId: session.user.id },
+			data: { logo: result.secure_url }
+		})
+
+		revalidatePath('/profile')
 		return { success: true, logoUrl: result.secure_url };
 	} catch (error) {
 		console.error("Upload company logo error:", error);

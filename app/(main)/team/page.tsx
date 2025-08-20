@@ -27,6 +27,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { useSession } from "next-auth/react"
 import { formatDistanceToNow } from "date-fns"
 import { getTeamMembers, getDeveloperDetails } from "@/actions/(productmanager)/team.action"
+import { getDeveloperTasks } from "@/actions/(productmanager)/user-role.action"
 import { useToast } from "@/hooks/use-toast"
 
 export default function TeamPage() {
@@ -142,6 +143,58 @@ export default function TeamPage() {
             toast({
                 title: "Error",
                 description: "Failed to load developer details",
+                variant: "destructive"
+            })
+        } finally {
+            setLoadingDetails(false)
+        }
+    }
+
+    const handleViewTasks = async (developerId: string) => {
+        try {
+            setLoadingDetails(true)
+            const result = await getDeveloperTasks(developerId)
+            
+            if (result.success) {
+                setDeveloperDetails(result as unknown as DeveloperDetails)
+            } else {
+                toast({
+                    title: "Error",
+                    description: result.error || "Failed to load developer tasks",
+                    variant: "destructive"
+                })
+            }
+        } catch (error) {
+            console.error("Error loading developer tasks:", error)
+            toast({
+                title: "Error",
+                description: "Failed to load developer tasks",
+                variant: "destructive"
+            })
+        } finally {
+            setLoadingDetails(false)
+        }
+    }
+
+    const handleViewTasks = async (developerId: string) => {
+        try {
+            setLoadingDetails(true)
+            const result = await getDeveloperTasks(developerId)
+            
+            if (result.success) {
+                setDeveloperDetails(result as any) // Type assertion for compatibility
+            } else {
+                toast({
+                    title: "Error",
+                    description: result.error || "Failed to load developer tasks",
+                    variant: "destructive"
+                })
+            }
+        } catch (error) {
+            console.error("Error loading developer tasks:", error)
+            toast({
+                title: "Error",
+                description: "Failed to load developer tasks",
                 variant: "destructive"
             })
         } finally {
@@ -398,14 +451,116 @@ export default function TeamPage() {
 
                         {/* Contact Actions */}
                         <div className="flex gap-2 pt-2">
-                            <Button variant="outline" size="sm" className="flex-1">
-                                <Mail className="h-3 w-3 mr-2" />
-                                Email
-                            </Button>
-                            <Button variant="outline" size="sm" className="flex-1">
-                                <Phone className="h-3 w-3 mr-2" />
-                                Call
-                            </Button>
+                            <Sheet>
+                                <SheetTrigger asChild>
+                                    <Button 
+                                        variant="outline" 
+                                        size="sm" 
+                                        className="flex-1"
+                                        onClick={() => handleViewTasks(member.id)}
+                                    >
+                                        <Eye className="h-3 w-3 mr-2" />
+                                        View Tasks
+                                    </Button>
+                                </SheetTrigger>
+                                <SheetContent className="w-full max-w-2xl">
+                                    <SheetHeader>
+                                        <SheetTitle className="flex items-center gap-3">
+                                            <Avatar className="h-8 w-8">
+                                                <AvatarImage src={member.image} />
+                                                <AvatarFallback className="bg-primary/10 text-primary font-semibold">
+                                                    {member.name.split(" ").map(n => n[0]).join("")}
+                                                </AvatarFallback>
+                                            </Avatar>
+                                            {member.name}&apos;s Tasks
+                                        </SheetTitle>
+                                        <SheetDescription>
+                                            View all tasks assigned to this developer across projects
+                                        </SheetDescription>
+                                    </SheetHeader>
+                                    
+                                    <div className="mt-6 space-y-4">
+                                        {loadingDetails ? (
+                                            <div className="space-y-4">
+                                                {[1, 2, 3].map((i) => (
+                                                    <div key={i} className="animate-pulse space-y-2">
+                                                        <div className="h-4 bg-muted rounded w-1/4" />
+                                                        <div className="space-y-2 p-4 border rounded-lg">
+                                                            <div className="h-4 bg-muted rounded w-3/4" />
+                                                            <div className="h-3 bg-muted rounded w-1/2" />
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        ) : developerDetails?.tasksByProject.length === 0 ? (
+                                            <div className="text-center py-8">
+                                                <Activity className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
+                                                <h3 className="font-semibold text-lg mb-2">No Tasks Assigned</h3>
+                                                <p className="text-muted-foreground">
+                                                    This developer has no tasks assigned yet
+                                                </p>
+                                            </div>
+                                        ) : (
+                                            developerDetails?.tasksByProject.map((projectGroup, index) => (
+                                                <div key={projectGroup.project.id} className="space-y-3">
+                                                    <div className="flex items-center gap-2">
+                                                        <h4 className="font-semibold text-lg">{projectGroup.project.title}</h4>
+                                                        <Badge variant="outline" className="text-xs">
+                                                            {projectGroup.project.status}
+                                                        </Badge>
+                                                    </div>
+                                                    
+                                                    <div className="space-y-2 pl-4 border-l-2 border-border/50">
+                                                        {projectGroup.tasks.map((task) => (
+                                                            <Card key={task.id} className="hover:shadow-sm transition-shadow">
+                                                                <CardContent className="p-4">
+                                                                    <div className="flex items-start justify-between">
+                                                                        <div className="space-y-1 flex-1">
+                                                                            <h5 className="font-medium">{task.title}</h5>
+                                                                            {task.description && (
+                                                                                <p className="text-sm text-muted-foreground line-clamp-2">
+                                                                                    {task.description}
+                                                                                </p>
+                                                                            )}
+                                                                            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                                                                                <Calendar className="h-3 w-3" />
+                                                                                Created {formatDistanceToNow(new Date(task.createdAt), { addSuffix: true })}
+                                                                                {task.duration && (
+                                                                                    <>
+                                                                                        <span>•</span>
+                                                                                        <Clock className="h-3 w-3" />
+                                                                                        {task.duration}h estimated
+                                                                                    </>
+                                                                                )}
+                                                                            </div>
+                                                                        </div>
+                                                                        <Badge 
+                                                                            variant={
+                                                                                task.status === "COMPLETED" ? "default" :
+                                                                                task.status === "IN_PROGRESS" ? "secondary" : "outline"
+                                                                            }
+                                                                            className={`ml-3 ${
+                                                                                task.status === "COMPLETED" ? "bg-green-100 text-green-800 border-green-200" :
+                                                                                task.status === "IN_PROGRESS" ? "bg-blue-100 text-blue-800 border-blue-200" :
+                                                                                "bg-gray-100 text-gray-800 border-gray-200"
+                                                                            }`}
+                                                                        >
+                                                                            {task.status === "COMPLETED" && <CheckCircle className="h-3 w-3 mr-1" />}
+                                                                            {task.status === "IN_PROGRESS" && <Activity className="h-3 w-3 mr-1" />}
+                                                                            {task.status === "YET_TO_START" && <Clock className="h-3 w-3 mr-1" />}
+                                                                            {task.status.replace('_', ' ')}
+                                                                        </Badge>
+                                                                    </div>
+                                                                </CardContent>
+                                                            </Card>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            ))
+                                        )}
+                                    </div>
+                                </SheetContent>
+                            </Sheet>
                         </div>
 
                         {/* Last Active */}

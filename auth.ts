@@ -92,6 +92,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
             if (user) {
                 token.id = user.id as string;
                 token.role = user.role;
+                token.userRole = user.userRole;
                 
                 // Check if user needs onboarding (Google users without role)
                 if (!user.role && user.email) {
@@ -115,6 +116,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
             if (session.user) {
                 session.user.id = token.id as string;
                 session.user.role = token.role as Role;
+                session.user.userRole = token.userRole as any;
             }
             return session;
         },

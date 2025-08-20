@@ -64,6 +64,24 @@ enum InvitationType {
     PROJECT_MEMBER
 }
 
+enum UserRole {
+    BASIC_DEVELOPER      // Basic access - can view projects, tasks
+    PROJECT_CREATOR      // Can create projects, onboard clients
+    SENIOR_DEVELOPER     // Full development access
+    TEAM_LEAD           // Team management access
+}
+
+enum NotificationType {
+    PROJECT_ASSIGNED
+    TASK_ASSIGNED
+    TASK_COMPLETED
+    PROJECT_UPDATE
+    USER_PROMOTED
+    CLIENT_ONBOARDED
+    FEEDBACK_RECEIVED
+    GENERAL
+}
+
 model User {
     id                String    @id @default(cuid())
     name              String?
@@ -74,6 +92,7 @@ model User {
     bio               String?   @db.Text
     skills            String?   @db.Text
     role              Role      @default(CLIENT)
+    userRole          UserRole? // Additional role for developers (only for DEVELOPER role)
     verifyToken       String?
     verifyTokenExpiry DateTime?
     resetToken        String?
@@ -111,6 +130,10 @@ model User {
     // Project memberships
     projectMemberships  ProjectMember[]
     addedProjectMembers ProjectMember[] @relation("ProjectMemberAdder")
+
+    // Notifications
+    sentNotifications     Notification[] @relation("NotificationSender")
+    receivedNotifications Notification[] @relation("NotificationReceiver")
 }
 
 model Company {
@@ -350,4 +373,29 @@ model ProjectMember {
     @@unique([userId, projectId])
     @@index([userId])
     @@index([projectId])
+}
+
+model Notification {
+    id          String           @id @default(cuid())
+    title       String
+    description String?          @db.Text
+    type        NotificationType @default(GENERAL)
+    read        Boolean          @default(false)
+    actionUrl   String? // URL to redirect when notification is clicked
+    metadata    Json? // Additional data related to notification
+
+    // Who sent the notification
+    senderId String?
+    sender   User?  @relation("NotificationSender", fields: [senderId], references: [id])
+
+    // Who receives the notification
+    receiverId String
+    receiver   User   @relation("NotificationReceiver", fields: [receiverId], references: [id], onDelete: Cascade)
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@index([receiverId, read])
+    @@index([receiverId, createdAt])
+    @@index([type])
 }

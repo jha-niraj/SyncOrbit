@@ -2,7 +2,7 @@
 
 import type React from "react"
 import { usePathname, useRouter } from "next/navigation"
-import { LogOut, ChevronRight, UserPlus, Users, Briefcase, BarChart3, Settings, Home, Building2 } from "lucide-react"
+import { LogOut, ChevronRight, UserPlus, Users, Briefcase, BarChart3, Settings, Home, Building2, Bell, UserCog } from "lucide-react"
 import Link from "next/link"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { toast } from "sonner"
@@ -87,6 +87,24 @@ const Sidebar = ({ isCollapsed, toggleSidebar }: SidebarProps) => {
                 path: "analytics",
                 name: "Analytics",
                 icon: <BarChart3 className="h-5 w-5" />,
+                status: "active"
+            }
+        ] : []),
+        // Show notifications for developers and PMs
+        ...(session?.user?.role && ["DEVELOPER", "PRODUCTMANAGER"].includes(session.user.role) ? [
+            {
+                path: "notifications",
+                name: "Notifications",
+                icon: <Bell className="h-5 w-5" />,
+                status: "active"
+            }
+        ] : []),
+        // Show role settings only for PMs
+        ...(session?.user?.role === 'PRODUCTMANAGER' ? [
+            {
+                path: "role-settings",
+                name: "Role Settings",
+                icon: <UserCog className="h-5 w-5" />,
                 status: "active"
             }
         ] : []),

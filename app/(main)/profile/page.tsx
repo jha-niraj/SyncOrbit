@@ -54,8 +54,8 @@ export default async function ProfilePage() {
 
 	return (
 		<div className="min-h-screen bg-white dark:bg-neutral-900">
-			<div className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
-				<div className="flex flex-col lg:flex-row gap-8">
+			<div className="max-w-7xl mx-auto p-4 pt-4">
+				<div className="flex flex-col lg:flex-row gap-2">
 					<div className="lg:w-1/3">
 						<Card className="sticky top-8">
 							<CardHeader className="text-center">
@@ -190,7 +190,7 @@ export default async function ProfilePage() {
 									Settings
 								</TabsTrigger>
 							</TabsList>
-							<TabsContent value="profile" className="mt-6">
+							<TabsContent value="profile" className="mt-2">
 								<Card>
 									<CardHeader>
 										<CardTitle>
