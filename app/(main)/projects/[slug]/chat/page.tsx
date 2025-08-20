@@ -5,15 +5,9 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
-import { 
-    ArrowLeft, 
-    Send, 
-    Paperclip, 
-    Smile,
-    MoreVertical,
-    Phone,
-    Video,
-    Info
+import {
+    ArrowLeft, Send, Paperclip, Smile, MoreVertical,
+    Phone, Video, Info
 } from "lucide-react"
 import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
@@ -74,7 +68,7 @@ export default function ProjectChatPage({ params }: ChatPageProps) {
         try {
             setLoading(true)
             const result = await getProjectMessages(slug)
-            
+
             if (result.success) {
                 setMessages(result.messages)
                 setProject(result.project)
@@ -145,9 +139,9 @@ export default function ProjectChatPage({ params }: ChatPageProps) {
     const renderMessage = (message: MessageData, index: number) => {
         const isOwnMessage = message.user.id === session?.user?.id
         const showAvatar = index === 0 || messages[index - 1].user.id !== message.user.id
-        const showTimestamp = index === messages.length - 1 || 
-                            messages[index + 1].user.id !== message.user.id ||
-                            (new Date(messages[index + 1].createdAt).getTime() - new Date(message.createdAt).getTime()) > 300000 // 5 minutes
+        const showTimestamp = index === messages.length - 1 ||
+            messages[index + 1].user.id !== message.user.id ||
+            (new Date(messages[index + 1].createdAt).getTime() - new Date(message.createdAt).getTime()) > 300000 // 5 minutes
 
         return (
             <motion.div
@@ -157,71 +151,82 @@ export default function ProjectChatPage({ params }: ChatPageProps) {
                 transition={{ duration: 0.3 }}
                 className={`flex gap-3 ${isOwnMessage ? 'flex-row-reverse' : 'flex-row'}`}
             >
-                {showAvatar && !isOwnMessage && (
-                    <Avatar className="h-8 w-8 flex-shrink-0">
-                        <AvatarImage src={message.user.image || ""} alt={message.user.name || "User"} />
-                        <AvatarFallback className="text-xs">
-                            {message.user.name?.split(' ').map((n: string) => n[0]).join('') || "U"}
-                        </AvatarFallback>
-                    </Avatar>
-                )}
-                
+                {
+                    showAvatar && !isOwnMessage && (
+                        <Avatar className="h-8 w-8 flex-shrink-0">
+                            <AvatarImage src={message.user.image || ""} alt={message.user.name || "User"} />
+                            <AvatarFallback className="text-xs">
+                                {message.user.name?.split(' ').map((n: string) => n[0]).join('') || "U"}
+                            </AvatarFallback>
+                        </Avatar>
+                    )
+                }
+
                 {!showAvatar && !isOwnMessage && <div className="w-8 flex-shrink-0" />}
 
                 <div className={`flex flex-col max-w-xs sm:max-w-md ${isOwnMessage ? 'items-end' : 'items-start'}`}>
-                    {showAvatar && (
-                        <div className={`flex items-center gap-2 mb-1 ${isOwnMessage ? 'flex-row-reverse' : 'flex-row'}`}>
-                            <span className="text-sm font-medium text-foreground">{message.user.name || "Anonymous"}</span>
-                            <Badge className={`${getRoleColor(message.user.role)} border text-xs`}>
-                                {message.user.role}
-                            </Badge>
-                        </div>
-                    )}
-                    
+                    {
+                        showAvatar && (
+                            <div className={`flex items-center gap-2 mb-1 ${isOwnMessage ? 'flex-row-reverse' : 'flex-row'}`}>
+                                <span className="text-sm font-medium text-foreground">{message.user.name || "Anonymous"}</span>
+                                <Badge className={`${getRoleColor(message.user.role)} border text-xs`}>
+                                    {message.user.role}
+                                </Badge>
+                            </div>
+                        )
+                    }
+
                     <div
-                        className={`rounded-2xl px-4 py-2 ${
-                            isOwnMessage
+                        className={`rounded-2xl px-4 py-2 ${isOwnMessage
                                 ? 'bg-primary text-primary-foreground'
                                 : 'bg-muted text-foreground'
-                        }`}
+                            }`}
                     >
                         <p className="text-sm whitespace-pre-wrap">{message.content}</p>
-                        {message.linkUrl && (
-                            <a 
-                                href={message.linkUrl} 
-                                target="_blank" 
-                                rel="noopener noreferrer"
-                                className="block mt-2 text-xs underline"
-                            >
-                                {message.linkTitle || message.linkUrl}
-                            </a>
-                        )}
-                        {message.imageUrl && (
-                            <Image
-                                src={message.imageUrl} 
-                                alt="Shared image"
-                                className="mt-2 max-w-full rounded-lg"
-                                width={32}
-                                height={32}
-                            />
-                        )}
+                        {
+                            message.linkUrl && (
+                                <a
+                                    href={message.linkUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="block mt-2 text-xs underline"
+                                >
+                                    {message.linkTitle || message.linkUrl}
+                                </a>
+                            )
+                        }
+                        {
+                            message.imageUrl && (
+                                <Image
+                                    src={message.imageUrl}
+                                    alt="Shared image"
+                                    className="mt-2 max-w-full rounded-lg"
+                                    width={32}
+                                    height={32}
+                                />
+                            )
+                        }
                     </div>
-                    
-                    {showTimestamp && (
-                        <span className={`text-xs text-muted-foreground mt-1 ${isOwnMessage ? 'text-right' : 'text-left'}`}>
-                            {formatDistanceToNow(new Date(message.createdAt), { addSuffix: true })}
-                        </span>
-                    )}
+
+                    {
+                        showTimestamp && (
+                            <span className={`text-xs text-muted-foreground mt-1 ${isOwnMessage ? 'text-right' : 'text-left'}`}>
+                                {formatDistanceToNow(new Date(message.createdAt), { addSuffix: true })}
+                            </span>
+                        )
+                    }
                 </div>
 
-                {showAvatar && isOwnMessage && (
-                    <Avatar className="h-8 w-8 flex-shrink-0">
-                        <AvatarImage src={message.user.image || ""} alt={message.user.name || "User"} />
-                        <AvatarFallback className="text-xs">
-                            {message.user.name?.split(' ').map((n: string) => n[0]).join('') || "U"}
-                        </AvatarFallback>
-                    </Avatar>
-                )}
+                {
+                    showAvatar && isOwnMessage && (
+                        <Avatar className="h-8 w-8 flex-shrink-0">
+                            <AvatarImage src={message.user.image || ""} alt={message.user.name || "User"} />
+                            <AvatarFallback className="text-xs">
+                                {message.user.name?.split(' ').map((n: string) => n[0]).join('') || "U"}
+                            </AvatarFallback>
+                        </Avatar>
+                    )
+                }
             </motion.div>
         )
     }
@@ -255,7 +260,6 @@ export default function ProjectChatPage({ params }: ChatPageProps) {
     return (
         <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
             <div className="flex flex-col h-screen max-w-4xl mx-auto">
-                {/* Header */}
                 <div className="bg-background/80 backdrop-blur-xl border-b border-border/50 p-4">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
@@ -269,7 +273,6 @@ export default function ProjectChatPage({ params }: ChatPageProps) {
                                 <p className="text-sm text-muted-foreground">Project Chat</p>
                             </div>
                         </div>
-                        
                         <div className="flex items-center gap-2">
                             <Button variant="ghost" size="sm">
                                 <Phone className="h-4 w-4" />
@@ -286,43 +289,39 @@ export default function ProjectChatPage({ params }: ChatPageProps) {
                         </div>
                     </div>
                 </div>
-
-                {/* Messages */}
                 <div className="flex-1 overflow-y-auto p-4 space-y-4">
                     <AnimatePresence>
                         {messages.map((message, index) => renderMessage(message, index))}
                     </AnimatePresence>
-                    
-                    {isTyping && (
-                        <motion.div
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -10 }}
-                            className="flex items-center gap-3"
-                        >
-                            <Avatar className="h-8 w-8">
-                                <AvatarFallback className="text-xs">...</AvatarFallback>
-                            </Avatar>
-                            <div className="bg-muted rounded-2xl px-4 py-2">
-                                <div className="flex space-x-1">
-                                    <div className="w-2 h-2 bg-muted-foreground/50 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                                    <div className="w-2 h-2 bg-muted-foreground/50 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                                    <div className="w-2 h-2 bg-muted-foreground/50 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+
+                    {
+                        isTyping && (
+                            <motion.div
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -10 }}
+                                className="flex items-center gap-3"
+                            >
+                                <Avatar className="h-8 w-8">
+                                    <AvatarFallback className="text-xs">...</AvatarFallback>
+                                </Avatar>
+                                <div className="bg-muted rounded-2xl px-4 py-2">
+                                    <div className="flex space-x-1">
+                                        <div className="w-2 h-2 bg-muted-foreground/50 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                                        <div className="w-2 h-2 bg-muted-foreground/50 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                                        <div className="w-2 h-2 bg-muted-foreground/50 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                                    </div>
                                 </div>
-                            </div>
-                        </motion.div>
-                    )}
-                    
+                            </motion.div>
+                        )
+                    }
                     <div ref={messagesEndRef} />
                 </div>
-
-                {/* Message Input */}
                 <div className="bg-background/80 backdrop-blur-xl border-t border-border/50 p-4">
                     <div className="flex items-end gap-3">
                         <Button variant="ghost" size="sm" className="flex-shrink-0">
                             <Paperclip className="h-4 w-4" />
                         </Button>
-                        
                         <div className="flex-1 relative">
                             <Input
                                 placeholder="Type your message..."
@@ -339,8 +338,7 @@ export default function ProjectChatPage({ params }: ChatPageProps) {
                                 <Smile className="h-4 w-4" />
                             </Button>
                         </div>
-                        
-                        <Button 
+                        <Button
                             onClick={handleSendMessage}
                             disabled={!newMessage.trim()}
                             size="sm"

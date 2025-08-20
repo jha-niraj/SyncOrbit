@@ -81,26 +81,10 @@ export const Navbar = () => {
                                 <X className="group-data-[state=active]:rotate-0 group-data-[state=active]:scale-100 group-data-[state=active]:opacity-100 absolute inset-0 m-auto size-6 -rotate-180 scale-0 opacity-0 duration-200" />
                             </button>
                         </div>
-
                         <div className="absolute inset-0 m-auto hidden size-fit lg:block">
                             <ul className="flex gap-8 text-sm">
-                                {menuItems.map((item, index) => (
-                                    <li key={index}>
-                                        <Link
-                                            href={item.href}
-                                            onClick={(e) => handleLinkClick(item.href, e)}
-                                            className="text-muted-foreground hover:text-accent-foreground block duration-150">
-                                            <span>{item.name}</span>
-                                        </Link>
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-
-                        <div className="bg-background group-data-[state=active]:block lg:group-data-[state=active]:flex mb-6 hidden w-full flex-wrap items-center justify-end space-y-8 rounded-3xl border p-6 shadow-2xl shadow-zinc-300/20 md:flex-nowrap lg:m-0 lg:flex lg:w-fit lg:gap-6 lg:space-y-0 lg:border-transparent lg:bg-transparent lg:p-0 lg:shadow-none dark:shadow-none dark:lg:bg-transparent">
-                            <div className="lg:hidden">
-                                <ul className="space-y-6 text-base">
-                                    {menuItems.map((item, index) => (
+                                {
+                                    menuItems.map((item, index) => (
                                         <li key={index}>
                                             <Link
                                                 href={item.href}
@@ -109,7 +93,25 @@ export const Navbar = () => {
                                                 <span>{item.name}</span>
                                             </Link>
                                         </li>
-                                    ))}
+                                    ))
+                                }
+                            </ul>
+                        </div>
+                        <div className="bg-background group-data-[state=active]:block lg:group-data-[state=active]:flex mb-6 hidden w-full flex-wrap items-center justify-end space-y-8 rounded-3xl border p-6 shadow-2xl shadow-zinc-300/20 md:flex-nowrap lg:m-0 lg:flex lg:w-fit lg:gap-6 lg:space-y-0 lg:border-transparent lg:bg-transparent lg:p-0 lg:shadow-none dark:shadow-none dark:lg:bg-transparent">
+                            <div className="lg:hidden">
+                                <ul className="space-y-6 text-base">
+                                    {
+                                        menuItems.map((item, index) => (
+                                            <li key={index}>
+                                                <Link
+                                                    href={item.href}
+                                                    onClick={(e) => handleLinkClick(item.href, e)}
+                                                    className="text-muted-foreground hover:text-accent-foreground block duration-150">
+                                                    <span>{item.name}</span>
+                                                </Link>
+                                            </li>
+                                        ))
+                                    }
                                 </ul>
                                 <div className="mt-6 pt-6 border-t border-border/20">
                                     <button
@@ -163,4 +165,4 @@ export const Navbar = () => {
     )
 }
 
-export default Navbar
+export default Navbar;

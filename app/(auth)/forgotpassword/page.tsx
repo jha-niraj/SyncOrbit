@@ -148,7 +148,6 @@ function ForgotPassword() {
                     />
                 </svg>
             </div>
-
             <div className="flex-1 flex items-center justify-center p-4">
                 <div className="w-full max-w-md relative z-10">
                     <div className="text-center mb-8">

@@ -6,7 +6,10 @@ import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
-import { DollarSign, Users, ArrowLeft, CheckCircle, Target, MessageSquare, CreditCard, Plus, Clock, ListTodo, MessageCircle } from "lucide-react"
+import {
+	DollarSign, Users, ArrowLeft, CheckCircle, Target, MessageSquare,
+	CreditCard, Plus, Clock, ListTodo, MessageCircle
+} from "lucide-react"
 import Link from "next/link"
 import { getProjectBySlug } from "@/actions/(client)/project.action"
 import { TaskManagementSheet } from "./_components/TaskManagementSheet"
@@ -161,41 +164,46 @@ export default function ProjectPage({ params }: ProjectPageProps) {
 									}`} />
 								<h4 className="font-medium text-foreground">{task.title}</h4>
 							</div>
-							{task.assignedDeveloper && (
-								<Avatar className="h-6 w-6">
-									<AvatarImage src={task.assignedDeveloper.image || "/placeholder.svg"} alt={task.assignedDeveloper.name || "Developer"} />
-									<AvatarFallback className="text-xs">
-										{task.assignedDeveloper.name?.split(" ").map((n: string) => n[0]).join("") || "D"}
-									</AvatarFallback>
-								</Avatar>
-							)}
+							{
+								task.assignedDeveloper && (
+									<Avatar className="h-6 w-6">
+										<AvatarImage src={task.assignedDeveloper.image || "/placeholder.svg"} alt={task.assignedDeveloper.name || "Developer"} />
+										<AvatarFallback className="text-xs">
+											{task.assignedDeveloper.name?.split(" ").map((n: string) => n[0]).join("") || "D"}
+										</AvatarFallback>
+									</Avatar>
+								)
+							}
 						</div>
-
-						{task.description && (
-							<p className="text-sm text-muted-foreground mb-3">{task.description}</p>
-						)}
-
-						{subtaskCount > 0 && (
-							<div className="space-y-2">
-								<div className="flex justify-between items-center">
-									<span className="text-xs text-muted-foreground">
-										{completedSubtasks} of {subtaskCount} subtasks
-									</span>
-									<span className="text-xs font-medium">{progress}%</span>
+						{
+							task.description && (
+								<p className="text-sm text-muted-foreground mb-3">{task.description}</p>
+							)
+						}
+						{
+							subtaskCount > 0 && (
+								<div className="space-y-2">
+									<div className="flex justify-between items-center">
+										<span className="text-xs text-muted-foreground">
+											{completedSubtasks} of {subtaskCount} subtasks
+										</span>
+										<span className="text-xs font-medium">{progress}%</span>
+									</div>
+									<Progress value={progress} className="h-1" />
 								</div>
-								<Progress value={progress} className="h-1" />
-							</div>
-						)}
-
+							)
+						}
 						<div className="flex items-center justify-between mt-3">
 							<Badge className={`${getTaskStatusColor(task.status)} border text-xs`}>
 								{task.status.replace('_', ' ')}
 							</Badge>
-							{task.assignedDeveloper && (
-								<span className="text-xs text-muted-foreground">
-									{task.assignedDeveloper.name}
-								</span>
-							)}
+							{
+								task.assignedDeveloper && (
+									<span className="text-xs text-muted-foreground">
+										{task.assignedDeveloper.name}
+									</span>
+								)
+							}
 						</div>
 					</div>
 				}
@@ -210,37 +218,43 @@ export default function ProjectPage({ params }: ProjectPageProps) {
 					{icon}
 					{title} ({tasks.length})
 				</h3>
-				{isDeveloper && status !== TaskStatus.COMPLETED && (
-					<div className="flex gap-2">
-						{tasks.map((task: any) => (
-							<Button
-								key={task.id}
-								variant="ghost"
-								size="sm"
-								onClick={(e) => {
-									e.preventDefault()
-									const nextStatus = status === TaskStatus.YET_TO_START ? TaskStatus.IN_PROGRESS : TaskStatus.COMPLETED
-									handleTaskStatusUpdate(task.id, nextStatus)
-								}}
-								className="text-xs"
-							>
-								Move to {status === TaskStatus.YET_TO_START ? 'Working' : 'Completed'}
-							</Button>
-						)).slice(0, 1)}
-					</div>
-				)}
+				{
+					isDeveloper && status !== TaskStatus.COMPLETED && (
+						<div className="flex gap-2">
+							{
+								tasks.map((task: any) => (
+									<Button
+										key={task.id}
+										variant="ghost"
+										size="sm"
+										onClick={(e) => {
+											e.preventDefault()
+											const nextStatus = status === TaskStatus.YET_TO_START ? TaskStatus.IN_PROGRESS : TaskStatus.COMPLETED
+											handleTaskStatusUpdate(task.id, nextStatus)
+										}}
+										className="text-xs"
+									>
+										Move to {status === TaskStatus.YET_TO_START ? 'Working' : 'Completed'}
+									</Button>
+								)).slice(0, 1)
+							}
+						</div>
+					)
+				}
 			</div>
 			<div className="space-y-3 min-h-32">
-				{tasks.length > 0 ? (
-					tasks.map(renderTaskCard)
-				) : (
-					<div className="text-center py-8 text-muted-foreground">
-						<div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-3">
-							{icon}
+				{
+					tasks.length > 0 ? (
+						tasks.map(renderTaskCard)
+					) : (
+						<div className="text-center py-8 text-muted-foreground">
+							<div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-3">
+								{icon}
+							</div>
+							<p className="text-sm">No tasks in {title.toLowerCase()}</p>
 						</div>
-						<p className="text-sm">No tasks in {title.toLowerCase()}</p>
-					</div>
-				)}
+					)
+				}
 			</div>
 		</div>
 	)
@@ -249,7 +263,6 @@ export default function ProjectPage({ params }: ProjectPageProps) {
 		<ProjectStoreProvider initialProject={initialProject}>
 			<div className="min-h-screen bg-background">
 				<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-					{/* Back button and navigation */}
 					<div className="flex items-center justify-between mb-8">
 						<Link href="/projects">
 							<Button variant="ghost" className="gap-2">
@@ -272,8 +285,6 @@ export default function ProjectPage({ params }: ProjectPageProps) {
 							</Link>
 						</div>
 					</div>
-
-					{/* Project Header */}
 					<div className="space-y-6 mb-12">
 						<div>
 							<h1 className="text-4xl font-bold text-foreground mb-4">
@@ -283,39 +294,41 @@ export default function ProjectPage({ params }: ProjectPageProps) {
 								{project.description || "No description provided"}
 							</p>
 						</div>
-
-						{/* Recent Feedback Preview */}
-						{project.feedbacks && project.feedbacks.length > 0 && (
-							<Card className="border-l-4 border-l-blue-500">
-								<CardHeader>
-									<CardTitle className="flex items-center gap-2 text-blue-600">
-										<MessageSquare className="h-5 w-5" />
-										Recent Feedback
-									</CardTitle>
-								</CardHeader>
-								<CardContent>
-									<div className="space-y-3">
-										{project.feedbacks.slice(0, 2).map((feedback: any, index: number) => (
-											<div key={index} className="border-l-2 border-muted pl-4">
-												<p className="text-sm text-muted-foreground">{feedback.message}</p>
-												<p className="text-xs text-muted-foreground mt-1">
-													{new Date(feedback.createdAt).toLocaleDateString()}
-												</p>
-											</div>
-										))}
-										{project.feedbacks.length > 2 && (
-											<Link href={`/projects/${slug}/feedback`}>
-												<Button variant="link" className="p-0 h-auto text-blue-600">
-													View all {project.feedbacks.length} feedback items →
-												</Button>
-											</Link>
-										)}
-									</div>
-								</CardContent>
-							</Card>
-						)}
-
-						{/* Project Stats Grid */}
+						{
+							project.feedbacks && project.feedbacks.length > 0 && (
+								<Card className="border-l-4 border-l-blue-500">
+									<CardHeader>
+										<CardTitle className="flex items-center gap-2 text-blue-600">
+											<MessageSquare className="h-5 w-5" />
+											Recent Feedback
+										</CardTitle>
+									</CardHeader>
+									<CardContent>
+										<div className="space-y-3">
+											{
+												project.feedbacks.slice(0, 2).map((feedback: any, index: number) => (
+													<div key={index} className="border-l-2 border-muted pl-4">
+														<p className="text-sm text-muted-foreground">{feedback.message}</p>
+														<p className="text-xs text-muted-foreground mt-1">
+															{new Date(feedback.createdAt).toLocaleDateString()}
+														</p>
+													</div>
+												))
+											}
+											{
+												project.feedbacks.length > 2 && (
+													<Link href={`/projects/${slug}/feedback`}>
+														<Button variant="link" className="p-0 h-auto text-blue-600">
+															View all {project.feedbacks.length} feedback items →
+														</Button>
+													</Link>
+												)
+											}
+										</div>
+									</CardContent>
+								</Card>
+							)
+						}
 						<div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
 							<Card>
 								<CardContent className="flex items-center gap-4 p-6">
@@ -330,7 +343,6 @@ export default function ProjectPage({ params }: ProjectPageProps) {
 									</div>
 								</CardContent>
 							</Card>
-
 							<Card>
 								<CardContent className="flex items-center gap-4 p-6">
 									<div className="w-12 h-12 bg-green-500/10 rounded-xl flex items-center justify-center">
@@ -344,7 +356,6 @@ export default function ProjectPage({ params }: ProjectPageProps) {
 									</div>
 								</CardContent>
 							</Card>
-
 							<Card>
 								<CardContent className="flex items-center gap-4 p-6">
 									<div className="w-12 h-12 bg-blue-500/10 rounded-xl flex items-center justify-center">
@@ -358,7 +369,6 @@ export default function ProjectPage({ params }: ProjectPageProps) {
 									</div>
 								</CardContent>
 							</Card>
-
 							<Card>
 								<CardContent className="flex items-center gap-4 p-6">
 									<div className="w-12 h-12 bg-purple-500/10 rounded-xl flex items-center justify-center">
@@ -374,7 +384,6 @@ export default function ProjectPage({ params }: ProjectPageProps) {
 							</Card>
 						</div>
 					</div>
-					{/* Task Management - Kanban Board */}
 					<Card className="mb-8">
 						<CardHeader>
 							<div className="flex items-center justify-between">
@@ -387,18 +396,20 @@ export default function ProjectPage({ params }: ProjectPageProps) {
 										Organize and track tasks across different stages
 									</CardDescription>
 								</div>
-								{isDeveloper && (
-									<CreateTaskSheet
-										projectId={project.id}
-										onTaskCreated={handleTaskCreated}
-										trigger={
-											<Button>
-												<Plus className="h-4 w-4 mr-2" />
-												Add Task
-											</Button>
-										}
-									/>
-								)}
+								{
+									isDeveloper && (
+										<CreateTaskSheet
+											projectId={project.id}
+											onTaskCreated={handleTaskCreated}
+											trigger={
+												<Button>
+													<Plus className="h-4 w-4 mr-2" />
+													Add Task
+												</Button>
+											}
+										/>
+									)
+								}
 							</div>
 						</CardHeader>
 						<CardContent>
@@ -422,7 +433,6 @@ export default function ProjectPage({ params }: ProjectPageProps) {
 						</CardContent>
 					</Card>
 
-					{/* Kanban Board */}
 					<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 						{renderKanbanColumn("Initiate", initiateeTasks, TaskStatus.YET_TO_START, <ListTodo className="h-4 w-4" />)}
 						{renderKanbanColumn("Working", workingTasks, TaskStatus.IN_PROGRESS, <Clock className="h-4 w-4" />)}

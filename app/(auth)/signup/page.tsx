@@ -239,28 +239,30 @@ function SignUp() {
                         </div>
 
                         {/* Company Display for Referral Code */}
-                        {company && referralValidated && (
-                            <div className="mb-6">
-                                <Card className="border-green-200 bg-green-50 dark:bg-green-900/20 border-2">
-                                    <CardContent className="p-4">
-                                        <div className="flex items-center gap-3">
-                                            <Building2 className="h-5 w-5 text-green-600" />
-                                            <div>
-                                                <p className="font-semibold text-green-800 dark:text-green-200">
-                                                    {company.name}
-                                                </p>
-                                                <p className="text-sm text-green-600 dark:text-green-300">
-                                                    Referral code validated
-                                                </p>
+                        {
+                            company && referralValidated && (
+                                <div className="mb-6">
+                                    <Card className="border-green-200 bg-green-50 dark:bg-green-900/20 border-2">
+                                        <CardContent className="p-4">
+                                            <div className="flex items-center gap-3">
+                                                <Building2 className="h-5 w-5 text-green-600" />
+                                                <div>
+                                                    <p className="font-semibold text-green-800 dark:text-green-200">
+                                                        {company.name}
+                                                    </p>
+                                                    <p className="text-sm text-green-600 dark:text-green-300">
+                                                        Referral code validated
+                                                    </p>
+                                                </div>
+                                                <Badge className="ml-auto bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100">
+                                                    Verified
+                                                </Badge>
                                             </div>
-                                            <Badge className="ml-auto bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100">
-                                                Verified
-                                            </Badge>
-                                        </div>
-                                    </CardContent>
-                                </Card>
-                            </div>
-                        )}
+                                        </CardContent>
+                                    </Card>
+                                </div>
+                            )
+                        }
 
                         <form onSubmit={handleSubmit} className="space-y-6 w-full">
                             <div className="flex gap-4 w-full">
@@ -279,73 +281,80 @@ function SignUp() {
                                 </div>
 
                                 {/* Referral Code Field (for developers and clients) */}
-                                {role !== 'PRODUCTMANAGER' && (
-                                    <div className="space-y-2 w-full">
-                                        <Label htmlFor="referralCode" className="text-neutral-700 dark:text-neutral-300 font-medium">
-                                            Referral Code <span className="text-neutral-500">(Optional)</span>
-                                        </Label>
-                                        <div className="relative">
-                                            <Input
-                                                id="referralCode"
-                                                placeholder="Enter referral code..."
-                                                value={referralCode}
-                                                onChange={(e) => handleReferralCodeChange(e.target.value)}
-                                                disabled={isLoading}
-                                                className="h-12 rounded-2xl border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 focus:border-neutral-400 dark:focus:border-neutral-500 focus:ring-0 placeholder:text-neutral-400 dark:placeholder:text-neutral-500 pr-10"
-                                            />
-                                            {validatingReferral && (
-                                                <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                                                    <Loader2 className="h-4 w-4 animate-spin text-blue-500" />
-                                                </div>
-                                            )}
+                                {
+                                    role !== 'PRODUCTMANAGER' && (
+                                        <div className="space-y-2 w-full">
+                                            <Label htmlFor="referralCode" className="text-neutral-700 dark:text-neutral-300 font-medium">
+                                                Referral Code <span className="text-neutral-500">(Optional)</span>
+                                            </Label>
+                                            <div className="relative">
+                                                <Input
+                                                    id="referralCode"
+                                                    placeholder="Enter referral code..."
+                                                    value={referralCode}
+                                                    onChange={(e) => handleReferralCodeChange(e.target.value)}
+                                                    disabled={isLoading}
+                                                    className="h-12 rounded-2xl border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 focus:border-neutral-400 dark:focus:border-neutral-500 focus:ring-0 placeholder:text-neutral-400 dark:placeholder:text-neutral-500 pr-10"
+                                                />
+                                                {
+                                                    validatingReferral && (
+                                                        <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                                                            <Loader2 className="h-4 w-4 animate-spin text-blue-500" />
+                                                        </div>
+                                                    )
+                                                }
+                                            </div>
+                                            {
+                                                referralCode && !validatingReferral && (
+                                                    <p className={`text-sm ${referralValidated ? 'text-green-600' : 'text-red-600'}`}>
+                                                        {referralValidated ? 'Valid referral code' : 'Invalid referral code'}
+                                                    </p>
+                                                )
+                                            }
                                         </div>
-                                        {referralCode && !validatingReferral && (
-                                            <p className={`text-sm ${referralValidated ? 'text-green-600' : 'text-red-600'}`}>
-                                                {referralValidated ? 'Valid referral code' : 'Invalid referral code'}
-                                            </p>
-                                        )}
-                                    </div>
-                                )}
+                                    )
+                                }
                             </div>
 
-                            {/* Company Fields (only for PMs) */}
-                            {role === 'PRODUCTMANAGER' && (
-                                <div className="flex gap-4 w-full">
-                                    <div className="space-y-2">
-                                        <Label htmlFor="companyName" className="text-neutral-700 dark:text-neutral-300 font-medium">
-                                            Company Name *
-                                        </Label>
-                                        <Input
-                                            id="companyName"
-                                            placeholder="Enter company name..."
-                                            value={companyName}
-                                            onChange={(e) => setCompanyName(e.target.value)}
-                                            required
-                                            disabled={isLoading}
-                                            className="h-12 rounded-2xl border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 focus:border-neutral-400 dark:focus:border-neutral-500 focus:ring-0 placeholder:text-neutral-400 dark:placeholder:text-neutral-500"
-                                        />
+                            {
+                                role === 'PRODUCTMANAGER' && (
+                                    <div className="flex gap-4 w-full">
+                                        <div className="space-y-2">
+                                            <Label htmlFor="companyName" className="text-neutral-700 dark:text-neutral-300 font-medium">
+                                                Company Name *
+                                            </Label>
+                                            <Input
+                                                id="companyName"
+                                                placeholder="Enter company name..."
+                                                value={companyName}
+                                                onChange={(e) => setCompanyName(e.target.value)}
+                                                required
+                                                disabled={isLoading}
+                                                className="h-12 rounded-2xl border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 focus:border-neutral-400 dark:focus:border-neutral-500 focus:ring-0 placeholder:text-neutral-400 dark:placeholder:text-neutral-500"
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label htmlFor="companyShortName" className="text-neutral-700 dark:text-neutral-300 font-medium">
+                                                Company Short Name *
+                                            </Label>
+                                            <Input
+                                                id="companyShortName"
+                                                placeholder="e.g., projectcentral"
+                                                value={companyShortName}
+                                                onChange={(e) => setCompanyShortName(e.target.value)}
+                                                required
+                                                disabled={isLoading}
+                                                pattern="[a-zA-Z0-9]+"
+                                                title="Only alphanumeric characters allowed"
+                                                className="h-12 rounded-2xl border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 focus:border-neutral-400 dark:focus:border-neutral-500 focus:ring-0 placeholder:text-neutral-400 dark:placeholder:text-neutral-500"
+                                            />
+                                            <p className="text-xs text-neutral-500 dark:text-neutral-400">
+                                                Used for generating referral codes (alphanumeric only)
+                                            </p>
+                                        </div>
                                     </div>
-                                    <div className="space-y-2">
-                                        <Label htmlFor="companyShortName" className="text-neutral-700 dark:text-neutral-300 font-medium">
-                                            Company Short Name *
-                                        </Label>
-                                        <Input
-                                            id="companyShortName"
-                                            placeholder="e.g., projectcentral"
-                                            value={companyShortName}
-                                            onChange={(e) => setCompanyShortName(e.target.value)}
-                                            required
-                                            disabled={isLoading}
-                                            pattern="[a-zA-Z0-9]+"
-                                            title="Only alphanumeric characters allowed"
-                                            className="h-12 rounded-2xl border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 focus:border-neutral-400 dark:focus:border-neutral-500 focus:ring-0 placeholder:text-neutral-400 dark:placeholder:text-neutral-500"
-                                        />
-                                        <p className="text-xs text-neutral-500 dark:text-neutral-400">
-                                            Used for generating referral codes (alphanumeric only)
-                                        </p>
-                                    </div>
-                                </div>
-                            )}
+                                )
+                            }
                             <div className="space-y-2">
                                 <Label htmlFor="name" className="text-neutral-700 dark:text-neutral-300 font-medium">Full Name</Label>
                                 <Input

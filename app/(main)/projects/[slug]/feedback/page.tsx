@@ -7,33 +7,26 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { 
-    ArrowLeft, 
-    Plus,
-    MessageSquare,
-    Search,
-    Calendar,
-    User,
-    AlertCircle,
-    CheckCircle,
-    Clock,
+import {
+    Select, SelectContent, SelectItem,
+    SelectTrigger, SelectValue
+} from "@/components/ui/select"
+import {
+    ArrowLeft, Plus, MessageSquare, Search, Calendar,
+    User, AlertCircle, CheckCircle, Clock,
 } from "lucide-react"
 import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
 // import { useSession } from "next-auth/react"
 import { formatDistanceToNow } from "date-fns"
 import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
+    Dialog, DialogContent, DialogDescription,
+    DialogHeader, DialogTitle, DialogTrigger
 } from "@/components/ui/dialog"
 import { getProjectFeedback, createFeedback, updateFeedbackStatus } from "@/actions/(client)/feedback.action"
 import { toast } from "sonner"
 import { FeedbackStatus } from "@prisma/client"
+import { Label } from "@/components/ui/label"
 
 interface FeedbackPageProps {
     params: Promise<{
@@ -69,7 +62,7 @@ export default function FeedbackPage({ params }: FeedbackPageProps) {
     const [project, setProject] = useState<ProjectInfo | null>(null)
     const [loading, setLoading] = useState(true)
     const [slug, setSlug] = useState<string>("")
-    
+
     // Form states
     const [isDialogOpen, setIsDialogOpen] = useState(false)
     const [newFeedback, setNewFeedback] = useState({
@@ -78,7 +71,7 @@ export default function FeedbackPage({ params }: FeedbackPageProps) {
         priority: "MEDIUM" as "LOW" | "MEDIUM" | "HIGH",
         category: ""
     })
-    
+
     // Filter states
     const [searchTerm, setSearchTerm] = useState("")
     const [statusFilter, setStatusFilter] = useState("ALL")
@@ -96,7 +89,7 @@ export default function FeedbackPage({ params }: FeedbackPageProps) {
         try {
             setLoading(true)
             const result = await getProjectFeedback(slug)
-            
+
             if (result.success) {
                 setFeedback(result.feedback)
                 setProject(result.project)
@@ -154,11 +147,11 @@ export default function FeedbackPage({ params }: FeedbackPageProps) {
     const handleUpdateStatus = async (feedbackId: string, status: FeedbackStatus) => {
         try {
             const result = await updateFeedbackStatus(feedbackId, status)
-            
+
             if (result.success) {
-                setFeedback(prev => prev.map(item => 
-                    item.id === feedbackId 
-                        ? { ...item, status } 
+                setFeedback(prev => prev.map(item =>
+                    item.id === feedbackId
+                        ? { ...item, status }
                         : item
                 ))
                 toast.success("Status updated successfully")
@@ -174,10 +167,10 @@ export default function FeedbackPage({ params }: FeedbackPageProps) {
     // Filter feedback based on search and filters
     const filteredFeedback = feedback.filter(item => {
         const matchesSearch = item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                            (item.description && item.description.toLowerCase().includes(searchTerm.toLowerCase()))
+            (item.description && item.description.toLowerCase().includes(searchTerm.toLowerCase()))
         const matchesStatus = statusFilter === "ALL" || item.status === statusFilter
         const matchesPriority = priorityFilter === "ALL" || priorityFilter === "HIGH" // Simplified for now
-        
+
         return matchesSearch && matchesStatus && matchesPriority
     })
 
@@ -225,10 +218,9 @@ export default function FeedbackPage({ params }: FeedbackPageProps) {
 
     return (
         <div className="container mx-auto py-8 space-y-8">
-            {/* Header */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div className="flex items-center gap-4">
-                    <Link 
+                    <Link
                         href={`/projects/${slug}`}
                         className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
                     >
@@ -242,7 +234,6 @@ export default function FeedbackPage({ params }: FeedbackPageProps) {
                         </p>
                     </div>
                 </div>
-                
                 <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                     <DialogTrigger asChild>
                         <Button>
@@ -259,7 +250,7 @@ export default function FeedbackPage({ params }: FeedbackPageProps) {
                         </DialogHeader>
                         <div className="space-y-4">
                             <div>
-                                <label className="text-sm font-medium">Title</label>
+                                <Label className="text-sm font-medium">Title</Label>
                                 <Input
                                     placeholder="Brief description of the feedback"
                                     value={newFeedback.title}
@@ -267,7 +258,7 @@ export default function FeedbackPage({ params }: FeedbackPageProps) {
                                 />
                             </div>
                             <div>
-                                <label className="text-sm font-medium">Description</label>
+                                <Label className="text-sm font-medium">Description</Label>
                                 <Textarea
                                     placeholder="Provide detailed information about your feedback"
                                     value={newFeedback.description}
@@ -277,10 +268,10 @@ export default function FeedbackPage({ params }: FeedbackPageProps) {
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label className="text-sm font-medium">Priority</label>
-                                    <Select 
-                                        value={newFeedback.priority} 
-                                        onValueChange={(value: "LOW" | "MEDIUM" | "HIGH") => 
+                                    <Label className="text-sm font-medium">Priority</Label>
+                                    <Select
+                                        value={newFeedback.priority}
+                                        onValueChange={(value: "LOW" | "MEDIUM" | "HIGH") =>
                                             setNewFeedback(prev => ({ ...prev, priority: value }))
                                         }
                                     >
@@ -295,7 +286,7 @@ export default function FeedbackPage({ params }: FeedbackPageProps) {
                                     </Select>
                                 </div>
                                 <div>
-                                    <label className="text-sm font-medium">Category</label>
+                                    <Label className="text-sm font-medium">Category</Label>
                                     <Input
                                         placeholder="e.g., Bug, Feature, UI/UX"
                                         value={newFeedback.category}
@@ -315,8 +306,6 @@ export default function FeedbackPage({ params }: FeedbackPageProps) {
                     </DialogContent>
                 </Dialog>
             </div>
-
-            {/* Filters */}
             <Card>
                 <CardContent className="p-6">
                     <div className="flex flex-col md:flex-row gap-4">
@@ -359,103 +348,102 @@ export default function FeedbackPage({ params }: FeedbackPageProps) {
                     </div>
                 </CardContent>
             </Card>
-
-            {/* Feedback List */}
             <div className="space-y-6">
-                {filteredFeedback.length > 0 ? (
-                    <AnimatePresence>
-                        {filteredFeedback.map((item) => (
-                            <motion.div
-                                key={item.id}
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                exit={{ opacity: 0, y: -20 }}
-                                transition={{ duration: 0.2 }}
-                            >
-                                <Card className="hover:shadow-md transition-shadow">
-                                    <CardContent className="p-6">
-                                        <div className="space-y-4">
-                                            {/* Header */}
-                                            <div className="flex items-start justify-between">
-                                                <div className="space-y-2">
-                                                    <h3 className="text-lg font-semibold">{item.title}</h3>
-                                                    <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                                                        <div className="flex items-center gap-2">
-                                                            <User className="h-4 w-4" />
-                                                            {item.user.name || "Anonymous"}
+                {
+                    filteredFeedback.length > 0 ? (
+                        <AnimatePresence>
+                            {
+                                filteredFeedback.map((item) => (
+                                    <motion.div
+                                        key={item.id}
+                                        initial={{ opacity: 0, y: 20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: -20 }}
+                                        transition={{ duration: 0.2 }}
+                                    >
+                                        <Card className="hover:shadow-md transition-shadow">
+                                            <CardContent className="p-6">
+                                                <div className="space-y-4">
+                                                    <div className="flex items-start justify-between">
+                                                        <div className="space-y-2">
+                                                            <h3 className="text-lg font-semibold">{item.title}</h3>
+                                                            <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                                                                <div className="flex items-center gap-2">
+                                                                    <User className="h-4 w-4" />
+                                                                    {item.user.name || "Anonymous"}
+                                                                </div>
+                                                                <div className="flex items-center gap-2">
+                                                                    <Calendar className="h-4 w-4" />
+                                                                    {formatDistanceToNow(new Date(item.createdAt), { addSuffix: true })}
+                                                                </div>
+                                                                <Badge variant="outline">
+                                                                    {item.user.role}
+                                                                </Badge>
+                                                            </div>
                                                         </div>
                                                         <div className="flex items-center gap-2">
-                                                            <Calendar className="h-4 w-4" />
-                                                            {formatDistanceToNow(new Date(item.createdAt), { addSuffix: true })}
+                                                            <Badge variant={getStatusBadgeVariant(item.status)}>
+                                                                {getStatusIcon(item.status)}
+                                                                <span className="ml-1">{item.status.replace('_', ' ')}</span>
+                                                            </Badge>
+                                                            <Select
+                                                                value={item.status}
+                                                                onValueChange={(value) => handleUpdateStatus(item.id, value as FeedbackStatus)}
+                                                            >
+                                                                <SelectTrigger className="w-[140px]">
+                                                                    <SelectValue />
+                                                                </SelectTrigger>
+                                                                <SelectContent>
+                                                                    <SelectItem value={FeedbackStatus.PENDING}>Pending</SelectItem>
+                                                                    <SelectItem value={FeedbackStatus.IN_PROGRESS}>In Progress</SelectItem>
+                                                                    <SelectItem value={FeedbackStatus.COMPLETED}>Completed</SelectItem>
+                                                                    <SelectItem value={FeedbackStatus.CANCELLED}>Cancelled</SelectItem>
+                                                                </SelectContent>
+                                                            </Select>
                                                         </div>
-                                                        <Badge variant="outline">
-                                                            {item.user.role}
-                                                        </Badge>
+                                                    </div>
+                                                    {
+                                                        item.description && (
+                                                            <p className="text-muted-foreground">
+                                                                {item.description}
+                                                            </p>
+                                                        )
+                                                    }
+                                                    <div className="flex items-center gap-3">
+                                                        <Avatar className="h-8 w-8">
+                                                            <AvatarImage src={item.user.image || ""} />
+                                                            <AvatarFallback>
+                                                                {item.user.name?.split(" ").map(n => n[0]).join("") || "U"}
+                                                            </AvatarFallback>
+                                                        </Avatar>
+                                                        <div>
+                                                            <p className="text-sm font-medium">{item.user.name || "Anonymous"}</p>
+                                                            <p className="text-xs text-muted-foreground">{item.user.email}</p>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                                <div className="flex items-center gap-2">
-                                                    <Badge variant={getStatusBadgeVariant(item.status)}>
-                                                        {getStatusIcon(item.status)}
-                                                        <span className="ml-1">{item.status.replace('_', ' ')}</span>
-                                                    </Badge>
-                                                    <Select
-                                                        value={item.status}
-                                                        onValueChange={(value) => handleUpdateStatus(item.id, value as FeedbackStatus)}
-                                                    >
-                                                        <SelectTrigger className="w-[140px]">
-                                                            <SelectValue />
-                                                        </SelectTrigger>
-                                                        <SelectContent>
-                                                            <SelectItem value={FeedbackStatus.PENDING}>Pending</SelectItem>
-                                                            <SelectItem value={FeedbackStatus.IN_PROGRESS}>In Progress</SelectItem>
-                                                            <SelectItem value={FeedbackStatus.COMPLETED}>Completed</SelectItem>
-                                                            <SelectItem value={FeedbackStatus.CANCELLED}>Cancelled</SelectItem>
-                                                        </SelectContent>
-                                                    </Select>
-                                                </div>
-                                            </div>
-
-                                            {/* Description */}
-                                            {item.description && (
-                                                <p className="text-muted-foreground">
-                                                    {item.description}
-                                                </p>
-                                            )}
-
-                                            {/* Author */}
-                                            <div className="flex items-center gap-3">
-                                                <Avatar className="h-8 w-8">
-                                                    <AvatarImage src={item.user.image || ""} />
-                                                    <AvatarFallback>
-                                                        {item.user.name?.split(" ").map(n => n[0]).join("") || "U"}
-                                                    </AvatarFallback>
-                                                </Avatar>
-                                                <div>
-                                                    <p className="text-sm font-medium">{item.user.name || "Anonymous"}</p>
-                                                    <p className="text-xs text-muted-foreground">{item.user.email}</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </CardContent>
-                                </Card>
-                            </motion.div>
-                        ))}
-                    </AnimatePresence>
-                ) : (
-                    <Card>
-                        <CardContent className="p-12 text-center">
-                            <MessageSquare className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                            <h3 className="text-lg font-semibold mb-2">No feedback yet</h3>
-                            <p className="text-muted-foreground mb-4">
-                                Be the first to share your thoughts about this project.
-                            </p>
-                            <Button onClick={() => setIsDialogOpen(true)}>
-                                <Plus className="h-4 w-4 mr-2" />
-                                Add First Feedback
-                            </Button>
-                        </CardContent>
-                    </Card>
-                )}
+                                            </CardContent>
+                                        </Card>
+                                    </motion.div>
+                                ))
+                            }
+                        </AnimatePresence>
+                    ) : (
+                        <Card>
+                            <CardContent className="p-12 text-center">
+                                <MessageSquare className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                                <h3 className="text-lg font-semibold mb-2">No feedback yet</h3>
+                                <p className="text-muted-foreground mb-4">
+                                    Be the first to share your thoughts about this project.
+                                </p>
+                                <Button onClick={() => setIsDialogOpen(true)}>
+                                    <Plus className="h-4 w-4 mr-2" />
+                                    Add First Feedback
+                                </Button>
+                            </CardContent>
+                        </Card>
+                    )
+                }
             </div>
         </div>
     )

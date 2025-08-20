@@ -146,10 +146,8 @@ function Onboarding() {
                             Welcome {session.user.name || session.user.email}! Let&apos;s set up your account.
                         </p>
                     </CardHeader>
-
                     <CardContent>
                         <form onSubmit={handleSubmit} className="space-y-6">
-                            {/* Role Selection */}
                             <div className="space-y-2">
                                 <Label htmlFor="role">Select Your Role</Label>
                                 <Select
@@ -168,8 +166,6 @@ function Onboarding() {
                                     </SelectContent>
                                 </Select>
                             </div>
-
-                            {/* Referral Code */}
                             <div className="space-y-2">
                                 <Label htmlFor="referralCode">
                                     Referral Code <span className="text-muted-foreground">(Optional)</span>
@@ -186,16 +182,14 @@ function Onboarding() {
                                     />
                                 </div>
                             </div>
-
-                            {/* PM-specific fields */}
-                            {formData.role === "PRODUCTMANAGER" && (
+                            {
+                            formData.role === "PRODUCTMANAGER" && (
                                 <motion.div
                                     initial={{ opacity: 0, height: 0 }}
                                     animate={{ opacity: 1, height: "auto" }}
                                     transition={{ duration: 0.3 }}
                                     className="space-y-4"
                                 >
-                                    {/* Company Name */}
                                     <div className="space-y-2">
                                         <Label htmlFor="companyName">
                                             Company Name <span className="text-red-500">*</span>
@@ -213,8 +207,6 @@ function Onboarding() {
                                             />
                                         </div>
                                     </div>
-
-                                    {/* Company Email */}
                                     <div className="space-y-2">
                                         <Label htmlFor="companyEmail">
                                             Company Email <span className="text-muted-foreground">(Optional)</span>
@@ -232,21 +224,23 @@ function Onboarding() {
                                         </div>
                                     </div>
                                 </motion.div>
-                            )}
-
+                            )
+                            }
                             <Button
                                 type="submit"
                                 className="w-full"
                                 disabled={loading}
                             >
-                                {loading ? (
+                                {
+                                loading ? (
                                     <div className="flex items-center gap-2">
                                         <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
                                         Completing Setup...
                                     </div>
                                 ) : (
                                     "Complete Setup"
-                                )}
+                                )
+                                }
                             </Button>
                         </form>
                     </CardContent>

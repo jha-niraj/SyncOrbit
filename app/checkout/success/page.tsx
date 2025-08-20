@@ -107,9 +107,9 @@ export default function CheckoutSuccessPage() {
                         <div className="pt-8 border-t border-gray-200 dark:border-gray-700">
                             <p className="text-sm text-gray-500 dark:text-gray-400">
                                 Need help? Contact our support team at{" "}
-                                <a href="mailto:support@projectcentral.com" className="text-blue-600 hover:underline">
+                                <Link href="mailto:support@projectcentral.com" className="text-blue-600 hover:underline">
                                     support@projectcentral.com
-                                </a>
+                                </Link>
                             </p>
                         </div>
                     </motion.div>

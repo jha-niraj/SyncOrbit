@@ -280,16 +280,18 @@ const Sidebar = ({ isCollapsed, toggleSidebar }: SidebarProps) => {
                                                 }
                                             </AvatarFallback>
                                         </Avatar>
-                                        {!isCollapsed && (
-                                            <div className="flex-1 min-w-0">
-                                                <p className="text-sm font-medium text-foreground truncate">
-                                                    {session.user.name}
-                                                </p>
-                                                <p className="text-xs text-muted-foreground truncate">
-                                                    {session.user.role}
-                                                </p>
-                                            </div>
-                                        )}
+                                        {
+                                            !isCollapsed && (
+                                                <div className="flex-1 min-w-0">
+                                                    <p className="text-sm font-medium text-foreground truncate">
+                                                        {session.user.name}
+                                                    </p>
+                                                    <p className="text-xs text-muted-foreground truncate">
+                                                        {session.user.role}
+                                                    </p>
+                                                </div>
+                                            )
+                                        }
                                     </div>
                                     <Tooltip>
                                         <TooltipTrigger asChild>

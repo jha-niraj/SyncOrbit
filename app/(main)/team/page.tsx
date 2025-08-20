@@ -6,20 +6,17 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
-import { 
-    Users, 
-    Search, 
-    Filter, 
-    Calendar,
-    Award,
-    Activity,
-    MoreVertical,
-    UserPlus,
-    Eye,
-    CheckCircle,
-    Clock
+import {
+    Select, SelectContent, SelectItem,
+    SelectTrigger, SelectValue
+} from "@/components/ui/select"
+import {
+    Sheet, SheetContent, SheetDescription,
+    SheetHeader, SheetTitle, SheetTrigger
+} from "@/components/ui/sheet"
+import {
+    Users, Search, Filter, Calendar, Award, Activity, MoreVertical,
+    UserPlus, Eye, CheckCircle, Clock
 } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { useSession } from "next-auth/react"
@@ -52,7 +49,7 @@ export default function TeamPage() {
         try {
             setIsLoading(true)
             const result = await getTeamMembers()
-            
+
             if (result.success) {
                 setTeamMembers(result.teamMembers as TeamMember[])
             } else {
@@ -83,7 +80,7 @@ export default function TeamPage() {
             setLoadingDetails(true)
             setViewingTasks(false)
             const result = await getDeveloperDetails(developerId)
-            
+
             if (result.success) {
                 setDeveloperDetails(result.developer as unknown as DeveloperDetails)
             } else {
@@ -110,7 +107,7 @@ export default function TeamPage() {
             setLoadingDetails(true)
             setViewingTasks(true)
             const result = await getDeveloperTasks(developerId)
-            
+
             if (result.success) {
                 // Transform the result to match our expected structure
                 setDeveloperDetails({
@@ -170,9 +167,9 @@ export default function TeamPage() {
 
     const filteredMembers = teamMembers.filter(member => {
         const matchesSearch = member.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                            member.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                            member.bio?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                            member.skills?.some((skill: string) => skill.toLowerCase().includes(searchTerm.toLowerCase()))
+            member.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            member.bio?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            member.skills?.some((skill: string) => skill.toLowerCase().includes(searchTerm.toLowerCase()))
         const matchesRole = roleFilter === "all" || member.role === roleFilter
         // For now, assume all members are active since we don't have status in real data
         const matchesStatus = statusFilter === "all" || statusFilter === "ACTIVE"
@@ -198,7 +195,6 @@ export default function TeamPage() {
                                         {member.name?.split(' ').map((n: string) => n[0]).join('') || "??"}
                                     </AvatarFallback>
                                 </Avatar>
-                                
                                 <div className="space-y-2 flex-1 min-w-0">
                                     <div className="flex items-center gap-2">
                                         <h3 className="font-semibold text-foreground truncate">{member.name || "Unknown User"}</h3>
@@ -206,7 +202,6 @@ export default function TeamPage() {
                                             ACTIVE
                                         </Badge>
                                     </div>
-                                    
                                     <div className="space-y-1">
                                         <Badge className={`${getRoleColor(member.role)} border text-xs w-fit`}>
                                             {member.role}
@@ -221,142 +216,152 @@ export default function TeamPage() {
                                     </div>
                                 </div>
                             </div>
-                            
                             <div className="flex gap-2">
-                                {member.role === 'DEVELOPER' && (
-                                    <Sheet>
-                                        <SheetTrigger asChild>
-                                            <Button 
-                                                variant="ghost" 
-                                                size="sm"
-                                                onClick={() => handleViewDeveloper(member.id)}
-                                                className="opacity-0 group-hover:opacity-100 transition-opacity"
-                                            >
-                                                <Eye className="h-4 w-4" />
-                                            </Button>
-                                        </SheetTrigger>
-                                        <SheetContent className="w-[400px] sm:w-[540px]">
-                                            <SheetHeader>
-                                                <SheetTitle>Developer Details</SheetTitle>
-                                                <SheetDescription>
-                                                    Detailed information about {member.name}
-                                                </SheetDescription>
-                                            </SheetHeader>
-                                            {loadingDetails ? (
-                                                <div className="flex items-center justify-center py-8">
-                                                    <Activity className="h-6 w-6 animate-spin" />
-                                                </div>
-                                            ) : developerDetails ? (
-                                                <div className="mt-6 space-y-6">
-                                                    <div className="flex items-center gap-4">
-                                                        <Avatar className="h-20 w-20">
-                                                            <AvatarImage src={developerDetails.image || ""} alt={developerDetails.name || ""} />
-                                                            <AvatarFallback className="text-xl">
-                                                                {developerDetails.name?.split(' ').map((n: string) => n[0]).join('') || "??"}
-                                                            </AvatarFallback>
-                                                        </Avatar>
-                                                        <div>
-                                                            <h3 className="text-xl font-semibold">{developerDetails.name}</h3>
-                                                            <p className="text-muted-foreground">{developerDetails.email}</p>
-                                                            <Badge className={`${getRoleColor(developerDetails.role)} border text-xs mt-1`}>
-                                                                {developerDetails.role}
-                                                            </Badge>
+                                {
+                                    member.role === 'DEVELOPER' && (
+                                        <Sheet>
+                                            <SheetTrigger asChild>
+                                                <Button
+                                                    variant="ghost"
+                                                    size="sm"
+                                                    onClick={() => handleViewDeveloper(member.id)}
+                                                    className="opacity-0 group-hover:opacity-100 transition-opacity"
+                                                >
+                                                    <Eye className="h-4 w-4" />
+                                                </Button>
+                                            </SheetTrigger>
+                                            <SheetContent className="w-[400px] sm:w-[540px]">
+                                                <SheetHeader>
+                                                    <SheetTitle>Developer Details</SheetTitle>
+                                                    <SheetDescription>
+                                                        Detailed information about {member.name}
+                                                    </SheetDescription>
+                                                </SheetHeader>
+                                                {
+                                                    loadingDetails ? (
+                                                        <div className="flex items-center justify-center py-8">
+                                                            <Activity className="h-6 w-6 animate-spin" />
                                                         </div>
-                                                    </div>
-                                                    
-                                                    {developerDetails.bio && (
-                                                        <div>
-                                                            <h4 className="font-medium mb-2">Bio</h4>
-                                                            <p className="text-sm text-muted-foreground">{developerDetails.bio}</p>
-                                                        </div>
-                                                    )}
-
-                                                    {developerDetails?.skills && developerDetails?.skills?.length > 0 && (
-                                                        <div>
-                                                            <h4 className="font-medium mb-2">Skills</h4>
-                                                            <div className="flex flex-wrap gap-2">
-                                                                {developerDetails?.skills?.map((skill: string) => (
-                                                                    <Badge key={skill} variant="outline">{skill}</Badge>
-                                                                ))}
+                                                    ) : developerDetails ? (
+                                                        <div className="mt-6 space-y-6">
+                                                            <div className="flex items-center gap-4">
+                                                                <Avatar className="h-20 w-20">
+                                                                    <AvatarImage src={developerDetails.image || ""} alt={developerDetails.name || ""} />
+                                                                    <AvatarFallback className="text-xl">
+                                                                        {developerDetails.name?.split(' ').map((n: string) => n[0]).join('') || "??"}
+                                                                    </AvatarFallback>
+                                                                </Avatar>
+                                                                <div>
+                                                                    <h3 className="text-xl font-semibold">{developerDetails.name}</h3>
+                                                                    <p className="text-muted-foreground">{developerDetails.email}</p>
+                                                                    <Badge className={`${getRoleColor(developerDetails.role)} border text-xs mt-1`}>
+                                                                        {developerDetails.role}
+                                                                    </Badge>
+                                                                </div>
                                                             </div>
-                                                        </div>
-                                                    )}
-
-                                                    <div>
-                                                        <h4 className="font-medium mb-2">Statistics</h4>
-                                                        <div className="grid grid-cols-2 gap-4">
-                                                            <div className="text-center p-3 bg-muted rounded-lg">
-                                                                <div className="text-2xl font-bold text-blue-600">{developerDetails.stats?.projectCount || 0}</div>
-                                                                <div className="text-xs text-muted-foreground">Projects</div>
-                                                            </div>
-                                                            <div className="text-center p-3 bg-muted rounded-lg">
-                                                                <div className="text-2xl font-bold text-green-600">{developerDetails.stats?.completedTasks || 0}</div>
-                                                                <div className="text-xs text-muted-foreground">Completed Tasks</div>
-                                                            </div>
-                                                            <div className="text-center p-3 bg-muted rounded-lg">
-                                                                <div className="text-2xl font-bold text-orange-600">{developerDetails.stats?.inProgressTasks || 0}</div>
-                                                                <div className="text-xs text-muted-foreground">In Progress</div>
-                                                            </div>
-                                                            <div className="text-center p-3 bg-muted rounded-lg">
-                                                                <div className="text-2xl font-bold text-gray-600">{developerDetails.stats?.pendingTasks || 0}</div>
-                                                                <div className="text-xs text-muted-foreground">Pending</div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-
-                                                    {developerDetails?.projects && developerDetails?.projects?.length > 0 && (
-                                                        <div>
-                                                            <h4 className="font-medium mb-2">Current Projects</h4>
-                                                            <div className="space-y-2">
-                                                                {developerDetails?.projects.map((project: Project) => (
-                                                                    <div key={project.id} className="flex items-center justify-between p-2 border rounded">
-                                                                        <span className="font-medium">{project.title}</span>
-                                                                        <Badge variant="outline">{project.status}</Badge>
+                                                            {
+                                                                developerDetails.bio && (
+                                                                    <div>
+                                                                        <h4 className="font-medium mb-2">Bio</h4>
+                                                                        <p className="text-sm text-muted-foreground">{developerDetails.bio}</p>
                                                                     </div>
-                                                                ))}
+                                                                )
+                                                            }
+                                                            {
+                                                                developerDetails?.skills && developerDetails?.skills?.length > 0 && (
+                                                                    <div>
+                                                                        <h4 className="font-medium mb-2">Skills</h4>
+                                                                        <div className="flex flex-wrap gap-2">
+                                                                            {
+                                                                                developerDetails?.skills?.map((skill: string) => (
+                                                                                    <Badge key={skill} variant="outline">{skill}</Badge>
+                                                                                ))
+                                                                            }
+                                                                        </div>
+                                                                    </div>
+                                                                )
+                                                            }
+                                                            <div>
+                                                                <h4 className="font-medium mb-2">Statistics</h4>
+                                                                <div className="grid grid-cols-2 gap-4">
+                                                                    <div className="text-center p-3 bg-muted rounded-lg">
+                                                                        <div className="text-2xl font-bold text-blue-600">{developerDetails.stats?.projectCount || 0}</div>
+                                                                        <div className="text-xs text-muted-foreground">Projects</div>
+                                                                    </div>
+                                                                    <div className="text-center p-3 bg-muted rounded-lg">
+                                                                        <div className="text-2xl font-bold text-green-600">{developerDetails.stats?.completedTasks || 0}</div>
+                                                                        <div className="text-xs text-muted-foreground">Completed Tasks</div>
+                                                                    </div>
+                                                                    <div className="text-center p-3 bg-muted rounded-lg">
+                                                                        <div className="text-2xl font-bold text-orange-600">{developerDetails.stats?.inProgressTasks || 0}</div>
+                                                                        <div className="text-xs text-muted-foreground">In Progress</div>
+                                                                    </div>
+                                                                    <div className="text-center p-3 bg-muted rounded-lg">
+                                                                        <div className="text-2xl font-bold text-gray-600">{developerDetails.stats?.pendingTasks || 0}</div>
+                                                                        <div className="text-xs text-muted-foreground">Pending</div>
+                                                                    </div>
+                                                                </div>
                                                             </div>
+                                                            {
+                                                                developerDetails?.projects && developerDetails?.projects?.length > 0 && (
+                                                                    <div>
+                                                                        <h4 className="font-medium mb-2">Current Projects</h4>
+                                                                        <div className="space-y-2">
+                                                                            {
+                                                                                developerDetails?.projects.map((project: Project) => (
+                                                                                    <div key={project.id} className="flex items-center justify-between p-2 border rounded">
+                                                                                        <span className="font-medium">{project.title}</span>
+                                                                                        <Badge variant="outline">{project.status}</Badge>
+                                                                                    </div>
+                                                                                ))
+                                                                            }
+                                                                        </div>
+                                                                    </div>
+                                                                )
+                                                            }
                                                         </div>
-                                                    )}
-                                                </div>
-                                            ) : null}
-                                        </SheetContent>
-                                    </Sheet>
-                                )}
+                                                    ) : null}
+                                            </SheetContent>
+                                        </Sheet>
+                                    )
+                                }
                                 <Button variant="ghost" size="sm" className="opacity-0 group-hover:opacity-100 transition-opacity">
                                     <MoreVertical className="h-4 w-4" />
                                 </Button>
                             </div>
                         </div>
                     </CardHeader>
-                    
                     <CardContent className="space-y-4">
-                        {/* Bio */}
-                        {member.bio && (
-                            <p className="text-sm text-muted-foreground line-clamp-2">
-                                {member.bio}
-                            </p>
-                        )}
-
-                        {/* Skills */}
-                        {member.skills && member.skills.length > 0 && (
-                            <div className="space-y-2">
-                                <span className="text-sm font-medium text-foreground">Skills:</span>
-                                <div className="flex flex-wrap gap-1">
-                                    {member.skills.slice(0, 4).map((skill: string) => (
-                                        <Badge key={skill} variant="outline" className="text-xs">
-                                            {skill}
-                                        </Badge>
-                                    ))}
-                                    {member.skills.length > 4 && (
-                                        <Badge variant="outline" className="text-xs">
-                                            +{member.skills.length - 4} more
-                                        </Badge>
-                                    )}
+                        {
+                            member.bio && (
+                                <p className="text-sm text-muted-foreground line-clamp-2">
+                                    {member.bio}
+                                </p>
+                            )
+                        }
+                        {
+                            member.skills && member.skills.length > 0 && (
+                                <div className="space-y-2">
+                                    <span className="text-sm font-medium text-foreground">Skills:</span>
+                                    <div className="flex flex-wrap gap-1">
+                                        {
+                                            member.skills.slice(0, 4).map((skill: string) => (
+                                                <Badge key={skill} variant="outline" className="text-xs">
+                                                    {skill}
+                                                </Badge>
+                                            ))
+                                        }
+                                        {
+                                            member.skills.length > 4 && (
+                                                <Badge variant="outline" className="text-xs">
+                                                    +{member.skills.length - 4} more
+                                                </Badge>
+                                            )
+                                        }
+                                    </div>
                                 </div>
-                            </div>
-                        )}
-
-                        {/* Stats */}
+                            )
+                        }
                         <div className="grid grid-cols-3 gap-4 pt-2 border-t border-border/50">
                             <div className="text-center">
                                 <div className="flex items-center justify-center gap-1 mb-1">
@@ -365,7 +370,6 @@ export default function TeamPage() {
                                 </div>
                                 <span className="text-xs text-muted-foreground">Projects</span>
                             </div>
-                            
                             <div className="text-center">
                                 <div className="flex items-center justify-center gap-1 mb-1">
                                     <CheckCircle className="h-3 w-3 text-green-600" />
@@ -373,7 +377,6 @@ export default function TeamPage() {
                                 </div>
                                 <span className="text-xs text-muted-foreground">Completed</span>
                             </div>
-                            
                             <div className="text-center">
                                 <div className="flex items-center justify-center gap-1 mb-1">
                                     <Clock className="h-3 w-3 text-orange-600" />
@@ -382,14 +385,12 @@ export default function TeamPage() {
                                 <span className="text-xs text-muted-foreground">In Progress</span>
                             </div>
                         </div>
-
-                        {/* Contact Actions */}
                         <div className="flex gap-2 pt-2">
                             <Sheet>
                                 <SheetTrigger asChild>
-                                    <Button 
-                                        variant="outline" 
-                                        size="sm" 
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
                                         className="flex-1"
                                         onClick={() => handleViewTasks(member.id)}
                                     >
@@ -412,92 +413,98 @@ export default function TeamPage() {
                                             View all tasks assigned to this developer across projects
                                         </SheetDescription>
                                     </SheetHeader>
-                                    
                                     <div className="mt-6 space-y-4">
-                                        {loadingDetails ? (
-                                            <div className="space-y-4">
-                                                {[1, 2, 3].map((i) => (
-                                                    <div key={i} className="animate-pulse space-y-2">
-                                                        <div className="h-4 bg-muted rounded w-1/4" />
-                                                        <div className="space-y-2 p-4 border rounded-lg">
-                                                            <div className="h-4 bg-muted rounded w-3/4" />
-                                                            <div className="h-3 bg-muted rounded w-1/2" />
+                                        {
+                                            loadingDetails ? (
+                                                <div className="space-y-4">
+                                                    {
+                                                        [1, 2, 3].map((i) => (
+                                                            <div key={i} className="animate-pulse space-y-2">
+                                                                <div className="h-4 bg-muted rounded w-1/4" />
+                                                                <div className="space-y-2 p-4 border rounded-lg">
+                                                                    <div className="h-4 bg-muted rounded w-3/4" />
+                                                                    <div className="h-3 bg-muted rounded w-1/2" />
+                                                                </div>
+                                                            </div>
+                                                        ))
+                                                    }
+                                                </div>
+                                            ) : (!developerDetails?.tasksByProject || developerDetails.tasksByProject.length === 0) ? (
+                                                <div className="text-center py-8">
+                                                    <Activity className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
+                                                    <h3 className="font-semibold text-lg mb-2">No Tasks Assigned</h3>
+                                                    <p className="text-muted-foreground">
+                                                        This developer has no tasks assigned yet
+                                                    </p>
+                                                </div>
+                                            ) : (
+                                                developerDetails.tasksByProject.map((projectGroup: ProjectTaskGroup) => (
+                                                    <div key={projectGroup.project.id} className="space-y-3">
+                                                        <div className="flex items-center gap-2">
+                                                            <h4 className="font-semibold text-lg">{projectGroup.project.title}</h4>
+                                                            <Badge variant="outline" className="text-xs">
+                                                                {projectGroup.project.status}
+                                                            </Badge>
+                                                        </div>
+
+                                                        <div className="space-y-2 pl-4 border-l-2 border-border/50">
+                                                            {
+                                                                projectGroup.tasks.map((task: TaskDetail) => (
+                                                                    <Card key={task.id} className="hover:shadow-sm transition-shadow">
+                                                                        <CardContent className="p-4">
+                                                                            <div className="flex items-start justify-between">
+                                                                                <div className="space-y-1 flex-1">
+                                                                                    <h5 className="font-medium">{task.title}</h5>
+                                                                                    {
+                                                                                        task.description && (
+                                                                                            <p className="text-sm text-muted-foreground line-clamp-2">
+                                                                                                {task.description}
+                                                                                            </p>
+                                                                                        )
+                                                                                    }
+                                                                                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                                                                                        <Calendar className="h-3 w-3" />
+                                                                                        Created {formatDistanceToNow(new Date(task.createdAt), { addSuffix: true })}
+                                                                                        {
+                                                                                            task.duration && (
+                                                                                                <>
+                                                                                                    <span>•</span>
+                                                                                                    <Clock className="h-3 w-3" />
+                                                                                                    {task.duration}h estimated
+                                                                                                </>
+                                                                                            )
+                                                                                        }
+                                                                                    </div>
+                                                                                </div>
+                                                                                <Badge
+                                                                                    variant={
+                                                                                        task.status === "COMPLETED" ? "default" :
+                                                                                            task.status === "IN_PROGRESS" ? "secondary" : "outline"
+                                                                                    }
+                                                                                    className={`ml-3 ${task.status === "COMPLETED" ? "bg-green-100 text-green-800 border-green-200" :
+                                                                                            task.status === "IN_PROGRESS" ? "bg-blue-100 text-blue-800 border-blue-200" :
+                                                                                                "bg-gray-100 text-gray-800 border-gray-200"
+                                                                                        }`}
+                                                                                >
+                                                                                    {task.status === "COMPLETED" && <CheckCircle className="h-3 w-3 mr-1" />}
+                                                                                    {task.status === "IN_PROGRESS" && <Activity className="h-3 w-3 mr-1" />}
+                                                                                    {task.status === "YET_TO_START" && <Clock className="h-3 w-3 mr-1" />}
+                                                                                    {task.status.replace('_', ' ')}
+                                                                                </Badge>
+                                                                            </div>
+                                                                        </CardContent>
+                                                                    </Card>
+                                                                ))
+                                                            }
                                                         </div>
                                                     </div>
-                                                ))}
-                                            </div>
-                                        ) : (!developerDetails?.tasksByProject || developerDetails.tasksByProject.length === 0) ? (
-                                            <div className="text-center py-8">
-                                                <Activity className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
-                                                <h3 className="font-semibold text-lg mb-2">No Tasks Assigned</h3>
-                                                <p className="text-muted-foreground">
-                                                    This developer has no tasks assigned yet
-                                                </p>
-                                            </div>
-                                        ) : (
-                                            developerDetails.tasksByProject.map((projectGroup: ProjectTaskGroup) => (
-                                                <div key={projectGroup.project.id} className="space-y-3">
-                                                    <div className="flex items-center gap-2">
-                                                        <h4 className="font-semibold text-lg">{projectGroup.project.title}</h4>
-                                                        <Badge variant="outline" className="text-xs">
-                                                            {projectGroup.project.status}
-                                                        </Badge>
-                                                    </div>
-                                                    
-                                                    <div className="space-y-2 pl-4 border-l-2 border-border/50">
-                                                        {projectGroup.tasks.map((task: TaskDetail) => (
-                                                            <Card key={task.id} className="hover:shadow-sm transition-shadow">
-                                                                <CardContent className="p-4">
-                                                                    <div className="flex items-start justify-between">
-                                                                        <div className="space-y-1 flex-1">
-                                                                            <h5 className="font-medium">{task.title}</h5>
-                                                                            {task.description && (
-                                                                                <p className="text-sm text-muted-foreground line-clamp-2">
-                                                                                    {task.description}
-                                                                                </p>
-                                                                            )}
-                                                                            <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                                                                                <Calendar className="h-3 w-3" />
-                                                                                Created {formatDistanceToNow(new Date(task.createdAt), { addSuffix: true })}
-                                                                                {task.duration && (
-                                                                                    <>
-                                                                                        <span>•</span>
-                                                                                        <Clock className="h-3 w-3" />
-                                                                                        {task.duration}h estimated
-                                                                                    </>
-                                                                                )}
-                                                                            </div>
-                                                                        </div>
-                                                                        <Badge 
-                                                                            variant={
-                                                                                task.status === "COMPLETED" ? "default" :
-                                                                                task.status === "IN_PROGRESS" ? "secondary" : "outline"
-                                                                            }
-                                                                            className={`ml-3 ${
-                                                                                task.status === "COMPLETED" ? "bg-green-100 text-green-800 border-green-200" :
-                                                                                task.status === "IN_PROGRESS" ? "bg-blue-100 text-blue-800 border-blue-200" :
-                                                                                "bg-gray-100 text-gray-800 border-gray-200"
-                                                                            }`}
-                                                                        >
-                                                                            {task.status === "COMPLETED" && <CheckCircle className="h-3 w-3 mr-1" />}
-                                                                            {task.status === "IN_PROGRESS" && <Activity className="h-3 w-3 mr-1" />}
-                                                                            {task.status === "YET_TO_START" && <Clock className="h-3 w-3 mr-1" />}
-                                                                            {task.status.replace('_', ' ')}
-                                                                        </Badge>
-                                                                    </div>
-                                                                </CardContent>
-                                                            </Card>
-                                                        ))}
-                                                    </div>
-                                                </div>
-                                            ))
-                                        )}
+                                                ))
+                                            )
+                                        }
                                     </div>
                                 </SheetContent>
                             </Sheet>
                         </div>
-
-                        {/* Last Active */}
                         <div className="text-center pt-2 border-t border-border/50">
                             <span className="text-xs text-muted-foreground">
                                 Member since {formatDistanceToNow(new Date(member.createdAt), { addSuffix: true })}
@@ -530,7 +537,6 @@ export default function TeamPage() {
     return (
         <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 p-6">
             <div className="max-w-7xl mx-auto space-y-6">
-                {/* Header */}
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                     <div>
                         <h1 className="text-3xl font-bold text-foreground">Team Members</h1>
@@ -538,16 +544,16 @@ export default function TeamPage() {
                             Manage your development team and track performance
                         </p>
                     </div>
-                    
-                    {session?.user?.role === 'PRODUCTMANAGER' && (
-                        <Button className="gap-2">
-                            <UserPlus className="h-4 w-4" />
-                            Invite Member
-                        </Button>
-                    )}
-                </div>
 
-                {/* Stats Cards */}
+                    {
+                        session?.user?.role === 'PRODUCTMANAGER' && (
+                            <Button className="gap-2">
+                                <UserPlus className="h-4 w-4" />
+                                Invite Member
+                            </Button>
+                        )
+                    }
+                </div>
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                     <Card className="bg-background/50 backdrop-blur-sm border-border/50">
                         <CardContent className="p-4">
@@ -562,7 +568,6 @@ export default function TeamPage() {
                             </div>
                         </CardContent>
                     </Card>
-                    
                     <Card className="bg-background/50 backdrop-blur-sm border-border/50">
                         <CardContent className="p-4">
                             <div className="flex items-center gap-3">
@@ -578,7 +583,6 @@ export default function TeamPage() {
                             </div>
                         </CardContent>
                     </Card>
-                    
                     <Card className="bg-background/50 backdrop-blur-sm border-border/50">
                         <CardContent className="p-4">
                             <div className="flex items-center gap-3">
@@ -594,7 +598,6 @@ export default function TeamPage() {
                             </div>
                         </CardContent>
                     </Card>
-                    
                     <Card className="bg-background/50 backdrop-blur-sm border-border/50">
                         <CardContent className="p-4">
                             <div className="flex items-center gap-3">
@@ -611,8 +614,6 @@ export default function TeamPage() {
                         </CardContent>
                     </Card>
                 </div>
-
-                {/* Filters */}
                 <div className="flex flex-col sm:flex-row gap-4">
                     <div className="relative flex-1">
                         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -623,7 +624,6 @@ export default function TeamPage() {
                             className="pl-10"
                         />
                     </div>
-                    
                     <Select value={roleFilter} onValueChange={setRoleFilter}>
                         <SelectTrigger className="w-full sm:w-48">
                             <Filter className="h-4 w-4 mr-2" />
@@ -636,7 +636,6 @@ export default function TeamPage() {
                             <SelectItem value="ADMIN">Admin</SelectItem>
                         </SelectContent>
                     </Select>
-                    
                     <Select value={statusFilter} onValueChange={setStatusFilter}>
                         <SelectTrigger className="w-full sm:w-48">
                             <SelectValue placeholder="Filter by status" />
@@ -649,56 +648,61 @@ export default function TeamPage() {
                         </SelectContent>
                     </Select>
                 </div>
-
-                {/* Team Members Grid */}
-                {isLoading ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {[1, 2, 3, 4, 5, 6].map((i) => (
-                            <Card key={i} className="h-96">
-                                <CardHeader className="space-y-2">
-                                    <div className="flex gap-4">
-                                        <div className="h-16 w-16 bg-muted rounded-full animate-pulse" />
-                                        <div className="space-y-2 flex-1">
-                                            <div className="h-4 bg-muted rounded animate-pulse" />
-                                            <div className="h-3 bg-muted rounded animate-pulse w-3/4" />
-                                        </div>
-                                    </div>
-                                </CardHeader>
-                                <CardContent className="space-y-4">
-                                    <div className="space-y-2">
-                                        <div className="h-3 bg-muted rounded animate-pulse" />
-                                        <div className="h-3 bg-muted rounded animate-pulse w-2/3" />
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        ))}
-                    </div>
-                ) : filteredMembers.length > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        <AnimatePresence>
-                            {filteredMembers.map(renderMemberCard)}
-                        </AnimatePresence>
-                    </div>
-                ) : (
-                    <div className="text-center py-12">
-                        <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
-                            <Users className="h-8 w-8 text-muted-foreground" />
-                        </div>
-                        <h3 className="text-lg font-semibold text-foreground mb-2">No team members found</h3>
-                        <p className="text-muted-foreground mb-4">
-                            {searchTerm || roleFilter !== "all" || statusFilter !== "all"
-                                ? "Try adjusting your search criteria" 
-                                : "Start building your team by inviting members"
+                {
+                    isLoading ? (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {
+                                [1, 2, 3, 4, 5, 6].map((i) => (
+                                    <Card key={i} className="h-96">
+                                        <CardHeader className="space-y-2">
+                                            <div className="flex gap-4">
+                                                <div className="h-16 w-16 bg-muted rounded-full animate-pulse" />
+                                                <div className="space-y-2 flex-1">
+                                                    <div className="h-4 bg-muted rounded animate-pulse" />
+                                                    <div className="h-3 bg-muted rounded animate-pulse w-3/4" />
+                                                </div>
+                                            </div>
+                                        </CardHeader>
+                                        <CardContent className="space-y-4">
+                                            <div className="space-y-2">
+                                                <div className="h-3 bg-muted rounded animate-pulse" />
+                                                <div className="h-3 bg-muted rounded animate-pulse w-2/3" />
+                                            </div>
+                                        </CardContent>
+                                    </Card>
+                                ))
                             }
-                        </p>
-                        {session?.user?.role === 'PRODUCTMANAGER' && (
-                            <Button>
-                                <UserPlus className="h-4 w-4 mr-2" />
-                                Invite Team Member
-                            </Button>
-                        )}
-                    </div>
-                )}
+                        </div>
+                    ) : filteredMembers.length > 0 ? (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <AnimatePresence>
+                                {filteredMembers.map(renderMemberCard)}
+                            </AnimatePresence>
+                        </div>
+                    ) : (
+                        <div className="text-center py-12">
+                            <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
+                                <Users className="h-8 w-8 text-muted-foreground" />
+                            </div>
+                            <h3 className="text-lg font-semibold text-foreground mb-2">No team members found</h3>
+                            <p className="text-muted-foreground mb-4">
+                                {
+                                    searchTerm || roleFilter !== "all" || statusFilter !== "all"
+                                        ? "Try adjusting your search criteria"
+                                        : "Start building your team by inviting members"
+                                }
+                            </p>
+                            {
+                                session?.user?.role === 'PRODUCTMANAGER' && (
+                                    <Button>
+                                        <UserPlus className="h-4 w-4 mr-2" />
+                                        Invite Team Member
+                                    </Button>
+                                )
+                            }
+                        </div>
+                    )
+                }
             </div>
         </div>
     )

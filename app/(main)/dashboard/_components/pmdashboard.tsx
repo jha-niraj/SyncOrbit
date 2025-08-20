@@ -316,32 +316,33 @@ export function PMDashboard({ data }: PMDashboardProps) {
 								</CardHeader>
 								<CardContent>
 									<div className="space-y-4">
-										{data.developers.map((developer) => (
+										{
+											data.developers.map((developer) => (
 
-											<div key={developer.id} className="space-y-2">
-												<div className="flex items-center justify-between">
-													<div className="flex items-center gap-2">
-														<Avatar className="h-6 w-6">
-															<AvatarImage src={developer.image || undefined} />
-															<AvatarFallback className="text-xs">
-																{developer.name?.charAt(0) || 'D'}
-															</AvatarFallback>
-														</Avatar>
-														<span className="text-sm font-medium">{developer.name}</span>
+												<div key={developer.id} className="space-y-2">
+													<div className="flex items-center justify-between">
+														<div className="flex items-center gap-2">
+															<Avatar className="h-6 w-6">
+																<AvatarImage src={developer.image || undefined} />
+																<AvatarFallback className="text-xs">
+																	{developer.name?.charAt(0) || 'D'}
+																</AvatarFallback>
+															</Avatar>
+															<span className="text-sm font-medium">{developer.name}</span>
+														</div>
+														<Badge variant="outline" className="text-xs">
+															{developer.taskStats.completionRate}%
+														</Badge>
 													</div>
-													<Badge variant="outline" className="text-xs">
-														{developer.taskStats.completionRate}%
-													</Badge>
-												</div>
-												<div className="space-y-1">
-													<div className="flex justify-between text-xs text-muted-foreground">
-														<span>{developer.taskStats.completed} completed</span>
-														<span>{developer.taskStats.total} total</span>
+													<div className="space-y-1">
+														<div className="flex justify-between text-xs text-muted-foreground">
+															<span>{developer.taskStats.completed} completed</span>
+															<span>{developer.taskStats.total} total</span>
+														</div>
+														<Progress value={developer.taskStats.completionRate} className="h-1" />
 													</div>
-													<Progress value={developer.taskStats.completionRate} className="h-1" />
 												</div>
-											</div>
-										))
+											))
 										}
 									</div>
 								</CardContent>

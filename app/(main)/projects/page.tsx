@@ -7,18 +7,13 @@ import { Progress } from "@/components/ui/progress"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { 
-    DollarSign, 
-    Users, 
-    Search, 
-    Filter, 
-    Plus,
-    MoreVertical,
-    Eye,
-    MessageSquare,
-    BarChart3,
-    Briefcase
+import {
+    Select, SelectContent, SelectItem,
+    SelectTrigger, SelectValue
+} from "@/components/ui/select"
+import {
+    DollarSign, Users, Search, Filter, Plus, MoreVertical,
+    Eye, MessageSquare, BarChart3, Briefcase
 } from "lucide-react"
 import Link from "next/link"
 import { motion } from "framer-motion"
@@ -89,7 +84,7 @@ export default function ProjectsPage() {
         try {
             setIsLoading(true)
             const result = await getUserProjects()
-            
+
             if (result.success) {
                 setProjects(result.projects)
             } else {
@@ -134,7 +129,7 @@ export default function ProjectsPage() {
     // Filter projects
     const filteredProjects = projects.filter(project => {
         const matchesSearch = project.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                            (project.description && project.description.toLowerCase().includes(searchTerm.toLowerCase()))
+            (project.description && project.description.toLowerCase().includes(searchTerm.toLowerCase()))
         const matchesStatus = statusFilter === "all" || project.status === statusFilter
         return matchesSearch && matchesStatus
     })
@@ -142,14 +137,14 @@ export default function ProjectsPage() {
     const renderProjectCard = (project: ProjectData) => {
         const progress = getProjectProgress(project.tasks)
         const paymentProgress = getPaymentProgress(project.paidAmount, project.budget)
-        
+
         // Get team members from project members
         const teamMembers = project.members.map(member => ({
             id: member.user.id,
             name: member.user.name || "Unknown",
             image: member.user.image || "/placeholder.svg"
         }))
-        
+
         return (
             <motion.div
                 key={project.id}
@@ -179,24 +174,20 @@ export default function ProjectsPage() {
                             </Button>
                         </div>
                     </CardHeader>
-                    
                     <CardContent className="space-y-4">
-                        {/* Progress Section */}
                         <div className="space-y-3">
                             <div className="flex justify-between items-center">
                                 <span className="text-sm font-medium text-foreground">Project Progress</span>
                                 <span className="text-sm text-muted-foreground">{progress}%</span>
                             </div>
                             <Progress value={progress} className="h-2" />
-                            
+
                             <div className="flex justify-between items-center">
                                 <span className="text-sm font-medium text-foreground">Payment Progress</span>
                                 <span className="text-sm text-muted-foreground">{paymentProgress}%</span>
                             </div>
                             <Progress value={paymentProgress} className="h-2" />
                         </div>
-
-                        {/* Stats Grid */}
                         <div className="grid grid-cols-2 gap-4">
                             <div className="flex items-center gap-2">
                                 <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
@@ -209,7 +200,6 @@ export default function ProjectsPage() {
                                     </p>
                                 </div>
                             </div>
-                            
                             <div className="flex items-center gap-2">
                                 <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
                                     <Users className="h-4 w-4 text-primary" />
@@ -222,30 +212,31 @@ export default function ProjectsPage() {
                                 </div>
                             </div>
                         </div>
-
-                        {/* Team Members */}
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
                                 <span className="text-sm font-medium text-foreground">Team:</span>
                                 <div className="flex -space-x-2">
-                                    {teamMembers.slice(0, 3).map((member) => (
-                                        <Avatar key={member.id} className="h-6 w-6 border-2 border-background">
-                                            <AvatarImage src={member.image} alt={member.name} />
-                                            <AvatarFallback className="text-xs">
-                                                {member.name.split(' ').map((n: string) => n[0]).join('')}
-                                            </AvatarFallback>
-                                        </Avatar>
-                                    ))}
-                                    {teamMembers.length > 3 && (
-                                        <div className="h-6 w-6 bg-muted border-2 border-background rounded-full flex items-center justify-center">
-                                            <span className="text-xs text-muted-foreground">
-                                                +{teamMembers.length - 3}
-                                            </span>
-                                        </div>
-                                    )}
+                                    {
+                                        teamMembers.slice(0, 3).map((member) => (
+                                            <Avatar key={member.id} className="h-6 w-6 border-2 border-background">
+                                                <AvatarImage src={member.image} alt={member.name} />
+                                                <AvatarFallback className="text-xs">
+                                                    {member.name.split(' ').map((n: string) => n[0]).join('')}
+                                                </AvatarFallback>
+                                            </Avatar>
+                                        ))
+                                    }
+                                    {
+                                        teamMembers.length > 3 && (
+                                            <div className="h-6 w-6 bg-muted border-2 border-background rounded-full flex items-center justify-center">
+                                                <span className="text-xs text-muted-foreground">
+                                                    +{teamMembers.length - 3}
+                                                </span>
+                                            </div>
+                                        )
+                                    }
                                 </div>
                             </div>
-                            
                             <div className="flex items-center gap-1">
                                 <Button variant="ghost" size="sm" asChild>
                                     <Link href={`/projects/${project.slug}/chat`}>
@@ -264,8 +255,6 @@ export default function ProjectsPage() {
                                 </Button>
                             </div>
                         </div>
-
-                        {/* Action Button */}
                         <Button asChild className="w-full mt-4">
                             <Link href={`/projects/${project.slug}`}>
                                 View Project Details
@@ -280,7 +269,6 @@ export default function ProjectsPage() {
     return (
         <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 p-6">
             <div className="max-w-7xl mx-auto space-y-6">
-                {/* Header */}
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                     <div>
                         <h1 className="text-3xl font-bold text-foreground">Projects</h1>
@@ -288,16 +276,15 @@ export default function ProjectsPage() {
                             Manage and track your project progress
                         </p>
                     </div>
-                    
-                    {session?.user?.role !== 'CLIENT' && (
-                        <Button className="gap-2">
-                            <Plus className="h-4 w-4" />
-                            New Project
-                        </Button>
-                    )}
+                    {
+                        session?.user?.role !== 'CLIENT' && (
+                            <Button className="gap-2">
+                                <Plus className="h-4 w-4" />
+                                New Project
+                            </Button>
+                        )
+                    }
                 </div>
-
-                {/* Filters */}
                 <div className="flex flex-col sm:flex-row gap-4">
                     <div className="relative flex-1">
                         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -308,7 +295,6 @@ export default function ProjectsPage() {
                             className="pl-10"
                         />
                     </div>
-                    
                     <Select value={statusFilter} onValueChange={setStatusFilter}>
                         <SelectTrigger className="w-full sm:w-48">
                             <Filter className="h-4 w-4 mr-2" />
@@ -323,53 +309,58 @@ export default function ProjectsPage() {
                         </SelectContent>
                     </Select>
                 </div>
-
-                {/* Projects Grid */}
-                {isLoading ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {[1, 2, 3, 4, 5, 6].map((i) => (
-                            <Card key={i} className="h-80">
-                                <CardHeader className="space-y-2">
-                                    <div className="h-4 bg-muted rounded animate-pulse" />
-                                    <div className="h-3 bg-muted rounded animate-pulse w-3/4" />
-                                </CardHeader>
-                                <CardContent className="space-y-4">
-                                    <div className="space-y-2">
-                                        <div className="h-2 bg-muted rounded animate-pulse" />
-                                        <div className="h-2 bg-muted rounded animate-pulse" />
-                                    </div>
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div className="h-12 bg-muted rounded animate-pulse" />
-                                        <div className="h-12 bg-muted rounded animate-pulse" />
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        ))}
-                    </div>
-                ) : filteredProjects.length > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {filteredProjects.map(renderProjectCard)}
-                    </div>
-                ) : (
-                    <div className="text-center py-12">
-                        <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
-                            <Briefcase className="h-8 w-8 text-muted-foreground" />
-                        </div>
-                        <h3 className="text-lg font-semibold text-foreground mb-2">No projects found</h3>
-                        <p className="text-muted-foreground mb-4">
-                            {searchTerm || statusFilter !== "all" 
-                                ? "Try adjusting your search criteria" 
-                                : "Get started by creating your first project"
+                {
+                    isLoading ? (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {
+                                [1, 2, 3, 4, 5, 6].map((i) => (
+                                    <Card key={i} className="h-80">
+                                        <CardHeader className="space-y-2">
+                                            <div className="h-4 bg-muted rounded animate-pulse" />
+                                            <div className="h-3 bg-muted rounded animate-pulse w-3/4" />
+                                        </CardHeader>
+                                        <CardContent className="space-y-4">
+                                            <div className="space-y-2">
+                                                <div className="h-2 bg-muted rounded animate-pulse" />
+                                                <div className="h-2 bg-muted rounded animate-pulse" />
+                                            </div>
+                                            <div className="grid grid-cols-2 gap-4">
+                                                <div className="h-12 bg-muted rounded animate-pulse" />
+                                                <div className="h-12 bg-muted rounded animate-pulse" />
+                                            </div>
+                                        </CardContent>
+                                    </Card>
+                                ))
                             }
-                        </p>
-                        {session?.user?.role !== 'CLIENT' && (
-                            <Button>
-                                <Plus className="h-4 w-4 mr-2" />
-                                Create Project
-                            </Button>
-                        )}
-                    </div>
-                )}
+                        </div>
+                    ) : filteredProjects.length > 0 ? (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {filteredProjects.map(renderProjectCard)}
+                        </div>
+                    ) : (
+                        <div className="text-center py-12">
+                            <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
+                                <Briefcase className="h-8 w-8 text-muted-foreground" />
+                            </div>
+                            <h3 className="text-lg font-semibold text-foreground mb-2">No projects found</h3>
+                            <p className="text-muted-foreground mb-4">
+                                {
+                                    searchTerm || statusFilter !== "all"
+                                        ? "Try adjusting your search criteria"
+                                        : "Get started by creating your first project"
+                                }
+                            </p>
+                            {
+                                session?.user?.role !== 'CLIENT' && (
+                                    <Button>
+                                        <Plus className="h-4 w-4 mr-2" />
+                                        Create Project
+                                    </Button>
+                                )
+                            }
+                        </div>
+                    )
+                }
             </div>
         </div>
     )

@@ -181,7 +181,6 @@ export function PMProfileForm({ user }: PMProfileFormProps) {
 
     return (
         <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Profile Image */}
             <Card>
                 <CardHeader>
                     <CardTitle className="text-lg">Profile Image</CardTitle>
@@ -207,29 +206,33 @@ export function PMProfileForm({ user }: PMProfileFormProps) {
                                     onClick={() => imageInputRef.current?.click()}
                                     disabled={imageUploading}
                                 >
-                                    {imageUploading ? (
-                                        <>
-                                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                            Uploading...
-                                        </>
-                                    ) : (
-                                        <>
-                                            <Upload className="mr-2 h-4 w-4" />
-                                            Upload Image
-                                        </>
-                                    )}
+                                    {
+                                        imageUploading ? (
+                                            <>
+                                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                                Uploading...
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Upload className="mr-2 h-4 w-4" />
+                                                Upload Image
+                                            </>
+                                        )
+                                    }
                                 </Button>
-                                {formData.image && (
-                                    <Button
-                                        type="button"
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={handleRemoveImage}
-                                    >
-                                        <X className="mr-2 h-4 w-4" />
-                                        Remove
-                                    </Button>
-                                )}
+                                {
+                                    formData.image && (
+                                        <Button
+                                            type="button"
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={handleRemoveImage}
+                                        >
+                                            <X className="mr-2 h-4 w-4" />
+                                            Remove
+                                        </Button>
+                                    )
+                                }
                             </div>
                         </div>
                         <input
@@ -242,8 +245,6 @@ export function PMProfileForm({ user }: PMProfileFormProps) {
                     </div>
                 </CardContent>
             </Card>
-
-            {/* Company Logo */}
             <Card>
                 <CardHeader>
                     <CardTitle className="text-lg flex items-center gap-2">
@@ -255,16 +256,18 @@ export function PMProfileForm({ user }: PMProfileFormProps) {
                 <CardContent>
                     <div className="flex items-center gap-6">
                         <div className="h-24 w-24 bg-muted rounded-lg flex items-center justify-center border-2 border-dashed relative">
-                            {formData.companyLogo ? (
-                                <Image
-                                    src={formData.companyLogo}
-                                    alt="Company Logo"
-                                    fill
-                                    className="object-contain rounded-lg"
-                                />
-                            ) : (
-                                <Building2 className="h-8 w-8 text-muted-foreground" />
-                            )}
+                            {
+                                formData.companyLogo ? (
+                                    <Image
+                                        src={formData.companyLogo}
+                                        alt="Company Logo"
+                                        fill
+                                        className="object-contain rounded-lg"
+                                    />
+                                ) : (
+                                    <Building2 className="h-8 w-8 text-muted-foreground" />
+                                )
+                            }
                         </div>
                         <div className="flex-1">
                             <p className="text-xs text-muted-foreground mb-2">
@@ -278,29 +281,33 @@ export function PMProfileForm({ user }: PMProfileFormProps) {
                                     onClick={() => logoInputRef.current?.click()}
                                     disabled={logoUploading}
                                 >
-                                    {logoUploading ? (
-                                        <>
-                                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                            Uploading...
-                                        </>
-                                    ) : (
-                                        <>
-                                            <Upload className="mr-2 h-4 w-4" />
-                                            Upload Logo
-                                        </>
-                                    )}
+                                    {
+                                        logoUploading ? (
+                                            <>
+                                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                                Uploading...
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Upload className="mr-2 h-4 w-4" />
+                                                Upload Logo
+                                            </>
+                                        )
+                                    }
                                 </Button>
-                                {formData.companyLogo && (
-                                    <Button
-                                        type="button"
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={handleRemoveLogo}
-                                    >
-                                        <X className="mr-2 h-4 w-4" />
-                                        Remove
-                                    </Button>
-                                )}
+                                {
+                                    formData.companyLogo && (
+                                        <Button
+                                            type="button"
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={handleRemoveLogo}
+                                        >
+                                            <X className="mr-2 h-4 w-4" />
+                                            Remove
+                                        </Button>
+                                    )
+                                }
                             </div>
                         </div>
                         <input
@@ -313,8 +320,6 @@ export function PMProfileForm({ user }: PMProfileFormProps) {
                     </div>
                 </CardContent>
             </Card>
-
-            {/* Basic Information */}
             <Card>
                 <CardHeader>
                     <CardTitle className="text-lg">Basic Information</CardTitle>
@@ -345,8 +350,6 @@ export function PMProfileForm({ user }: PMProfileFormProps) {
                     </div>
                 </CardContent>
             </Card>
-
-            {/* Company Information */}
             <Card>
                 <CardHeader>
                     <CardTitle className="text-lg">Company Information</CardTitle>
@@ -376,76 +379,81 @@ export function PMProfileForm({ user }: PMProfileFormProps) {
                     </div>
                 </CardContent>
             </Card>
-
-            {/* Referral Links */}
-            {user.managedCompany && (
-                <Card>
-                    <CardHeader>
-                        <CardTitle className="text-lg">Referral Links</CardTitle>
-                        <CardDescription>Share these links to invite team members</CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                        <div className="space-y-2">
-                            <Label className="text-sm font-medium">Developer Referral Link</Label>
-                            <div className="flex items-center gap-2">
-                                <div className="flex-1 p-2 bg-muted rounded-md text-sm font-mono text-xs">
-                                    {getDeveloperReferralLink()}
+            {
+                user.managedCompany && (
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="text-lg">Referral Links</CardTitle>
+                            <CardDescription>Share these links to invite team members</CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            <div className="space-y-2">
+                                <Label className="text-sm font-medium">Developer Referral Link</Label>
+                                <div className="flex items-center gap-2">
+                                    <div className="flex-1 p-2 bg-muted rounded-md text-sm font-mono text-xs">
+                                        {getDeveloperReferralLink()}
+                                    </div>
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => copyToClipboard(getDeveloperReferralLink(), 'Developer')}
+                                    >
+                                        {
+                                            copiedCode === 'Developer' ? (
+                                                <>
+                                                    <ExternalLink className="h-4 w-4" />
+                                                </>
+                                            ) : (
+                                                <Copy className="h-4 w-4" />
+                                            )
+                                        }
+                                    </Button>
                                 </div>
-                                <Button
-                                    type="button"
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() => copyToClipboard(getDeveloperReferralLink(), 'Developer')}
-                                >
-                                    {copiedCode === 'Developer' ? (
-                                        <>
-                                            <ExternalLink className="h-4 w-4" />
-                                        </>
-                                    ) : (
-                                        <Copy className="h-4 w-4" />
-                                    )}
-                                </Button>
                             </div>
-                        </div>
-                        <div className="space-y-2">
-                            <Label className="text-sm font-medium">Client Referral Link</Label>
-                            <div className="flex items-center gap-2">
-                                <div className="flex-1 p-2 bg-muted rounded-md text-sm font-mono text-xs">
-                                    {getClientReferralLink()}
+                            <div className="space-y-2">
+                                <Label className="text-sm font-medium">Client Referral Link</Label>
+                                <div className="flex items-center gap-2">
+                                    <div className="flex-1 p-2 bg-muted rounded-md text-sm font-mono text-xs">
+                                        {getClientReferralLink()}
+                                    </div>
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => copyToClipboard(getClientReferralLink(), 'Client')}
+                                    >
+                                        {
+                                            copiedCode === 'Client' ? (
+                                                <>
+                                                    <ExternalLink className="h-4 w-4" />
+                                                </>
+                                            ) : (
+                                                <Copy className="h-4 w-4" />
+                                            )
+                                        }
+                                    </Button>
                                 </div>
-                                <Button
-                                    type="button"
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() => copyToClipboard(getClientReferralLink(), 'Client')}
-                                >
-                                    {copiedCode === 'Client' ? (
-                                        <>
-                                            <ExternalLink className="h-4 w-4" />
-                                        </>
-                                    ) : (
-                                        <Copy className="h-4 w-4" />
-                                    )}
-                                </Button>
                             </div>
-                        </div>
-                    </CardContent>
-                </Card>
-            )}
-
-            <Button 
-                type="submit" 
-                disabled={isLoading || imageUploading || logoUploading} 
+                        </CardContent>
+                    </Card>
+                )
+            }
+            <Button
+                type="submit"
+                disabled={isLoading || imageUploading || logoUploading}
                 className="w-full"
             >
-                {isLoading ? (
-                    <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Updating Profile...
-                    </>
-                ) : (
-                    "Update Profile"
-                )}
+                {
+                    isLoading ? (
+                        <>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            Updating Profile...
+                        </>
+                    ) : (
+                        "Update Profile"
+                    )
+                }
             </Button>
         </form>
     )

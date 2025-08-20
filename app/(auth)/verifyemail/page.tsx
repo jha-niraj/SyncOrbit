@@ -199,7 +199,6 @@ function VerifyContent() {
 								{isVerified ? "Signing you in and redirecting to sign in page..." : "We've sent a 6-digit code to your email"}
 							</p>
 						</div>
-
 						{
 							isVerified ? (
 								<div className="flex flex-col items-center justify-center py-8">

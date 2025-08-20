@@ -5,19 +5,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { 
-    BarChart3, 
-    TrendingUp, 
-    TrendingDown,
-    DollarSign,
-    Users,
-    Clock,
-    Target,
-    Award,
-    Activity,
-    Download,
-    Filter
+import {
+    Select, SelectContent, SelectItem,
+    SelectTrigger, SelectValue
+} from "@/components/ui/select"
+import {
+    BarChart3, TrendingUp, TrendingDown, DollarSign, Users,
+    Clock, Target, Award, Activity, Download, Filter
 } from "lucide-react"
 import { motion } from "framer-motion"
 import { useSession } from "next-auth/react"
@@ -35,7 +29,7 @@ export default function AnalyticsPage() {
         try {
             setIsLoading(true)
             const result = await getAnalyticsData()
-            
+
             if (result.success && result.analytics) {
                 setAnalytics(result.analytics as AnalyticsData)
             } else {
@@ -120,22 +114,28 @@ export default function AnalyticsPage() {
                     <div className="space-y-2">
                         <p className="text-sm font-medium text-muted-foreground">{title}</p>
                         <p className="text-3xl font-bold text-foreground">{value}</p>
-                        {change && (
-                            <div className="flex items-center gap-1 text-sm">
-                                {trend === 'up' ? (
-                                    <TrendingUp className="h-4 w-4 text-green-500" />
-                                ) : (
-                                    <TrendingDown className="h-4 w-4 text-red-500" />
-                                )}
-                                <span className={trend === 'up' ? 'text-green-500' : 'text-red-500'}>
-                                    {change}%
-                                </span>
-                                <span className="text-muted-foreground">vs last period</span>
-                            </div>
-                        )}
-                        {description && (
-                            <p className="text-xs text-muted-foreground">{description}</p>
-                        )}
+                        {
+                            change && (
+                                <div className="flex items-center gap-1 text-sm">
+                                    {
+                                        trend === 'up' ? (
+                                            <TrendingUp className="h-4 w-4 text-green-500" />
+                                        ) : (
+                                            <TrendingDown className="h-4 w-4 text-red-500" />
+                                        )
+                                    }
+                                    <span className={trend === 'up' ? 'text-green-500' : 'text-red-500'}>
+                                        {change}%
+                                    </span>
+                                    <span className="text-muted-foreground">vs last period</span>
+                                </div>
+                            )
+                        }
+                        {
+                            description && (
+                                <p className="text-xs text-muted-foreground">{description}</p>
+                            )
+                        }
                     </div>
                     <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
                         <Icon className="h-6 w-6 text-primary" />
@@ -157,7 +157,6 @@ export default function AnalyticsPage() {
     return (
         <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 p-6">
             <div className="max-w-7xl mx-auto space-y-6">
-                {/* Header */}
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                     <div>
                         <h1 className="text-3xl font-bold text-foreground">Analytics Dashboard</h1>
@@ -165,7 +164,6 @@ export default function AnalyticsPage() {
                             Track performance, monitor progress, and gain insights
                         </p>
                     </div>
-                    
                     <div className="flex gap-2">
                         <Select value={timeFilter} onValueChange={setTimeFilter}>
                             <SelectTrigger className="w-48">
@@ -179,15 +177,12 @@ export default function AnalyticsPage() {
                                 <SelectItem value="1year">Last Year</SelectItem>
                             </SelectContent>
                         </Select>
-                        
                         <Button variant="outline" className="gap-2">
                             <Download className="h-4 w-4" />
                             Export
                         </Button>
                     </div>
                 </div>
-
-                {/* Overview Stats */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     <StatCard
                         title="Total Projects"
@@ -197,7 +192,6 @@ export default function AnalyticsPage() {
                         icon={Target}
                         description={`${analytics.overview.activeProjects} active, ${analytics.overview.completedProjects} completed`}
                     />
-                    
                     <StatCard
                         title="Total Revenue"
                         value={`$${(analytics.overview.totalRevenue / 1000).toFixed(0)}K`}
@@ -206,7 +200,6 @@ export default function AnalyticsPage() {
                         icon={DollarSign}
                         description="Across all projects"
                     />
-                    
                     <StatCard
                         title="Team Members"
                         value={analytics.overview.teamMembers}
@@ -215,7 +208,6 @@ export default function AnalyticsPage() {
                         icon={Users}
                         description="Active developers and PMs"
                     />
-                    
                     <StatCard
                         title="On-Time Delivery"
                         value={`${analytics.overview.onTimeDelivery}%`}
@@ -225,115 +217,111 @@ export default function AnalyticsPage() {
                         description="Project completion rate"
                     />
                 </div>
-
-                {/* Charts Row */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    {/* Project Progress Chart */}
                     <ChartCard title="Project Progress Over Time">
                         <div className="space-y-4">
-                            {analytics.projectStats.slice(-6).map((stat) => (
-                                <div key={stat.month} className="space-y-2">
-                                    <div className="flex justify-between items-center">
-                                        <span className="text-sm font-medium text-foreground">{stat.month}</span>
-                                        <div className="flex gap-4 text-sm">
-                                            <span className="text-green-600">{stat.completed} completed</span>
-                                            <span className="text-blue-600">{stat.active} active</span>
+                            {
+                                analytics.projectStats.slice(-6).map((stat) => (
+                                    <div key={stat.month} className="space-y-2">
+                                        <div className="flex justify-between items-center">
+                                            <span className="text-sm font-medium text-foreground">{stat.month}</span>
+                                            <div className="flex gap-4 text-sm">
+                                                <span className="text-green-600">{stat.completed} completed</span>
+                                                <span className="text-blue-600">{stat.active} active</span>
+                                            </div>
+                                        </div>
+                                        <div className="flex gap-1 h-2">
+                                            <div
+                                                className="bg-green-500 rounded-l"
+                                                style={{ width: `${(stat.completed / (stat.completed + stat.active)) * 100}%` }}
+                                            />
+                                            <div
+                                                className="bg-blue-500 rounded-r"
+                                                style={{ width: `${(stat.active / (stat.completed + stat.active)) * 100}%` }}
+                                            />
+                                        </div>
+                                        <div className="text-xs text-muted-foreground">
+                                            Revenue: ${(stat.revenue / 1000).toFixed(0)}K
                                         </div>
                                     </div>
-                                    <div className="flex gap-1 h-2">
-                                        <div 
-                                            className="bg-green-500 rounded-l"
-                                            style={{ width: `${(stat.completed / (stat.completed + stat.active)) * 100}%` }}
-                                        />
-                                        <div 
-                                            className="bg-blue-500 rounded-r"
-                                            style={{ width: `${(stat.active / (stat.completed + stat.active)) * 100}%` }}
-                                        />
-                                    </div>
-                                    <div className="text-xs text-muted-foreground">
-                                        Revenue: ${(stat.revenue / 1000).toFixed(0)}K
-                                    </div>
-                                </div>
-                            ))}
+                                ))
+                            }
                         </div>
                     </ChartCard>
-
-                    {/* Team Performance */}
                     <ChartCard title="Team Performance">
                         <div className="space-y-4">
-                            {analytics.teamPerformance.map((member, index) => (
-                                <motion.div
-                                    key={member.name}
-                                    initial={{ opacity: 0, x: -20 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    transition={{ delay: index * 0.1 }}
-                                    className="space-y-2"
-                                >
-                                    <div className="flex justify-between items-center">
-                                        <span className="text-sm font-medium text-foreground">{member.name}</span>
-                                        <div className="flex items-center gap-2">
-                                            <Badge variant="outline" className="text-xs">
-                                                {member.rating}★
-                                            </Badge>
-                                            <span className="text-sm text-muted-foreground">
-                                                {member.efficiency}%
-                                            </span>
+                            {
+                                analytics.teamPerformance.map((member, index) => (
+                                    <motion.div
+                                        key={member.name}
+                                        initial={{ opacity: 0, x: -20 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        transition={{ delay: index * 0.1 }}
+                                        className="space-y-2"
+                                    >
+                                        <div className="flex justify-between items-center">
+                                            <span className="text-sm font-medium text-foreground">{member.name}</span>
+                                            <div className="flex items-center gap-2">
+                                                <Badge variant="outline" className="text-xs">
+                                                    {member.rating}★
+                                                </Badge>
+                                                <span className="text-sm text-muted-foreground">
+                                                    {member.efficiency}%
+                                                </span>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <Progress value={member.efficiency} className="h-2" />
-                                    <div className="flex justify-between text-xs text-muted-foreground">
-                                        <span>{member.projectsCompleted} projects</span>
-                                        <span>{member.tasksCompleted} tasks</span>
-                                    </div>
-                                </motion.div>
-                            ))}
+                                        <Progress value={member.efficiency} className="h-2" />
+                                        <div className="flex justify-between text-xs text-muted-foreground">
+                                            <span>{member.projectsCompleted} projects</span>
+                                            <span>{member.tasksCompleted} tasks</span>
+                                        </div>
+                                    </motion.div>
+                                ))
+                            }
                         </div>
                     </ChartCard>
                 </div>
-
-                {/* Additional Stats Row */}
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    {/* Recent Activity */}
                     <ChartCard title="Recent Activity">
                         <div className="space-y-4">
-                            {analytics.recentActivity.map((activity, index) => {
-                                const getActivityIcon = (type: string) => {
-                                    switch (type) {
-                                        case 'project_completed':
-                                            return <Award className="h-4 w-4 text-green-500" />
-                                        case 'milestone_reached':
-                                            return <Target className="h-4 w-4 text-blue-500" />
-                                        case 'new_client':
-                                            return <Users className="h-4 w-4 text-purple-500" />
-                                        case 'team_added':
-                                            return <Activity className="h-4 w-4 text-orange-500" />
-                                        default:
-                                            return <Activity className="h-4 w-4 text-gray-500" />
+                            {
+                                analytics.recentActivity.map((activity, index) => {
+                                    const getActivityIcon = (type: string) => {
+                                        switch (type) {
+                                            case 'project_completed':
+                                                return <Award className="h-4 w-4 text-green-500" />
+                                            case 'milestone_reached':
+                                                return <Target className="h-4 w-4 text-blue-500" />
+                                            case 'new_client':
+                                                return <Users className="h-4 w-4 text-purple-500" />
+                                            case 'team_added':
+                                                return <Activity className="h-4 w-4 text-orange-500" />
+                                            default:
+                                                return <Activity className="h-4 w-4 text-gray-500" />
+                                        }
                                     }
-                                }
 
-                                return (
-                                    <motion.div
-                                        key={index}
-                                        initial={{ opacity: 0, y: 10 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        transition={{ delay: index * 0.1 }}
-                                        className="flex items-start gap-3 p-2 rounded-lg hover:bg-muted/50 transition-colors"
-                                    >
-                                        <div className="flex-shrink-0 mt-0.5">
-                                            {getActivityIcon(activity.type)}
-                                        </div>
-                                        <div className="flex-1 min-w-0">
-                                            <p className="text-sm text-foreground">{activity.message}</p>
-                                            <p className="text-xs text-muted-foreground">{activity.time}</p>
-                                        </div>
-                                    </motion.div>
-                                )
-                            })}
+                                    return (
+                                        <motion.div
+                                            key={index}
+                                            initial={{ opacity: 0, y: 10 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            transition={{ delay: index * 0.1 }}
+                                            className="flex items-start gap-3 p-2 rounded-lg hover:bg-muted/50 transition-colors"
+                                        >
+                                            <div className="flex-shrink-0 mt-0.5">
+                                                {getActivityIcon(activity.type)}
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <p className="text-sm text-foreground">{activity.message}</p>
+                                                <p className="text-xs text-muted-foreground">{activity.time}</p>
+                                            </div>
+                                        </motion.div>
+                                    )
+                                })
+                            }
                         </div>
                     </ChartCard>
-
-                    {/* Key Metrics */}
                     <ChartCard title="Key Metrics">
                         <div className="space-y-6">
                             <div className="space-y-2">
@@ -343,7 +331,6 @@ export default function AnalyticsPage() {
                                 </div>
                                 <Progress value={(analytics.overview.clientSatisfaction / 5) * 100} className="h-2" />
                             </div>
-                            
                             <div className="space-y-2">
                                 <div className="flex justify-between">
                                     <span className="text-sm font-medium text-foreground">Average Project Duration</span>
@@ -351,7 +338,6 @@ export default function AnalyticsPage() {
                                 </div>
                                 <Progress value={70} className="h-2" />
                             </div>
-                            
                             <div className="space-y-2">
                                 <div className="flex justify-between">
                                     <span className="text-sm font-medium text-foreground">Team Utilization</span>
@@ -359,7 +345,6 @@ export default function AnalyticsPage() {
                                 </div>
                                 <Progress value={78} className="h-2" />
                             </div>
-                            
                             <div className="space-y-2">
                                 <div className="flex justify-between">
                                     <span className="text-sm font-medium text-foreground">Budget Accuracy</span>
@@ -369,8 +354,6 @@ export default function AnalyticsPage() {
                             </div>
                         </div>
                     </ChartCard>
-
-                    {/* Goals & Targets */}
                     <ChartCard title="Goals & Targets">
                         <div className="space-y-4">
                             <div className="space-y-2">
@@ -384,7 +367,6 @@ export default function AnalyticsPage() {
                                 </div>
                                 <Progress value={90} className="h-2" />
                             </div>
-                            
                             <div className="space-y-2">
                                 <div className="flex items-center gap-2">
                                     <Users className="h-4 w-4 text-primary" />
@@ -396,7 +378,6 @@ export default function AnalyticsPage() {
                                 </div>
                                 <Progress value={80} className="h-2" />
                             </div>
-                            
                             <div className="space-y-2">
                                 <div className="flex items-center gap-2">
                                     <Clock className="h-4 w-4 text-primary" />
@@ -408,7 +389,6 @@ export default function AnalyticsPage() {
                                 </div>
                                 <Progress value={87} className="h-2" />
                             </div>
-                            
                             <div className="space-y-2">
                                 <div className="flex items-center gap-2">
                                     <Award className="h-4 w-4 text-primary" />
