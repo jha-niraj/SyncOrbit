@@ -107,7 +107,7 @@ const Sidebar = ({ isCollapsed, toggleSidebar }: SidebarProps) => {
                     "fixed top-0 left-0 h-full border-r shadow-lg z-20 sm:block hidden",
                     "bg-background/80 backdrop-blur-xl border-border/50"
                 )}
-                animate={{ width: isCollapsed ? 60 : 180 }}
+                animate={{ width: isCollapsed ? 60 : 200 }}
                 transition={{ duration: 0.3, ease: "easeInOut" }}
             >
                 <div className="flex flex-col h-full relative">
@@ -249,7 +249,7 @@ const Sidebar = ({ isCollapsed, toggleSidebar }: SidebarProps) => {
                     {
                         session?.user && (
                             <div className="border-t border-border/20 p-4 mt-auto bg-muted/30 backdrop-blur-sm">
-                                <div className={`flex items-center justify-between ${isCollapsed ? "flex-col gap-2" : "flex-row"}`}>
+                                <div className={`flex flex-col gap-4 items-center justify-between ${isCollapsed ? "flex-col gap-2" : "flex-row"}`}>
                                     <div className="flex items-center space-x-3">
                                         <Avatar className="h-10 w-10 border-2 border-border/50 shadow-sm">
                                             <AvatarImage src={session.user.image || "/placeholder.svg"} alt={session.user.name || "User"} />
@@ -289,7 +289,7 @@ const Sidebar = ({ isCollapsed, toggleSidebar }: SidebarProps) => {
                                                 {!isCollapsed && <span className="ml-2 text-sm">Sign Out</span>}
                                             </Button>
                                         </TooltipTrigger>
-                                        <TooltipContent side={isCollapsed ? "right" : "top"}>
+                                        <TooltipContent side={isCollapsed ? "right" : "right"}>
                                             <p>Sign Out</p>
                                         </TooltipContent>
                                     </Tooltip>

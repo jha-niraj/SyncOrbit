@@ -898,7 +898,6 @@ export default function LandingPage() {
                                     INR (₹)
                                 </button>
                             </div>
-
                             <p className="text-sm text-gray-500 dark:text-gray-400">
                                 <Link href="/pricing" className="text-blue-600 dark:text-blue-400 hover:underline">
                                     View detailed pricing →
@@ -983,7 +982,7 @@ export default function LandingPage() {
                                                 <Button
                                                     className={`w-full mt-6 ${plan.popular
                                                         ? 'bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white'
-                                                        : 'border-2 border-gray-300 dark:border-gray-600 hover:border-blue-500 dark:hover:border-blue-400 bg-white dark:bg-gray-800'
+                                                        : 'text-black dark:text-white border-2 border-gray-300 dark:border-gray-600 hover:border-blue-500 dark:hover:border-blue-400 bg-white dark:bg-gray-800'
                                                         }`}
                                                     size="lg"
                                                     asChild

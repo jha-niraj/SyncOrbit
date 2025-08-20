@@ -2,7 +2,6 @@
 
 import { prisma } from "@/lib/prisma"
 import { Role } from "@prisma/client"
-import bcrypt from "bcryptjs"
 
 interface OnboardingData {
     email: string
