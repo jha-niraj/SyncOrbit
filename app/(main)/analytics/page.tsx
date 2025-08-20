@@ -23,43 +23,7 @@ import { motion } from "framer-motion"
 import { useSession } from "next-auth/react"
 import { getAnalyticsData } from "@/actions/(client)/analytics.action"
 import { toast } from "sonner"
-
-interface MonthlyStats {
-    month: string
-    completed: number
-    active: number
-    revenue: number
-}
-
-interface TeamMember {
-    name: string
-    projectsCompleted: number
-    tasksCompleted: number
-    rating: number
-    efficiency: number
-}
-
-interface ActivityItem {
-    type: string
-    message: string
-    time: string
-}
-
-interface AnalyticsData {
-    overview: {
-        totalProjects: number
-        activeProjects: number
-        completedProjects: number
-        totalRevenue: number
-        teamMembers: number
-        averageProjectDuration: number
-        clientSatisfaction: number
-        onTimeDelivery: number
-    }
-    projectStats: MonthlyStats[]
-    teamPerformance: TeamMember[]
-    recentActivity: ActivityItem[]
-}
+import { AnalyticsData, StatCardProps, ChartCardProps } from "@/types/analytics"
 
 export default function AnalyticsPage() {
     const { data: session } = useSession()
@@ -73,7 +37,7 @@ export default function AnalyticsPage() {
             const result = await getAnalyticsData()
             
             if (result.success && result.analytics) {
-                setAnalytics(result.analytics)
+                setAnalytics(result.analytics as AnalyticsData)
             } else {
                 toast.error(result.error || "Failed to load analytics data")
             }
@@ -149,7 +113,7 @@ export default function AnalyticsPage() {
         )
     }
 
-    const StatCard = ({ title, value, change, icon: Icon, trend, description }: any) => (
+    const StatCard = ({ title, value, change, icon: Icon, trend, description }: StatCardProps) => (
         <Card className="bg-background/50 backdrop-blur-sm border-border/50">
             <CardContent className="p-6">
                 <div className="flex items-center justify-between">
@@ -181,7 +145,7 @@ export default function AnalyticsPage() {
         </Card>
     )
 
-    const ChartCard = ({ title, children }: any) => (
+    const ChartCard = ({ title, children }: ChartCardProps) => (
         <Card className="bg-background/50 backdrop-blur-sm border-border/50">
             <CardHeader className="pb-3">
                 <CardTitle className="text-lg font-semibold text-foreground">{title}</CardTitle>

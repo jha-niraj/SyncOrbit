@@ -259,7 +259,7 @@ function Onboarding() {
 export default function OnboardingPage() {
     return (
         <Suspense fallback={<div>Loading...</div>}>
-            <OnboardingPage />
+            <Onboarding />
         </Suspense>
     )
 }

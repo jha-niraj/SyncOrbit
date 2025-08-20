@@ -27,6 +27,7 @@ import { formatDistanceToNow } from "date-fns"
 import { getTeamMembers, getDeveloperDetails } from "@/actions/(productmanager)/team.action"
 import { getDeveloperTasks } from "@/actions/(productmanager)/user-role.action"
 import { useToast } from "@/hooks/use-toast"
+import { TeamMember, DeveloperDetails, ProjectTaskGroup, TaskDetail, Project } from "@/types/team"
 
 export default function TeamPage() {
     const { data: session } = useSession()
@@ -40,68 +41,6 @@ export default function TeamPage() {
     const [loadingDetails, setLoadingDetails] = useState(false)
     const [viewingTasks, setViewingTasks] = useState(false)
     console.log(viewingTasks)
-
-    // Types
-    interface TeamMember {
-        id: string
-        name: string
-        email: string
-        image?: string
-        role: string
-        bio?: string
-        skills?: string[]
-        createdAt: string
-        stats?: {
-            projectCount: number
-            completedTasks: number
-            inProgressTasks: number
-            pendingTasks: number
-            totalTasks: number
-            completionRate: number
-        }
-        projects?: Project[]
-        tasks?: Task[]
-    }
-
-    interface DeveloperDetails extends TeamMember {
-        stats?: {
-            projectCount: number
-            completedTasks: number
-            inProgressTasks: number
-            pendingTasks: number
-            totalTasks: number
-            completionRate: number
-        }
-        tasksByProject?: Array<{
-            project: {
-                id: string
-                title: string
-                status: string
-            }
-            tasks: Array<{
-                id: string
-                title: string
-                description?: string
-                status: string
-                createdAt: string
-                duration?: number
-            }>
-        }>
-    }
-
-    interface Project {
-        id: string
-        title: string
-        slug: string
-        status: string
-    }
-
-    interface Task {
-        id: string
-        title: string
-        status: string
-        project: Project
-    }
 
     // Load team members on component mount
     const loadTeamMembers = useCallback(async () => {
@@ -496,7 +435,7 @@ export default function TeamPage() {
                                                 </p>
                                             </div>
                                         ) : (
-                                            developerDetails.tasksByProject.map((projectGroup: any) => (
+                                            developerDetails.tasksByProject.map((projectGroup: ProjectTaskGroup) => (
                                                 <div key={projectGroup.project.id} className="space-y-3">
                                                     <div className="flex items-center gap-2">
                                                         <h4 className="font-semibold text-lg">{projectGroup.project.title}</h4>
@@ -506,7 +445,7 @@ export default function TeamPage() {
                                                     </div>
                                                     
                                                     <div className="space-y-2 pl-4 border-l-2 border-border/50">
-                                                        {projectGroup.tasks.map((task: any) => (
+                                                        {projectGroup.tasks.map((task: TaskDetail) => (
                                                             <Card key={task.id} className="hover:shadow-sm transition-shadow">
                                                                 <CardContent className="p-4">
                                                                     <div className="flex items-start justify-between">

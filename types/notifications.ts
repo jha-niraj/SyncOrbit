@@ -12,10 +12,27 @@ export type NotificationType =
     | 'GENERAL';
     
 export interface Notification {
-    id: string;
-    type: NotificationType;
-    message: string;
-    read: boolean;
-    createdAt: Date;
-    receiverId: string;
+    id: string
+    type: NotificationType
+    title: string
+    description?: string | null
+    message?: string
+    read: boolean
+    createdAt: string | Date
+    receiverId: string
+    actionUrl?: string | null
+    sender?: NotificationSender | null
+}
+
+export interface NotificationSender {
+    id: string
+    name: string | null
+    image?: string | null
+}
+
+export interface NotificationResponse {
+    success: boolean
+    notifications?: Notification[]
+    unreadCount?: number
+    error?: string
 }

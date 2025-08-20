@@ -20,12 +20,13 @@ import { Badge } from "./ui/badge"
 import { cn } from "@/lib/utils"
 import { getRecentNotifications, markNotificationAsRead } from "@/actions/notifications.action"
 import { format } from "date-fns"
+import { Notification } from "@/types/notifications"
 
 const MainNavbar = ({ isCollapsed }: { isCollapsed: boolean }) => {
     const { data: session } = useSession();
     const { theme, setTheme } = useTheme()
     const [scrolled, setScrolled] = useState(false)
-    const [notifications, setNotifications] = useState<any[]>([])
+    const [notifications, setNotifications] = useState<Notification[]>([])
     const [unreadCount, setUnreadCount] = useState(0)
     const [notificationsOpen, setNotificationsOpen] = useState(false)
     const pathname = usePathname()
@@ -59,7 +60,7 @@ const MainNavbar = ({ isCollapsed }: { isCollapsed: boolean }) => {
         }
     }
 
-    const handleNotificationClick = async (notification: any) => {
+    const handleNotificationClick = async (notification: Notification) => {
         try {
             await markNotificationAsRead(notification.id)
             setUnreadCount(prev => Math.max(0, prev - 1))

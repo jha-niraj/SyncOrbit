@@ -11,18 +11,7 @@ import { Users, Settings, UserCheck, Clock, Briefcase } from "lucide-react"
 import { getUsersByCompany, updateUserRole } from "@/actions/(productmanager)/user-role.action"
 import { useSession } from "next-auth/react"
 import { UserRole } from "@prisma/client"
-
-interface DeveloperUser {
-    id: string
-    name: string | null
-    email: string | null
-    image: string | null
-    role: string
-    userRole: UserRole | null
-    createdAt: Date
-    assignedTasks: any[]
-    projects: any[]
-}
+import { UserWithRole } from "@/types/role-settings"
 
 const roleOptions = [
     {
@@ -53,7 +42,7 @@ const roleOptions = [
 
 export default function RoleSettingsPage() {
     const { data: session } = useSession()
-    const [developers, setDevelopers] = useState<DeveloperUser[]>([])
+    const [developers, setDevelopers] = useState<UserWithRole[]>([])
     const [loading, setLoading] = useState(true)
     const [updating, setUpdating] = useState<string | null>(null)
 
@@ -65,7 +54,7 @@ export default function RoleSettingsPage() {
         try {
             const result = await getUsersByCompany()
             if (result.success) {
-                setDevelopers(result.users as DeveloperUser[])
+                setDevelopers(result.users as UserWithRole[])
             } else {
                 toast.error(result.error || "Failed to fetch developers")
             }
@@ -167,7 +156,7 @@ export default function RoleSettingsPage() {
             ) : (
                 <div className="space-y-4">
                     {developers.map((developer, index) => {
-                        const roleInfo = getRoleInfo(developer.userRole)
+                        const roleInfo = getRoleInfo(developer.userRole as UserRole)
                         
                         return (
                             <motion.div
@@ -183,7 +172,7 @@ export default function RoleSettingsPage() {
                                                 <Avatar className="h-12 w-12 border-2 border-border/50">
                                                     <AvatarImage src={developer.image || ""} />
                                                     <AvatarFallback className="bg-primary/10 text-primary font-semibold">
-                                                        {developer.name?.split(" ").map(n => n[0]).join("") || "D"}
+                                                        {developer.name?.split(" ").map((n: string) => n[0]).join("") || "D"}
                                                     </AvatarFallback>
                                                 </Avatar>
                                                 <div className="space-y-1">
@@ -196,11 +185,11 @@ export default function RoleSettingsPage() {
                                                     <div className="flex items-center gap-2">
                                                         <Badge variant="outline" className="text-xs">
                                                             <Briefcase className="w-3 h-3 mr-1" />
-                                                            {developer.projects.length} Projects
+                                                            {developer.projects?.length || 0} Projects
                                                         </Badge>
                                                         <Badge variant="outline" className="text-xs">
                                                             <Clock className="w-3 h-3 mr-1" />
-                                                            {developer.assignedTasks.length} Tasks
+                                                            {developer.assignedTasks?.length || 0} Tasks
                                                         </Badge>
                                                     </div>
                                                 </div>
