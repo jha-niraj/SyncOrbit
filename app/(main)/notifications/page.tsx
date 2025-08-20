@@ -1,32 +1,30 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { useState, useEffect, useCallback } from "react"
+import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-} from "@/components/ui/alert-dialog"
+// import {
+//     AlertDialog,
+//     AlertDialogAction,
+//     AlertDialogCancel,
+//     AlertDialogContent,
+//     AlertDialogDescription,
+//     AlertDialogFooter,
+//     AlertDialogHeader,
+//     AlertDialogTitle,
+// } from "@/components/ui/alert-dialog"
 import { toast } from "sonner"
 import { motion } from "framer-motion"
 import { 
     Bell, 
     BellOff, 
-    Check, 
     CheckCheck, 
     Trash2, 
     RefreshCw,
     ChevronLeft,
     ChevronRight,
-    Filter
 } from "lucide-react"
 import { 
     getNotifications, 
@@ -77,15 +75,7 @@ export default function NotificationsPage() {
     const [markingAllRead, setMarkingAllRead] = useState(false)
     const [refreshing, setRefreshing] = useState(false)
 
-    useEffect(() => {
-        if (session?.user && ["DEVELOPER", "PRODUCTMANAGER"].includes(session.user.role)) {
-            fetchNotifications(1)
-        } else {
-            setLoading(false)
-        }
-    }, [session])
-
-    const fetchNotifications = async (page: number = currentPage) => {
+    const fetchNotifications = useCallback(async (page: number = currentPage) => {
         try {
             setRefreshing(page === 1)
             const result = await getNotifications(page, 20)
@@ -104,7 +94,15 @@ export default function NotificationsPage() {
             setLoading(false)
             setRefreshing(false)
         }
-    }
+    }, [currentPage])
+
+    useEffect(() => {
+        if (session?.user && ["DEVELOPER", "PRODUCTMANAGER"].includes(session.user.role)) {
+            fetchNotifications(1)
+        } else {
+            setLoading(false)
+        }
+    }, [session, fetchNotifications])
 
     const handleNotificationClick = async (notification: Notification) => {
         if (!notification.read) {

@@ -13,14 +13,3 @@ export interface RequestBody {
 
 // User role types for developers
 export type UserRole = 'BASIC_DEVELOPER' | 'PROJECT_CREATOR' | 'SENIOR_DEVELOPER' | 'TEAM_LEAD';
-
-// Notification types
-export type NotificationType = 
-    | 'PROJECT_ASSIGNED' 
-    | 'TASK_ASSIGNED' 
-    | 'TASK_COMPLETED' 
-    | 'PROJECT_UPDATE' 
-    | 'USER_PROMOTED' 
-    | 'CLIENT_ONBOARDED' 
-    | 'FEEDBACK_RECEIVED' 
-    | 'GENERAL';

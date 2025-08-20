@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, Suspense } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -13,12 +13,12 @@ import { toast } from "sonner"
 import { useSession } from "next-auth/react"
 import { completeOnboarding } from "@/actions/auth/onboarding.action"
 
-export default function OnboardingPage() {
+function Onboarding() {
     const router = useRouter()
     const searchParams = useSearchParams()
     const { data: session, status } = useSession()
     const [loading, setLoading] = useState(false)
-    
+
     // Form state
     const [formData, setFormData] = useState({
         role: "CLIENT" as "CLIENT" | "DEVELOPER" | "PRODUCTMANAGER",
@@ -30,7 +30,7 @@ export default function OnboardingPage() {
     useEffect(() => {
         // Wait for session to load
         if (status === "loading") return
-        
+
         // If no session, redirect to signin
         if (status === "unauthenticated") {
             router.push('/signin')
@@ -41,7 +41,7 @@ export default function OnboardingPage() {
         const ref = searchParams.get('ref')
         if (ref) {
             setFormData(prev => ({ ...prev, referralCode: ref }))
-            
+
             // Extract role from referral code
             if (ref.includes('dev')) {
                 setFormData(prev => ({ ...prev, role: 'DEVELOPER' }))
@@ -143,7 +143,7 @@ export default function OnboardingPage() {
                             Complete Your Profile
                         </CardTitle>
                         <p className="text-muted-foreground">
-                            Welcome {session.user.name || session.user.email}! Let's set up your account.
+                            Welcome {session.user.name || session.user.email}! Let&apos;s set up your account.
                         </p>
                     </CardHeader>
 
@@ -152,9 +152,9 @@ export default function OnboardingPage() {
                             {/* Role Selection */}
                             <div className="space-y-2">
                                 <Label htmlFor="role">Select Your Role</Label>
-                                <Select 
-                                    value={formData.role} 
-                                    onValueChange={(value: "CLIENT" | "DEVELOPER" | "PRODUCTMANAGER") => 
+                                <Select
+                                    value={formData.role}
+                                    onValueChange={(value: "CLIENT" | "DEVELOPER" | "PRODUCTMANAGER") =>
                                         setFormData(prev => ({ ...prev, role: value }))
                                     }
                                 >
@@ -234,9 +234,9 @@ export default function OnboardingPage() {
                                 </motion.div>
                             )}
 
-                            <Button 
-                                type="submit" 
-                                className="w-full" 
+                            <Button
+                                type="submit"
+                                className="w-full"
                                 disabled={loading}
                             >
                                 {loading ? (
@@ -253,5 +253,13 @@ export default function OnboardingPage() {
                 </Card>
             </motion.div>
         </div>
+    )
+}
+
+export default function OnboardingPage() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <OnboardingPage />
+        </Suspense>
     )
 }

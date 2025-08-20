@@ -12,8 +12,6 @@ import {
     Users, 
     Search, 
     Filter, 
-    Mail,
-    Phone,
     Calendar,
     Award,
     Activity,
@@ -40,6 +38,8 @@ export default function TeamPage() {
     const [isLoading, setIsLoading] = useState(true)
     const [developerDetails, setDeveloperDetails] = useState<DeveloperDetails | null>(null)
     const [loadingDetails, setLoadingDetails] = useState(false)
+    const [viewingTasks, setViewingTasks] = useState(false)
+    console.log(viewingTasks)
 
     // Types
     interface TeamMember {
@@ -72,6 +72,21 @@ export default function TeamPage() {
             totalTasks: number
             completionRate: number
         }
+        tasksByProject?: Array<{
+            project: {
+                id: string
+                title: string
+                status: string
+            }
+            tasks: Array<{
+                id: string
+                title: string
+                description?: string
+                status: string
+                createdAt: string
+                duration?: number
+            }>
+        }>
     }
 
     interface Project {
@@ -127,6 +142,7 @@ export default function TeamPage() {
     const handleViewDeveloper = async (developerId: string) => {
         try {
             setLoadingDetails(true)
+            setViewingTasks(false)
             const result = await getDeveloperDetails(developerId)
             
             if (result.success) {
@@ -153,36 +169,15 @@ export default function TeamPage() {
     const handleViewTasks = async (developerId: string) => {
         try {
             setLoadingDetails(true)
+            setViewingTasks(true)
             const result = await getDeveloperTasks(developerId)
             
             if (result.success) {
-                setDeveloperDetails(result as unknown as DeveloperDetails)
-            } else {
-                toast({
-                    title: "Error",
-                    description: result.error || "Failed to load developer tasks",
-                    variant: "destructive"
-                })
-            }
-        } catch (error) {
-            console.error("Error loading developer tasks:", error)
-            toast({
-                title: "Error",
-                description: "Failed to load developer tasks",
-                variant: "destructive"
-            })
-        } finally {
-            setLoadingDetails(false)
-        }
-    }
-
-    const handleViewTasks = async (developerId: string) => {
-        try {
-            setLoadingDetails(true)
-            const result = await getDeveloperTasks(developerId)
-            
-            if (result.success) {
-                setDeveloperDetails(result as any) // Type assertion for compatibility
+                // Transform the result to match our expected structure
+                setDeveloperDetails({
+                    ...result.developer,
+                    tasksByProject: result.tasksByProject || []
+                } as DeveloperDetails)
             } else {
                 toast({
                     title: "Error",
@@ -492,7 +487,7 @@ export default function TeamPage() {
                                                     </div>
                                                 ))}
                                             </div>
-                                        ) : developerDetails?.tasksByProject.length === 0 ? (
+                                        ) : (!developerDetails?.tasksByProject || developerDetails.tasksByProject.length === 0) ? (
                                             <div className="text-center py-8">
                                                 <Activity className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
                                                 <h3 className="font-semibold text-lg mb-2">No Tasks Assigned</h3>
@@ -501,7 +496,7 @@ export default function TeamPage() {
                                                 </p>
                                             </div>
                                         ) : (
-                                            developerDetails?.tasksByProject.map((projectGroup, index) => (
+                                            developerDetails.tasksByProject.map((projectGroup: any) => (
                                                 <div key={projectGroup.project.id} className="space-y-3">
                                                     <div className="flex items-center gap-2">
                                                         <h4 className="font-semibold text-lg">{projectGroup.project.title}</h4>
@@ -511,7 +506,7 @@ export default function TeamPage() {
                                                     </div>
                                                     
                                                     <div className="space-y-2 pl-4 border-l-2 border-border/50">
-                                                        {projectGroup.tasks.map((task) => (
+                                                        {projectGroup.tasks.map((task: any) => (
                                                             <Card key={task.id} className="hover:shadow-sm transition-shadow">
                                                                 <CardContent className="p-4">
                                                                     <div className="flex items-start justify-between">

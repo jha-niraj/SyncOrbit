@@ -1,7 +1,6 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { useState, useEffect, useRef, useCallback } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -22,6 +21,7 @@ import { useSession } from "next-auth/react"
 import { formatDistanceToNow } from "date-fns"
 import { getProjectMessages, sendMessage } from "@/actions/(client)/chat.action"
 import { toast } from "sonner"
+import Image from "next/image"
 
 interface ChatPageProps {
     params: Promise<{
@@ -57,7 +57,7 @@ export default function ProjectChatPage({ params }: ChatPageProps) {
     const [project, setProject] = useState<ProjectInfo | null>(null)
     const [messages, setMessages] = useState<MessageData[]>([])
     const [newMessage, setNewMessage] = useState("")
-    const [isTyping, setIsTyping] = useState(false)
+    const [isTyping] = useState(false)
     const [loading, setLoading] = useState(true)
     const [slug, setSlug] = useState<string>("")
     const messagesEndRef = useRef<HTMLDivElement>(null)
@@ -70,18 +70,7 @@ export default function ProjectChatPage({ params }: ChatPageProps) {
         resolveParams()
     }, [params])
 
-    useEffect(() => {
-        if (slug) {
-            loadMessages()
-        }
-    }, [slug])
-
-    useEffect(() => {
-        // Scroll to bottom when new messages arrive
-        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
-    }, [messages])
-
-    const loadMessages = async () => {
+    const loadMessages = useCallback(async () => {
         try {
             setLoading(true)
             const result = await getProjectMessages(slug)
@@ -98,7 +87,18 @@ export default function ProjectChatPage({ params }: ChatPageProps) {
         } finally {
             setLoading(false)
         }
-    }
+    }, [slug]);
+
+    useEffect(() => {
+        if (slug) {
+            loadMessages()
+        }
+    }, [slug, loadMessages])
+
+    useEffect(() => {
+        // Scroll to bottom when new messages arrive
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+    }, [messages])
 
     const handleSendMessage = async () => {
         if (!newMessage.trim() || !session?.user || !slug) return
@@ -197,10 +197,12 @@ export default function ProjectChatPage({ params }: ChatPageProps) {
                             </a>
                         )}
                         {message.imageUrl && (
-                            <img 
+                            <Image
                                 src={message.imageUrl} 
                                 alt="Shared image"
                                 className="mt-2 max-w-full rounded-lg"
+                                width={32}
+                                height={32}
                             />
                         )}
                     </div>
@@ -241,7 +243,7 @@ export default function ProjectChatPage({ params }: ChatPageProps) {
             <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 flex items-center justify-center">
                 <div className="text-center">
                     <h2 className="text-2xl font-bold mb-2">Project not found</h2>
-                    <p className="text-muted-foreground mb-4">The project you're looking for doesn't exist or you don't have access to it.</p>
+                    <p className="text-muted-foreground mb-4">The project you&apos;re looking for doesn&apos;t exist or you don&apos;t have access to it.</p>
                     <Button asChild>
                         <Link href="/projects">Back to Projects</Link>
                     </Button>

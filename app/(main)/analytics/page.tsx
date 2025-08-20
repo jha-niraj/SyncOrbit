@@ -16,7 +16,6 @@ import {
     Target,
     Award,
     Activity,
-    Calendar,
     Download,
     Filter
 } from "lucide-react"
@@ -268,7 +267,7 @@ export default function AnalyticsPage() {
                     {/* Project Progress Chart */}
                     <ChartCard title="Project Progress Over Time">
                         <div className="space-y-4">
-                            {analytics.projectStats.slice(-6).map((stat, index) => (
+                            {analytics.projectStats.slice(-6).map((stat) => (
                                 <div key={stat.month} className="space-y-2">
                                     <div className="flex justify-between items-center">
                                         <span className="text-sm font-medium text-foreground">{stat.month}</span>
