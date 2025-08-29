@@ -21,11 +21,11 @@ export function generateOTPExpiry(minutes: number = 10): Date {
 export async function sendVerificationEmail(email: string, name: string, otp: string) {
 	try {
 		const { data, error } = await resend.emails.send({
-			from: 'ShunyaTech <noreply@nirajjha.xyz>',
+			from: 'Project Central <noreply@nirajjha.xyz>',
 			to: [email],
-			subject: 'Verify Your Email - ShunyaTech',
+			subject: 'Verify Your Email - Project Central',
 			react: VerificationEmailTemplate({ name, otp }),
-			text: 'Verify Your Email - ShunyaTech',
+			text: 'Verify Your Email - Project Central',
 		});
 
 		if (error) {
@@ -43,11 +43,11 @@ export async function sendVerificationEmail(email: string, name: string, otp: st
 export async function sendPasswordResetEmail(email: string, name: string, otp: string) {
 	try {
 		const { data, error } = await resend.emails.send({
-			from: 'ShunyaTech <noreply@nirajjha.xyz>',
+			from: 'Project Central <noreply@nirajjha.xyz>',
 			to: [email],
-			subject: 'Reset Your Password - ShunyaTech',
+			subject: 'Reset Your Password - Project Central',
 			react: PasswordResetEmailTemplate({ name, otp }),
-			text: 'Reset Your Password - ShunyaTech',
+			text: 'Reset Your Password - Project Central',
 		});
 
 		if (error) {
@@ -65,9 +65,9 @@ export async function sendPasswordResetEmail(email: string, name: string, otp: s
 export async function sendWelcomeEmail(email: string, name: string) {
 	try {
 		const { data, error } = await resend.emails.send({
-			from: 'ShunyaTech <noreply@nirajjha.xyz>',
+			from: 'Project Central <noreply@nirajjha.xyz>',
 			to: [email],
-			subject: 'Welcome to ShunyaTech! 🎉',
+			subject: 'Welcome to Project Central! 🎉',
 			react: WelcomeEmailTemplate({ name }),
 		});
 
@@ -98,7 +98,7 @@ export async function sendInvitationEmail(
 		const declineUrl = `${baseUrl}/api/invitations/decline?id=${invitationId}`
 
 		const { data, error } = await resend.emails.send({
-			from: 'ShunyaTech <noreply@nirajjha.xyz>',
+			from: 'Project Central <noreply@nirajjha.xyz>',
 			to: [email],
 			subject: `You're invited to join ${targetName} on Project Central`,
 			react: InvitationEmailTemplate({

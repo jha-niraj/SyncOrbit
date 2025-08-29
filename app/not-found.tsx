@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 
 export default function NotFound() {
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 px-4">
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 px-4">
             <div className="max-w-3xl w-full text-center">
                 <motion.div
                     initial={{ opacity: 0 }}
@@ -39,7 +39,7 @@ export default function NotFound() {
                                     initial={{ scale: 0.8 }}
                                     animate={{ scale: [0.8, 1.2, 1] }}
                                     transition={{ delay: 0.6, duration: 0.5 }}
-                                    className="inline-block text-black dark:text-white"
+                                    className="inline-block text-gray-900 dark:text-gray-100"
                                 >
                                     404
                                 </motion.span>
@@ -48,7 +48,7 @@ export default function NotFound() {
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
                                 transition={{ delay: 0.8, duration: 0.5 }}
-                                className="text-2xl md:text-3xl font-semibold mt-2"
+                                className="text-2xl md:text-3xl font-semibold mt-2 text-gray-800 dark:text-gray-200"
                             >
                                 Page Not Found
                             </motion.h2>
@@ -57,7 +57,7 @@ export default function NotFound() {
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             transition={{ delay: 1, duration: 0.5 }}
-                            className="max-w-lg mx-auto text-lg"
+                            className="max-w-lg mx-auto text-lg text-gray-600 dark:text-gray-400"
                         >
                             Oops! The page you&apos;re looking for seems to have wandered off into
                             the digital wilderness. Let&apos;s get you back on track.
@@ -75,7 +75,7 @@ export default function NotFound() {
                                 <Button
                                     asChild
                                     size="lg"
-                                    className="bg-gradient-to-r from-black to-black/90 hover:shadow-lg transition-all duration-300 px-8 py-6 text-lg"
+                                    className="bg-gradient-to-r from-gray-900 to-gray-800 hover:from-gray-800 hover:to-gray-700 dark:from-gray-100 dark:to-gray-200 dark:hover:from-gray-200 dark:hover:to-gray-300 dark:text-gray-900 hover:shadow-lg transition-all duration-300 px-8 py-6 text-lg"
                                 >
                                     <Link href="/" className="flex items-center gap-2">
                                         <Home className="h-5 w-5" />
@@ -122,7 +122,7 @@ function NotFoundSVG() {
             viewBox="0 0 800 400"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
-            className="w-full h-auto"
+            className="w-full h-auto text-gray-800 dark:text-gray-200"
         >
             <motion.circle
                 cx="400"
@@ -209,7 +209,6 @@ function NotFoundSVG() {
                     d="M400 150 L400 130"
                     stroke="currentColor"
                     strokeWidth="4"
-                    className="text-primary"
                     strokeLinecap="round"
                 />
             </motion.g>
