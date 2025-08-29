@@ -21,7 +21,7 @@ export function generateOTPExpiry(minutes: number = 10): Date {
 export async function sendVerificationEmail(email: string, name: string, otp: string) {
 	try {
 		const { data, error } = await resend.emails.send({
-			from: 'ShunyaTech <noreply@setu.nirajjha.xyz>',
+			from: 'ShunyaTech <noreply@nirajjha.xyz>',
 			to: [email],
 			subject: 'Verify Your Email - ShunyaTech',
 			react: VerificationEmailTemplate({ name, otp }),
@@ -43,7 +43,7 @@ export async function sendVerificationEmail(email: string, name: string, otp: st
 export async function sendPasswordResetEmail(email: string, name: string, otp: string) {
 	try {
 		const { data, error } = await resend.emails.send({
-			from: 'ShunyaTech <noreply@setu.nirajjha.xyz>',
+			from: 'ShunyaTech <noreply@nirajjha.xyz>',
 			to: [email],
 			subject: 'Reset Your Password - ShunyaTech',
 			react: PasswordResetEmailTemplate({ name, otp }),
@@ -65,7 +65,7 @@ export async function sendPasswordResetEmail(email: string, name: string, otp: s
 export async function sendWelcomeEmail(email: string, name: string) {
 	try {
 		const { data, error } = await resend.emails.send({
-			from: 'ShunyaTech <noreply@setu.nirajjha.xyz>',
+			from: 'ShunyaTech <noreply@nirajjha.xyz>',
 			to: [email],
 			subject: 'Welcome to ShunyaTech! 🎉',
 			react: WelcomeEmailTemplate({ name }),
@@ -98,7 +98,7 @@ export async function sendInvitationEmail(
 		const declineUrl = `${baseUrl}/api/invitations/decline?id=${invitationId}`
 
 		const { data, error } = await resend.emails.send({
-			from: 'ShunyaTech <noreply@setu.nirajjha.xyz>',
+			from: 'ShunyaTech <noreply@nirajjha.xyz>',
 			to: [email],
 			subject: `You're invited to join ${targetName} on Project Central`,
 			react: InvitationEmailTemplate({
