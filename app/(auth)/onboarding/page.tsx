@@ -117,10 +117,6 @@ function Onboarding() {
         )
     }
 
-    if (!session?.user) {
-        return null // Will redirect to signin
-    }
-
     return (
         <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 flex items-center justify-center p-4">
             <motion.div
@@ -143,7 +139,7 @@ function Onboarding() {
                             Complete Your Profile
                         </CardTitle>
                         <p className="text-muted-foreground">
-                            Welcome {session.user.name || session.user.email}! Let&apos;s set up your account.
+                            Welcome {session?.user?.name || session?.user?.email}! Let&apos;s set up your account.
                         </p>
                     </CardHeader>
                     <CardContent>
