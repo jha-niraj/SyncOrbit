@@ -21,8 +21,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-	title: "ShunyaTech - Innovative Digital Solutions",
-	description: "Transform your business with cutting-edge technology solutions from ShunyaTech. We specialize in web development, mobile apps, cloud solutions, and more.",
+	title: "Project Central",
+	description: "Streamline Your Projects with Ease",
 };
 
 export default function RootLayout({
