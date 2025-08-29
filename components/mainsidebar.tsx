@@ -23,11 +23,7 @@ export interface Route {
     status: string
 }
 
-interface SidebarProps {
-    // Remove collapsible props since it's now fixed width
-}
-
-const Sidebar = ({}: SidebarProps) => {
+const Sidebar = () => {
     const pathname = usePathname()
     const router = useRouter()
     const { data: session, status } = useSession()

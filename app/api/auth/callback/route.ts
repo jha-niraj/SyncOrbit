@@ -1,7 +1,7 @@
 // DISABLED: Using NextAuth for authentication instead
 // Keep this code for future Supabase migration if needed
 
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 // import { supabase } from '@/lib/supabase'
 // import { prisma } from '@/lib/prisma'
 
