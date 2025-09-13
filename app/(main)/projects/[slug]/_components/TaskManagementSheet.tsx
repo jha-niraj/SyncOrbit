@@ -12,9 +12,10 @@ import { Badge } from "@/components/ui/badge"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Separator } from "@/components/ui/separator"
-import { Plus, Trash2, CheckCircle, Clock, AlertCircle, User, Calendar, Loader2 } from "lucide-react"
+import { Plus, Trash2, CheckCircle, Clock, AlertCircle, User, Calendar, Loader2, ImageIcon, Link2, ExternalLink, FileIcon, Download } from "lucide-react"
 import { toast } from "sonner"
 import { createSubTask, updateSubTask, deleteSubTask, getTaskWithSubTasks } from "@/actions/(developers)/developers.action"
+import { uploadImageToCloudinary } from "@/actions/shared/upload.action"
 import { TaskStatus } from "@prisma/client"
 
 interface SubTask {
@@ -59,6 +60,10 @@ export function TaskManagementSheet({ taskId, trigger, userRole }: TaskManagemen
 	const [loading, setLoading] = useState(false)
 	const [newSubTask, setNewSubTask] = useState({ title: "", description: "" })
 	const [creatingSubTask, setCreatingSubTask] = useState(false)
+	const [selectedFile, setSelectedFile] = useState<File | null>(null)
+	const [filePreview, setFilePreview] = useState<string | null>(null)
+	const [uploadingFile, setUploadingFile] = useState(false)
+	const [selectedFileType, setSelectedFileType] = useState<'image' | 'document'>('image')
 
 	const isDeveloper = ['DEVELOPER', 'PRODUCTMANAGER', 'ADMIN'].includes(userRole)
 
@@ -87,6 +92,75 @@ export function TaskManagementSheet({ taskId, trigger, userRole }: TaskManagemen
 		}
 	}, [isOpen, loadTask])
 
+	const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+		const file = event.target.files?.[0]
+		if (file) {
+			// Validate file type
+			const imageTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp']
+			const documentTypes = [
+				'application/pdf', 'application/msword', 
+				'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+				'application/vnd.ms-excel',
+				'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+				'text/plain', 'application/zip', 'application/x-zip-compressed'
+			]
+			
+			const validTypes = [...imageTypes, ...documentTypes]
+			const isImage = imageTypes.includes(file.type)
+			
+			if (!validTypes.includes(file.type)) {
+				toast.error('Please select a valid image or document file')
+				return
+			}
+			
+			// Validate file size (5MB)
+			if (file.size > 5 * 1024 * 1024) {
+				toast.error('File size must be less than 5MB')
+				return
+			}
+			
+			setSelectedFile(file)
+			setSelectedFileType(isImage ? 'image' : 'document')
+			
+			// Create preview for images only
+			if (isImage) {
+				const reader = new FileReader()
+				reader.onload = (e) => {
+					setFilePreview(e.target?.result as string)
+				}
+				reader.readAsDataURL(file)
+			} else {
+				setFilePreview(null)
+			}
+		}
+	}
+
+	const clearFileSelection = () => {
+		setSelectedFile(null)
+		setFilePreview(null)
+	}
+
+	const detectLinksInText = (text: string) => {
+		const urlRegex = /(https?:\/\/[^\s]+)/g
+		return text.split(urlRegex).map((part, index) => {
+			if (part.match(urlRegex)) {
+				return (
+					<a
+						key={index}
+						href={part}
+						target="_blank"
+						rel="noopener noreferrer"
+						className="text-blue-600 hover:text-blue-800 underline inline-flex items-center gap-1"
+					>
+						{part}
+						<ExternalLink className="h-3 w-3" />
+					</a>
+				)
+			}
+			return part
+		})
+	}
+
 	const handleCreateSubTask = async () => {
 		if (!newSubTask.title.trim()) {
 			toast.error("Please enter a task title")
@@ -95,15 +169,39 @@ export function TaskManagementSheet({ taskId, trigger, userRole }: TaskManagemen
 
 		setCreatingSubTask(true)
 		try {
+			let description = newSubTask.description
+			
+			// Upload file if selected
+			if (selectedFile) {
+				setUploadingFile(true)
+				const formData = new FormData()
+				formData.append('file', selectedFile)
+				
+				const uploadResult = await uploadImageToCloudinary(formData)
+				if (uploadResult.success && uploadResult.url) {
+					const filePrefix = selectedFileType === 'image' ? 'Image' : 'File'
+					const fileName = selectedFile.name
+					description = description 
+						? `${description}\n\n${filePrefix}: ${fileName} - ${uploadResult.url}`
+						: `${filePrefix}: ${fileName} - ${uploadResult.url}`
+					toast.success(`${filePrefix} uploaded successfully`)
+				} else {
+					toast.error(uploadResult.message || "Failed to upload file")
+					// Continue without file
+				}
+				setUploadingFile(false)
+			}
+
 			const result = await createSubTask({
 				title: newSubTask.title,
-				description: newSubTask.description || undefined,
+				description: description || undefined,
 				taskId,
 			})
 
 			if (result.success) {
 				toast.success("Subtask created successfully")
 				setNewSubTask({ title: "", description: "" })
+				clearFileSelection()
 				await loadTask() // Refresh the task
 			} else {
 				toast.error(result.error || "Failed to create subtask")
@@ -113,6 +211,7 @@ export function TaskManagementSheet({ taskId, trigger, userRole }: TaskManagemen
 			toast.error("Failed to create subtask")
 		} finally {
 			setCreatingSubTask(false)
+			setUploadingFile(false)
 		}
 	}
 
@@ -276,25 +375,115 @@ export function TaskManagementSheet({ taskId, trigger, userRole }: TaskManagemen
 													placeholder="Enter subtask title..."
 													value={newSubTask.title}
 													onChange={(e) => setNewSubTask({ ...newSubTask, title: e.target.value })}
+													disabled={creatingSubTask || uploadingFile}
 												/>
 											</div>
 											<div className="space-y-2">
 												<Label htmlFor="subtask-description">Description (Optional)</Label>
 												<Textarea
 													id="subtask-description"
-													placeholder="Enter subtask description..."
+													placeholder="Enter subtask description... You can also include links!"
 													value={newSubTask.description}
 													onChange={(e) => setNewSubTask({ ...newSubTask, description: e.target.value })}
 													rows={3}
+													disabled={creatingSubTask || uploadingFile}
 												/>
 											</div>
+											
+											{/* File Upload Section */}
+											<div className="space-y-2">
+												<Label>Attach File (Optional)</Label>
+												<div className="flex items-center gap-2">
+													<input
+														type="file"
+														accept="image/*,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,text/plain,application/zip"
+														onChange={handleFileSelect}
+														className="hidden"
+														id="file-upload"
+														disabled={creatingSubTask || uploadingFile}
+													/>
+													<Button
+														type="button"
+														variant="outline"
+														size="sm"
+														onClick={() => document.getElementById('file-upload')?.click()}
+														disabled={creatingSubTask || uploadingFile}
+													>
+														<ImageIcon className="h-4 w-4 mr-2" />
+														Select File
+													</Button>
+													{
+														selectedFile && (
+															<Button
+																type="button"
+																variant="ghost"
+																size="sm"
+																onClick={clearFileSelection}
+																disabled={creatingSubTask || uploadingFile}
+															>
+																<Trash2 className="h-4 w-4 mr-2" />
+																Remove
+															</Button>
+														)
+													}
+												</div>
+												
+												{/* File Preview */}
+												{
+													selectedFile && (
+														<div className="relative p-3 border rounded-lg bg-muted/20">
+															<div className="flex items-center gap-3">
+																{selectedFileType === 'image' ? (
+																	<div className="relative">
+																		<img
+																			src={filePreview || ''}
+																			alt="Preview"
+																			className="w-16 h-16 object-cover rounded"
+																		/>
+																	</div>
+																) : (
+																	<div className="w-16 h-16 bg-muted rounded flex items-center justify-center">
+																		<FileIcon className="h-8 w-8 text-muted-foreground" />
+																	</div>
+																)}
+																<div className="flex-1 min-w-0">
+																	<p className="text-sm font-medium truncate">{selectedFile.name}</p>
+																	<p className="text-xs text-muted-foreground">
+																		{(selectedFile.size / 1024 / 1024).toFixed(2)} MB
+																	</p>
+																</div>
+															</div>
+															{
+																uploadingFile && (
+																	<div className="absolute inset-0 bg-black/50 rounded-lg flex items-center justify-center">
+																		<div className="text-white text-center">
+																			<Loader2 className="h-6 w-6 animate-spin mx-auto mb-2" />
+																			<p className="text-sm">Uploading...</p>
+																		</div>
+																	</div>
+																)
+															}
+														</div>
+													)
+												}
+												
+												<p className="text-xs text-muted-foreground">
+													Supports images and documents up to 5MB (JPG, PNG, WebP, PDF, DOC, DOCX, XLS, XLSX, TXT, ZIP)
+												</p>
+											</div>
+											
 											<Button
 												onClick={handleCreateSubTask}
-												disabled={creatingSubTask || !newSubTask.title.trim()}
+												disabled={creatingSubTask || uploadingFile || !newSubTask.title.trim()}
 												className="w-full"
 											>
 												{
-													creatingSubTask ? (
+													uploadingFile ? (
+														<>
+															<Loader2 className="mr-2 h-4 w-4 animate-spin" />
+															Uploading File...
+														</>
+													) : creatingSubTask ? (
 														<>
 															<Loader2 className="mr-2 h-4 w-4 animate-spin" />
 															Creating...
@@ -320,7 +509,22 @@ export function TaskManagementSheet({ taskId, trigger, userRole }: TaskManagemen
 									task.subtasks.length > 0 ? (
 										<div className="space-y-3">
 											{
-												task.subtasks.map((subTask) => (
+											task.subtasks.map((subTask) => {
+												// Parse file attachments from description
+												const imageUrlMatch = subTask.description?.match(/Image: ([^\s]+) - (https?:\/\/[^\s]+)/)
+												const fileUrlMatch = subTask.description?.match(/File: ([^\s]+) - (https?:\/\/[^\s]+)/)
+												
+												const imageUrl = imageUrlMatch?.[2]
+												const imageName = imageUrlMatch?.[1]
+												const fileUrl = fileUrlMatch?.[2]
+												const fileName = fileUrlMatch?.[1]
+												
+												const descriptionWithoutFiles = subTask.description
+													?.replace(/Image: [^\s]+ - https?:\/\/[^\s]+/, '')
+													?.replace(/File: [^\s]+ - https?:\/\/[^\s]+/, '')
+													?.trim()
+												
+												return (
 													<Card key={subTask.id} className={`${subTask.completed ? 'bg-gray-50 dark:bg-gray-900/50' : ''}`}>
 														<CardContent className="p-4">
 															<div className="flex items-start gap-3">
@@ -337,10 +541,41 @@ export function TaskManagementSheet({ taskId, trigger, userRole }: TaskManagemen
 																		{subTask.title}
 																	</h4>
 																	{
-																		subTask.description && (
-																			<p className={`text-sm mt-1 ${subTask.completed ? 'line-through text-gray-400' : 'text-gray-600 dark:text-gray-400'}`}>
-																				{subTask.description}
-																			</p>
+																		descriptionWithoutFiles && (
+																			<div className={`text-sm mt-1 ${subTask.completed ? 'line-through text-gray-400' : 'text-gray-600 dark:text-gray-400'}`}>
+																				{detectLinksInText(descriptionWithoutFiles)}
+																			</div>
+																		)
+																	}
+																	
+																	{/* Image Attachment */}
+																	{
+																		imageUrl && (
+																			<div className="mt-2">
+																				<p className="text-xs text-muted-foreground mb-1">📎 {imageName}</p>
+																				<img
+																					src={imageUrl}
+																					alt={imageName || "Subtask attachment"}
+																					className="max-w-full h-auto max-h-48 object-contain rounded-lg border cursor-pointer hover:opacity-90 transition-opacity"
+																					onClick={() => window.open(imageUrl, '_blank')}
+																				/>
+																			</div>
+																		)
+																	}
+																	
+																	{/* File Attachment */}
+																	{
+																		fileUrl && fileName && (
+																			<div className="mt-2">
+																				<div 
+																					className="flex items-center gap-2 p-2 border rounded-lg hover:bg-muted/50 cursor-pointer transition-colors"
+																					onClick={() => window.open(fileUrl, '_blank')}
+																				>
+																					<FileIcon className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+																					<span className="text-sm font-medium truncate">{fileName}</span>
+																					<Download className="h-4 w-4 text-muted-foreground flex-shrink-0 ml-auto" />
+																				</div>
+																			</div>
 																		)
 																	}
 																	<p className="text-xs text-gray-500 mt-2">
@@ -362,7 +597,8 @@ export function TaskManagementSheet({ taskId, trigger, userRole }: TaskManagemen
 															</div>
 														</CardContent>
 													</Card>
-												))
+												)
+											})
 											}
 										</div>
 									) : (

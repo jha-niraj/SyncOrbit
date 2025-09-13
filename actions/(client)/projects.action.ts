@@ -2,7 +2,220 @@
 
 import { auth } from "@/auth"
 import { prisma } from "@/lib/prisma"
-import { Role } from "@prisma/client"
+import { Role, Currency, ClientType } from "@prisma/client"
+import { z } from "zod"
+import { revalidatePath } from "next/cache"
+import { Resend } from "resend"
+import { projectCreationClientTemplate, ProjectEmailData } from "@/lib/email-templates/projectEmailTemplates"
+
+// Schema for project creation
+const createProjectSchema = z.object({
+    title: z.string().min(1, "Project title is required").max(100, "Title must be less than 100 characters"),
+    description: z.string().optional(),
+    budget: z.number().min(0, "Budget must be a positive number"),
+    currency: z.nativeEnum(Currency),
+    clientType: z.nativeEnum(ClientType),
+    startDate: z.string().refine((date) => !isNaN(Date.parse(date)), {
+        message: "Invalid start date"
+    }),
+    endDate: z.string().optional().refine((date) => !date || !isNaN(Date.parse(date)), {
+        message: "Invalid end date"
+    }),
+    clientEmail: z.string().email("Invalid email address").optional(),
+    livePreviewUrl: z.string().url("Invalid URL").optional().or(z.literal("")),
+    figmaUrl: z.string().url("Invalid URL").optional().or(z.literal("")),
+    githubUrl: z.string().url("Invalid URL").optional().or(z.literal("")),
+    documentsUrl: z.string().url("Invalid URL").optional().or(z.literal("")),
+    otherLinks: z.string().optional()
+})
+
+type CreateProjectInput = z.infer<typeof createProjectSchema>
+
+// Initialize Resend
+const resend = new Resend(process.env.RESEND_API_KEY)
+
+// Send project creation email to client
+async function sendProjectCreationEmail(project: any, clientEmail: string, creatorName: string, creatorEmail: string) {
+    try {
+        const emailData: ProjectEmailData = {
+            projectTitle: project.title,
+            projectDescription: project.description || undefined,
+            clientName: project.user.name || clientEmail.split('@')[0],
+            clientEmail: clientEmail,
+            managerName: creatorName,
+            managerEmail: creatorEmail,
+            companyName: "ProjectCentral",
+            projectUrl: `${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/projects/${project.slug}`,
+            budget: project.budget,
+            currency: project.currency,
+            startDate: project.startDate.toLocaleDateString(),
+            endDate: project.endDate ? project.endDate.toLocaleDateString() : undefined
+        }
+
+        const template = projectCreationClientTemplate(emailData)
+
+        await resend.emails.send({
+            from: `ProjectCentral <noreply@${process.env.RESEND_DOMAIN || 'localhost.com'}>`,
+            to: clientEmail,
+            subject: template.subject,
+            html: template.html,
+            text: template.text
+        })
+
+        console.log(`Project creation email sent to ${clientEmail} for project ${project.title}`)
+        return true
+    } catch (error) {
+        console.error('Failed to send project creation email:', error)
+        return false
+    }
+}
+
+// Create a new project
+export async function createProject(data: CreateProjectInput) {
+    try {
+        const session = await auth()
+        if (!session?.user?.id) {
+            throw new Error("Unauthorized")
+        }
+
+        // Only Product Managers and Developers can create projects
+        if (session.user.role !== Role.PRODUCTMANAGER && session.user.role !== Role.DEVELOPER) {
+            throw new Error("Only Product Managers and Developers can create projects")
+        }
+
+        // Validate input data
+        const validatedData = createProjectSchema.parse(data)
+
+        // Generate unique slug from title
+        const baseSlug = validatedData.title
+            .toLowerCase()
+            .replace(/[^a-zA-Z0-9\s]/g, '')
+            .replace(/\s+/g, '-')
+            .substring(0, 50)
+
+        let slug = baseSlug
+        let counter = 1
+        
+        // Ensure slug is unique
+        while (await prisma.project.findUnique({ where: { slug } })) {
+            slug = `${baseSlug}-${counter}`
+            counter++
+        }
+
+        // Handle client creation or assignment
+        let clientUserId: string
+        
+        if (validatedData.clientType === ClientType.EXTERNAL && validatedData.clientEmail) {
+            // Check if client already exists
+            let existingClient = await prisma.user.findUnique({
+                where: { email: validatedData.clientEmail }
+            })
+
+            if (!existingClient) {
+                // Create new client user
+                existingClient = await prisma.user.create({
+                    data: {
+                        email: validatedData.clientEmail,
+                        name: validatedData.clientEmail.split('@')[0], // Use email prefix as name
+                        role: Role.CLIENT,
+                        emailVerified: new Date() // Auto-verify for external clients
+                    }
+                })
+            }
+            
+            clientUserId = existingClient.id
+        } else {
+            // For internal clients, use the current user as client
+            clientUserId = session.user.id
+        }
+
+        // Create the project
+        const project = await prisma.project.create({
+            data: {
+                title: validatedData.title,
+                description: validatedData.description || null,
+                slug,
+                budget: validatedData.budget,
+                currency: validatedData.currency,
+                clientType: validatedData.clientType,
+                startDate: new Date(validatedData.startDate),
+                endDate: validatedData.endDate ? new Date(validatedData.endDate) : null,
+                livePreviewUrl: validatedData.livePreviewUrl || null,
+                figmaUrl: validatedData.figmaUrl || null,
+                githubUrl: validatedData.githubUrl || null,
+                documentsUrl: validatedData.documentsUrl || null,
+                otherLinks: validatedData.otherLinks || null,
+                userId: clientUserId
+            },
+            include: {
+                user: {
+                    select: {
+                        id: true,
+                        name: true,
+                        email: true,
+                        image: true
+                    }
+                }
+            }
+        })
+
+        // Add the creator as a project member if they're not the client
+        if (session.user.id !== clientUserId) {
+            await prisma.projectMember.create({
+                data: {
+                    userId: session.user.id,
+                    projectId: project.id,
+                    role: session.user.role === Role.PRODUCTMANAGER ? "MANAGER" : "DEVELOPER",
+                    addedById: session.user.id
+                }
+            })
+        }
+
+        // Send email notification to client for external projects
+        if (validatedData.clientType === ClientType.EXTERNAL) {
+            const clientEmail = validatedData.clientEmail || project.user.email
+            const creatorName = session.user.name || session.user.email || 'Project Manager'
+            const creatorEmail = session.user.email || 'manager@projectcentral.com'
+            
+            if (clientEmail) {
+                try {
+                    await sendProjectCreationEmail(project, clientEmail, creatorName, creatorEmail)
+                } catch (emailError) {
+                    // Log email error but don't fail project creation
+                    console.error('Email notification failed:', emailError)
+                }
+            }
+        }
+
+        // Revalidate the projects page
+        revalidatePath('/projects')
+        revalidatePath('/dashboard')
+
+        return {
+            success: true,
+            project,
+            message: validatedData.clientType === ClientType.EXTERNAL 
+                ? "Project created successfully! Client notification email has been sent."
+                : "Project created successfully!"
+        }
+    } catch (error) {
+        console.error("Create project error:", error)
+        
+        if (error instanceof z.ZodError) {
+            return {
+                success: false,
+                error: error.errors[0]?.message || "Invalid input data",
+                project: null
+            }
+        }
+        
+        return {
+            success: false,
+            error: error instanceof Error ? error.message : "Failed to create project",
+            project: null
+        }
+    }
+}
 
 // Get projects for the current user (based on role)
 export async function getUserProjects() {

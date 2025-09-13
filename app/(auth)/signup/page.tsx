@@ -28,9 +28,8 @@ function SignUp() {
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
     const [referralCode, setReferralCode] = useState("")
-    const [role, setRole] = useState<'CLIENT' | 'DEVELOPER' | 'PRODUCTMANAGER'>('CLIENT')
+    const [role, setRole] = useState<'CLIENT' | 'DEVELOPER' | 'PRODUCTMANAGER'>('PRODUCTMANAGER')
     const [companyName, setCompanyName] = useState("")
-    const [companyShortName, setCompanyShortName] = useState("")
     const [company, setCompany] = useState<Company | null>(null)
     const [validatingReferral, setValidatingReferral] = useState(false)
     const [referralValidated, setReferralValidated] = useState(false)
@@ -123,13 +122,14 @@ function SignUp() {
                     setIsLoading(false)
                     return
                 }
-                if (!companyShortName.trim()) {
-                    toast.error("Company short name is required for Product Manager registration")
-                    setIsLoading(false)
-                    return
-                }
+                // Generate slug from company name
+                const generatedSlug = companyName.toLowerCase()
+                    .replace(/[^a-zA-Z0-9\s]/g, '') // Remove special characters
+                    .replace(/\s+/g, '') // Remove spaces
+                    .substring(0, 20) // Limit length
+                
                 requestData.companyName = companyName
-                requestData.companyShortName = companyShortName
+                requestData.companyShortName = generatedSlug
             }
 
             const response = await axios.post('/api/register', requestData)
@@ -272,11 +272,11 @@ function SignUp() {
                                         <SelectTrigger className="h-12 rounded-2xl border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 focus:border-neutral-400 dark:focus:border-neutral-500 focus:ring-0">
                                             <SelectValue placeholder="Select your role" />
                                         </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="CLIENT">Client</SelectItem>
-                                            <SelectItem value="DEVELOPER">Developer</SelectItem>
-                                            <SelectItem value="PRODUCTMANAGER">Product Manager</SelectItem>
-                                        </SelectContent>
+                        <SelectContent>
+                            <SelectItem value="PRODUCTMANAGER">Product Manager</SelectItem>
+                            <SelectItem value="DEVELOPER">Developer</SelectItem>
+                            <SelectItem value="CLIENT">Client</SelectItem>
+                        </SelectContent>
                                     </Select>
                                 </div>
 
@@ -316,45 +316,27 @@ function SignUp() {
                                 }
                             </div>
 
-                            {
-                                role === 'PRODUCTMANAGER' && (
-                                    <div className="flex gap-4 w-full">
-                                        <div className="space-y-2">
-                                            <Label htmlFor="companyName" className="text-neutral-700 dark:text-neutral-300 font-medium">
-                                                Company Name *
-                                            </Label>
-                                            <Input
-                                                id="companyName"
-                                                placeholder="Enter company name..."
-                                                value={companyName}
-                                                onChange={(e) => setCompanyName(e.target.value)}
-                                                required
-                                                disabled={isLoading}
-                                                className="h-12 rounded-2xl border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 focus:border-neutral-400 dark:focus:border-neutral-500 focus:ring-0 placeholder:text-neutral-400 dark:placeholder:text-neutral-500"
-                                            />
-                                        </div>
-                                        <div className="space-y-2">
-                                            <Label htmlFor="companyShortName" className="text-neutral-700 dark:text-neutral-300 font-medium">
-                                                Company Short Name *
-                                            </Label>
-                                            <Input
-                                                id="companyShortName"
-                                                placeholder="e.g., projectcentral"
-                                                value={companyShortName}
-                                                onChange={(e) => setCompanyShortName(e.target.value)}
-                                                required
-                                                disabled={isLoading}
-                                                pattern="[a-zA-Z0-9]+"
-                                                title="Only alphanumeric characters allowed"
-                                                className="h-12 rounded-2xl border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 focus:border-neutral-400 dark:focus:border-neutral-500 focus:ring-0 placeholder:text-neutral-400 dark:placeholder:text-neutral-500"
-                                            />
-                                            <p className="text-xs text-neutral-500 dark:text-neutral-400">
-                                                Used for generating referral codes (alphanumeric only)
-                                            </p>
-                                        </div>
-                                    </div>
-                                )
-                            }
+            {
+                role === 'PRODUCTMANAGER' && (
+                    <div className="space-y-2">
+                        <Label htmlFor="companyName" className="text-neutral-700 dark:text-neutral-300 font-medium">
+                            Company Name *
+                        </Label>
+                        <Input
+                            id="companyName"
+                            placeholder="Enter your company name..."
+                            value={companyName}
+                            onChange={(e) => setCompanyName(e.target.value)}
+                            required
+                            disabled={isLoading}
+                            className="h-12 rounded-2xl border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 focus:border-neutral-400 dark:focus:border-neutral-500 focus:ring-0 placeholder:text-neutral-400 dark:placeholder:text-neutral-500"
+                        />
+                        <p className="text-xs text-neutral-500 dark:text-neutral-400">
+                            Company slug will be auto-generated from this name
+                        </p>
+                    </div>
+                )
+            }
                             <div className="space-y-2">
                                 <Label htmlFor="name" className="text-neutral-700 dark:text-neutral-300 font-medium">Full Name</Label>
                                 <Input

@@ -22,6 +22,10 @@ import { Status, TaskStatus } from "@prisma/client"
 import { formatCurrency, getCurrencySymbol } from "@/store/useProjectStore"
 import { getUserProjects } from "@/actions/(client)/projects.action"
 import { toast } from "sonner"
+import { CreateProjectModal } from "@/components/create-project-modal"
+import { ProjectHealth } from "@/components/project-health"
+import { ProjectHealthData } from "@/lib/utils/healthScore"
+import { differenceInDays } from "date-fns"
 
 interface TasksProps {
     id: string
@@ -134,9 +138,57 @@ export default function ProjectsPage() {
         return matchesSearch && matchesStatus
     })
 
+    // Create health data for a project
+    const getProjectHealthData = (project: ProjectData): ProjectHealthData | null => {
+        try {
+            const yetToStartTasks = project.tasks?.filter(task => task.status === 'YET_TO_START').length || 0
+            const inProgressTasks = project.tasks?.filter(task => task.status === 'WORKING').length || 0
+            const completedTasks = project.tasks?.filter(task => task.status === 'COMPLETED').length || 0
+            
+            const overdueTasksCount = project.endDate && new Date() > new Date(project.endDate) 
+                ? yetToStartTasks + inProgressTasks 
+                : 0
+            
+            return {
+                id: project.id,
+                title: project.title,
+                startDate: new Date(project.startDate),
+                endDate: project.endDate ? new Date(project.endDate) : null,
+                status: project.status,
+                budget: project.budget,
+                paidAmount: project.paidAmount || 0,
+                tasks: {
+                    total: project.tasks.length,
+                    completed: completedTasks,
+                    inProgress: inProgressTasks,
+                    yetToStart: yetToStartTasks,
+                    overdue: overdueTasksCount
+                },
+                timeline: {
+                    totalDuration: project.endDate 
+                        ? differenceInDays(new Date(project.endDate), new Date(project.startDate))
+                        : 0,
+                    elapsed: differenceInDays(new Date(), new Date(project.startDate)),
+                    remaining: project.endDate 
+                        ? Math.max(0, differenceInDays(new Date(project.endDate), new Date()))
+                        : 0
+                },
+                feedback: project._count.feedbacks > 0 ? {
+                    averageRating: 3.5, // Default since we don't have rating data in listing
+                    totalFeedbacks: project._count.feedbacks
+                } : undefined,
+                budgetUtilization: (project.paidAmount || 0) / project.budget * 100
+            }
+        } catch (error) {
+            console.error('Error preparing health data:', error)
+            return null
+        }
+    }
+
     const renderProjectCard = (project: ProjectData) => {
         const progress = getProjectProgress(project.tasks)
         const paymentProgress = getPaymentProgress(project.paidAmount, project.budget)
+        const healthData = getProjectHealthData(project)
 
         // Get team members from project members
         const teamMembers = project.members.map(member => ({
@@ -188,6 +240,15 @@ export default function ProjectsPage() {
                             </div>
                             <Progress value={paymentProgress} className="h-2" />
                         </div>
+                        
+                        {/* Project Health Score */}
+                        {healthData && (
+                            <div className="flex items-center justify-between p-2 bg-muted/30 rounded-lg">
+                                <span className="text-sm font-medium text-foreground">Health Score</span>
+                                <ProjectHealth data={healthData} variant="compact" />
+                            </div>
+                        )}
+                        
                         <div className="grid grid-cols-2 gap-4">
                             <div className="flex items-center gap-2">
                                 <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
@@ -278,10 +339,7 @@ export default function ProjectsPage() {
                     </div>
                     {
                         session?.user?.role !== 'CLIENT' && (
-                            <Button className="gap-2">
-                                <Plus className="h-4 w-4" />
-                                New Project
-                            </Button>
+                            <CreateProjectModal onSuccess={loadProjects} />
                         )
                     }
                 </div>
@@ -352,10 +410,15 @@ export default function ProjectsPage() {
                             </p>
                             {
                                 session?.user?.role !== 'CLIENT' && (
-                                    <Button>
-                                        <Plus className="h-4 w-4 mr-2" />
-                                        Create Project
-                                    </Button>
+                                    <CreateProjectModal 
+                                        onSuccess={loadProjects}
+                                        trigger={
+                                            <Button>
+                                                <Plus className="h-4 w-4 mr-2" />
+                                                Create Project
+                                            </Button>
+                                        }
+                                    />
                                 )
                             }
                         </div>

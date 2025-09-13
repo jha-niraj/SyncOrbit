@@ -1,7 +1,9 @@
 import { getClientDashboardData, getDeveloperDashboardData } from "@/actions/(client)/dashboard.action";
 import { getPMDashboardData } from "@/actions/(productmanager)/pm.action";
+import { getDashboardMetrics } from "@/actions/dashboard.action";
 import { auth } from "@/auth";
 import { DashboardStats } from "./_components/DashboardStats";
+import QuickStatsCards from "@/components/dashboard/QuickStatsCards";
 import { ProjectCard } from "./_components/ProjectCard";
 import { CompletedProjects } from "./_components/CompletedProjects";
 import { Separator } from "@/components/ui/separator";
@@ -12,6 +14,7 @@ import { MessageCircle, Calendar, ArrowRight, Code, Users, BarChart3 } from "luc
 import Link from "next/link";
 import { DeveloperDashboard } from "./_components/developerdashboard";
 import { PMDashboard } from "./_components/pmdashboard";
+import { ActivityFeed } from "@/components/activity-feed";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export default async function DashboardPage() {
@@ -46,7 +49,7 @@ export default async function DashboardPage() {
 
 	// Default to client dashboard
 	const data = await getClientDashboardData();
-	return <ClientDashboardView data={data} />;
+	return await ClientDashboardView({ data });
 }
 
 function PMSetupView() {
@@ -84,9 +87,12 @@ function PMSetupView() {
 	);
 }
 
-function ClientDashboardView({ data }: { data: any }) {
+async function ClientDashboardView({ data }: { data: any }) {
 	const inProgressProjects = data.projects.filter((p: any) => p.status === Status.IN_PROGRESS);
 	const completedProjects = data.projects.filter((p: any) => p.status === Status.COMPLETED);
+	
+	// Get enhanced dashboard metrics
+	const dashboardMetrics = await getDashboardMetrics();
 
 	if (data.projects.length === 0) {
 		return (
@@ -156,10 +162,10 @@ function ClientDashboardView({ data }: { data: any }) {
 							Here&apos;s an overview of your projects and progress.
 						</p>
 					</div>
-					<DashboardStats
-						totalSpent={data.user.totalSpent}
-						projectStats={data.projectStats}
-						taskStats={data.taskStats}
+					{/* Enhanced Quick Stats Cards */}
+					<QuickStatsCards 
+						metrics={dashboardMetrics}
+						loading={false}
 					/>
 
 					<Separator className="bg-gray-200 dark:bg-gray-800" />
@@ -200,17 +206,25 @@ function ClientDashboardView({ data }: { data: any }) {
 								)
 							}
 						</div>
-						<div className="space-y-6">
-							<div className="flex items-center justify-between">
-								<h2 className="text-xl font-semibold tracking-tight text-gray-900 dark:text-white">
-									Completed Projects
-								</h2>
-								<span className="text-sm text-gray-500 dark:text-gray-400">
-									{completedProjects.length} done
-								</span>
-							</div>
-							<CompletedProjects projects={completedProjects} />
+					<div className="space-y-6">
+						<div className="flex items-center justify-between">
+							<h2 className="text-xl font-semibold tracking-tight text-gray-900 dark:text-white">
+								Completed Projects
+							</h2>
+							<span className="text-sm text-gray-500 dark:text-gray-400">
+								{completedProjects.length} done
+							</span>
 						</div>
+						<CompletedProjects projects={completedProjects} />
+						
+						{/* Activity Feed */}
+						<ActivityFeed 
+							variant="dashboard" 
+							maxItems={8}
+							showFilters={false}
+							autoRefresh={true}
+						/>
+					</div>
 					</div>
 				</div>
 			</div>

@@ -20,6 +20,11 @@ import { formatCurrency, getPaymentProgress, useProjectStore } from "@/store/use
 import { TaskStatus } from "@prisma/client"
 import { updateTaskStatus } from "@/actions/(developers)/developers.action"
 import { toast } from "sonner"
+import { KanbanBoard } from "@/components/kanban-board"
+import { ProjectHealth } from "@/components/project-health"
+import { ProjectHealthData } from "@/lib/utils/healthScore"
+import { ActivityFeed } from "@/components/activity-feed"
+import { differenceInDays } from "date-fns"
 
 interface ProjectPageProps {
 	params: Promise<{
@@ -86,10 +91,6 @@ export default function ProjectPage({ params }: ProjectPageProps) {
 		return Math.round((completed / task.subtasks.length) * 100)
 	}
 
-	// Group tasks by status
-	const initiateeTasks = project?.tasks?.filter((task: any) => task.status === TaskStatus.YET_TO_START) || []
-	const workingTasks = project?.tasks?.filter((task: any) => task.status === TaskStatus.IN_PROGRESS) || []
-	const completedTasks = project?.tasks?.filter((task: any) => task.status === TaskStatus.COMPLETED) || []
 
 	if (isLoading) {
 		return (
@@ -124,140 +125,74 @@ export default function ProjectPage({ params }: ProjectPageProps) {
 	}
 
 	const totalTasks = project?.tasks?.length || 0
-	const overallCompletedTasks = completedTasks.length
+	const overallCompletedTasks = project?.tasks?.filter((task: any) => task.status === TaskStatus.COMPLETED).length || 0
 	const progressPercentage = totalTasks > 0 ? (overallCompletedTasks / totalTasks) * 100 : 0
 	const paymentProgress = getPaymentProgress(project?.paidAmount || 0, project?.budget || 0)
 	const assignedDevelopers = project?.tasks
 		?.map((task: any) => task.assignedDeveloper)
 		?.filter((dev: any, index: number, self: any[]) => dev && self.findIndex((d: any) => d?.id === dev.id) === index) || []
 
-	const getTaskStatusColor = (status: TaskStatus) => {
-		switch (status) {
-			case TaskStatus.COMPLETED:
-				return "bg-green-50 text-green-700 border-green-200 dark:bg-green-900/20 dark:text-green-300 dark:border-green-800"
-			case TaskStatus.IN_PROGRESS:
-				return "bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-800"
-			case TaskStatus.YET_TO_START:
-				return "bg-gray-50 text-gray-700 border-gray-200 dark:bg-gray-900/20 dark:text-gray-300 dark:border-gray-800"
-			default:
-				return "bg-gray-50 text-gray-700 border-gray-200 dark:bg-gray-900/20 dark:text-gray-300 dark:border-gray-800"
+	// Prepare health score data
+	const getHealthData = (): ProjectHealthData | null => {
+		if (!project) return null
+		
+		try {
+			// Count tasks by status
+			const yetToStartTasks = project.tasks?.filter((task: any) => task.status === 'YET_TO_START').length || 0
+			const inProgressTasks = project.tasks?.filter((task: any) => task.status === 'WORKING').length || 0
+			const completedTasks = project.tasks?.filter((task: any) => task.status === 'COMPLETED').length || 0
+			
+			// For overdue tasks, we need to check if endDate exists and has passed
+			const overdueTasksCount = project.endDate && new Date() > new Date(project.endDate) 
+				? yetToStartTasks + inProgressTasks 
+				: 0
+			
+			// Calculate feedback metrics
+			const feedbacks = project.feedbacks || []
+			const averageRating = feedbacks.length > 0 
+				? feedbacks.reduce((sum: number, f: any) => sum + (f.rating || 3), 0) / feedbacks.length 
+				: 0
+			
+			return {
+				id: project.id,
+				title: project.title,
+				startDate: new Date(project.startDate),
+				endDate: project.endDate ? new Date(project.endDate) : null,
+				status: project.status,
+				budget: project.budget,
+				paidAmount: project.paidAmount || 0,
+				tasks: {
+					total: totalTasks,
+					completed: completedTasks,
+					inProgress: inProgressTasks,
+					yetToStart: yetToStartTasks,
+					overdue: overdueTasksCount
+				},
+				timeline: {
+					totalDuration: project.endDate 
+						? differenceInDays(new Date(project.endDate), new Date(project.startDate))
+						: 0,
+					elapsed: differenceInDays(new Date(), new Date(project.startDate)),
+					remaining: project.endDate 
+						? Math.max(0, differenceInDays(new Date(project.endDate), new Date()))
+						: 0
+				},
+				feedback: feedbacks.length > 0 ? {
+					averageRating,
+					totalFeedbacks: feedbacks.length
+				} : undefined,
+				budgetUtilization: (project.paidAmount || 0) / project.budget * 100
+			}
+		} catch (error) {
+			console.error('Error preparing health data:', error)
+			return null
 		}
 	}
+	
+	const healthData = getHealthData()
 
-	const renderTaskCard = (task: any) => {
-		const progress = getTaskProgress(task)
-		const subtaskCount = task.subtasks?.length || 0
-		const completedSubtasks = task.subtasks?.filter((st: any) => st.completed).length || 0
 
-		return (
-			<TaskManagementSheet
-				key={task.id}
-				taskId={task.id}
-				userRole={session?.user?.role || ""}
-				trigger={
-					<div className="p-4 border rounded-lg hover:bg-muted/50 transition-colors cursor-pointer">
-						<div className="flex items-center justify-between mb-3">
-							<div className="flex items-center gap-2">
-								<div className={`w-3 h-3 rounded-full ${task.status === TaskStatus.COMPLETED ? "bg-green-500" :
-									task.status === TaskStatus.IN_PROGRESS ? "bg-blue-500" :
-										"bg-gray-400"
-									}`} />
-								<h4 className="font-medium text-foreground">{task.title}</h4>
-							</div>
-							{
-								task.assignedDeveloper && (
-									<Avatar className="h-6 w-6">
-										<AvatarImage src={task.assignedDeveloper.image || "/placeholder.svg"} alt={task.assignedDeveloper.name || "Developer"} />
-										<AvatarFallback className="text-xs">
-											{task.assignedDeveloper.name?.split(" ").map((n: string) => n[0]).join("") || "D"}
-										</AvatarFallback>
-									</Avatar>
-								)
-							}
-						</div>
-						{
-							task.description && (
-								<p className="text-sm text-muted-foreground mb-3">{task.description}</p>
-							)
-						}
-						{
-							subtaskCount > 0 && (
-								<div className="space-y-2">
-									<div className="flex justify-between items-center">
-										<span className="text-xs text-muted-foreground">
-											{completedSubtasks} of {subtaskCount} subtasks
-										</span>
-										<span className="text-xs font-medium">{progress}%</span>
-									</div>
-									<Progress value={progress} className="h-1" />
-								</div>
-							)
-						}
-						<div className="flex items-center justify-between mt-3">
-							<Badge className={`${getTaskStatusColor(task.status)} border text-xs`}>
-								{task.status.replace('_', ' ')}
-							</Badge>
-							{
-								task.assignedDeveloper && (
-									<span className="text-xs text-muted-foreground">
-										{task.assignedDeveloper.name}
-									</span>
-								)
-							}
-						</div>
-					</div>
-				}
-			/>
-		)
-	}
 
-	const renderKanbanColumn = (title: string, tasks: any[], status: TaskStatus, icon: React.ReactNode) => (
-		<div className="space-y-4 border rounded-xl p-4 bg-muted/20">
-			<div className="flex items-center justify-between border-b pb-2">
-				<h3 className="font-semibold text-foreground flex items-center gap-2">
-					{icon}
-					{title} ({tasks.length})
-				</h3>
-				{
-					isDeveloper && status !== TaskStatus.COMPLETED && (
-						<div className="flex gap-2">
-							{
-								tasks.map((task: any) => (
-									<Button
-										key={task.id}
-										variant="ghost"
-										size="sm"
-										onClick={(e) => {
-											e.preventDefault()
-											const nextStatus = status === TaskStatus.YET_TO_START ? TaskStatus.IN_PROGRESS : TaskStatus.COMPLETED
-											handleTaskStatusUpdate(task.id, nextStatus)
-										}}
-										className="text-xs"
-									>
-										Move to {status === TaskStatus.YET_TO_START ? 'Working' : 'Completed'}
-									</Button>
-								)).slice(0, 1)
-							}
-						</div>
-					)
-				}
-			</div>
-			<div className="space-y-3 min-h-32">
-				{
-					tasks.length > 0 ? (
-						tasks.map(renderTaskCard)
-					) : (
-						<div className="text-center py-8 text-muted-foreground">
-							<div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-3">
-								{icon}
-							</div>
-							<p className="text-sm">No tasks in {title.toLowerCase()}</p>
-						</div>
-					)
-				}
-			</div>
-		</div>
-	)
 
 	return (
 		<ProjectStoreProvider initialProject={initialProject}>
@@ -329,7 +264,7 @@ export default function ProjectPage({ params }: ProjectPageProps) {
 								</Card>
 							)
 						}
-						<div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+						<div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
 							<Card>
 								<CardContent className="flex items-center gap-4 p-6">
 									<div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center">
@@ -358,19 +293,6 @@ export default function ProjectPage({ params }: ProjectPageProps) {
 							</Card>
 							<Card>
 								<CardContent className="flex items-center gap-4 p-6">
-									<div className="w-12 h-12 bg-blue-500/10 rounded-xl flex items-center justify-center">
-										<Target className="h-6 w-6 text-blue-600" />
-									</div>
-									<div className="flex-1">
-										<p className="text-sm text-muted-foreground">Progress</p>
-										<p className="text-2xl font-bold text-foreground">
-											{Math.round(progressPercentage)}%
-										</p>
-									</div>
-								</CardContent>
-							</Card>
-							<Card>
-								<CardContent className="flex items-center gap-4 p-6">
 									<div className="w-12 h-12 bg-purple-500/10 rounded-xl flex items-center justify-center">
 										<Users className="h-6 w-6 text-purple-600" />
 									</div>
@@ -383,13 +305,73 @@ export default function ProjectPage({ params }: ProjectPageProps) {
 								</CardContent>
 							</Card>
 						</div>
+						
+						{/* Project Health Score and Activity Feed */}
+						{healthData && (
+							<div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+								<div className="lg:col-span-2">
+									<ProjectHealth 
+										data={healthData} 
+										variant="detailed" 
+										showRecommendations={true}
+									/>
+								</div>
+								<div className="space-y-6">
+									<Card>
+										<CardHeader>
+											<CardTitle className="flex items-center gap-2">
+												<Target className="h-5 w-5" />
+												Progress Overview
+											</CardTitle>
+										</CardHeader>
+										<CardContent className="space-y-4">
+											<div>
+												<div className="flex justify-between text-sm mb-2">
+													<span>Task Progress</span>
+													<span className="font-semibold">{Math.round(progressPercentage)}%</span>
+												</div>
+												<Progress value={progressPercentage} className="h-2" />
+											</div>
+											<div>
+												<div className="flex justify-between text-sm mb-2">
+													<span>Payment Progress</span>
+													<span className="font-semibold">{Math.round(paymentProgress)}%</span>
+												</div>
+												<Progress value={paymentProgress} className="h-2" />
+											</div>
+											<div className="grid grid-cols-2 gap-2 text-center pt-2">
+												<div className="p-2 bg-blue-50 dark:bg-blue-950/20 rounded-lg">
+													<div className="text-2xl font-bold text-blue-600">{overallCompletedTasks}</div>
+													<div className="text-xs text-blue-600">Completed</div>
+												</div>
+												<div className="p-2 bg-gray-50 dark:bg-gray-950/20 rounded-lg">
+													<div className="text-2xl font-bold text-gray-600">{totalTasks - overallCompletedTasks}</div>
+													<div className="text-xs text-gray-600">Remaining</div>
+												</div>
+											</div>
+										</CardContent>
+									</Card>
+									
+									{/* Project Activity Feed */}
+									<ActivityFeed 
+										variant="dashboard"
+										projectId={project.id}
+										maxItems={6}
+										showFilters={false}
+										autoRefresh={true}
+									/>
+								</div>
+							</div>
+						)}
 					</div>
-					<Card className="mb-8">
+
+					{/* Kanban Board with Task Management */}
+					<Card>
 						<CardHeader>
 							<div className="flex items-center justify-between">
 								<div>
 									<CardTitle className="flex items-center gap-2">
-										<div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+										<ListTodo className="h-5 w-5" />
 										Task Management
 									</CardTitle>
 									<CardDescription>
@@ -413,31 +395,14 @@ export default function ProjectPage({ params }: ProjectPageProps) {
 							</div>
 						</CardHeader>
 						<CardContent>
-							<div className="space-y-6">
-								<div className="flex items-center justify-between">
-									<span className="text-sm font-medium text-muted-foreground">
-										Overall Task Progress
-									</span>
-									<span className="text-sm font-bold text-foreground">
-										{overallCompletedTasks} of {totalTasks} tasks completed
-									</span>
-								</div>
-								<Progress value={progressPercentage} className="h-3" />
-								<div className="text-center">
-									<span className="text-4xl font-bold text-foreground">
-										{Math.round(progressPercentage)}%
-									</span>
-									<p className="text-sm text-muted-foreground">Complete</p>
-								</div>
-							</div>
+							<KanbanBoard 
+								tasks={project.tasks || []}
+								userRole={session?.user?.role || ""}
+								onTaskUpdate={handleTaskCreated}
+								projectId={project.id}
+							/>
 						</CardContent>
 					</Card>
-
-					<div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-						{renderKanbanColumn("Initiate", initiateeTasks, TaskStatus.YET_TO_START, <ListTodo className="h-4 w-4" />)}
-						{renderKanbanColumn("Working", workingTasks, TaskStatus.IN_PROGRESS, <Clock className="h-4 w-4" />)}
-						{renderKanbanColumn("Completed", completedTasks, TaskStatus.COMPLETED, <CheckCircle className="h-4 w-4" />)}
-					</div>
 				</div>
 			</div>
 		</ProjectStoreProvider>
