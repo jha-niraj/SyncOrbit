@@ -142,7 +142,7 @@ export default function ProjectsPage() {
     const getProjectHealthData = (project: ProjectData): ProjectHealthData | null => {
         try {
             const yetToStartTasks = project.tasks?.filter(task => task.status === 'YET_TO_START').length || 0
-            const inProgressTasks = project.tasks?.filter(task => task.status === 'WORKING').length || 0
+            const inProgressTasks = project.tasks?.filter(task => task.status === 'IN_PROGRESS').length || 0
             const completedTasks = project.tasks?.filter(task => task.status === 'COMPLETED').length || 0
             
             const overdueTasksCount = project.endDate && new Date() > new Date(project.endDate) 

@@ -49,20 +49,20 @@ export async function processMentions(
     const notificationPromises = mentionedUsers.map(async (user) => {
       const message = createMentionNotification(mentioner, context)
       
-      return createNotification({
-        userId: user.id,
-        title: "You were mentioned",
+      return createNotification(
+        user.id,
+        "You were mentioned",
         message,
-        type: "MENTION",
-        actionUrl: getActionUrl(context),
-        metadata: {
+        "MENTION",
+        getActionUrl(context),
+        {
           mentionerId: mentioner.id,
           mentionerName: mentioner.name || mentioner.email,
           entityType: context.type,
           entityId: context.entityId,
           projectId: context.projectId
         }
-      })
+      )
     })
 
     await Promise.all(notificationPromises)
@@ -140,9 +140,9 @@ export async function getProjectMentionUsers(projectId: string): Promise<Mention
         OR: [
           { userId: session.user.id },
           { 
-            company: {
-              users: {
-                some: { id: session.user.id }
+            user: {
+              companyId: {
+                not: null
               }
             }
           }
@@ -157,21 +157,9 @@ export async function getProjectMentionUsers(projectId: string): Promise<Mention
             image: true
           }
         },
-        company: {
-          include: {
-            users: {
-              select: {
-                id: true,
-                name: true,
-                email: true,
-                image: true
-              }
-            }
-          }
-        },
         tasks: {
           include: {
-            assignedTo: {
+            assignedDeveloper: {
               select: {
                 id: true,
                 name: true,
@@ -200,28 +188,14 @@ export async function getProjectMentionUsers(projectId: string): Promise<Mention
       })
     }
 
-    // Add company members
-    if (project.company?.users) {
-      project.company.users.forEach(user => {
-        if (user.id !== session.user.id) {
-          users.set(user.id, {
-            id: user.id,
-            name: user.name,
-            email: user.email,
-            image: user.image
-          })
-        }
-      })
-    }
-
     // Add assigned developers
     project.tasks.forEach(task => {
-      if (task.assignedTo && task.assignedTo.id !== session.user.id) {
-        users.set(task.assignedTo.id, {
-          id: task.assignedTo.id,
-          name: task.assignedTo.name,
-          email: task.assignedTo.email,
-          image: task.assignedTo.image
+      if (task.assignedDeveloper && task.assignedDeveloper.id !== session.user.id) {
+        users.set(task.assignedDeveloper.id, {
+          id: task.assignedDeveloper.id,
+          name: task.assignedDeveloper.name,
+          email: task.assignedDeveloper.email,
+          image: task.assignedDeveloper.image
         })
       }
     })
@@ -254,9 +228,9 @@ export async function canMentionInProject(projectId: string): Promise<boolean> {
         OR: [
           { userId: session.user.id },
           { 
-            company: {
-              users: {
-                some: { id: session.user.id }
+            user: {
+              companyId: {
+                not: null
               }
             }
           }

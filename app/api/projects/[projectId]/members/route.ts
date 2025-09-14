@@ -24,13 +24,13 @@ export async function GET(
         id: projectId,
         OR: [
           { userId: session.user.id }, // User is the client
-          { 
-            company: {
-              users: {
-                some: { id: session.user.id }
+          {
+            user: {
+              companyId: {
+                not: null
               }
             }
-          } // User is part of the company
+          } // User is part of a company
         ]
       },
       include: {
@@ -39,25 +39,28 @@ export async function GET(
             id: true,
             name: true,
             email: true,
-            image: true
-          }
-        },
-        company: {
-          include: {
-            users: {
+            image: true,
+            companyId: true,
+            company: {
               select: {
                 id: true,
                 name: true,
-                email: true,
-                image: true,
-                role: true
+                users: {
+                  select: {
+                    id: true,
+                    name: true,
+                    email: true,
+                    image: true,
+                    role: true
+                  }
+                }
               }
             }
           }
         },
         tasks: {
           include: {
-            assignedTo: {
+            assignedDeveloper: {
               select: {
                 id: true,
                 name: true,
@@ -92,8 +95,8 @@ export async function GET(
     }
 
     // Add company members
-    if (project.company?.users) {
-      project.company.users.forEach(user => {
+    if (project.user?.company?.users) {
+      project.user.company.users.forEach(user => {
         users.set(user.id, {
           id: user.id,
           name: user.name,
@@ -106,12 +109,12 @@ export async function GET(
 
     // Add assigned developers from tasks
     project.tasks.forEach(task => {
-      if (task.assignedTo) {
-        users.set(task.assignedTo.id, {
-          id: task.assignedTo.id,
-          name: task.assignedTo.name,
-          email: task.assignedTo.email,
-          image: task.assignedTo.image,
+      if (task.assignedDeveloper) {
+        users.set(task.assignedDeveloper.id, {
+          id: task.assignedDeveloper.id,
+          name: task.assignedDeveloper.name,
+          email: task.assignedDeveloper.email,
+          image: task.assignedDeveloper.image,
           role: 'DEVELOPER'
         })
       }

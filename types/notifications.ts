@@ -9,6 +9,7 @@ export type NotificationType =
     | 'USER_PROMOTED' 
     | 'CLIENT_ONBOARDED' 
     | 'FEEDBACK_RECEIVED' 
+    | 'MENTION'
     | 'GENERAL';
     
 export interface Notification {
