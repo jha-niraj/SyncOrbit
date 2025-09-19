@@ -88,35 +88,88 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
         }),
     ],
     callbacks: {
-        async jwt({ token, user, trigger }) {
+        async jwt({ token, user, trigger, session }) {
             if (user) {
                 token.id = user.id as string;
                 token.role = user.role;
-                token.userRole = user.userRole;
                 
                 // Check if user needs onboarding (Google users without role)
                 if (!user.role && user.email) {
                     const dbUser = await prisma.user.findUnique({
-                        where: { email: user.email }
+                        where: { email: user.email },
+                        include: {
+                            ownedCompany: true,
+                            company: true,
+                            teamMemberships: { where: { isActive: true } }
+                        }
                     });
                     
                     if (!dbUser) {
                         token.needsOnboarding = true;
                         token.googleUser = {
                             email: user.email,
-                            name: user.name,
-                            image: user.image
+                            name: user.name || '',
+                            image: user.image || undefined
                         };
+                    } else {
+                        // Update token with fresh user data
+                        token.role = dbUser.role;
+                        token.companyId = dbUser.ownedCompany?.id || dbUser.company?.id;
+                        token.isCompanyOwner = dbUser.role === Role.COMPANY_OWNER;
+                        token.hasTeams = dbUser.teamMemberships.length > 0;
+                    }
+                } else if (user.role) {
+                    // Fetch additional user context for existing users
+                    const dbUser = await prisma.user.findUnique({
+                        where: { id: user.id as string },
+                        include: {
+                            ownedCompany: true,
+                            company: true,
+                            teamMemberships: { where: { isActive: true } },
+                            ledTeams: true
+                        }
+                    });
+                    
+                    if (dbUser) {
+                        token.companyId = dbUser.ownedCompany?.id || dbUser.company?.id;
+                        token.isCompanyOwner = dbUser.role === Role.COMPANY_OWNER;
+                        token.isTeamHead = dbUser.role === Role.TEAM_HEAD;
+                        token.hasTeams = dbUser.teamMemberships.length > 0 || dbUser.ledTeams.length > 0;
                     }
                 }
             }
+            
+            // Refresh user data on update
+            if (trigger === 'update' && token.id) {
+                const dbUser = await prisma.user.findUnique({
+                    where: { id: token.id as string },
+                    include: {
+                        ownedCompany: true,
+                        company: true,
+                        teamMemberships: { where: { isActive: true } },
+                        ledTeams: true
+                    }
+                });
+                
+                if (dbUser) {
+                    token.role = dbUser.role;
+                    token.companyId = dbUser.ownedCompany?.id || dbUser.company?.id;
+                    token.isCompanyOwner = dbUser.role === Role.COMPANY_OWNER;
+                    token.isTeamHead = dbUser.role === Role.TEAM_HEAD;
+                    token.hasTeams = dbUser.teamMemberships.length > 0 || dbUser.ledTeams.length > 0;
+                }
+            }
+            
             return token;
         },
         async session({ session, token }) {
             if (session.user) {
                 session.user.id = token.id as string;
                 session.user.role = token.role as Role;
-                session.user.userRole = token.userRole as any;
+                session.user.companyId = token.companyId as string;
+                session.user.isCompanyOwner = token.isCompanyOwner as boolean;
+                session.user.isTeamHead = token.isTeamHead as boolean;
+                session.user.hasTeams = token.hasTeams as boolean;
             }
             return session;
         },

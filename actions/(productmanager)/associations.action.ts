@@ -18,7 +18,7 @@ export async function getUserAssociations() {
             where: { id: session.user.id },
             include: {
                 company: true,
-                managedCompany: {
+                ownedCompany: {
                     include: {
                         users: {
                             select: {
@@ -89,8 +89,8 @@ export async function getUserAssociations() {
                 },
                 // Company user belongs to
                 memberOfCompany: user.company,
-                // Company user manages (if PM)
-                managedCompany: user.managedCompany,
+                // Company user owns (if Owner)
+                ownedCompany: user.ownedCompany,
                 // Projects user is member of
                 projectMemberships: user.projectMemberships,
                 // Projects user owns
@@ -114,14 +114,14 @@ export async function inviteUserToCompany(email: string, message?: string) {
             throw new Error("Unauthorized")
         }
 
-        // Verify user is a Product Manager
+        // Verify user is a Company Owner
         const sender = await prisma.user.findUnique({
             where: { id: session.user.id },
-            include: { managedCompany: true }
+            include: { ownedCompany: true }
         })
 
-        if (!sender || sender.role !== Role.PRODUCTMANAGER || !sender.managedCompany) {
-            throw new Error("Only Product Managers can invite users to companies")
+        if (!sender || sender.role !== Role.COMPANY_OWNER || !sender.ownedCompany) {
+            throw new Error("Only Company Owners can invite users to companies")
         }
 
         // Check if user exists
@@ -135,7 +135,7 @@ export async function inviteUserToCompany(email: string, message?: string) {
         }
 
         // Check if user is already part of this company
-        if (targetUser.companyId === sender.managedCompany.id) {
+        if (targetUser.companyId === sender.ownedCompany.id) {
             throw new Error("User is already a member of this company")
         }
 
@@ -143,8 +143,8 @@ export async function inviteUserToCompany(email: string, message?: string) {
         const existingInvitation = await prisma.invitation.findFirst({
             where: {
                 email,
-                companyId: sender.managedCompany.id,
-                type: InvitationType.COMPANY_MEMBER,
+                companyId: sender.ownedCompany.id,
+                type: InvitationType.TEAM_MEMBER,
                 status: InvitationStatus.PENDING
             }
         })
@@ -157,12 +157,12 @@ export async function inviteUserToCompany(email: string, message?: string) {
         const invitation = await prisma.invitation.create({
             data: {
                 email,
-                type: InvitationType.COMPANY_MEMBER,
+                type: InvitationType.TEAM_MEMBER,
                 message,
                 expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
                 senderId: sender.id,
                 receiverId: targetUser.id,
-                companyId: sender.managedCompany.id
+                companyId: sender.ownedCompany.id
             },
             include: {
                 company: {
@@ -179,9 +179,9 @@ export async function inviteUserToCompany(email: string, message?: string) {
             await sendInvitationEmail(
                 email,
                 targetUser.name || email,
-                sender.name || "Product Manager",
+                sender.name || "Company Owner",
                 "company",
-                sender.managedCompany.name,
+                sender.ownedCompany.name,
                 message,
                 invitation.id
             )
@@ -219,7 +219,7 @@ export async function inviteUserToProject(projectId: string, email: string, role
             where: { id: projectId },
             include: {
                 user: {
-                    include: { managedCompany: true }
+                    include: { ownedCompany: true }
                 }
             }
         })
@@ -228,16 +228,16 @@ export async function inviteUserToProject(projectId: string, email: string, role
             throw new Error("Project not found")
         }
 
-        // Check if user is the project owner or a PM of the same company
+        // Check if user is the project owner or Company Owner of the same company
         const currentUser = await prisma.user.findUnique({
             where: { id: session.user.id },
-            include: { managedCompany: true }
+            include: { ownedCompany: true }
         })
 
         const canInvite = 
             project.userId === session.user.id || // Project owner
-            (currentUser?.role === Role.PRODUCTMANAGER && 
-             currentUser.managedCompany?.id === project.user.managedCompany?.id) // Same company PM
+            (currentUser?.role === Role.COMPANY_OWNER && 
+             currentUser.ownedCompany?.id === project.user.ownedCompany?.id) // Same company Owner
 
         if (!canInvite) {
             throw new Error("You don't have permission to invite users to this project")
@@ -379,7 +379,7 @@ export async function respondToInvitation(invitationId: string, action: "accept"
         })
 
         if (action === "accept") {
-            if (invitation.type === InvitationType.COMPANY_MEMBER && invitation.companyId) {
+            if (invitation.type === InvitationType.TEAM_MEMBER && invitation.companyId) {
                 // Add user to company
                 await prisma.user.update({
                     where: { id: session.user.id },
@@ -477,11 +477,11 @@ export async function removeUserFromCompany(userId: string) {
 
         const currentUser = await prisma.user.findUnique({
             where: { id: session.user.id },
-            include: { managedCompany: true }
+            include: { ownedCompany: true }
         })
 
-        if (!currentUser || currentUser.role !== Role.PRODUCTMANAGER || !currentUser.managedCompany) {
-            throw new Error("Only Product Managers can remove users from companies")
+        if (!currentUser || currentUser.role !== Role.COMPANY_OWNER || !currentUser.ownedCompany) {
+            throw new Error("Only Company Owners can remove users from companies")
         }
 
         // Verify the user is part of this PM's company
@@ -489,7 +489,7 @@ export async function removeUserFromCompany(userId: string) {
             where: { id: userId }
         })
 
-        if (!targetUser || targetUser.companyId !== currentUser.managedCompany.id) {
+        if (!targetUser || targetUser.companyId !== currentUser.ownedCompany.id) {
             throw new Error("User is not a member of your company")
         }
 
@@ -505,8 +505,8 @@ export async function removeUserFromCompany(userId: string) {
                 userId,
                 project: {
                     user: {
-                        managedCompany: {
-                            id: currentUser.managedCompany.id
+                        ownedCompany: {
+                            id: currentUser.ownedCompany.id
                         }
                     }
                 }
@@ -541,7 +541,7 @@ export async function removeUserFromProject(projectId: string, userId: string) {
             where: { id: projectId },
             include: {
                 user: {
-                    include: { managedCompany: true }
+                    include: { ownedCompany: true }
                 }
             }
         })
@@ -552,13 +552,13 @@ export async function removeUserFromProject(projectId: string, userId: string) {
 
         const currentUser = await prisma.user.findUnique({
             where: { id: session.user.id },
-            include: { managedCompany: true }
+            include: { ownedCompany: true }
         })
 
         const canRemove = 
             project.userId === session.user.id || // Project owner
-            (currentUser?.role === Role.PRODUCTMANAGER && 
-             currentUser.managedCompany?.id === project.user.managedCompany?.id) // Same company PM
+            (currentUser?.role === Role.COMPANY_OWNER && 
+             currentUser.ownedCompany?.id === project.user.ownedCompany?.id) // Same company Owner
 
         if (!canRemove) {
             throw new Error("You don't have permission to remove users from this project")

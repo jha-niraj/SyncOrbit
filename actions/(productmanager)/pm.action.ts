@@ -43,8 +43,8 @@ const createCompanySchema = z.object({
 	shortName: z.string().min(1, "Short name is required").max(20).regex(/^[a-zA-Z0-9]+$/, "Only alphanumeric characters allowed"),
 })
 
-// Create company during PM registration
-export async function createCompany(data: z.infer<typeof createCompanySchema>, productManagerId: string) {
+// Create company during Owner registration
+export async function createCompany(data: z.infer<typeof createCompanySchema>, ownerId: string) {
 	try {
 		const validatedData = createCompanySchema.parse(data)
 
@@ -75,10 +75,10 @@ export async function createCompany(data: z.infer<typeof createCompanySchema>, p
 				shortName: validatedData.shortName,
 				devReferralCode,
 				clientReferralCode,
-				productManagerId,
+				ownerId,
 			},
 			include: {
-				productManager: {
+				owner: {
 					select: {
 						id: true,
 						name: true,
@@ -89,9 +89,9 @@ export async function createCompany(data: z.infer<typeof createCompanySchema>, p
 			}
 		})
 
-		// Update the PM user with company reference
+		// Update the Owner user with company reference
 		await prisma.user.update({
-			where: { id: productManagerId },
+			where: { id: ownerId },
 			data: { companyId: company.id }
 		})
 
@@ -135,16 +135,16 @@ export async function getCompanyByReferralCode(referralCode: string) {
 	}
 }
 
-// Get PM dashboard data
-export async function getPMDashboardData() {
+// Get Owner dashboard data
+export async function getOwnerDashboardData() {
 	try {
 		const session = await auth()
-		if (!session?.user?.id || session.user.role !== 'PRODUCTMANAGER') {
+		if (!session?.user?.id || session.user.role !== 'COMPANY_OWNER') {
 			return { success: false, error: "Unauthorized" }
 		}
 
 		const company = await prisma.company.findFirst({
-			where: { productManagerId: session.user.id },
+			where: { ownerId: session.user.id },
 			include: {
 				users: {
 					select: {
@@ -171,10 +171,10 @@ export async function getPMDashboardData() {
 						}
 					},
 					where: {
-						role: { in: ['DEVELOPER', 'CLIENT'] }
+						role: { in: ['TEAM_MEMBER', 'CLIENT'] }
 					}
 				},
-				productManager: {
+				owner: {
 					select: {
 						id: true,
 						name: true,
@@ -252,43 +252,46 @@ export async function getPMDashboardData() {
 			}
 		})
 
-		return {
-			success: true,
-			data: {
-				company,
-				projects,
-				statistics: {
-					totalProjects,
-					completedProjects,
-					activeProjects,
-					totalRevenue,
-					paidAmount,
-					pendingAmount,
-					developersCount: developers.length,
-					clientsCount: clients.length,
-				},
-				developers: developerStats,
-				clients,
-			}
+	return {
+		success: true,
+		data: {
+			company: {
+				...company,
+				productManager: company.owner, // Map owner to productManager for backward compatibility
+			},
+			projects,
+			statistics: {
+				totalProjects,
+				completedProjects,
+				activeProjects,
+				totalRevenue,
+				paidAmount,
+				pendingAmount,
+				developersCount: developers.length,
+				clientsCount: clients.length,
+			},
+			developers: developerStats,
+			clients,
 		}
+	}
 	} catch (error) {
 		console.error("Get PM dashboard data error:", error)
 		return { success: false, error: "Failed to fetch dashboard data" }
 	}
 }
 
-// Get PM profile data
-export async function getPMProfile() {
+// Get Owner profile data
+export async function getOwnerProfile() {
 	try {
 		const session = await auth()
-		if (!session?.user?.id || session.user.role !== 'PRODUCTMANAGER') {
+		if (!session?.user?.id || session.user.role !== 'COMPANY_OWNER') {
 			return { success: false, error: "Unauthorized" }
 		}
 
 		const user = await prisma.user.findUnique({
 			where: { id: session.user.id },
 			include: {
-				managedCompany: {
+				ownedCompany: {
 					select: {
 						id: true,
 						name: true,
@@ -322,8 +325,8 @@ export async function getPMProfile() {
 	}
 }
 
-// Update PM profile
-const updatePMProfileSchema = z.object({
+// Update Owner profile
+const updateOwnerProfileSchema = z.object({
 	name: z.string().min(1, "Name is required").max(100),
 	bio: z.string().max(500).optional(),
 	image: z.string().url().optional(),
@@ -331,14 +334,14 @@ const updatePMProfileSchema = z.object({
 	companyLogo: z.string().url().optional(),
 })
 
-export async function updatePMProfile(data: z.infer<typeof updatePMProfileSchema>) {
+export async function updateOwnerProfile(data: z.infer<typeof updateOwnerProfileSchema>) {
 	try {
 		const session = await auth()
-		if (!session?.user?.id || session.user.role !== 'PRODUCTMANAGER') {
+		if (!session?.user?.id || session.user.role !== 'COMPANY_OWNER') {
 			return { success: false, error: "Unauthorized" }
 		}
 
-		const validatedData = updatePMProfileSchema.parse(data)
+		const validatedData = updateOwnerProfileSchema.parse(data)
 
 		// Update user profile
 		const user = await prisma.user.update({
@@ -349,7 +352,7 @@ export async function updatePMProfile(data: z.infer<typeof updatePMProfileSchema
 				image: validatedData.image,
 			},
 			include: {
-				managedCompany: {
+				ownedCompany: {
 					select: {
 						id: true,
 						name: true,
@@ -362,9 +365,9 @@ export async function updatePMProfile(data: z.infer<typeof updatePMProfileSchema
 		})
 
 		// Update company information if provided
-		if (user.managedCompany && (validatedData.companyName || validatedData.companyLogo)) {
+		if (user.ownedCompany && (validatedData.companyName || validatedData.companyLogo)) {
 			await prisma.company.update({
-				where: { id: user.managedCompany.id },
+				where: { id: user.ownedCompany.id },
 				data: {
 					...(validatedData.companyName && { name: validatedData.companyName }),
 					...(validatedData.companyLogo && { logo: validatedData.companyLogo }),
@@ -387,7 +390,7 @@ export async function updatePMProfile(data: z.infer<typeof updatePMProfileSchema
 export async function uploadCompanyLogo(formData: FormData) {
 	try {
 		const session = await auth()
-		if (!session?.user?.id || session.user.role !== 'PRODUCTMANAGER') {
+		if (!session?.user?.id || session.user.role !== 'COMPANY_OWNER') {
 			return { success: false, error: "Unauthorized" }
 		}
 
@@ -415,7 +418,7 @@ export async function uploadCompanyLogo(formData: FormData) {
 		
 		// Update company logo in database
 		await prisma.company.update({
-			where: { productManagerId: session.user.id },
+			where: { ownerId: session.user.id },
 			data: { logo: result.secure_url }
 		})
 
@@ -433,7 +436,7 @@ export async function registerWithReferralCode(
 		name: string
 		email: string
 		password: string
-		role: 'DEVELOPER' | 'CLIENT'
+		role: 'TEAM_MEMBER' | 'CLIENT'
 	},
 	referralCode: string
 ) {
@@ -450,8 +453,8 @@ export async function registerWithReferralCode(
 		const isDevReferral = company.devReferralCode === referralCode
 		const isClientReferral = company.clientReferralCode === referralCode
 
-		if (userData.role === 'DEVELOPER' && !isDevReferral) {
-			return { success: false, error: "Invalid referral code for developer registration" }
+		if (userData.role === 'TEAM_MEMBER' && !isDevReferral) {
+			return { success: false, error: "Invalid referral code for team member registration" }
 		}
 
 		if (userData.role === 'CLIENT' && !isClientReferral) {

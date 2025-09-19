@@ -61,6 +61,7 @@ const notificationTypeColors = {
     CLIENT_ONBOARDED: "bg-indigo-100 text-indigo-800 border-indigo-200",
     FEEDBACK_RECEIVED: "bg-pink-100 text-pink-800 border-pink-200",
     MENTION: "bg-cyan-100 text-cyan-800 border-cyan-200",
+    TEAM_INVITATION: "bg-teal-100 text-teal-800 border-teal-200",
     GENERAL: "bg-gray-100 text-gray-800 border-gray-200"
 }
 

@@ -2,6 +2,7 @@
 
 import { prisma } from "@/lib/prisma"
 import { auth } from "@/auth"
+import { Role } from "@prisma/client"
 
 export async function searchDevelopers(query?: string) {
     try {
@@ -13,7 +14,7 @@ export async function searchDevelopers(query?: string) {
         const developers = await prisma.user.findMany({
             where: {
                 role: {
-                    in: ['DEVELOPER', 'PRODUCTMANAGER']
+                    in: [Role.TEAM_MEMBER, Role.TEAM_HEAD]
                 },
                 ...(query && {
                     OR: [

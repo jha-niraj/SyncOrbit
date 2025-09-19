@@ -35,15 +35,15 @@ export async function getActivities(options: GetActivitiesOptions = {}) {
         select: { id: true }
       })
       projectIds = projects.map(p => p.id)
-    } else if (userRole === 'PRODUCTMANAGER') {
-      // Product managers can see activities for their company's projects
+    } else if (userRole === 'COMPANY_OWNER') {
+      // Company owners can see activities for their company's projects
       const user = await prisma.user.findUnique({
         where: { id: userId },
-        include: { managedCompany: { include: { users: { select: { projects: { select: { id: true } } } } } } }
+        include: { ownedCompany: { include: { users: { select: { projects: { select: { id: true } } } } } } }
       })
       
-      if (user?.managedCompany) {
-        const allProjects = user.managedCompany.users.flatMap(u => u.projects.map(p => p.id))
+      if (user?.ownedCompany) {
+        const allProjects = user.ownedCompany.users.flatMap(u => u.projects.map(p => p.id))
         projectIds = [...new Set(allProjects)]
       }
     } else {
@@ -307,22 +307,22 @@ export async function getActivities(options: GetActivitiesOptions = {}) {
       })
     }
 
-    // 6. User Activities (for PMs and Admins)
-    if ((userRole === 'PRODUCTMANAGER' || userRole === 'ADMIN') && 
+    // 6. User Activities (for Company Owners and Admins)
+    if ((userRole === 'COMPANY_OWNER' || userRole === 'ADMIN') && 
         (!options.types || options.types.some(t => t.startsWith('user_')))) {
       
       let userQuery: any = {
         createdAt: { gte: dateFrom, lte: dateTo }
       }
 
-      // For PMs, only show users from their company
-      if (userRole === 'PRODUCTMANAGER') {
-        const pmUser = await prisma.user.findUnique({
+      // For Company Owners, only show users from their company
+      if (userRole === 'COMPANY_OWNER') {
+        const ownerUser = await prisma.user.findUnique({
           where: { id: userId },
           select: { companyId: true }
         })
-        if (pmUser?.companyId) {
-          userQuery.companyId = pmUser.companyId
+        if (ownerUser?.companyId) {
+          userQuery.companyId = ownerUser.companyId
         }
       }
 

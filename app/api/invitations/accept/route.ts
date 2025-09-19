@@ -60,7 +60,7 @@ export async function GET(request: NextRequest) {
         })
 
         // Add user to company or project
-        if (invitation.type === InvitationType.COMPANY_MEMBER && invitation.companyId) {
+        if (invitation.type === InvitationType.TEAM_MEMBER && invitation.companyId) {
             await prisma.user.update({
                 where: { id: invitation.receiver.id },
                 data: { companyId: invitation.companyId }

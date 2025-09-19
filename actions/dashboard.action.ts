@@ -101,7 +101,7 @@ export async function getDashboardMetrics(): Promise<DashboardMetrics | null> {
       where: { companyId: user.companyId }
     })
     
-    const developers = teamMembers.filter(u => u.role === 'DEVELOPER')
+    const developers = teamMembers.filter(u => u.role === 'TEAM_MEMBER')
     const activeDevelopers = developers.filter(d => 
       allTasks.some(t => t.assignedDeveloperId === d.id && t.status === 'IN_PROGRESS')
     )

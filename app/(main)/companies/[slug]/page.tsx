@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect, useCallback, use } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -91,24 +91,15 @@ export default function CompanyDetailsPage({ params }: { params: Promise<{ slug:
     const router = useRouter()
     const [company, setCompany] = useState<CompanyDetails | null>(null)
     const [loading, setLoading] = useState(true)
-    const [resolvedParams, setResolvedParams] = useState<{ slug: string } | null>(null)
+    const { slug } = use(params);
 
-    useEffect(() => {
-        // Handle async params in Next.js 15
-        const resolveParams = async () => {
-            const resolved = await params
-            setResolvedParams(resolved)
-        }
-
-        resolveParams()
-    }, [params])
 
     const loadCompanyDetails = useCallback(async () => {
-        if (!resolvedParams?.slug) return
+        if (!slug) return
 
         setLoading(true)
         try {
-            const result = await getClientCompanyDetails(resolvedParams.slug)
+            const result = await getClientCompanyDetails(slug)
             if (result.success && result.company) {
                 setCompany(result.company)
             } else {
@@ -122,7 +113,7 @@ export default function CompanyDetailsPage({ params }: { params: Promise<{ slug:
         } finally {
             setLoading(false)
         }
-    }, [resolvedParams?.slug, router])
+    }, [slug, router])
 
     useEffect(() => {
         // Redirect if not a client
@@ -131,10 +122,10 @@ export default function CompanyDetailsPage({ params }: { params: Promise<{ slug:
             return
         }
 
-        if (resolvedParams?.slug) {
+        if (slug) {
             loadCompanyDetails()
         }
-    }, [session, router, resolvedParams?.slug, loadCompanyDetails])
+    }, [session, router, slug, loadCompanyDetails])
 
     const getProjectStatusColor = (status: string) => {
         switch (status) {

@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
+import { Label } from "@/components/ui/label"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import {
 	DollarSign,
@@ -32,8 +33,8 @@ interface PMDashboardData {
 		id: string
 		name: string
 		shortName: string
-		devReferralCode: string
-		clientReferralCode: string
+		devReferralCode: string | null
+		clientReferralCode: string | null
 		createdAt: Date
 		users: { id: string; name: string | null; email: string | null; image: string | null; role: string; createdAt: Date; assignedTasks: { id: string; title: string; status: string; createdAt: Date; project: { id: string; title: string; slug: string } }[] }[]
 		productManager: {
@@ -78,12 +79,12 @@ export function PMDashboard({ data }: PMDashboardProps) {
 
 	const getDeveloperReferralLink = () => {
 		const baseUrl = typeof window !== 'undefined' ? window.location.origin : 'https://shunyatech.com'
-		return `${baseUrl}/devs/signup?ref=${data.company.devReferralCode}`
+		return `${baseUrl}/devs/signup?ref=${data.company.devReferralCode || ''}`
 	}
 
 	const getClientReferralLink = () => {
 		const baseUrl = typeof window !== 'undefined' ? window.location.origin : 'https://shunyatech.com'
-		return `${baseUrl}/signup?ref=${data.company.clientReferralCode}`
+		return `${baseUrl}/signup?ref=${data.company.clientReferralCode || ''}`
 	}
 
 	return (
@@ -457,6 +458,3 @@ function DeveloperCard({ developer }: { developer: { id: string; name: string | 
 	)
 }
 
-function Label({ className, children }: { className?: string; children: React.ReactNode }) {
-	return <label className={className}>{children}</label>
-} 

@@ -2,29 +2,29 @@
 
 import { prisma } from "@/lib/prisma"
 import { auth } from "@/auth"
-import { UserRole } from "@prisma/client"
+import { Role } from "@prisma/client"
 import { revalidatePath } from "next/cache"
 
 export async function getUsersByCompany() {
     try {
         const session = await auth()
-        if (!session?.user || session.user.role !== "PRODUCTMANAGER") {
-            throw new Error("Unauthorized: Only product managers can access company users")
+        if (!session?.user || session.user.role !== "COMPANY_OWNER") {
+            throw new Error("Unauthorized: Only company owners can access company users")
         }
 
         const user = await prisma.user.findUnique({
             where: { id: session.user.id },
-            include: { managedCompany: true }
+            include: { ownedCompany: true }
         })
 
-        if (!user?.managedCompany) {
-            throw new Error("No company found for this product manager")
+        if (!user?.ownedCompany) {
+            throw new Error("No company found for this company owner")
         }
 
         const companyUsers = await prisma.user.findMany({
             where: {
-                companyId: user.managedCompany.id,
-                role: "DEVELOPER"
+                companyId: user.ownedCompany.id,
+                role: "TEAM_MEMBER"
             },
             select: {
                 id: true,
@@ -32,7 +32,6 @@ export async function getUsersByCompany() {
                 email: true,
                 image: true,
                 role: true,
-                userRole: true,
                 createdAt: true,
                 assignedTasks: {
                     include: {
@@ -65,21 +64,21 @@ export async function getUsersByCompany() {
     }
 }
 
-export async function updateUserRole(userId: string, newUserRole: UserRole) {
+export async function updateUserRole(userId: string, newRole: Role) {
     try {
         const session = await auth()
-        if (!session?.user || session.user.role !== "PRODUCTMANAGER") {
-            throw new Error("Unauthorized: Only product managers can update user roles")
+        if (!session?.user || session.user.role !== "COMPANY_OWNER") {
+            throw new Error("Unauthorized: Only company owners can update user roles")
         }
 
-        // Verify the user belongs to the PM's company
-        const pmUser = await prisma.user.findUnique({
+        // Verify the user belongs to the Owner's company
+        const ownerUser = await prisma.user.findUnique({
             where: { id: session.user.id },
-            include: { managedCompany: true }
+            include: { ownedCompany: true }
         })
 
-        if (!pmUser?.managedCompany) {
-            throw new Error("No company found for this product manager")
+        if (!ownerUser?.ownedCompany) {
+            throw new Error("No company found for this company owner")
         }
 
         const targetUser = await prisma.user.findUnique({
@@ -91,25 +90,25 @@ export async function updateUserRole(userId: string, newUserRole: UserRole) {
             throw new Error("User not found")
         }
 
-        if (targetUser.companyId !== pmUser.managedCompany.id) {
+        if (targetUser.companyId !== ownerUser.ownedCompany.id) {
             throw new Error("User does not belong to your company")
         }
 
-        if (targetUser.role !== "DEVELOPER") {
-            throw new Error("Can only update roles for developers")
+        if (targetUser.role !== "TEAM_MEMBER") {
+            throw new Error("Can only update roles for team members")
         }
 
         // Update the user role
         const updatedUser = await prisma.user.update({
             where: { id: userId },
-            data: { userRole: newUserRole }
+            data: { role: newRole }
         })
 
         // Create notification for the user
         await prisma.notification.create({
             data: {
                 title: "Role Updated",
-                description: `Your role has been updated to ${newUserRole.replace('_', ' ')}`,
+                description: `Your role has been updated to ${newRole.replace('_', ' ')}`,
                 type: "USER_PROMOTED",
                 actionUrl: "/profile",
                 senderId: session.user.id,
@@ -140,8 +139,8 @@ export async function getDeveloperTasks(developerId: string) {
             throw new Error("Unauthorized")
         }
 
-        // Verify access (PM or the developer themselves)
-        if (session.user.role !== "PRODUCTMANAGER" && session.user.id !== developerId) {
+        // Verify access (Owner or the team member themselves)
+        if (session.user.role !== "COMPANY_OWNER" && session.user.id !== developerId) {
             throw new Error("Unauthorized: Cannot view other user's tasks")
         }
 
@@ -188,7 +187,7 @@ export async function getDeveloperTasks(developerId: string) {
                 id: developer.id,
                 name: developer.name,
                 email: developer.email,
-                userRole: developer.userRole
+                role: developer.role
             },
             tasksByProject: Object.values(tasksByProject)
         }

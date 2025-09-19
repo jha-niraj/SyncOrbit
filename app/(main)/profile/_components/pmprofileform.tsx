@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useRef } from "react"
-import { updatePMProfile, uploadCompanyLogo } from "@/actions/(productmanager)/pm.action"
+import { updateOwnerProfile, uploadCompanyLogo } from "@/actions/(productmanager)/pm.action"
 import { uploadProfileImage } from "@/actions/(client)/profile.action"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -120,7 +120,7 @@ export function PMProfileForm({ user }: PMProfileFormProps) {
         setIsLoading(true)
 
         try {
-            const result = await updatePMProfile({
+            const result = await updateOwnerProfile({
                 name: formData.name,
                 bio: formData.bio,
                 image: formData.image,

@@ -1,150 +1,339 @@
 "use server"
 
 import { prisma } from "@/lib/prisma"
-import { Role } from "@prisma/client"
+import { Role, TeamType, InvitationType } from "@prisma/client"
+import { revalidatePath } from "next/cache"
+import { z } from "zod"
 
-interface OnboardingData {
-    email: string
-    name: string
-    image?: string
-    role: "CLIENT" | "DEVELOPER" | "PRODUCTMANAGER"
-    referralCode?: string
-    companyName?: string
-    companyEmail?: string
-}
+// Validation schemas
+const companyOnboardingSchema = z.object({
+    email: z.string().email(),
+    name: z.string().min(1),
+    image: z.string().optional(),
+    companyName: z.string().min(1, "Company name is required"),
+    companyDescription: z.string().optional(),
+    website: z.string().url().optional().or(z.literal("")),
+    selectedTeams: z.array(z.object({
+        type: z.nativeEnum(TeamType),
+        name: z.string().min(1),
+        displayName: z.string().min(1),
+        headRoleTitle: z.string().min(1),
+        description: z.string().optional(),
+        color: z.string().optional(),
+    })).min(1, "At least one team is required"),
+})
 
-export async function completeOnboarding(data: OnboardingData) {
+const invitationAcceptSchema = z.object({
+    email: z.string().email(),
+    name: z.string().min(1),
+    image: z.string().optional(),
+    invitationId: z.string().min(1),
+})
+
+// Complete company onboarding (for new company owners)
+export async function completeCompanyOnboarding(data: z.infer<typeof companyOnboardingSchema>) {
     try {
-        const { email, name, image, role, referralCode, companyName, companyEmail } = data
+        const validatedData = companyOnboardingSchema.parse(data)
 
         // Check if user already exists
         const existingUser = await prisma.user.findUnique({
-            where: { email }
+            where: { email: validatedData.email },
+            include: { ownedCompany: true }
         })
 
-        if (existingUser) {
-            // User already exists, just update their profile if needed
-            const updatedUser = await prisma.user.update({
-                where: { email },
-                data: {
-                    name,
-                    image,
-                    role: role as Role,
-                    companyEmail,
-                    referralCode
-                }
-            })
-
+        if (existingUser && existingUser.ownedCompany) {
             return {
-                success: true,
-                user: updatedUser
+                success: false,
+                error: "User already owns a company"
             }
         }
 
-        // Validate referral code if provided
-        let referralCodeRecord = null
-        let companyId = null
-
-        if (referralCode) {
-            referralCodeRecord = await prisma.referralCode.findUnique({
-                where: { 
-                    code: referralCode,
-                    status: "ACTIVE"
-                },
-                include: { company: true }
-            })
-
-            if (!referralCodeRecord) {
-                throw new Error("Invalid or expired referral code")
-            }
-
-            // Check if referral code matches the role
-            if (referralCodeRecord.role !== role) {
-                throw new Error(`This referral code is for ${referralCodeRecord.role} role, but you selected ${role}`)
-            }
-
-            // Check if referral code has usage limit
-            if (referralCodeRecord.usedCount >= referralCodeRecord.maxUses) {
-                throw new Error("This referral code has reached its usage limit")
-            }
-
-            // Check expiration
-            if (referralCodeRecord.expiresAt && new Date() > referralCodeRecord.expiresAt) {
-                throw new Error("This referral code has expired")
-            }
-
-            companyId = referralCodeRecord.companyId
-        }
-
-        // Handle company creation for Product Manager
-        let tempCompanyId = null
-        if (role === "PRODUCTMANAGER" && companyName) {
-            if (!companyId) {
-                // Create a short name from company name
-                const shortName = companyName.toLowerCase().replace(/[^a-z0-9]/g, '').substring(0, 10) + Math.random().toString(36).substring(2, 6)
-                
-                // We'll create the company after creating the user
-                tempCompanyId = shortName
-            }
-        }
-
-        // Create the user
-        const newUser = await prisma.user.create({
-            data: {
-                email,
-                name,
-                image,
-                role: role as Role,
-                companyId,
-                companyEmail,
-                referralCode,
-                usedReferralCodeId: referralCodeRecord?.id,
-                emailVerified: new Date() // Mark as verified since they used Google auth
+        // Check if company name is already taken
+        const existingCompany = await prisma.company.findFirst({
+            where: {
+                name: validatedData.companyName
             }
         })
 
-        // Update referral code usage if used
-        if (referralCodeRecord) {
-            await prisma.referralCode.update({
-                where: { id: referralCodeRecord.id },
-                data: {
-                    usedCount: {
-                        increment: 1
-                    }
-                }
-            })
+        if (existingCompany) {
+            return {
+                success: false,
+                error: "Company name already exists. Please choose a different name."
+            }
         }
 
-        // Create company for PM after user is created
-        if (role === "PRODUCTMANAGER" && tempCompanyId && companyName) {
-            const newCompany = await prisma.company.create({
+        // Create short name from company name
+        const baseShortName = validatedData.companyName
+            .toLowerCase()
+            .replace(/[^a-z0-9]/g, '')
+            .substring(0, 8)
+        const shortName = `${baseShortName}${Math.random().toString(36).substring(2, 4)}`
+
+        // Start transaction
+        const result = await prisma.$transaction(async (tx) => {
+            let user = existingUser
+
+            // Create or update user
+            if (!user) {
+                user = await tx.user.create({
+                    data: {
+                        email: validatedData.email,
+                        name: validatedData.name,
+                        image: validatedData.image,
+                        role: Role.COMPANY_OWNER,
+                        emailVerified: new Date(),
+                    },
+                    include: { ownedCompany: true }
+                })
+            } else {
+                user = await tx.user.update({
+                    where: { id: user.id },
+                    data: {
+                        name: validatedData.name,
+                        image: validatedData.image,
+                        role: Role.COMPANY_OWNER,
+                        emailVerified: new Date(),
+                    },
+                    include: { ownedCompany: true }
+                })
+            }
+
+            // Create company
+            const company = await tx.company.create({
                 data: {
-                    name: companyName,
-                    shortName: tempCompanyId,
-                    devReferralCode: `dev_${tempCompanyId}_${Math.random().toString(36).substring(2, 8)}`,
-                    clientReferralCode: `client_${tempCompanyId}_${Math.random().toString(36).substring(2, 8)}`,
-                    productManagerId: newUser.id
+                    name: validatedData.companyName,
+                    shortName: shortName,
+                    description: validatedData.companyDescription,
+                    website: validatedData.website || undefined,
+                    ownerId: user.id,
                 }
             })
 
             // Update user with company ID
-            await prisma.user.update({
-                where: { id: newUser.id },
+            await tx.user.update({
+                where: { id: user.id },
+                data: { companyId: company.id }
+            })
+
+            // Create teams and send invitations
+            const createdTeams = []
+            for (const teamData of validatedData.selectedTeams) {
+                const team = await tx.team.create({
+                    data: {
+                        name: teamData.name,
+                        displayName: teamData.displayName,
+                        teamType: teamData.type,
+                        description: teamData.description,
+                        color: teamData.color,
+                        companyId: company.id,
+                    }
+                })
+
+                createdTeams.push({
+                    ...team,
+                    headRoleTitle: teamData.headRoleTitle
+                })
+            }
+
+            return { user, company, teams: createdTeams }
+        })
+
+        revalidatePath("/dashboard")
+        revalidatePath("/teams")
+
+        return {
+            success: true,
+            user: result.user,
+            company: result.company,
+            teams: result.teams,
+            message: `Welcome to ProjectCentral! ${validatedData.companyName} has been created with ${result.teams.length} teams.`
+        }
+    } catch (error) {
+        console.error("Complete company onboarding error:", error)
+        return {
+            success: false,
+            error: error instanceof Error ? error.message : "Failed to complete company onboarding"
+        }
+    }
+}
+
+// Accept invitation and complete profile (for team members/heads)
+export async function completeInvitationOnboarding(data: z.infer<typeof invitationAcceptSchema>) {
+    try {
+        const validatedData = invitationAcceptSchema.parse(data)
+
+        const invitation = await prisma.invitation.findUnique({
+            where: { id: validatedData.invitationId },
+            include: {
+                company: true,
+                team: true,
+                sender: { select: { name: true, email: true } }
+            }
+        })
+
+        if (!invitation) {
+            return {
+                success: false,
+                error: "Invitation not found or expired"
+            }
+        }
+
+        if (invitation.email !== validatedData.email) {
+            return {
+                success: false,
+                error: "This invitation is not for your email address"
+            }
+        }
+
+        if (invitation.status !== "PENDING") {
+            return {
+                success: false,
+                error: "This invitation has already been processed"
+            }
+        }
+
+        if (invitation.expiresAt < new Date()) {
+            return {
+                success: false,
+                error: "This invitation has expired"
+            }
+        }
+
+        // Check if user already exists
+        let existingUser = await prisma.user.findUnique({
+            where: { email: validatedData.email }
+        })
+
+        const result = await prisma.$transaction(async (tx) => {
+            let user = existingUser
+
+            // Create or update user
+            if (!user) {
+                user = await tx.user.create({
+                    data: {
+                        email: validatedData.email,
+                        name: validatedData.name,
+                        image: validatedData.image,
+                        role: invitation.type === InvitationType.TEAM_HEAD ? Role.TEAM_HEAD : 
+                              invitation.type === InvitationType.TEAM_MEMBER ? Role.TEAM_MEMBER : Role.CLIENT,
+                        companyId: invitation.companyId,
+                        emailVerified: new Date(),
+                    }
+                })
+            } else {
+                user = await tx.user.update({
+                    where: { id: user.id },
+                    data: {
+                        name: validatedData.name,
+                        image: validatedData.image,
+                        role: invitation.type === InvitationType.TEAM_HEAD ? Role.TEAM_HEAD : 
+                              invitation.type === InvitationType.TEAM_MEMBER ? Role.TEAM_MEMBER : Role.CLIENT,
+                        companyId: invitation.companyId || user.companyId,
+                    }
+                })
+            }
+
+            // Update invitation
+            await tx.invitation.update({
+                where: { id: validatedData.invitationId },
                 data: {
-                    companyId: newCompany.id
+                    status: "ACCEPTED",
+                    receiverId: user.id
+                }
+            })
+
+            // Handle team assignments
+            if (invitation.teamId && invitation.type === InvitationType.TEAM_HEAD) {
+                // Make user the team head
+                await tx.team.update({
+                    where: { id: invitation.teamId },
+                    data: { headId: user.id }
+                })
+
+                // Also add as team member
+                await tx.teamMember.create({
+                    data: {
+                        userId: user.id,
+                        teamId: invitation.teamId,
+                        roleTitle: invitation.roleTitle!,
+                        addedById: invitation.senderId
+                    }
+                })
+            } else if (invitation.teamId && invitation.type === InvitationType.TEAM_MEMBER) {
+                // Add as team member
+                await tx.teamMember.create({
+                    data: {
+                        userId: user.id,
+                        teamId: invitation.teamId,
+                        roleTitle: invitation.roleTitle!,
+                        addedById: invitation.senderId
+                    }
+                })
+            }
+
+            return { user, invitation }
+        })
+
+        revalidatePath("/dashboard")
+        revalidatePath("/teams")
+
+        return {
+            success: true,
+            user: result.user,
+            role: result.user.role,
+            company: invitation.company?.name,
+            team: invitation.team?.name,
+            roleTitle: invitation.roleTitle,
+            message: `Welcome to ${invitation.company?.name}! You've joined as ${invitation.roleTitle} in the ${invitation.team?.name || 'company'}.`
+        }
+    } catch (error) {
+        console.error("Complete invitation onboarding error:", error)
+        return {
+            success: false,
+            error: error instanceof Error ? error.message : "Failed to complete onboarding"
+        }
+    }
+}
+
+// Legacy function for backward compatibility (clients without invitations)
+export async function completeClientOnboarding(data: { email: string; name: string; image?: string }) {
+    try {
+        const existingUser = await prisma.user.findUnique({
+            where: { email: data.email }
+        })
+
+        let user = existingUser
+        if (!user) {
+            user = await prisma.user.create({
+                data: {
+                    email: data.email,
+                    name: data.name,
+                    image: data.image,
+                    role: Role.CLIENT,
+                    emailVerified: new Date(),
+                }
+            })
+        } else {
+            user = await prisma.user.update({
+                where: { id: user.id },
+                data: {
+                    name: data.name,
+                    image: data.image,
+                    role: Role.CLIENT,
                 }
             })
         }
 
         return {
             success: true,
-            user: newUser
+            user,
+            message: "Welcome to ProjectCentral! You can now create projects and work with development teams."
         }
     } catch (error) {
-        console.error("Complete onboarding error:", error)
+        console.error("Complete client onboarding error:", error)
         return {
             success: false,
-            error: error instanceof Error ? error.message : "Failed to complete onboarding"
+            error: error instanceof Error ? error.message : "Failed to complete client onboarding"
         }
     }
 }

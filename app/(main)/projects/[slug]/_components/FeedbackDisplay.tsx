@@ -88,7 +88,7 @@ export function FeedbackDisplay({ feedbacks }: FeedbackDisplayProps) {
 		}
 	}
 
-	const canUpdateStatus = session?.user?.role === 'ADMIN' || session?.user?.role === 'DEVELOPER' || session?.user?.role === 'PRODUCTMANAGER'
+	const canUpdateStatus = session?.user?.role === 'ADMIN' || session?.user?.role === 'COMPANY_OWNER' || session?.user?.role === 'TEAM_HEAD'
 
 	if (displayFeedbacks.length === 0) {
 		return (

@@ -1,238 +1,650 @@
-import { getProfile } from "@/actions/(client)/profile.action"
-import { getPMProfile } from "@/actions/(productmanager)/pm.action"
-import { SettingsForm } from "./_components/settingsform"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Badge } from "@/components/ui/badge"
-import { Separator } from "@/components/ui/separator"
-import { User, Settings, Shield, Mail, Calendar, Building2, Users } from "lucide-react"
-import { ProfileForm } from "./_components/profileform"
-import { PMProfileForm } from "./_components/pmprofileform"
 import { auth } from "@/auth"
+import { redirect } from "next/navigation"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Separator } from "@/components/ui/separator"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
+import {
+    DropdownMenu, DropdownMenuContent, DropdownMenuItem,
+    DropdownMenuTrigger, DropdownMenuSeparator
+} from "@/components/ui/dropdown-menu"
+import {
+    User, Mail, Calendar, MapPin, Building2, Shield, Settings,
+    Users, Plus, Edit, Trash2, MoreVertical, Star, Award,
+    Code, Megaphone, ShoppingCart, Palette, Briefcase, Settings as SettingsIcon,
+    Crown, UserCheck, UserX, Send, Clock
+} from "lucide-react"
+import { Role, TeamType } from "@prisma/client"
+import { prisma } from "@/lib/prisma"
+import { format } from "date-fns"
+
+// Team type icons
+const TEAM_ICONS = {
+    [TeamType.TECHNICAL]: Code,
+    [TeamType.MARKETING]: Megaphone,
+    [TeamType.SALES]: ShoppingCart,
+    [TeamType.DESIGN]: Palette,
+    [TeamType.OPERATIONS]: SettingsIcon,
+    [TeamType.FINANCE]: Briefcase,
+    [TeamType.CUSTOM]: Users,
+}
+
+// Role badges
+const ROLE_BADGES = {
+    [Role.COMPANY_OWNER]: { color: "bg-purple-100 text-purple-800", icon: Crown },
+    [Role.TEAM_HEAD]: { color: "bg-blue-100 text-blue-800", icon: Shield },
+    [Role.TEAM_MEMBER]: { color: "bg-green-100 text-green-800", icon: UserCheck },
+    [Role.CLIENT]: { color: "bg-gray-100 text-gray-800", icon: User },
+    [Role.ADMIN]: { color: "bg-red-100 text-red-800", icon: Shield },
+}
+
+async function getUserProfile(userId: string) {
+    return await prisma.user.findUnique({
+        where: { id: userId },
+        include: {
+            ownedCompany: {
+                include: {
+                    teams: {
+                        include: {
+                            head: {
+                                select: {
+                                    id: true,
+                                    name: true,
+                                    image: true
+                                }
+                            },
+                            members: {
+                                select: {
+                                    id: true,
+                                    roleTitle: true,
+                                    user: {
+                                        select: {
+                                            id: true,
+                                            name: true,
+                                            email: true,
+                                            image: true,
+                                            role: true
+                                        }
+                                    }
+                                }
+                            },
+                            _count: {
+                                select: {
+                                    members: true,
+                                    assignedProjects: true
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            company: {
+                select: {
+                    id: true,
+                    name: true,
+                    website: true,
+                    owner: {
+                        select: {
+                            id: true,
+                            name: true,
+                            image: true
+                        }
+                    }
+                }
+            },
+            ledTeams: {
+                include: {
+                    members: {
+                        select: {
+                            id: true,
+                            roleTitle: true,
+                            user: {
+                                select: {
+                                    id: true,
+                                    name: true,
+                                    email: true,
+                                    image: true,
+                                    role: true
+                                }
+                            }
+                        }
+                    },
+                    _count: {
+                        select: {
+                            members: true,
+                            assignedProjects: true
+                        }
+                    }
+                }
+            },
+            teamMemberships: {
+                select: {
+                    id: true,
+                    roleTitle: true,
+                    team: {
+                        select: {
+                            id: true,
+                            name: true,
+                            displayName: true,
+                            teamType: true,
+                            color: true,
+                            head: {
+                                select: {
+                                    id: true,
+                                    name: true,
+                                    image: true
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            _count: {
+                select: {
+                    assignedTasks: true,
+                    projects: true,
+                    createdTasks: true
+                }
+            }
+        }
+    })
+}
 
 export default async function ProfilePage() {
-	const session = await auth()
+    const session = await auth()
+    
+    if (!session?.user) {
+        redirect('/signin')
+    }
 
-	if (!session?.user) {
-		return (
-			<div className="min-h-screen bg-white dark:bg-neutral-900 flex items-center justify-center">
-				<div className="text-center">
-					<h1 className="text-2xl font-bold text-red-600">Unauthorized</h1>
-					<p className="text-gray-600 mt-2">Please sign in to continue</p>
-				</div>
-			</div>
-		)
-	}
+    const userProfile = await getUserProfile(session.user.id)
+    
+    if (!userProfile) {
+        redirect('/signin')
+    }
 
-	// Get profile data based on user role
-	const profileData = session.user.role === 'PRODUCTMANAGER'
-		? await getPMProfile()
-		: await getProfile()
 
-	if (!profileData.success || !profileData.user) {
-		return (
-			<div className="min-h-screen bg-white dark:bg-neutral-900 flex items-center justify-center">
-				<div className="text-center">
-					<h1 className="text-2xl font-bold text-red-600">Error loading profile</h1>
-					<p className="text-gray-600 mt-2">Please try again later</p>
-				</div>
-			</div>
-		)
-	}
+    const roleBadge = ROLE_BADGES[userProfile.role]
+    const RoleIcon = roleBadge.icon
 
-	const { user } = profileData
-	const userRole = user.role || session.user.role
-	const isPM = userRole === 'PRODUCTMANAGER'
-	const isDeveloper = userRole === 'DEVELOPER'
+    return (
+        <div className="container mx-auto py-8 space-y-8">
+            {/* Header */}
+            <div className="flex items-center gap-6">
+                <Avatar className="w-20 h-20">
+                    <AvatarImage src={userProfile.image || undefined} />
+                    <AvatarFallback className="text-2xl">
+                        {userProfile.name?.[0] || userProfile.email?.[0] || 'U'}
+                    </AvatarFallback>
+                </Avatar>
+                
+                <div className="flex-1">
+                    <div className="flex items-center gap-3 mb-2">
+                        <h1 className="text-3xl font-bold">
+                            {userProfile.name || userProfile.email}
+                        </h1>
+                        <Badge className={`gap-1 ${roleBadge.color}`}>
+                            <RoleIcon className="w-3 h-3" />
+                            {userProfile.role.replace('_', ' ').toLowerCase()}
+                        </Badge>
+                    </div>
+                    
+                    <div className="flex items-center gap-4 text-muted-foreground">
+                        <div className="flex items-center gap-1">
+                            <Mail className="w-4 h-4" />
+                            <span>{userProfile.email}</span>
+                        </div>
+                        
+                        {userProfile.company && (
+                            <div className="flex items-center gap-1">
+                                <Building2 className="w-4 h-4" />
+                                <span>{userProfile.company.name}</span>
+                            </div>
+                        )}
+                        
+                        <div className="flex items-center gap-1">
+                            <Calendar className="w-4 h-4" />
+                            <span>Joined {format(new Date(userProfile.createdAt), 'MMM yyyy')}</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <Button className="gap-2">
+                    <Edit className="w-4 h-4" />
+                    Edit Profile
+                </Button>
+            </div>
 
-	// Type the user object properly
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	const pmUser = user as any // PM user with managedCompany
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	const regularUser = user as any // Regular user with projects/totalSpent/assignedTasks
+            {/* Stats Cards */}
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+                <Card>
+                    <CardContent className="pt-6">
+                        <div className="flex items-center gap-4">
+                            <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                                <Users className="w-6 h-6 text-blue-600" />
+                            </div>
+                            <div>
+                                <div className="text-2xl font-bold">
+                                    {userProfile.ledTeams.length + userProfile.teamMemberships.length}
+                                </div>
+                                <p className="text-sm text-muted-foreground">Teams</p>
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
 
-	return (
-		<div className="min-h-screen bg-white dark:bg-neutral-900">
-			<div className="max-w-7xl mx-auto p-4 pt-4">
-				<div className="flex flex-col lg:flex-row gap-2">
-					<div className="lg:w-1/3">
-						<Card className="sticky top-8">
-							<CardHeader className="text-center">
-								<div className="relative mx-auto">
-									<Avatar className="h-32 w-32 mx-auto border-4 border-white shadow-lg">
-										<AvatarImage src={user.image || "/placeholder.svg"} alt={user.name || "User"} />
-										<AvatarFallback className="bg-gradient-to-r from-blue-500 to-purple-600 text-white text-2xl font-bold">
-											{user.name?.split(" ").map((n: string) => n[0]).join("") || "U"}
-										</AvatarFallback>
-									</Avatar>
-								</div>
-								<CardTitle className="text-2xl font-bold mt-4">{user.name}</CardTitle>
-								<CardDescription className="text-lg">{user.email}</CardDescription>
-							</CardHeader>
-							<CardContent className="space-y-4">
-								<div className="flex items-center justify-center">
-									<Badge variant="outline" className="flex items-center gap-2">
-										<Shield className="h-4 w-4" />
-										{userRole}
-									</Badge>
-								</div>
+                <Card>
+                    <CardContent className="pt-6">
+                        <div className="flex items-center gap-4">
+                            <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                                <Award className="w-6 h-6 text-green-600" />
+                            </div>
+                            <div>
+                                <div className="text-2xl font-bold">{userProfile._count.assignedTasks}</div>
+                                <p className="text-sm text-muted-foreground">Assigned Tasks</p>
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
 
-								<Separator />
+                <Card>
+                    <CardContent className="pt-6">
+                        <div className="flex items-center gap-4">
+                            <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                                <Building2 className="w-6 h-6 text-purple-600" />
+                            </div>
+                            <div>
+                                <div className="text-2xl font-bold">{userProfile._count.projects}</div>
+                                <p className="text-sm text-muted-foreground">Projects Created</p>
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
 
-								<div className="space-y-3">
-									<div className="flex items-center gap-3 text-sm text-muted-foreground">
-										<Mail className="h-4 w-4" />
-										<span>{user.email}</span>
-									</div>
-									<div className="flex items-center gap-3 text-sm text-muted-foreground">
-										<Calendar className="h-4 w-4" />
-										{/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-										<span>Member since {new Date((user as any).createdAt || new Date()).toLocaleDateString()}</span>
-									</div>
-								</div>
+                <Card>
+                    <CardContent className="pt-6">
+                        <div className="flex items-center gap-4">
+                            <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
+                                <Star className="w-6 h-6 text-orange-600" />
+                            </div>
+                            <div>
+                                <div className="text-2xl font-bold">{userProfile._count.createdTasks}</div>
+                                <p className="text-sm text-muted-foreground">Tasks Created</p>
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
+            </div>
 
-								<Separator />
+            {/* Main Content Tabs */}
+            <Tabs defaultValue="overview" className="space-y-4">
+                <TabsList className="grid w-full grid-cols-4">
+                    <TabsTrigger value="overview">Overview</TabsTrigger>
+                    <TabsTrigger value="teams">Teams</TabsTrigger>
+                    <TabsTrigger value="company">Company</TabsTrigger>
+                    <TabsTrigger value="settings">Settings</TabsTrigger>
+                </TabsList>
 
-								{
-									isPM && pmUser.managedCompany && (
-										<>
-											<div className="space-y-3">
-												<h4 className="font-semibold text-sm flex items-center gap-2">
-													<Building2 className="h-4 w-4" />
-													Company Information
-												</h4>
-												<div className="space-y-2">
-													<div className="flex items-center gap-2">
-														<span className="text-sm font-medium">Name:</span>
-														<span className="text-sm text-muted-foreground">{pmUser.managedCompany.name}</span>
-													</div>
-													<div className="flex items-center gap-2">
-														<span className="text-sm text-black dark:text-white font-medium">Short Name:</span>
-														<span className="text-sm text-muted-foreground text-black dark:text-white">{pmUser.managedCompany.shortName}</span>
-													</div>
-													<div className="flex items-center gap-2">
-														<Users className="h-4 w-4" />
-														<span className="text-sm text-muted-foreground">
-															{pmUser.managedCompany.users?.length || 0} team members
-														</span>
-													</div>
-												</div>
-											</div>
-											<Separator />
-										</>
-									)
-								}
-								<div className="space-y-2">
-									<h4 className="font-semibold text-sm">
-										{isPM ? "Company Statistics" : "Account Statistics"}
-									</h4>
-									<div className="grid grid-cols-2 gap-4 text-center">
-										{
-											isPM ? (
-												<>
-													<div>
-														<p className="text-2xl font-bold text-blue-600">
-															{pmUser.managedCompany?.users?.length || 0}
-														</p>
-														<p className="text-xs text-muted-foreground">Team Members</p>
-													</div>
-													<div>
-														<p className="text-2xl font-bold text-green-600">
-															{regularUser.projects?.length || 0}
-														</p>
-														<p className="text-xs text-muted-foreground">Projects</p>
-													</div>
-												</>
-											) : isDeveloper ? (
-												<>
-													<div>
-														<p className="text-2xl font-bold text-blue-600">
-															{regularUser.assignedTasks?.length || 0}
-														</p>
-														<p className="text-xs text-muted-foreground">Tasks</p>
-													</div>
-													<div>
-														<p className="text-2xl font-bold text-green-600">
-															{/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-															{regularUser.assignedTasks?.filter((t: any) => t.status === 'COMPLETED').length || 0}
-														</p>
-														<p className="text-xs text-muted-foreground">Completed</p>
-													</div>
-												</>
-											) : (
-												<>
-													<div>
-														<p className="text-2xl font-bold text-blue-600">{regularUser.projects?.length || 0}</p>
-														<p className="text-xs text-muted-foreground">Projects</p>
-													</div>
-													<div>
-														<p className="text-2xl font-bold text-green-600">${regularUser.totalSpent || 0}</p>
-														<p className="text-xs text-muted-foreground">Total Spent</p>
-													</div>
-												</>
-											)
-										}
-									</div>
-								</div>
-							</CardContent>
-						</Card>
-					</div>
-					<div className="lg:w-2/3">
-						<Tabs defaultValue="profile" className="w-full">
-							<TabsList className="grid w-full grid-cols-2">
-								<TabsTrigger value="profile" className="flex items-center gap-2">
-									<User className="h-4 w-4" />
-									Profile
-								</TabsTrigger>
-								<TabsTrigger value="settings" className="flex items-center gap-2">
-									<Settings className="h-4 w-4" />
-									Settings
-								</TabsTrigger>
-							</TabsList>
-							<TabsContent value="profile" className="mt-2">
-								<Card>
-									<CardHeader>
-										<CardTitle>
-											{isPM ? "Company & Profile Information" : "Profile Information"}
-										</CardTitle>
-										<CardDescription>
-											{
-												isPM
-													? "Update your profile and company information"
-													: "Update your profile information and bio"
-											}
-										</CardDescription>
-									</CardHeader>
-									<CardContent>
-										{
-											isPM ? (
-												// eslint-disable-next-line @typescript-eslint/no-explicit-any
-												<PMProfileForm user={pmUser as any} />
-											) : (
-												<ProfileForm user={regularUser} />
-											)
-										}
-									</CardContent>
-								</Card>
-							</TabsContent>
-							<TabsContent value="settings" className="mt-6">
-								<Card>
-									<CardHeader>
-										<CardTitle>Account Settings</CardTitle>
-										<CardDescription>
-											Manage your account preferences and security settings
-										</CardDescription>
-									</CardHeader>
-									<CardContent>
-										<SettingsForm user={user} />
-									</CardContent>
-								</Card>
-							</TabsContent>
-						</Tabs>
-					</div>
-				</div>
-			</div>
-		</div>
-	)
+                <TabsContent value="overview" className="space-y-6">
+                    {/* Team Memberships */}
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Team Memberships</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            {userProfile.teamMemberships.length > 0 ? (
+                                <div className="space-y-4">
+                                    {userProfile.teamMemberships.map((membership) => {
+                                        const TeamIcon = TEAM_ICONS[membership.team.teamType] || Users
+                                        return (
+                                            <div key={membership.id} className="flex items-center justify-between p-4 border rounded-lg">
+                                                <div className="flex items-center gap-3">
+                                                    <div
+                                                        className="w-10 h-10 rounded-lg flex items-center justify-center"
+                                                        style={{
+                                                            backgroundColor: membership.team.color ? `${membership.team.color}20` : '#f1f5f9',
+                                                            color: membership.team.color || '#64748b'
+                                                        }}
+                                                    >
+                                                        <TeamIcon className="w-5 h-5" />
+                                                    </div>
+                                                    <div>
+                                                        <h3 className="font-medium">{membership.team.displayName}</h3>
+                                                        <p className="text-sm text-muted-foreground">
+                                                            Led by {membership.team.head?.name || 'No head assigned'}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                
+                                                <div className="flex items-center gap-2">
+                                                    <Badge variant="outline" className="capitalize">
+                                                        {membership.roleTitle}
+                                                    </Badge>
+                                                    <Badge variant="secondary">
+                                                        {membership.team.teamType.toLowerCase()}
+                                                    </Badge>
+                                                </div>
+                                            </div>
+                                        )
+                                    })}
+                                </div>
+                            ) : (
+                                <div className="text-center py-8 text-muted-foreground">
+                                    <Users className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                                    <p>You&apos;re not a member of any teams yet.</p>
+                                </div>
+                            )}
+                        </CardContent>
+                    </Card>
+                </TabsContent>
+
+                <TabsContent value="teams" className="space-y-6">
+                    {/* Teams I Lead */}
+                    {userProfile.role !== Role.CLIENT && userProfile.ledTeams.length > 0 && (
+                        <Card>
+                            <CardHeader>
+                                <CardTitle className="flex items-center gap-2">
+                                    <Shield className="w-5 h-5" />
+                                    Teams I Lead
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="space-y-4">
+                                    {userProfile.ledTeams.map((team) => {
+                                        const TeamIcon = TEAM_ICONS[team.teamType] || Users
+                                        return (
+                                            <Card key={team.id}>
+                                                <CardHeader>
+                                                    <div className="flex items-center justify-between">
+                                                        <div className="flex items-center gap-3">
+                                                            <div
+                                                                className="w-10 h-10 rounded-lg flex items-center justify-center"
+                                                                style={{
+                                                                    backgroundColor: team.color ? `${team.color}20` : '#f1f5f9',
+                                                                    color: team.color || '#64748b'
+                                                                }}
+                                                            >
+                                                                <TeamIcon className="w-5 h-5" />
+                                                            </div>
+                                                            <div>
+                                                                <h3 className="font-semibold">{team.displayName}</h3>
+                                                                <p className="text-sm text-muted-foreground">
+                                                                    {team.teamType.toLowerCase()} team
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                        
+                                                        <div className="flex items-center gap-4">
+                                                            <div className="text-center">
+                                                                <div className="text-lg font-semibold">{team._count.members}</div>
+                                                                <div className="text-xs text-muted-foreground">Members</div>
+                                                            </div>
+                                                            <div className="text-center">
+                                                                <div className="text-lg font-semibold">{team._count.assignedProjects}</div>
+                                                                <div className="text-xs text-muted-foreground">Projects</div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </CardHeader>
+                                                
+                                                <CardContent>
+                                                    <div className="space-y-3">
+                                                        <h4 className="text-sm font-medium">Team Members</h4>
+                                                        {team.members.length > 0 ? (
+                                                            <div className="grid gap-3 md:grid-cols-2">
+                                                                {team.members.map((member) => (
+                                                                    <div key={member.id} className="flex items-center gap-3">
+                                                                        <Avatar className="w-8 h-8">
+                                                                            <AvatarImage src={member.user.image || undefined} />
+                                                                            <AvatarFallback className="text-xs">
+                                                                                {member.user.name?.[0] || 'U'}
+                                                                            </AvatarFallback>
+                                                                        </Avatar>
+                                                                        <div className="flex-1">
+                                                                            <p className="text-sm font-medium">{member.user.name}</p>
+                                                                            <p className="text-xs text-muted-foreground">
+                                                                                {member.roleTitle}
+                                                                            </p>
+                                                                        </div>
+                                                                    </div>
+                                                                ))}
+                                                            </div>
+                                                        ) : (
+                                                            <p className="text-sm text-muted-foreground">No members yet</p>
+                                                        )}
+                                                    </div>
+                                                </CardContent>
+                                            </Card>
+                                        )
+                                    })}
+                                </div>
+                            </CardContent>
+                        </Card>
+                    )}
+
+                    {/* All Company Teams (for Company Owners) */}
+                    {userProfile.role === Role.COMPANY_OWNER && userProfile.ownedCompany && (
+                        <Card>
+                            <CardHeader>
+                                <CardTitle className="flex items-center justify-between">
+                                    <div className="flex items-center gap-2">
+                                        <Building2 className="w-5 h-5" />
+                                        Company Teams
+                                    </div>
+                                    <Button className="gap-2">
+                                        <Plus className="w-4 h-4" />
+                                        Add Team
+                                    </Button>
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                {userProfile.ownedCompany.teams.length > 0 ? (
+                                    <div className="space-y-4">
+                                        {userProfile.ownedCompany.teams.map((team) => {
+                                            const TeamIcon = TEAM_ICONS[team.teamType] || Users
+                                            return (
+                                                <div key={team.id} className="flex items-center justify-between p-4 border rounded-lg">
+                                                    <div className="flex items-center gap-3">
+                                                        <div
+                                                            className="w-10 h-10 rounded-lg flex items-center justify-center"
+                                                            style={{
+                                                                backgroundColor: team.color ? `${team.color}20` : '#f1f5f9',
+                                                                color: team.color || '#64748b'
+                                                            }}
+                                                        >
+                                                            <TeamIcon className="w-5 h-5" />
+                                                        </div>
+                                                        <div>
+                                                            <h3 className="font-medium">{team.displayName}</h3>
+                                                            <p className="text-sm text-muted-foreground">
+                                                                {team.head?.name ? `Led by ${team.head.name}` : 'No head assigned'}
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <div className="flex items-center gap-4">
+                                                        <div className="text-center">
+                                                            <div className="text-sm font-semibold">{team._count.members}</div>
+                                                            <div className="text-xs text-muted-foreground">Members</div>
+                                                        </div>
+                                                        <div className="text-center">
+                                                            <div className="text-sm font-semibold">{team._count.assignedProjects}</div>
+                                                            <div className="text-xs text-muted-foreground">Projects</div>
+                                                        </div>
+                                                        
+                                                        <DropdownMenu>
+                                                            <DropdownMenuTrigger asChild>
+                                                                <Button variant="ghost" size="sm">
+                                                                    <MoreVertical className="w-4 h-4" />
+                                                                </Button>
+                                                            </DropdownMenuTrigger>
+                                                            <DropdownMenuContent align="end">
+                                                                <DropdownMenuItem>
+                                                                    <Edit className="w-4 h-4 mr-2" />
+                                                                    Edit Team
+                                                                </DropdownMenuItem>
+                                                                <DropdownMenuItem>
+                                                                    <Users className="w-4 h-4 mr-2" />
+                                                                    Manage Members
+                                                                </DropdownMenuItem>
+                                                                <DropdownMenuSeparator />
+                                                                <DropdownMenuItem className="text-red-600">
+                                                                    <Trash2 className="w-4 h-4 mr-2" />
+                                                                    Delete Team
+                                                                </DropdownMenuItem>
+                                                            </DropdownMenuContent>
+                                                        </DropdownMenu>
+                                                    </div>
+                                                </div>
+                                            )
+                                        })}
+                                    </div>
+                                ) : (
+                                    <div className="text-center py-8 text-muted-foreground">
+                                        <Users className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                                        <p>No teams created yet.</p>
+                                        <Button className="mt-4 gap-2">
+                                            <Plus className="w-4 h-4" />
+                                            Create First Team
+                                        </Button>
+                                    </div>
+                                )}
+                            </CardContent>
+                        </Card>
+                    )}
+                </TabsContent>
+
+                <TabsContent value="company" className="space-y-6">
+                    {/* Company Information */}
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-2">
+                                <Building2 className="w-5 h-5" />
+                                Company Information
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            {userProfile.company || userProfile.ownedCompany ? (
+                                <div className="space-y-4">
+                                    <div className="grid gap-4 md:grid-cols-2">
+                                        <div>
+                                            <Label className="text-sm font-medium">Company Name</Label>
+                                            <p className="text-lg">
+                                                {userProfile.ownedCompany?.name || userProfile.company?.name}
+                                            </p>
+                                        </div>
+                                        
+                                        {(userProfile.ownedCompany?.website || userProfile.company?.website) && (
+                                            <div>
+                                                <Label className="text-sm font-medium">Website</Label>
+                                                <p className="text-lg">
+                                                    {userProfile.ownedCompany?.website || userProfile.company?.website}
+                                                </p>
+                                            </div>
+                                        )}
+                                        
+                                        <div>
+                                            <Label className="text-sm font-medium">Your Role</Label>
+                                            <Badge className={`${roleBadge.color}`}>
+                                                {userProfile.role === Role.COMPANY_OWNER ? 'Owner' : 'Employee'}
+                                            </Badge>
+                                        </div>
+                                        
+                                        {userProfile.company?.owner && (
+                                            <div>
+                                                <Label className="text-sm font-medium">Company Owner</Label>
+                                                <div className="flex items-center gap-2 mt-1">
+                                                    <Avatar className="w-6 h-6">
+                                                        <AvatarImage src={userProfile.company.owner.image || undefined} />
+                                                        <AvatarFallback className="text-xs">
+                                                            {userProfile.company.owner.name?.[0] || 'O'}
+                                                        </AvatarFallback>
+                                                    </Avatar>
+                                                    <span>{userProfile.company.owner.name}</span>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="text-center py-8 text-muted-foreground">
+                                    <Building2 className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                                    <p>No company information available.</p>
+                                </div>
+                            )}
+                        </CardContent>
+                    </Card>
+                </TabsContent>
+
+                <TabsContent value="settings" className="space-y-6">
+                    {/* Account Settings */}
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Account Settings</CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            <div className="grid gap-4 md:grid-cols-2">
+                                <div className="space-y-2">
+                                    <Label htmlFor="name">Display Name</Label>
+                                    <Input
+                                        id="name"
+                                        defaultValue={userProfile.name || ''}
+                                        placeholder="Enter your name"
+                                    />
+                                </div>
+                                
+                                <div className="space-y-2">
+                                    <Label htmlFor="email">Email</Label>
+                                    <Input
+                                        id="email"
+                                        type="email"
+                                        defaultValue={userProfile.email || ''}
+                                        disabled
+                                    />
+                                </div>
+                            </div>
+                            
+                            <div className="space-y-2">
+                                <Label htmlFor="bio">Bio</Label>
+                                <Textarea
+                                    id="bio"
+                                    placeholder="Tell us about yourself..."
+                                    rows={3}
+                                />
+                            </div>
+                            
+                            <div className="flex justify-end">
+                                <Button>Save Changes</Button>
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    {/* Danger Zone */}
+                    <Card className="border-red-200">
+                        <CardHeader>
+                            <CardTitle className="text-red-700">Danger Zone</CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            <div className="flex items-center justify-between p-4 border border-red-200 rounded-lg">
+                                <div>
+                                    <h3 className="font-medium text-red-700">Delete Account</h3>
+                                    <p className="text-sm text-red-600">
+                                        Permanently delete your account and all data.
+                                    </p>
+                                </div>
+                                <Button variant="destructive">
+                                    Delete Account
+                                </Button>
+                            </div>
+                        </CardContent>
+                    </Card>
+                </TabsContent>
+            </Tabs>
+        </div>
+    )
 }

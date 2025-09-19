@@ -25,13 +25,13 @@ export async function getClientCompanies() {
             include: {
                 user: {
                     include: {
-                        managedCompany: {
+                        ownedCompany: {
                             select: {
                                 id: true,
                                 name: true,
                                 shortName: true,
                                 logo: true,
-                                productManager: {
+                                owner: {
                                     select: {
                                         id: true,
                                         name: true,
@@ -56,7 +56,7 @@ export async function getClientCompanies() {
                 }
             },
             include: {
-                productManager: {
+                owner: {
                     select: {
                         id: true,
                         name: true,
@@ -74,7 +74,7 @@ export async function getClientCompanies() {
 
         // Extract unique companies from projects
         const projectCompanies = userProjects
-            .map(project => project.user.managedCompany)
+            .map(project => project.user.ownedCompany)
             .filter(company => company !== null)
             .reduce((unique: any[], company) => {
                 if (!unique.find((c: any) => c.id === company.id)) {
@@ -99,7 +99,7 @@ export async function getClientCompanies() {
                     where: {
                         userId: session.user.id,
                         user: {
-                            managedCompany: {
+                            ownedCompany: {
                                 id: company.id
                             }
                         }
@@ -108,6 +108,7 @@ export async function getClientCompanies() {
 
                 return {
                     ...company,
+                    productManager: company.owner, // Map owner to productManager for backward compatibility
                     projectCount,
                     _count: company._count || { users: 1 }
                 }
@@ -144,7 +145,7 @@ export async function getClientCompanyDetails(companyShortName: string) {
         const company = await prisma.company.findUnique({
             where: { shortName: companyShortName },
             include: {
-                productManager: {
+                owner: {
                     select: {
                         id: true,
                         name: true,
@@ -155,7 +156,9 @@ export async function getClientCompanyDetails(companyShortName: string) {
                 },
                 users: {
                     where: {
-                        role: Role.DEVELOPER
+                        role: {
+                            in: [Role.TEAM_MEMBER, Role.TEAM_HEAD]
+                        }
                     },
                     select: {
                         id: true,
@@ -196,7 +199,7 @@ export async function getClientCompanyDetails(companyShortName: string) {
             where: {
                 userId: session.user.id,
                 user: {
-                    managedCompany: {
+                    ownedCompany: {
                         id: company.id
                     }
                 }
@@ -248,6 +251,7 @@ export async function getClientCompanyDetails(companyShortName: string) {
             success: true,
             company: {
                 ...company,
+                productManager: company.owner, // Map owner to productManager for backward compatibility
                 projects: clientProjects
             }
         }

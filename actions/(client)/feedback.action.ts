@@ -35,7 +35,7 @@ export async function getProjectFeedback(projectSlug: string) {
             project.userId === session.user.id || // Client owns the project
             project.tasks.length > 0 || // Developer assigned to tasks
             project.members.length > 0 || // User is a member
-            session.user.role === Role.PRODUCTMANAGER // PM has access to all
+            session.user.role === Role.COMPANY_OWNER // Company owner has access to all
 
         if (!hasAccess) {
             throw new Error("Access denied to this project")
@@ -119,7 +119,7 @@ export async function createFeedback(data: {
             project.userId === session.user.id || // Client owns the project
             project.tasks.length > 0 || // Developer assigned to tasks
             project.members.length > 0 || // User is a member
-            session.user.role === Role.PRODUCTMANAGER // PM has access to all
+            session.user.role === Role.COMPANY_OWNER // Company owner has access to all
 
         if (!hasAccess) {
             throw new Error("Access denied to this project")
@@ -196,7 +196,7 @@ export async function updateFeedbackStatus(feedbackId: string, status: FeedbackS
             feedback.project.userId === session.user.id || // Client owns the project
             feedback.project.tasks.length > 0 || // Developer assigned to tasks
             feedback.project.members.length > 0 || // User is a member
-            session.user.role === Role.PRODUCTMANAGER // PM has access to all
+            session.user.role === Role.COMPANY_OWNER // Company owner has access to all
 
         if (!hasAccess) {
             throw new Error("Access denied to this feedback")

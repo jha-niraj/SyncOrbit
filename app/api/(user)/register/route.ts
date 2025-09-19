@@ -38,8 +38,8 @@ export async function POST(request: NextRequest) {
         }
 
         // Validate role if provided
-        const validRoles = ['CLIENT', 'DEVELOPER', 'PRODUCTMANAGER', 'ADMIN'];
-        let userRole = role && validRoles.includes(role) ? role : 'CLIENT';
+        const validRoles = [Role.CLIENT, Role.TEAM_MEMBER, Role.TEAM_HEAD, Role.COMPANY_OWNER, Role.ADMIN];
+        let userRole: Role = role && validRoles.includes(role as Role) ? role as Role : Role.CLIENT;
         let companyIdToUse = companyId;
 
         // Validate referral code if provided
@@ -92,8 +92,8 @@ export async function POST(request: NextRequest) {
             }
         }
 
-        // Special validation for PRODUCTMANAGER
-        if (userRole === 'PRODUCTMANAGER') {
+        // Special validation for COMPANY_OWNER
+        if (userRole === Role.COMPANY_OWNER) {
             if (!companyName || !companyShortName) {
                 return NextResponse.json(
                     { success: false, error: "Company name and short name are required for Product Manager registration" },
@@ -127,7 +127,7 @@ export async function POST(request: NextRequest) {
             hashedPassword,
             verifyToken: otp,
             verifyTokenExpiry: otpExpiry,
-            role: userRole as Role,
+            role: userRole,
             ...(referralCode && { referralCode }),
             ...(companyIdToUse && { companyId: companyIdToUse })
         };
@@ -166,8 +166,8 @@ export async function POST(request: NextRequest) {
             }
         }
 
-        // Handle company creation for Product Manager
-        if (userRole === 'PRODUCTMANAGER' && companyName && companyShortName) {
+        // Handle company creation for Company Owner
+        if (userRole === Role.COMPANY_OWNER && companyName && companyShortName) {
             try {
                 const companyResult = await createCompany(
                     {

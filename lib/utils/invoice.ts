@@ -1,5 +1,3 @@
-import { Project, User, Company } from "@prisma/client"
-
 export interface InvoiceItem {
   id: string
   description: string

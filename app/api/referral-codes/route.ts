@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { auth } from "@/auth"
 import { prisma } from "@/lib/prisma"
+import { Role } from "@prisma/client"
 
 export async function GET() {
     try {
@@ -13,10 +14,10 @@ export async function GET() {
             )
         }
 
-        // Only Product Managers can view referral codes
-        if (session.user.role !== "PRODUCTMANAGER") {
+        // Only Company Owners can view referral codes
+        if (session.user.role !== Role.COMPANY_OWNER) {
             return NextResponse.json(
-                { error: "Only Product Managers can view referral codes" },
+                { error: "Only Company Owners can view referral codes" },
                 { status: 403 }
             )
         }
@@ -24,19 +25,19 @@ export async function GET() {
         // Get user's company
         const user = await prisma.user.findUnique({
             where: { id: session.user.id },
-            include: { managedCompany: true }
+            include: { ownedCompany: true }
         })
 
-        if (!user?.managedCompany) {
+        if (!user?.ownedCompany) {
             return NextResponse.json(
-                { error: "Product Manager must be associated with a company" },
+                { error: "Company Owner must be associated with a company" },
                 { status: 400 }
             )
         }
 
         const referralCodes = await prisma.referralCode.findMany({
             where: {
-                companyId: user.managedCompany.id
+                companyId: user.ownedCompany.id
             },
             include: {
                 generatedBy: {
@@ -93,10 +94,10 @@ export async function DELETE(request: NextRequest) {
             )
         }
 
-        // Only Product Managers can delete referral codes
-        if (session.user.role !== "PRODUCTMANAGER") {
+        // Only Company Owners can delete referral codes
+        if (session.user.role !== Role.COMPANY_OWNER) {
             return NextResponse.json(
-                { error: "Only Product Managers can delete referral codes" },
+                { error: "Only Company Owners can delete referral codes" },
                 { status: 403 }
             )
         }

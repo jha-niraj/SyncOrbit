@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
+import { Role } from "@prisma/client";
 
 export async function GET() {
     try {
@@ -17,7 +18,7 @@ export async function GET() {
         const developers = await prisma.user.findMany({
             where: {
                 role: {
-                    in: ['DEVELOPER', 'PRODUCTMANAGER']
+                    in: [Role.TEAM_MEMBER, Role.TEAM_HEAD, Role.COMPANY_OWNER]
                 }
             },
             select: {

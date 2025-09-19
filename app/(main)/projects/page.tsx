@@ -1,430 +1,262 @@
-"use client"
-
-import { useState, useEffect } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Progress } from "@/components/ui/progress"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { auth } from "@/auth"
+import { getUserProjects } from "@/actions/projects.action"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import {
-    Select, SelectContent, SelectItem,
-    SelectTrigger, SelectValue
-} from "@/components/ui/select"
-import {
-    DollarSign, Users, Search, Filter, Plus, MoreVertical,
-    Eye, MessageSquare, BarChart3, Briefcase
+import { Badge } from "@/components/ui/badge"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Progress } from "@/components/ui/progress"
+import { 
+    Building2, Users, Calendar, DollarSign, Eye, EyeOff,
+    Code, Megaphone, ShoppingCart, Palette, Briefcase, Settings,
+    MessageSquare, FileText, CheckCircle, Clock, AlertCircle
 } from "lucide-react"
+import { ProjectVisibility, Status, TaskStatus, TeamType } from "@prisma/client"
+import { redirect } from "next/navigation"
 import Link from "next/link"
-import { motion } from "framer-motion"
-import { useSession } from "next-auth/react"
-import { Status, TaskStatus } from "@prisma/client"
-import { formatCurrency, getCurrencySymbol } from "@/store/useProjectStore"
-import { getUserProjects } from "@/actions/(client)/projects.action"
-import { toast } from "sonner"
-import { CreateProjectModal } from "@/components/create-project-modal"
-import { ProjectHealth } from "@/components/project-health"
-import { ProjectHealthData } from "@/lib/utils/healthScore"
-import { differenceInDays } from "date-fns"
+import { CreateProjectModal } from "@/components/projects/CreateProjectModal"
 
-interface TasksProps {
-    id: string
-    status: TaskStatus
-    assignedDeveloper?: {
-        id: string
-        name: string | null
-        image: string | null
-    } | null
-}
-interface ProjectData {
-    id: string
-    title: string
-    description: string | null
-    slug: string
-    status: Status
-    budget: number
-    paidAmount: number
-    currency: string
-    startDate: Date
-    endDate: Date | null
-    user: {
-        id: string
-        name: string | null
-        email: string | null
-        image: string | null
-        managedCompany?: {
-            name: string
-            shortName: string
-        } | null
-    }
-    tasks: TasksProps[]
-    members: Array<{
-        user: {
-            id: string
-            name: string | null
-            image: string | null
-            role: string
-        }
-    }>
-    _count: {
-        tasks: number
-        feedbacks: number
-        messages: number
-    }
+// Team type icon mapping
+const TEAM_ICONS = {
+    [TeamType.TECHNICAL]: Code,
+    [TeamType.MARKETING]: Megaphone,
+    [TeamType.SALES]: ShoppingCart,
+    [TeamType.DESIGN]: Palette,
+    [TeamType.OPERATIONS]: Settings,
+    [TeamType.FINANCE]: Briefcase,
+    [TeamType.CUSTOM]: Users,
 }
 
-export default function ProjectsPage() {
-    const { data: session } = useSession()
-    const [projects, setProjects] = useState<ProjectData[]>([])
-    const [searchTerm, setSearchTerm] = useState("")
-    const [statusFilter, setStatusFilter] = useState<string>("all")
-    const [isLoading, setIsLoading] = useState(true)
+// Status colors
+const STATUS_COLORS = {
+    [Status.IN_PROGRESS]: "bg-blue-500",
+    [Status.COMPLETED]: "bg-green-500",
+    [Status.ON_HOLD]: "bg-yellow-500",
+    [Status.CANCELLED]: "bg-red-500",
+}
 
-    useEffect(() => {
-        loadProjects()
-    }, [])
+// Status icons
+const STATUS_ICONS = {
+    [Status.IN_PROGRESS]: Clock,
+    [Status.COMPLETED]: CheckCircle,
+    [Status.ON_HOLD]: AlertCircle,
+    [Status.CANCELLED]: AlertCircle,
+}
 
-    const loadProjects = async () => {
-        try {
-            setIsLoading(true)
-            const result = await getUserProjects()
+function getTaskProgress(tasks: any[]) {
+    if (tasks.length === 0) return 0
+    const completedTasks = tasks.filter(task => task.status === TaskStatus.COMPLETED).length
+    return Math.round((completedTasks / tasks.length) * 100)
+}
 
-            if (result.success) {
-                setProjects(result.projects)
-            } else {
-                toast.error(result.error || "Failed to load projects")
-            }
-        } catch (error) {
-            console.error("Load projects error:", error)
-            toast.error("Failed to load projects")
-        } finally {
-            setIsLoading(false)
-        }
+function formatCurrency(amount: number, currency: string) {
+    const symbols: Record<string, string> = {
+        USD: '$',
+        INR: '₹',
+        NPR: 'Rs.'
+    }
+    return `${symbols[currency] || '$'}${amount.toLocaleString()}`
+}
+
+export default async function ProjectsPage() {
+    const session = await auth()
+    
+    if (!session?.user) {
+        redirect('/signin')
     }
 
-    // Calculate project progress
-    const getProjectProgress = (tasks: TasksProps[]) => {
-        if (!tasks || tasks.length === 0) return 0
-        const completed = tasks.filter(task => task.status === TaskStatus.COMPLETED).length
-        return Math.round((completed / tasks.length) * 100)
-    }
-
-    // Calculate payment progress
-    const getPaymentProgress = (paid: number, budget: number) => {
-        return Math.round((paid / budget) * 100)
-    }
-
-    // Get status color
-    const getStatusColor = (status: Status) => {
-        switch (status) {
-            case Status.IN_PROGRESS:
-                return "bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-800"
-            case Status.COMPLETED:
-                return "bg-green-50 text-green-700 border-green-200 dark:bg-green-900/20 dark:text-green-300 dark:border-green-800"
-            case Status.ON_HOLD:
-                return "bg-yellow-50 text-yellow-700 border-yellow-200 dark:bg-yellow-900/20 dark:text-yellow-300 dark:border-yellow-800"
-            case Status.CANCELLED:
-                return "bg-red-50 text-red-700 border-red-200 dark:bg-red-900/20 dark:text-red-300 dark:border-red-800"
-            default:
-                return "bg-gray-50 text-gray-700 border-gray-200 dark:bg-gray-900/20 dark:text-gray-300 dark:border-gray-800"
-        }
-    }
-
-    // Filter projects
-    const filteredProjects = projects.filter(project => {
-        const matchesSearch = project.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            (project.description && project.description.toLowerCase().includes(searchTerm.toLowerCase()))
-        const matchesStatus = statusFilter === "all" || project.status === statusFilter
-        return matchesSearch && matchesStatus
-    })
-
-    // Create health data for a project
-    const getProjectHealthData = (project: ProjectData): ProjectHealthData | null => {
-        try {
-            const yetToStartTasks = project.tasks?.filter(task => task.status === 'YET_TO_START').length || 0
-            const inProgressTasks = project.tasks?.filter(task => task.status === 'IN_PROGRESS').length || 0
-            const completedTasks = project.tasks?.filter(task => task.status === 'COMPLETED').length || 0
-            
-            const overdueTasksCount = project.endDate && new Date() > new Date(project.endDate) 
-                ? yetToStartTasks + inProgressTasks 
-                : 0
-            
-            return {
-                id: project.id,
-                title: project.title,
-                startDate: new Date(project.startDate),
-                endDate: project.endDate ? new Date(project.endDate) : null,
-                status: project.status,
-                budget: project.budget,
-                paidAmount: project.paidAmount || 0,
-                tasks: {
-                    total: project.tasks.length,
-                    completed: completedTasks,
-                    inProgress: inProgressTasks,
-                    yetToStart: yetToStartTasks,
-                    overdue: overdueTasksCount
-                },
-                timeline: {
-                    totalDuration: project.endDate 
-                        ? differenceInDays(new Date(project.endDate), new Date(project.startDate))
-                        : 0,
-                    elapsed: differenceInDays(new Date(), new Date(project.startDate)),
-                    remaining: project.endDate 
-                        ? Math.max(0, differenceInDays(new Date(project.endDate), new Date()))
-                        : 0
-                },
-                feedback: project._count.feedbacks > 0 ? {
-                    averageRating: 3.5, // Default since we don't have rating data in listing
-                    totalFeedbacks: project._count.feedbacks
-                } : undefined,
-                budgetUtilization: (project.paidAmount || 0) / project.budget * 100
-            }
-        } catch (error) {
-            console.error('Error preparing health data:', error)
-            return null
-        }
-    }
-
-    const renderProjectCard = (project: ProjectData) => {
-        const progress = getProjectProgress(project.tasks)
-        const paymentProgress = getPaymentProgress(project.paidAmount, project.budget)
-        const healthData = getProjectHealthData(project)
-
-        // Get team members from project members
-        const teamMembers = project.members.map(member => ({
-            id: member.user.id,
-            name: member.user.name || "Unknown",
-            image: member.user.image || "/placeholder.svg"
-        }))
-
+    const result = await getUserProjects()
+    
+    if (!result.success) {
         return (
-            <motion.div
-                key={project.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3 }}
-                className="group"
-            >
-                <Card className="h-full hover:shadow-lg transition-all duration-300 border-border/50 bg-background/50 backdrop-blur-sm">
-                    <CardHeader className="pb-3">
-                        <div className="flex items-start justify-between">
-                            <div className="space-y-2 flex-1">
-                                <div className="flex items-center gap-2">
-                                    <CardTitle className="text-lg font-semibold text-foreground group-hover:text-primary transition-colors">
-                                        {project.title}
-                                    </CardTitle>
-                                    <Badge className={`${getStatusColor(project.status)} border text-xs`}>
-                                        {project.status.replace('_', ' ')}
-                                    </Badge>
-                                </div>
-                                <CardDescription className="text-sm text-muted-foreground line-clamp-2">
-                                    {project.description || "No description available"}
-                                </CardDescription>
-                            </div>
-                            <Button variant="ghost" size="sm" className="opacity-0 group-hover:opacity-100 transition-opacity">
-                                <MoreVertical className="h-4 w-4" />
-                            </Button>
-                        </div>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                        <div className="space-y-3">
-                            <div className="flex justify-between items-center">
-                                <span className="text-sm font-medium text-foreground">Project Progress</span>
-                                <span className="text-sm text-muted-foreground">{progress}%</span>
-                            </div>
-                            <Progress value={progress} className="h-2" />
-
-                            <div className="flex justify-between items-center">
-                                <span className="text-sm font-medium text-foreground">Payment Progress</span>
-                                <span className="text-sm text-muted-foreground">{paymentProgress}%</span>
-                            </div>
-                            <Progress value={paymentProgress} className="h-2" />
-                        </div>
-                        
-                        {/* Project Health Score */}
-                        {healthData && (
-                            <div className="flex items-center justify-between p-2 bg-muted/30 rounded-lg">
-                                <span className="text-sm font-medium text-foreground">Health Score</span>
-                                <ProjectHealth data={healthData} variant="compact" />
-                            </div>
-                        )}
-                        
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="flex items-center gap-2">
-                                <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
-                                    <DollarSign className="h-4 w-4 text-primary" />
-                                </div>
-                                <div className="min-w-0 flex-1">
-                                    <p className="text-xs text-muted-foreground">Budget</p>
-                                    <p className="text-sm font-semibold text-foreground truncate">
-                                        {getCurrencySymbol(project.currency)}{formatCurrency(project.budget, project.currency)}
-                                    </p>
-                                </div>
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
-                                    <Users className="h-4 w-4 text-primary" />
-                                </div>
-                                <div className="min-w-0 flex-1">
-                                    <p className="text-xs text-muted-foreground">Team</p>
-                                    <p className="text-sm font-semibold text-foreground">
-                                        {teamMembers.length} members
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2">
-                                <span className="text-sm font-medium text-foreground">Team:</span>
-                                <div className="flex -space-x-2">
-                                    {
-                                        teamMembers.slice(0, 3).map((member) => (
-                                            <Avatar key={member.id} className="h-6 w-6 border-2 border-background">
-                                                <AvatarImage src={member.image} alt={member.name} />
-                                                <AvatarFallback className="text-xs">
-                                                    {member.name.split(' ').map((n: string) => n[0]).join('')}
-                                                </AvatarFallback>
-                                            </Avatar>
-                                        ))
-                                    }
-                                    {
-                                        teamMembers.length > 3 && (
-                                            <div className="h-6 w-6 bg-muted border-2 border-background rounded-full flex items-center justify-center">
-                                                <span className="text-xs text-muted-foreground">
-                                                    +{teamMembers.length - 3}
-                                                </span>
-                                            </div>
-                                        )
-                                    }
-                                </div>
-                            </div>
-                            <div className="flex items-center gap-1">
-                                <Button variant="ghost" size="sm" asChild>
-                                    <Link href={`/projects/${project.slug}/chat`}>
-                                        <MessageSquare className="h-4 w-4" />
-                                    </Link>
-                                </Button>
-                                <Button variant="ghost" size="sm" asChild>
-                                    <Link href={`/projects/${project.slug}/feedback`}>
-                                        <BarChart3 className="h-4 w-4" />
-                                    </Link>
-                                </Button>
-                                <Button variant="ghost" size="sm" asChild>
-                                    <Link href={`/projects/${project.slug}`}>
-                                        <Eye className="h-4 w-4" />
-                                    </Link>
-                                </Button>
-                            </div>
-                        </div>
-                        <Button asChild className="w-full mt-4">
-                            <Link href={`/projects/${project.slug}`}>
-                                View Project Details
-                            </Link>
-                        </Button>
+            <div className="container mx-auto py-8">
+                <Card>
+                    <CardContent className="py-8 text-center">
+                        <p className="text-muted-foreground">Failed to load projects</p>
+                        <p className="text-sm text-muted-foreground mt-2">
+                            {result.error}
+                        </p>
                     </CardContent>
                 </Card>
-            </motion.div>
+            </div>
         )
     }
 
+    const { projects } = result
+
     return (
-        <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 p-6">
-            <div className="max-w-7xl mx-auto space-y-6">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                    <div>
-                        <h1 className="text-3xl font-bold text-foreground">Projects</h1>
-                        <p className="text-muted-foreground">
-                            Manage and track your project progress
-                        </p>
-                    </div>
-                    {
-                        session?.user?.role !== 'CLIENT' && (
-                            <CreateProjectModal onSuccess={loadProjects} />
-                        )
+        <div className="container mx-auto py-8">
+            {/* Header */}
+            <div className="flex items-center justify-between mb-8">
+                <div>
+                    <h1 className="text-3xl font-bold">My Projects</h1>
+                    <p className="text-muted-foreground mt-1">
+                        Manage your assigned projects and collaborate with your teams
+                    </p>
+                </div>
+                
+                <CreateProjectModal 
+                    trigger={
+                        <Button className="gap-2">
+                            <Building2 className="w-4 h-4" />
+                            New Project
+                        </Button>
                     }
-                </div>
-                <div className="flex flex-col sm:flex-row gap-4">
-                    <div className="relative flex-1">
-                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                        <Input
-                            placeholder="Search projects..."
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                            className="pl-10"
-                        />
-                    </div>
-                    <Select value={statusFilter} onValueChange={setStatusFilter}>
-                        <SelectTrigger className="w-full sm:w-48">
-                            <Filter className="h-4 w-4 mr-2" />
-                            <SelectValue placeholder="Filter by status" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="all">All Projects</SelectItem>
-                            <SelectItem value="IN_PROGRESS">In Progress</SelectItem>
-                            <SelectItem value="COMPLETED">Completed</SelectItem>
-                            <SelectItem value="ON_HOLD">On Hold</SelectItem>
-                            <SelectItem value="CANCELLED">Cancelled</SelectItem>
-                        </SelectContent>
-                    </Select>
-                </div>
-                {
-                    isLoading ? (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {
-                                [1, 2, 3, 4, 5, 6].map((i) => (
-                                    <Card key={i} className="h-80">
-                                        <CardHeader className="space-y-2">
-                                            <div className="h-4 bg-muted rounded animate-pulse" />
-                                            <div className="h-3 bg-muted rounded animate-pulse w-3/4" />
-                                        </CardHeader>
-                                        <CardContent className="space-y-4">
-                                            <div className="space-y-2">
-                                                <div className="h-2 bg-muted rounded animate-pulse" />
-                                                <div className="h-2 bg-muted rounded animate-pulse" />
-                                            </div>
-                                            <div className="grid grid-cols-2 gap-4">
-                                                <div className="h-12 bg-muted rounded animate-pulse" />
-                                                <div className="h-12 bg-muted rounded animate-pulse" />
-                                            </div>
-                                        </CardContent>
-                                    </Card>
-                                ))
-                            }
-                        </div>
-                    ) : filteredProjects.length > 0 ? (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {filteredProjects.map(renderProjectCard)}
-                        </div>
-                    ) : (
-                        <div className="text-center py-12">
-                            <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
-                                <Briefcase className="h-8 w-8 text-muted-foreground" />
-                            </div>
-                            <h3 className="text-lg font-semibold text-foreground mb-2">No projects found</h3>
-                            <p className="text-muted-foreground mb-4">
-                                {
-                                    searchTerm || statusFilter !== "all"
-                                        ? "Try adjusting your search criteria"
-                                        : "Get started by creating your first project"
-                                }
-                            </p>
-                            {
-                                session?.user?.role !== 'CLIENT' && (
-                                    <CreateProjectModal 
-                                        onSuccess={loadProjects}
-                                        trigger={
-                                            <Button>
-                                                <Plus className="h-4 w-4 mr-2" />
-                                                Create Project
-                                            </Button>
-                                        }
-                                    />
-                                )
-                            }
-                        </div>
-                    )
-                }
+                />
             </div>
+
+            {/* Projects Grid */}
+            {projects.length === 0 ? (
+                <Card className="text-center py-12">
+                    <CardContent>
+                        <Building2 className="w-16 h-16 mx-auto text-muted-foreground mb-4 opacity-50" />
+                        <h3 className="text-lg font-semibold mb-2">No projects found</h3>
+                        <p className="text-muted-foreground mb-4">
+                            You haven&apos;t been assigned to any projects yet, or there are no projects created.
+                        </p>
+                        <CreateProjectModal 
+                            trigger={
+                                <Button className="gap-2">
+                                    <Building2 className="w-4 h-4" />
+                                    Create First Project
+                                </Button>
+                            }
+                        />
+                    </CardContent>
+                </Card>
+            ) : (
+                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                    {projects.map((project) => {
+                        const progress = getTaskProgress(project.tasks)
+                        const StatusIcon = STATUS_ICONS[project.status]
+                        
+                        return (
+                            <Card key={project.id} className="group hover:shadow-lg transition-shadow">
+                                <CardHeader className="pb-4">
+                                    <div className="flex items-start justify-between">
+                                        <div className="flex-1">
+                                            <div className="flex items-center gap-2 mb-2">
+                                                <CardTitle className="text-lg line-clamp-1">
+                                                    {project.title}
+                                                </CardTitle>
+                                                {project.visibility === ProjectVisibility.PRIVATE && (
+                                                    <EyeOff className="w-4 h-4 text-muted-foreground" />
+                                                )}
+                                            </div>
+                                            
+                                            {project.description && (
+                                                <p className="text-sm text-muted-foreground line-clamp-2 mb-3">
+                                                    {project.description}
+                                                </p>
+                                            )}
+                                            
+                                            <div className="flex items-center gap-2">
+                                                <div className={`w-2 h-2 rounded-full ${STATUS_COLORS[project.status]}`} />
+                                                <span className="text-sm font-medium capitalize">
+                                                    {project.status.toLowerCase().replace('_', ' ')}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </CardHeader>
+                                
+                                <CardContent className="pt-0 space-y-4">
+                                    {/* Client Info */}
+                                    <div className="flex items-center gap-2">
+                                        <Avatar className="w-6 h-6">
+                                            <AvatarImage src={project.user.image || undefined} />
+                                            <AvatarFallback className="text-xs">
+                                                {project.user.name?.[0] || project.user.email?.[0] || 'C'}
+                                            </AvatarFallback>
+                                        </Avatar>
+                                        <span className="text-sm text-muted-foreground">
+                                            {project.user.name || project.user.email}
+                                        </span>
+                                    </div>
+
+                                    {/* Budget */}
+                                    <div className="flex items-center gap-2">
+                                        <DollarSign className="w-4 h-4 text-muted-foreground" />
+                                        <span className="text-sm font-medium">
+                                            {formatCurrency(project.budget, project.currency)}
+                                        </span>
+                                    </div>
+
+                                    {/* Progress */}
+                                    <div className="space-y-2">
+                                        <div className="flex items-center justify-between text-sm">
+                                            <span className="text-muted-foreground">Progress</span>
+                                            <span className="font-medium">{progress}%</span>
+                                        </div>
+                                        <Progress value={progress} className="h-2" />
+                                    </div>
+
+                                    {/* Assigned Teams */}
+                                    <div className="space-y-2">
+                                        <p className="text-sm text-muted-foreground">Teams</p>
+                                        <div className="flex flex-wrap gap-2">
+                                            {project.assignedTeams?.slice(0, 3).map((assignment) => {
+                                                const IconComponent = TEAM_ICONS[assignment.team.teamType] || Users
+                                                return (
+                                                    <div
+                                                        key={assignment.id}
+                                                        className="flex items-center gap-1 px-2 py-1 rounded-md bg-muted text-xs"
+                                                        style={{
+                                                            backgroundColor: assignment.team.color ? `${assignment.team.color}15` : undefined,
+                                                            color: assignment.team.color || undefined
+                                                        }}
+                                                    >
+                                                        <IconComponent className="w-3 h-3" />
+                                                        <span>{assignment.team.displayName}</span>
+                                                    </div>
+                                                )
+                                            })}
+                                            {project.assignedTeams && project.assignedTeams.length > 3 && (
+                                                <Badge variant="secondary" className="text-xs">
+                                                    +{project.assignedTeams.length - 3} more
+                                                </Badge>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    {/* Stats */}
+                                    <div className="grid grid-cols-3 gap-4 pt-2 border-t">
+                                        <div className="text-center">
+                                            <div className="flex items-center justify-center mb-1">
+                                                <FileText className="w-4 h-4 text-muted-foreground" />
+                                            </div>
+                                            <p className="text-sm font-medium">{project._count?.tasks || 0}</p>
+                                            <p className="text-xs text-muted-foreground">Tasks</p>
+                                        </div>
+                                        <div className="text-center">
+                                            <div className="flex items-center justify-center mb-1">
+                                                <MessageSquare className="w-4 h-4 text-muted-foreground" />
+                                            </div>
+                                            <p className="text-sm font-medium">{project._count?.messages || 0}</p>
+                                            <p className="text-xs text-muted-foreground">Messages</p>
+                                        </div>
+                                        <div className="text-center">
+                                            <div className="flex items-center justify-center mb-1">
+                                                <Users className="w-4 h-4 text-muted-foreground" />
+                                            </div>
+                                            <p className="text-sm font-medium">{project.members?.length || 0}</p>
+                                            <p className="text-xs text-muted-foreground">Members</p>
+                                        </div>
+                                    </div>
+
+                                    {/* Action Button */}
+                                    <div className="pt-2">
+                                        <Link href={`/projects/${project.slug}`} className="w-full">
+                                            <Button variant="outline" className="w-full" size="sm">
+                                                View Project
+                                            </Button>
+                                        </Link>
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        )
+                    })}
+                </div>
+            )}
         </div>
     )
 }

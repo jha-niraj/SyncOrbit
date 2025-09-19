@@ -4,7 +4,7 @@ import { auth } from "@/auth"
 import { prisma } from "@/lib/prisma"
 import { Role } from "@prisma/client"
 
-// Get team members for Product Managers
+// Get team members for Company Owners
 export async function getTeamMembers() {
     try {
         const session = await auth()
@@ -12,18 +12,18 @@ export async function getTeamMembers() {
             throw new Error("Unauthorized")
         }
 
-        // Only Product Managers can access team data
-        if (session.user.role !== Role.PRODUCTMANAGER) {
-            throw new Error("Only Product Managers can access team data")
+        // Only Company Owners can access team data
+        if (session.user.role !== Role.COMPANY_OWNER) {
+            throw new Error("Only Company Owners can access team data")
         }
 
         const user = await prisma.user.findUnique({
             where: { id: session.user.id },
-            include: { managedCompany: true }
+            include: { ownedCompany: true }
         })
 
-        if (!user?.managedCompany) {
-            throw new Error("Product Manager must be associated with a company")
+        if (!user?.ownedCompany) {
+            throw new Error("Company Owner must be associated with a company")
         }
 
         // Get all team members (developers and clients)
@@ -31,15 +31,15 @@ export async function getTeamMembers() {
             where: {
                 OR: [
                     // Users who are members of the company
-                    { companyId: user.managedCompany.id },
-                    // Clients who have projects managed by this PM
+                    { companyId: user.ownedCompany.id },
+                    // Clients who have projects managed by this Owner
                     {
                         role: Role.CLIENT,
                         projects: {
                             some: {
                                 user: {
-                                    managedCompany: {
-                                        id: user.managedCompany.id
+                                    ownedCompany: {
+                                        id: user.ownedCompany.id
                                     }
                                 }
                             }
@@ -62,8 +62,8 @@ export async function getTeamMembers() {
                 projects: {
                     where: {
                         user: {
-                            managedCompany: {
-                                id: user.managedCompany.id
+                            ownedCompany: {
+                                id: user.ownedCompany.id
                             }
                         }
                     },
@@ -133,7 +133,7 @@ export async function getTeamMembers() {
         return {
             success: true,
             teamMembers: teamMembersWithStats,
-            company: user.managedCompany
+            company: user.ownedCompany
         }
     } catch (error) {
         console.error("Get team members error:", error)
@@ -154,18 +154,18 @@ export async function getDeveloperDetails(developerId: string) {
             throw new Error("Unauthorized")
         }
 
-        // Only Product Managers can access detailed developer data
-        if (session.user.role !== Role.PRODUCTMANAGER) {
-            throw new Error("Only Product Managers can access this data")
+        // Only Company Owners can access detailed developer data
+        if (session.user.role !== Role.COMPANY_OWNER) {
+            throw new Error("Only Company Owners can access this data")
         }
 
         const user = await prisma.user.findUnique({
             where: { id: session.user.id },
-            include: { managedCompany: true }
+            include: { ownedCompany: true }
         })
 
-        if (!user?.managedCompany) {
-            throw new Error("Product Manager must be associated with a company")
+        if (!user?.ownedCompany) {
+            throw new Error("Company Owner must be associated with a company")
         }
 
         // Get developer details
@@ -221,8 +221,8 @@ export async function getDeveloperDetails(developerId: string) {
             throw new Error("Developer not found")
         }
 
-        // Verify the developer is part of this PM's team
-        const isTeamMember = developer.companyId === user.managedCompany.id ||
+        // Verify the developer is part of this Owner's team
+        const isTeamMember = developer.companyId === user.ownedCompany.id ||
                            developer.assignedTasks.some(task => 
                                task.project.user.id === session.user.id
                            )

@@ -1,17 +1,18 @@
 // Role settings related types and interfaces
+import { Role } from '@prisma/client'
 
 export interface UserWithRole {
     id: string
     name: string
     email: string
     image?: string
-    role: 'DEVELOPER' | 'PRODUCTMANAGER' | 'CLIENT' | 'ADMIN'
-    userRole?: 'BASIC_DEVELOPER' | 'PROJECT_CREATOR' | 'SENIOR_DEVELOPER' | 'TEAM_LEAD'
+    role: Role
+    userRole?: Role
     projects?: any[]
     assignedTasks?: any[]
 }
 
 export interface RoleUpdateData {
     userId: string
-    userRole: 'BASIC_DEVELOPER' | 'PROJECT_CREATOR' | 'SENIOR_DEVELOPER' | 'TEAM_LEAD'
+    userRole: Role
 }

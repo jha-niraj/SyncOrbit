@@ -78,9 +78,26 @@ export async function createProject(data: CreateProjectInput) {
             throw new Error("Unauthorized")
         }
 
-        // Only Product Managers and Developers can create projects
-        if (session.user.role !== Role.PRODUCTMANAGER && session.user.role !== Role.DEVELOPER) {
-            throw new Error("Only Product Managers and Developers can create projects")
+        // Only Company Owners and Team Heads can create projects
+        if (session.user.role !== Role.COMPANY_OWNER && session.user.role !== Role.TEAM_HEAD) {
+            throw new Error("Only Company Owners and Team Heads can create projects")
+        }
+
+        // Get user with company info
+        const userWithCompany = await prisma.user.findUnique({
+            where: { id: session.user.id },
+            include: { company: true, ownedCompany: true }
+        })
+
+        if (!userWithCompany) {
+            throw new Error("User not found")
+        }
+
+        // Determine company ID
+        const companyId = userWithCompany.ownedCompany?.id || userWithCompany.companyId
+        
+        if (!companyId) {
+            throw new Error("User must be associated with a company to create projects")
         }
 
         // Validate input data
@@ -145,7 +162,8 @@ export async function createProject(data: CreateProjectInput) {
                 githubUrl: validatedData.githubUrl || null,
                 documentsUrl: validatedData.documentsUrl || null,
                 otherLinks: validatedData.otherLinks || null,
-                userId: clientUserId
+                userId: clientUserId,
+                companyId: companyId
             },
             include: {
                 user: {
@@ -165,7 +183,7 @@ export async function createProject(data: CreateProjectInput) {
                 data: {
                     userId: session.user.id,
                     projectId: project.id,
-                    role: session.user.role === Role.PRODUCTMANAGER ? "MANAGER" : "DEVELOPER",
+                    role: session.user.role === Role.COMPANY_OWNER ? "MANAGER" : "DEVELOPER",
                     addedById: session.user.id
                 }
             })
@@ -240,7 +258,7 @@ export async function getUserProjects() {
                             name: true,
                             email: true,
                             image: true,
-                            managedCompany: {
+                            ownedCompany: {
                                 select: {
                                     name: true,
                                     shortName: true
@@ -285,24 +303,20 @@ export async function getUserProjects() {
                     createdAt: 'desc'
                 }
             })
-        } else if (session.user.role === Role.PRODUCTMANAGER) {
-            // Get projects from the PM's managed company
+        } else if (session.user.role === Role.COMPANY_OWNER) {
+            // Get projects from the company owner's company
             const user = await prisma.user.findUnique({
                 where: { id: session.user.id },
-                include: { managedCompany: true }
+                include: { ownedCompany: true }
             })
 
-            if (!user?.managedCompany) {
-                throw new Error("Product Manager must be associated with a company")
+            if (!user?.ownedCompany) {
+                throw new Error("Company Owner must be associated with a company")
             }
 
             projects = await prisma.project.findMany({
                 where: {
-                    user: {
-                        managedCompany: {
-                            id: user.managedCompany.id
-                        }
-                    }
+                    companyId: user.ownedCompany.id
                 },
                 include: {
                     user: {
@@ -350,7 +364,7 @@ export async function getUserProjects() {
                     createdAt: 'desc'
                 }
             })
-        } else if (session.user.role === Role.DEVELOPER) {
+        } else if (session.user.role === Role.TEAM_MEMBER || session.user.role === Role.TEAM_HEAD) {
             // Get projects where user is assigned or is a member
             projects = await prisma.project.findMany({
                 where: {
@@ -450,7 +464,7 @@ export async function getProjectBySlug(slug: string) {
                         name: true,
                         email: true,
                         image: true,
-                        managedCompany: {
+                        ownedCompany: {
                             select: {
                                 name: true,
                                 shortName: true
@@ -532,7 +546,7 @@ export async function getProjectBySlug(slug: string) {
             (project.tasks && project.tasks.some((task: any) => task.assignedDeveloperId === session.user.id)) || // Developer assigned to tasks
             (project.members && project.members.some((member: any) => member.userId === session.user.id)) // User is a member
 
-        if (!hasAccess && session.user.role !== Role.PRODUCTMANAGER) {
+        if (!hasAccess && session.user.role !== Role.COMPANY_OWNER && session.user.role !== Role.TEAM_HEAD) {
             throw new Error("Access denied to this project")
         }
 

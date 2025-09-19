@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
+import { Role } from "@prisma/client";
 
 const createProjectSchema = z.object({
     title: z.string().min(1).max(200),
@@ -42,12 +43,19 @@ export async function POST(req: NextRequest) {
         const client = await prisma.user.findFirst({
             where: {
                 id: validatedData.clientId,
-                role: 'CLIENT'
+                role: Role.CLIENT
+            },
+            include: {
+                company: true
             }
         });
 
         if (!client) {
             return NextResponse.json({ error: "Client not found" }, { status: 404 });
+        }
+
+        if (!client.companyId) {
+            return NextResponse.json({ error: "Client must be associated with a company" }, { status: 400 });
         }
 
         // Check if slug is unique
@@ -64,7 +72,7 @@ export async function POST(req: NextRequest) {
             const developers = await prisma.user.findMany({
                 where: {
                     id: { in: validatedData.developerIds },
-                    role: { in: ['DEVELOPER', 'PRODUCTMANAGER'] }
+                    role: { in: [Role.TEAM_MEMBER, Role.TEAM_HEAD, Role.COMPANY_OWNER] }
                 }
             });
 
@@ -80,6 +88,7 @@ export async function POST(req: NextRequest) {
                 description: validatedData.description || '',
                 slug: validatedData.slug,
                 userId: validatedData.clientId,
+                companyId: client.companyId,
                 clientType: validatedData.clientType,
                 budget: validatedData.budget,
                 currency: validatedData.currency,

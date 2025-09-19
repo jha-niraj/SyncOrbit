@@ -12,9 +12,9 @@ export async function getAnalyticsData() {
             throw new Error("Unauthorized")
         }
 
-        // Only allow PMs and Developers to access analytics
+        // Only allow company members (not clients) to access analytics
         if (session.user.role === Role.CLIENT) {
-            throw new Error("Analytics access is restricted to Product Managers and Developers")
+            throw new Error("Analytics access is restricted to company members")
         }
 
         // Get overview stats
@@ -32,11 +32,11 @@ export async function getAnalyticsData() {
         })
         const totalRevenue = projects.reduce((sum, project) => sum + project.paidAmount, 0)
 
-        // Get team members count
+        // Get team members count (excluding clients)
         const teamMembers = await prisma.user.count({
             where: {
                 role: {
-                    in: [Role.DEVELOPER, Role.PRODUCTMANAGER]
+                    in: [Role.COMPANY_OWNER, Role.TEAM_HEAD, Role.TEAM_MEMBER]
                 }
             }
         })
@@ -56,8 +56,12 @@ export async function getAnalyticsData() {
         })
 
         // Get team performance data
-        const developers = await prisma.user.findMany({
-            where: { role: Role.DEVELOPER },
+        const performanceData = await prisma.user.findMany({
+            where: { 
+                role: {
+                    in: [Role.TEAM_MEMBER, Role.TEAM_HEAD]
+                }
+            },
             include: {
                 assignedTasks: {
                     where: { status: "COMPLETED" },
@@ -70,13 +74,13 @@ export async function getAnalyticsData() {
             }
         })
 
-        const teamPerformance = developers.map(dev => ({
-            id: dev.id,
-            name: dev.name || "Unknown",
-            email: dev.email,
-            image: dev.image,
-            projectsCompleted: dev.projects.length,
-            tasksCompleted: dev.assignedTasks.length,
+        const teamPerformance = performanceData.map(member => ({
+            id: member.id,
+            name: member.name || "Unknown",
+            email: member.email,
+            image: member.image,
+            projectsCompleted: member.projects.length,
+            tasksCompleted: member.assignedTasks.length,
             rating: Math.random() * 0.5 + 4.5, // Mock rating for now
             efficiency: Math.floor(Math.random() * 20 + 80) // Mock efficiency for now
         }))

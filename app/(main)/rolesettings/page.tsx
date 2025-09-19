@@ -10,33 +10,39 @@ import { motion } from "framer-motion"
 import { Users, Settings, UserCheck, Clock, Briefcase } from "lucide-react"
 import { getUsersByCompany, updateUserRole } from "@/actions/(productmanager)/user-role.action"
 import { useSession } from "next-auth/react"
-import { UserRole } from "@prisma/client"
+import { Role } from "@prisma/client"
 import { UserWithRole } from "@/types/role-settings"
 
 const roleOptions = [
     {
-        value: "BASIC_DEVELOPER",
-        label: "Basic Developer",
-        description: "Can view projects and tasks",
+        value: "CLIENT",
+        label: "Client",
+        description: "External client access",
         color: "bg-gray-100 text-gray-800 border-gray-200"
     },
     {
-        value: "PROJECT_CREATOR",
-        label: "Project Creator",
-        description: "Can create projects and onboard clients",
-        color: "bg-blue-100 text-blue-800 border-blue-200"
-    },
-    {
-        value: "SENIOR_DEVELOPER",
-        label: "Senior Developer",
-        description: "Full development access",
+        value: "TEAM_MEMBER",
+        label: "Team Member",
+        description: "Regular team member",
         color: "bg-green-100 text-green-800 border-green-200"
     },
     {
-        value: "TEAM_LEAD",
-        label: "Team Lead",
-        description: "Team management access",
+        value: "TEAM_HEAD",
+        label: "Team Head",
+        description: "Head of any department",
+        color: "bg-blue-100 text-blue-800 border-blue-200"
+    },
+    {
+        value: "COMPANY_OWNER",
+        label: "Company Owner",
+        description: "Full company access",
         color: "bg-purple-100 text-purple-800 border-purple-200"
+    },
+    {
+        value: "ADMIN",
+        label: "Admin",
+        description: "Super admin access",
+        color: "bg-red-100 text-red-800 border-red-200"
     }
 ]
 
@@ -66,7 +72,7 @@ export default function RoleSettingsPage() {
         }
     }
 
-    const handleRoleUpdate = async (userId: string, newRole: UserRole) => {
+    const handleRoleUpdate = async (userId: string, newRole: Role) => {
         setUpdating(userId)
         try {
             const result = await updateUserRole(userId, newRole)
@@ -90,12 +96,12 @@ export default function RoleSettingsPage() {
         }
     }
 
-    const getRoleInfo = (userRole: UserRole | null) => {
-        if (!userRole) return roleOptions[0] // Default to BASIC_DEVELOPER
+    const getRoleInfo = (userRole: Role | null) => {
+        if (!userRole) return roleOptions[0] // Default to CLIENT
         return roleOptions.find(role => role.value === userRole) || roleOptions[0]
     }
 
-    if (session?.user?.role !== "PRODUCTMANAGER") {
+    if (session?.user?.role !== "COMPANY_OWNER" && session?.user?.role !== "ADMIN") {
         return (
             <div className="flex items-center justify-center min-h-[400px]">
                 <Card className="w-96">
@@ -104,7 +110,7 @@ export default function RoleSettingsPage() {
                         <div className="text-center">
                             <h3 className="text-lg font-semibold">Access Denied</h3>
                             <p className="text-sm text-muted-foreground">
-                                Only Product Managers can access role settings
+                                Only Company Owners and Admins can access role settings
                             </p>
                         </div>
                     </CardContent>
@@ -159,7 +165,7 @@ export default function RoleSettingsPage() {
                     <div className="space-y-4">
                         {
                             developers.map((developer, index) => {
-                                const roleInfo = getRoleInfo(developer.userRole as UserRole)
+                                const roleInfo = getRoleInfo(developer.userRole as Role)
 
                                 return (
                                     <motion.div
@@ -211,8 +217,8 @@ export default function RoleSettingsPage() {
                                                             </p>
                                                         </div>
                                                         <Select
-                                                            value={developer.userRole || "BASIC_DEVELOPER"}
-                                                            onValueChange={(value) => handleRoleUpdate(developer.id, value as UserRole)}
+                                                            value={developer.userRole || "CLIENT"}
+                                                            onValueChange={(value) => handleRoleUpdate(developer.id, value as Role)}
                                                             disabled={updating === developer.id}
                                                         >
                                                             <SelectTrigger className="w-40">

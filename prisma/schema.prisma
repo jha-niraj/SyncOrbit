@@ -7,11 +7,65 @@ datasource db {
     url      = env("DATABASE_URL")
 }
 
+// Enhanced Role System - Simplified to core roles
 enum Role {
-    CLIENT
-    DEVELOPER
-    PRODUCTMANAGER
-    ADMIN
+    COMPANY_OWNER    // The person who created the company
+    TEAM_HEAD       // Head of any department (CTO, CMO, etc.)
+    TEAM_MEMBER     // Regular team member
+    CLIENT          // External client
+    ADMIN           // Super admin
+}
+
+// Predefined team types for easier setup
+enum TeamType {
+    TECHNICAL       // CTO, Developers, QA
+    MARKETING       // CMO, Social Media Managers, Content
+    SALES          // Sales Head, Sales Reps
+    DESIGN         // Design Head, UI/UX Designers
+    OPERATIONS     // Operations Head, Project Managers
+    FINANCE        // Finance Head, Accountants
+    CUSTOM         // User-defined team
+}
+
+// Project visibility control
+enum ProjectVisibility {
+    PUBLIC          // All company members can see
+    PRIVATE         // Invite-only access
+}
+
+// Permission types - granular control
+enum Permission {
+    // Project permissions
+    VIEW_ALL_PROJECTS
+    VIEW_TEAM_PROJECTS
+    CREATE_PROJECTS
+    EDIT_PROJECTS
+    DELETE_PROJECTS
+    
+    // Task permissions
+    CREATE_TASKS
+    EDIT_TASKS
+    DELETE_TASKS
+    ASSIGN_TASKS
+    
+    // Team management
+    INVITE_TEAM_MEMBERS
+    REMOVE_TEAM_MEMBERS
+    MANAGE_TEAM_SETTINGS
+    
+    // Analytics and reporting
+    VIEW_ANALYTICS
+    VIEW_FINANCIAL_DATA
+    GENERATE_REPORTS
+    
+    // Client management
+    MANAGE_CLIENTS
+    VIEW_CLIENT_DATA
+    
+    // System administration
+    MANAGE_COMPANY_SETTINGS
+    MANAGE_ROLES
+    MANAGE_PERMISSIONS
 }
 
 enum Currency {
@@ -24,6 +78,13 @@ enum TaskStatus {
     YET_TO_START
     IN_PROGRESS
     COMPLETED
+}
+
+enum Priority {
+    LOW
+    MEDIUM
+    HIGH
+    URGENT
 }
 
 enum Status {
@@ -60,15 +121,10 @@ enum InvitationStatus {
 }
 
 enum InvitationType {
-    COMPANY_MEMBER
-    PROJECT_MEMBER
-}
-
-enum UserRole {
-    BASIC_DEVELOPER      // Basic access - can view projects, tasks
-    PROJECT_CREATOR      // Can create projects, onboard clients
-    SENIOR_DEVELOPER     // Full development access
-    TEAM_LEAD           // Team management access
+    TEAM_HEAD        // Inviting a department head
+    TEAM_MEMBER      // Inviting a team member
+    CLIENT          // Inviting a client
+    PROJECT_MEMBER  // Adding to specific project
 }
 
 enum NotificationType {
@@ -80,6 +136,7 @@ enum NotificationType {
     CLIENT_ONBOARDED
     FEEDBACK_RECEIVED
     MENTION
+    TEAM_INVITATION
     GENERAL
 }
 
@@ -93,7 +150,7 @@ model User {
     bio               String?   @db.Text
     skills            String?   @db.Text
     role              Role      @default(CLIENT)
-    userRole          UserRole? // Additional role for developers (only for DEVELOPER role)
+    isActive          Boolean   @default(true)
     verifyToken       String?
     verifyTokenExpiry DateTime?
     resetToken        String?
@@ -102,14 +159,23 @@ model User {
     updatedAt         DateTime  @updatedAt
     totalSpent        Float     @default(0)
 
-    // Company-related fields
+    // Company relationship
     companyId      String?
     company        Company? @relation("CompanyUsers", fields: [companyId], references: [id])
+    ownedCompany   Company? @relation("CompanyOwner")
+
+    // Team relationships
+    teamMemberships TeamMember[]
+    ledTeams        Team[]       @relation("TeamHead")
+
+    // Role and permissions
+    roleAssignments RoleAssignment[]
+
+    // Legacy fields (for backward compatibility during migration)
     companyEmail   String? // Optional company email for PM role
     referralCode   String? // The referral code used during registration
-    managedCompany Company? @relation("CompanyManager")
-
-    // Referral relationships
+    
+    // Referral relationships (keeping existing system)
     generatedReferralCodes ReferralCode[] @relation("GeneratedBy")
     usedReferralCodeId     String?
     usedReferralCode       ReferralCode?  @relation("UsedBy", fields: [usedReferralCodeId], references: [id])
@@ -118,8 +184,6 @@ model User {
     projects            Project[]
     accounts            Account[]
     sessions            Session[]
-    managedTeam         Team?           @relation("TeamLead")
-    memberOfTeams       Team[]          @relation("TeamMembers")
     assignedTasks       Task[]          @relation("AssignedDeveloper")
     feedbacks           Feedback[]
     messages            Message[]
@@ -132,37 +196,166 @@ model User {
     projectMemberships  ProjectMember[]
     addedProjectMembers ProjectMember[] @relation("ProjectMemberAdder")
 
+    // Team member relationships
+    addedTeamMembers   TeamMember[]     @relation("TeamMemberAdder")
+    assignedRoles      RoleAssignment[] @relation("RoleAssigner")
+
     // Notifications
     sentNotifications     Notification[] @relation("NotificationSender")
     receivedNotifications Notification[] @relation("NotificationReceiver")
+
+    // Project access for private projects
+    invitedToProjects   ProjectInvite[]
+    
+    // New team-related relations
+    projectTeamAssignments ProjectTeam[]    @relation("ProjectTeamAssigner")
+    projectInvitesSent     ProjectInvite[]  @relation("ProjectInviter")
+    createdTasks           Task[]           @relation("TaskCreator")
 }
 
 model Company {
-    id                 String         @id @default(cuid())
-    name               String         @unique
-    shortName          String         @unique // For referral codes
-    logo               String? // Company logo URL
-    devReferralCode    String         @unique // For developer signup (legacy)
-    clientReferralCode String         @unique // For client signup (legacy)
-    productManagerId   String         @unique
-    productManager     User           @relation("CompanyManager", fields: [productManagerId], references: [id])
-    users              User[]         @relation("CompanyUsers")
-    referralCodes      ReferralCode[] @relation("CompanyReferralCodes")
-    invitations        Invitation[]   @relation("CompanyInvitations")
-    createdAt          DateTime       @default(now())
-    updatedAt          DateTime       @updatedAt
+    id              String    @id @default(cuid())
+    name            String    @unique
+    shortName       String    @unique
+    logo            String?   // Company logo URL
+    description     String?   @db.Text
+    website         String?
+    
+    // Owner relationship (replaces productManager)
+    ownerId         String    @unique
+    owner           User      @relation("CompanyOwner", fields: [ownerId], references: [id])
+    
+    // Company users and structure
+    users           User[]    @relation("CompanyUsers")
+    teams           Team[]
+    projects        Project[]
+    invitations     Invitation[]
+    
+    // Legacy fields (for backward compatibility)
+    devReferralCode    String?         @unique // For developer signup (legacy)
+    clientReferralCode String?         @unique // For client signup (legacy)
+    referralCodes      ReferralCode[]  @relation("CompanyReferralCodes")
+    
+    createdAt       DateTime  @default(now())
+    updatedAt       DateTime  @updatedAt
 
     @@map("companies")
 }
 
 model Team {
-    id               String   @id @default(uuid())
-    name             String
-    productManagerId String   @unique
-    productManager   User     @relation("TeamLead", fields: [productManagerId], references: [id])
-    members          User[]   @relation("TeamMembers")
-    createdAt        DateTime @default(now())
-    updatedAt        DateTime @updatedAt
+    id              String      @id @default(cuid())
+    name            String      // e.g., "Technical Team", "Marketing Team"
+    displayName     String      // e.g., "Development", "Social Media"
+    teamType        TeamType    @default(CUSTOM)
+    description     String?     @db.Text
+    color           String?     // Hex color for UI
+    isActive        Boolean     @default(true)
+    
+    // Company relationship
+    companyId       String
+    company         Company     @relation(fields: [companyId], references: [id], onDelete: Cascade)
+    
+    // Team head
+    headId          String?     @unique
+    head            User?       @relation("TeamHead", fields: [headId], references: [id])
+    
+    // Team members
+    members         TeamMember[]
+    
+    // Team roles (custom roles within this team)
+    roles           TeamRole[]
+    
+    // Team projects (projects assigned to this team)
+    assignedProjects ProjectTeam[]
+    
+    // Team tasks
+    tasks           Task[]      @relation("TeamTasks")
+    
+    // Team invitations
+    invitations     Invitation[]
+    
+    createdAt       DateTime    @default(now())
+    updatedAt       DateTime    @updatedAt
+    
+    @@unique([companyId, name]) // Team names must be unique within company
+}
+
+model TeamMember {
+    id          String      @id @default(cuid())
+    
+    // User and team relationship
+    userId      String
+    user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+    teamId      String
+    team        Team        @relation(fields: [teamId], references: [id], onDelete: Cascade)
+    
+    // Role within the team (flexible naming)
+    roleTitle   String      // e.g., "Senior Developer", "Social Media Manager", "Junior Designer"
+    isActive    Boolean     @default(true)
+    
+    // Who added this member
+    addedById   String?
+    addedBy     User?       @relation("TeamMemberAdder", fields: [addedById], references: [id])
+    
+    joinedAt    DateTime    @default(now())
+    createdAt   DateTime    @default(now())
+    updatedAt   DateTime    @updatedAt
+    
+    @@unique([userId, teamId])
+}
+
+model TeamRole {
+    id              String              @id @default(cuid())
+    name            String              // e.g., "Senior Developer", "Social Media Manager"
+    description     String?             @db.Text
+    
+    // Team this role belongs to
+    teamId          String
+    team            Team                @relation(fields: [teamId], references: [id], onDelete: Cascade)
+    
+    // Permissions for this role
+    permissions     RolePermission[]
+    
+    // Users with this role
+    assignments     RoleAssignment[]
+    
+    createdAt       DateTime            @default(now())
+    updatedAt       DateTime            @updatedAt
+    
+    @@unique([teamId, name]) // Role names must be unique within team
+}
+
+model RoleAssignment {
+    id          String      @id @default(cuid())
+    
+    userId      String
+    user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+    
+    teamRoleId  String
+    teamRole    TeamRole    @relation(fields: [teamRoleId], references: [id], onDelete: Cascade)
+    
+    // Who assigned this role
+    assignedById String?
+    assignedBy   User?      @relation("RoleAssigner", fields: [assignedById], references: [id])
+    
+    assignedAt   DateTime   @default(now())
+    createdAt    DateTime   @default(now())
+    updatedAt    DateTime   @updatedAt
+    
+    @@unique([userId, teamRoleId])
+}
+
+model RolePermission {
+    id          String      @id @default(cuid())
+    
+    teamRoleId  String
+    teamRole    TeamRole    @relation(fields: [teamRoleId], references: [id], onDelete: Cascade)
+    
+    permission  Permission
+    
+    createdAt   DateTime    @default(now())
+    
+    @@unique([teamRoleId, permission])
 }
 
 model Project {
@@ -176,24 +369,86 @@ model Project {
     currency       Currency        @default(USD)
     startDate      DateTime        @default(now())
     endDate        DateTime?
+    
     // Payment tracking
     paidAmount     Float           @default(0)
     paymentStatus  String          @default("PENDING") // PENDING, PARTIAL, COMPLETED
+    
     // Project links
     livePreviewUrl String?
     figmaUrl       String?
     githubUrl      String?
     documentsUrl   String?
     otherLinks     String?         @db.Text
+    
+    // Visibility and access control
+    visibility     ProjectVisibility @default(PUBLIC)
+    isArchived     Boolean         @default(false)
+    
+    // Company relationship
+    companyId      String
+    company        Company         @relation(fields: [companyId], references: [id])
+    
+    // Project creator
     userId         String
     user           User            @relation(fields: [userId], references: [id])
+    
+    // Team assignments (multiple teams can work on one project)
+    assignedTeams  ProjectTeam[]
+    
+    // Private project invitations
+    projectInvites ProjectInvite[]
+    
     createdAt      DateTime        @default(now())
     updatedAt      DateTime        @updatedAt
+    
     tasks          Task[]
     feedbacks      Feedback[]
     messages       Message[]
     invitations    Invitation[]    @relation("ProjectInvitations")
     members        ProjectMember[]
+}
+
+// Junction table for Project-Team many-to-many relationship
+model ProjectTeam {
+    id          String   @id @default(cuid())
+    
+    projectId   String
+    project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+    
+    teamId      String
+    team        Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+    
+    // Who assigned this team to the project
+    assignedById String?
+    assignedBy   User?   @relation("ProjectTeamAssigner", fields: [assignedById], references: [id])
+    
+    assignedAt   DateTime @default(now())
+    createdAt    DateTime @default(now())
+    updatedAt    DateTime @updatedAt
+    
+    @@unique([projectId, teamId])
+}
+
+// Private project access invitations
+model ProjectInvite {
+    id          String   @id @default(cuid())
+    
+    projectId   String
+    project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+    
+    userId      String
+    user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    
+    // Who invited this user
+    invitedById String?
+    invitedBy   User?    @relation("ProjectInviter", fields: [invitedById], references: [id])
+    
+    invitedAt   DateTime @default(now())
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+    
+    @@unique([projectId, userId])
 }
 
 model Task {
@@ -202,10 +457,24 @@ model Task {
     description         String?
     duration            Int?
     status              TaskStatus @default(YET_TO_START)
+    priority            Priority   @default(MEDIUM)
+    
+    // Project relationship
     projectId           String
     project             Project    @relation(fields: [projectId], references: [id])
+    
+    // Task assignment
     assignedDeveloperId String?
     assignedDeveloper   User?      @relation("AssignedDeveloper", fields: [assignedDeveloperId], references: [id])
+    
+    // Team ownership (which team this task belongs to)
+    assignedTeamId      String?
+    assignedTeam        Team?      @relation("TeamTasks", fields: [assignedTeamId], references: [id])
+    
+    // Who created this task
+    createdById         String?
+    createdBy           User?      @relation("TaskCreator", fields: [createdById], references: [id])
+    
     subtasks            SubTask[]
     createdAt           DateTime   @default(now())
     updatedAt           DateTime   @updatedAt
@@ -323,13 +592,18 @@ model ReferralCode {
 
 model Invitation {
     id        String           @id @default(cuid())
-    email     String // Email of the person being invited
-    type      InvitationType // COMPANY_MEMBER or PROJECT_MEMBER
+    email     String           // Email of the person being invited
+    type      InvitationType   // TEAM_HEAD, TEAM_MEMBER, CLIENT, PROJECT_MEMBER
     status    InvitationStatus @default(PENDING)
-    message   String? // Optional message from sender
-    expiresAt DateTime // When the invitation expires
+    message   String?          // Optional message from sender
+    expiresAt DateTime         // When the invitation expires
+    
+    // Role information for the invitation
+    roleTitle String?          // e.g., "Senior Developer", "Social Media Manager"
+    teamId    String?          // Which team they're being invited to
+    team      Team?            @relation(fields: [teamId], references: [id])
 
-    // Who sent the invitation (should be a PM or admin)
+    // Who sent the invitation
     senderId String
     sender   User   @relation("InvitationSender", fields: [senderId], references: [id])
 
@@ -339,7 +613,7 @@ model Invitation {
 
     // Company invitation is for
     companyId String?
-    company   Company? @relation("CompanyInvitations", fields: [companyId], references: [id])
+    company   Company? @relation(fields: [companyId], references: [id])
 
     // Project invitation is for (if type is PROJECT_MEMBER)
     projectId String?
@@ -351,6 +625,7 @@ model Invitation {
     @@index([email])
     @@index([senderId])
     @@index([status])
+    @@index([teamId])
 }
 
 model ProjectMember {

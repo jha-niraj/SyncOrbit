@@ -1,5 +1,3 @@
-import { User } from "@prisma/client"
-
 export interface MentionUser {
   id: string
   name: string | null

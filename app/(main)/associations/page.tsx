@@ -236,7 +236,7 @@ export default function AssociationsPage() {
         )
     }
 
-    const isProductManager = session?.user?.role === "PRODUCTMANAGER"
+    const isProductManager = session?.user?.role === "COMPANY_OWNER"
 
     return (
         <div className="container mx-auto p-6 space-y-6">

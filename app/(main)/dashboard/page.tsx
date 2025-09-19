@@ -1,5 +1,5 @@
 import { getClientDashboardData, getDeveloperDashboardData } from "@/actions/(client)/dashboard.action";
-import { getPMDashboardData } from "@/actions/(productmanager)/pm.action";
+import { getOwnerDashboardData } from "@/actions/(productmanager)/pm.action";
 import { getDashboardMetrics } from "@/actions/dashboard.action";
 import { auth } from "@/auth";
 import { DashboardStats } from "./_components/DashboardStats";
@@ -33,8 +33,8 @@ export default async function DashboardPage() {
 
 	const userRole = session.user.role;
 
-	if (userRole === 'PRODUCTMANAGER') {
-		const result = await getPMDashboardData();
+	if (userRole === 'COMPANY_OWNER') {
+		const result = await getOwnerDashboardData();
 		if (result.success && result.data) {
 			return <PMDashboard data={result.data} />;
 		} else {
@@ -42,7 +42,7 @@ export default async function DashboardPage() {
 		}
 	}
 
-	if (userRole === 'DEVELOPER') {
+	if (userRole === 'TEAM_MEMBER') {
 		const data = await getDeveloperDashboardData();
 		return <DeveloperDashboardView data={data} userRole={userRole} />;
 	}

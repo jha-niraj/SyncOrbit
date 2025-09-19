@@ -14,10 +14,10 @@ export async function POST(request: NextRequest) {
             )
         }
 
-        // Only Product Managers can generate referral codes
-        if (session.user.role !== "PRODUCTMANAGER") {
+        // Only Company Owners can generate referral codes
+        if (session.user.role !== Role.COMPANY_OWNER) {
             return NextResponse.json(
-                { error: "Only Product Managers can generate referral codes" },
+                { error: "Only Company Owners can generate referral codes" },
                 { status: 403 }
             )
         }
@@ -35,7 +35,10 @@ export async function POST(request: NextRequest) {
 
         // Generate a unique referral code
         const generateCode = () => {
-            const prefix = role === "CLIENT" ? "CL" : role === "DEVELOPER" ? "DV" : "PM"
+            const prefix = role === Role.CLIENT ? "CL" : 
+                          role === Role.TEAM_MEMBER ? "TM" : 
+                          role === Role.TEAM_HEAD ? "TH" : 
+                          role === Role.COMPANY_OWNER ? "CO" : "AD"
             const randomPart = Math.random().toString(36).substring(2, 8).toUpperCase()
             return `${prefix}-${randomPart}`
         }
@@ -57,12 +60,12 @@ export async function POST(request: NextRequest) {
         // Get user's company
         const user = await prisma.user.findUnique({
             where: { id: session.user.id },
-            include: { managedCompany: true }
+            include: { ownedCompany: true }
         })
 
-        if (!user?.managedCompany) {
+        if (!user?.ownedCompany) {
             return NextResponse.json(
-                { error: "Product Manager must be associated with a company" },
+                { error: "Company Owner must be associated with a company" },
                 { status: 400 }
             )
         }
@@ -76,7 +79,7 @@ export async function POST(request: NextRequest) {
                 expiresAt: expiresAt ? new Date(expiresAt) : null,
                 description,
                 generatedById: session.user.id,
-                companyId: user.managedCompany.id
+                companyId: user.ownedCompany.id
             },
             include: {
                 generatedBy: {

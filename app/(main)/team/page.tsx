@@ -41,7 +41,7 @@ export default function TeamPage() {
 
     // Load team members on component mount
     const loadTeamMembers = useCallback(async () => {
-        if (session?.user?.role !== 'PRODUCTMANAGER') {
+        if (session?.user?.role !== 'COMPANY_OWNER' && session?.user?.role !== 'ADMIN') {
             setIsLoading(false)
             return
         }
@@ -144,7 +144,7 @@ export default function TeamPage() {
                     </CardHeader>
                     <CardContent className="text-center">
                         <p className="text-muted-foreground">
-                            Team management is only available for Product Managers and Developers.
+                            Team management is only available for Company Owners and Admins.
                         </p>
                     </CardContent>
                 </Card>
@@ -154,12 +154,16 @@ export default function TeamPage() {
 
     const getRoleColor = (role: string) => {
         switch (role) {
-            case 'PRODUCTMANAGER':
+            case 'COMPANY_OWNER':
                 return "bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-900/20 dark:text-purple-300 dark:border-purple-800"
-            case 'DEVELOPER':
+            case 'TEAM_HEAD':
                 return "bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-800"
+            case 'TEAM_MEMBER':
+                return "bg-green-50 text-green-700 border-green-200 dark:bg-green-900/20 dark:text-green-300 dark:border-green-800"
             case 'ADMIN':
                 return "bg-red-50 text-red-700 border-red-200 dark:bg-red-900/20 dark:text-red-300 dark:border-red-800"
+            case 'CLIENT':
+                return "bg-gray-50 text-gray-700 border-gray-200 dark:bg-gray-900/20 dark:text-gray-300 dark:border-gray-800"
             default:
                 return "bg-gray-50 text-gray-700 border-gray-200 dark:bg-gray-900/20 dark:text-gray-300 dark:border-gray-800"
         }
@@ -546,7 +550,7 @@ export default function TeamPage() {
                     </div>
 
                     {
-                        session?.user?.role === 'PRODUCTMANAGER' && (
+                        (session?.user?.role === 'COMPANY_OWNER' || session?.user?.role === 'ADMIN') && (
                             <Button className="gap-2">
                                 <UserPlus className="h-4 w-4" />
                                 Invite Member
@@ -576,9 +580,9 @@ export default function TeamPage() {
                                 </div>
                                 <div>
                                     <p className="text-2xl font-bold text-foreground">
-                                        {teamMembers.filter(m => m.role === 'DEVELOPER').length}
+                                        {teamMembers.filter(m => m.role === 'TEAM_MEMBER').length}
                                     </p>
-                                    <p className="text-sm text-muted-foreground">Developers</p>
+                                    <p className="text-sm text-muted-foreground">Team Members</p>
                                 </div>
                             </div>
                         </CardContent>
@@ -631,8 +635,10 @@ export default function TeamPage() {
                         </SelectTrigger>
                         <SelectContent>
                             <SelectItem value="all">All Roles</SelectItem>
-                            <SelectItem value="PRODUCTMANAGER">Product Manager</SelectItem>
-                            <SelectItem value="DEVELOPER">Developer</SelectItem>
+                            <SelectItem value="COMPANY_OWNER">Company Owner</SelectItem>
+                            <SelectItem value="TEAM_HEAD">Team Head</SelectItem>
+                            <SelectItem value="TEAM_MEMBER">Team Member</SelectItem>
+                            <SelectItem value="CLIENT">Client</SelectItem>
                             <SelectItem value="ADMIN">Admin</SelectItem>
                         </SelectContent>
                     </Select>
@@ -693,7 +699,7 @@ export default function TeamPage() {
                                 }
                             </p>
                             {
-                                session?.user?.role === 'PRODUCTMANAGER' && (
+                                (session?.user?.role === 'COMPANY_OWNER' || session?.user?.role === 'ADMIN') && (
                                     <Button>
                                         <UserPlus className="h-4 w-4 mr-2" />
                                         Invite Team Member
