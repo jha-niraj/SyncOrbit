@@ -8,6 +8,7 @@ import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { useTheme } from 'next-themes'
 import Image from 'next/image'
+import { useSession, signOut } from 'next-auth/react'
 
 const menuItems = [
     { name: 'Features', href: '#features' },
@@ -130,32 +131,56 @@ export const Navbar = () => {
                                 >
                                     {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
                                 </button>
-                                <Button
-                                    asChild
-                                    variant="outline"
-                                    size="sm"
-                                    className={cn(isScrolled && 'lg:hidden')}>
-                                    <Link href="/signin">
-                                        <span>Sign In</span>
-                                    </Link>
-                                </Button>
-                                <Button
-                                    asChild
-                                    size="sm"
-                                    className={cn(isScrolled && 'lg:hidden')}>
-                                    <Link href="/signup">
-                                        <span>Get Started</span>
-                                    </Link>
-                                </Button>
-                                <Button
-                                    asChild
-                                    size="sm"
-                                    className={cn(isScrolled ? 'lg:inline-flex' : 'hidden')}>
-                                    <Link href="/signup">
-                                        <span>Get Started</span>
-                                        <ArrowRight className="ml-1 h-3 w-3" />
-                                    </Link>
-                                </Button>
+                                {!session ? (
+                                    <>
+                                        <Button
+                                            asChild
+                                            size="sm"
+                                            className={cn(isScrolled && 'lg:hidden')}>
+                                            <Link href="/signin">
+                                                <span>Sign In</span>
+                                            </Link>
+                                        </Button>
+                                        <Button
+                                            asChild
+                                            size="sm"
+                                            className={cn(isScrolled ? 'lg:inline-flex' : 'hidden')}>
+                                            <Link href="/signup">
+                                                <span>Get Started</span>
+                                                <ArrowRight className="ml-1 h-3 w-3" />
+                                            </Link>
+                                        </Button>
+                                    </>
+                                ) : (
+                                    <DropdownMenu>
+                                        <DropdownMenuTrigger asChild>
+                                            <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+                                                <User className="h-4 w-4" />
+                                            </Button>
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent className="w-56" align="end" forceMount>
+                                            <DropdownMenuItem asChild>
+                                                <Link href="/dashboard" className="flex items-center">
+                                                    <LayoutDashboard className="mr-2 h-4 w-4" />
+                                                    <span>Dashboard</span>
+                                                </Link>
+                                            </DropdownMenuItem>
+                                            <DropdownMenuItem asChild>
+                                                <Link href="/profile" className="flex items-center">
+                                                    <User className="mr-2 h-4 w-4" />
+                                                    <span>Profile</span>
+                                                </Link>
+                                            </DropdownMenuItem>
+                                            <DropdownMenuItem 
+                                                onClick={() => signOut()}
+                                                className="flex items-center text-red-600 focus:text-red-600"
+                                            >
+                                                <LogOut className="mr-2 h-4 w-4" />
+                                                <span>Logout</span>
+                                            </DropdownMenuItem>
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
+                                )}
                             </div>
                         </div>
                     </div>
