@@ -2,13 +2,15 @@
 
 import Link from 'next/link'
 import { useRouter, usePathname } from 'next/navigation'
-import { Menu, X, Moon, Sun, ArrowRight } from 'lucide-react'
+import { Menu, X, Moon, Sun, ArrowRight, User, LayoutDashboard, LogOut } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { useTheme } from 'next-themes'
 import Image from 'next/image'
 import { useSession, signOut } from 'next-auth/react'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from './ui/dropdown-menu'
+
 
 const menuItems = [
     { name: 'Features', href: '#features' },
@@ -23,6 +25,7 @@ export const Navbar = () => {
     const { theme, setTheme } = useTheme();
     const router = useRouter();
     const pathname = usePathname();
+    const { data: session } = useSession();
 
     useEffect(() => {
         const handleScroll = () => {
