@@ -272,11 +272,11 @@ function SignUp() {
                                         <SelectTrigger className="h-12 rounded-2xl border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 focus:border-neutral-400 dark:focus:border-neutral-500 focus:ring-0">
                                             <SelectValue placeholder="Select your role" />
                                         </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="PRODUCTMANAGER">Product Manager</SelectItem>
-                            <SelectItem value="DEVELOPER">Developer</SelectItem>
-                            <SelectItem value="CLIENT">Client</SelectItem>
-                        </SelectContent>
+                                        <SelectContent>
+                                          <SelectItem value="PRODUCTMANAGER">Product Manager</SelectItem>
+                                          <SelectItem value="DEVELOPER">Developer</SelectItem>
+                                          <SelectItem value="CLIENT">Client</SelectItem>
+                                      </SelectContent>
                                     </Select>
                                 </div>
 

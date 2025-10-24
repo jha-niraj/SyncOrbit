@@ -80,6 +80,7 @@ export default function NotificationsPage() {
     const fetchNotifications = useCallback(async (page: number = currentPage) => {
         try {
             setRefreshing(page === 1)
+      console.log("Hey")
             const result = await getNotifications(page, 20)
             if (result.success) {
                 setNotifications(result.notifications || [])
@@ -99,7 +100,7 @@ export default function NotificationsPage() {
     }, [currentPage])
 
     useEffect(() => {
-        if (session?.user && ["DEVELOPER", "PRODUCTMANAGER"].includes(session.user.role)) {
+        if (session?.user) {
             fetchNotifications(1)
         } else {
             setLoading(false)
@@ -167,7 +168,7 @@ export default function NotificationsPage() {
 
     const unreadCount = notifications.filter(n => !n.read).length
 
-    if (!session?.user || !["DEVELOPER", "PRODUCTMANAGER"].includes(session.user.role)) {
+    if (!session?.user || !["COMPANY_OWNER", "TEAM_HEAD", "TEAM_MEMBER", "CLIENT"].includes(session.user.role)) {
         return (
             <div className="flex items-center justify-center min-h-[400px]">
                 <Card className="w-96">

@@ -32,6 +32,7 @@ export default async function DashboardPage() {
 	}
 
 	const userRole = session.user.role;
+    console.log(session.user);
 
 	if (userRole === 'COMPANY_OWNER') {
 		const result = await getOwnerDashboardData();
