@@ -4,7 +4,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import {
     Mail, Phone, MapPin, Facebook, Twitter, Linkedin, Instagram, Youtube, Calendar,
-    Users, TrendingUp, Shield, Award, Ticket, ArrowUp
+    Users, TrendingUp, Shield, Award, ArrowUp
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -19,11 +19,11 @@ export default function Footer() {
     };
 
     const quickLinks = [
-        { name: "Home", href: "/organizer" },
-        { name: "Features", href: "/organizer#features" },
-        { name: "Event Types", href: "/organizer#event-types" },
-        { name: "Pricing", href: "/organizer#certificates" },
-        { name: "Testimonials", href: "/organizer#testimonials" },
+        { name: "Home", href: "/" },
+        { name: "Features", href: "/#features" },
+        { name: "Pricing", href: "/pricing" },
+        { name: "Dashboard", href: "/dashboard" },
+        { name: "Projects", href: "/projects" },
     ];
 
     const resources = [
@@ -35,12 +35,12 @@ export default function Footer() {
         { name: "Case Studies", href: "/case-studies", comingSoon: true },
     ];
 
-    const eventTypes = [
-        { name: "Hackathons", href: "/organizer#event-types", icon: Calendar },
-        { name: "Job Fairs", href: "/organizer#event-types", icon: Users },
-        { name: "Cultural Events", href: "/organizer#event-types", icon: TrendingUp },
-        { name: "Workshops", href: "/organizer#event-types", icon: Shield },
-        { name: "Conferences", href: "/organizer#event-types", icon: Award },
+    const solutions = [
+        { name: "Team Management", href: "/teams", icon: Users },
+        { name: "Project Tracking", href: "/projects", icon: TrendingUp },
+        { name: "Analytics", href: "/analytics", icon: Shield },
+        { name: "Collaboration", href: "/dashboard", icon: Award },
+        { name: "Task Management", href: "/projects", icon: Calendar },
     ];
 
     const company = [
@@ -60,17 +60,17 @@ export default function Footer() {
     ];
 
     const socialLinks = [
-        { name: "Facebook", icon: Facebook, href: "https://facebook.com/eventeye" },
-        { name: "Twitter", icon: Twitter, href: "https://twitter.com/eventeye" },
-        { name: "LinkedIn", icon: Linkedin, href: "https://linkedin.com/company/eventeye" },
-        { name: "Instagram", icon: Instagram, href: "https://instagram.com/eventeye" },
-        { name: "YouTube", icon: Youtube, href: "https://youtube.com/@eventeye" },
+        { name: "Facebook", icon: Facebook, href: "https://facebook.com/shunyatech" },
+        { name: "Twitter", icon: Twitter, href: "https://twitter.com/shunyatech" },
+        { name: "LinkedIn", icon: Linkedin, href: "https://linkedin.com/company/shunya-tech" },
+        { name: "Instagram", icon: Instagram, href: "https://instagram.com/shunyatech" },
+        { name: "YouTube", icon: Youtube, href: "https://youtube.com/@shunyatech" },
     ];
 
     const features = [
-        { icon: Ticket, text: "100% Secure Payments" },
-        { icon: Shield, text: "24/7 Support" },
-        { icon: Award, text: "Trusted by 10,000+ Organizers" },
+        { icon: Shield, text: "Enterprise-Grade Security" },
+        { icon: Users, text: "24/7 Team Support" },
+        { icon: Award, text: "Trusted by 1,000+ Teams" },
     ];
 
     const scrollToTop = () => {
@@ -84,7 +84,7 @@ export default function Footer() {
                     <div>
                         <h3 className="text-2xl font-bold mb-2">Stay Updated</h3>
                         <p className="text-muted-foreground">
-                            Get the latest updates on new features, best practices, and event management tips
+                            Get the latest updates on new features, best practices, and project management tips
                         </p>
                     </div>
                     <div>
@@ -112,17 +112,17 @@ export default function Footer() {
                         </ul>
                     </div>
                     <div>
-                        <h4 className="font-semibold mb-4 text-foreground">Event Types</h4>
+                        <h4 className="font-semibold mb-4 text-foreground">Solutions</h4>
                         <ul className="space-y-3">
                             {
-                                eventTypes.map((type) => (
-                                    <li key={type.name}>
+                                solutions.map((solution) => (
+                                    <li key={solution.name}>
                                         <Link
-                                            href={type.href}
+                                            href={solution.href}
                                             className="text-muted-foreground hover:text-primary transition-colors text-sm flex items-center gap-2"
                                         >
-                                            <type.icon className="w-3 h-3" />
-                                            {type.name}
+                                            <solution.icon className="w-3 h-3" />
+                                            {solution.name}
                                         </Link>
                                     </li>
                                 ))
@@ -214,40 +214,12 @@ export default function Footer() {
                         </ul>
                     </div>
                     <div>
-                        <h4 className="font-semibold mb-4 text-foreground">Legal</h4>
-                        <ul className="space-y-3">
-                            {
-                                legal.map((link) => (
-                                    <li key={link.name}>
-                                        {
-                                            link.comingSoon ? (
-                                                <button
-                                                    onClick={() => handleComingSoon(link.name)}
-                                                    className="text-muted-foreground hover:text-primary transition-colors text-sm text-left cursor-pointer"
-                                                >
-                                                    {link.name}
-                                                </button>
-                                            ) : (
-                                                <Link
-                                                    href={link.href}
-                                                    className="text-muted-foreground hover:text-primary transition-colors text-sm"
-                                                >
-                                                    {link.name}
-                                                </Link>
-                                            )
-                                        }
-                                    </li>
-                                ))
-                            }
-                        </ul>
-                    </div>
-                    <div>
                         <h4 className="font-semibold mb-4 text-foreground">Contact Us</h4>
                         <ul className="space-y-3">
                             <li className="flex items-start gap-2 text-sm text-muted-foreground">
                                 <Mail className="w-4 h-4 mt-0.5 shrink-0 text-primary" />
-                                <a href="mailto:support@eventeye.com" className="hover:text-primary transition-colors">
-                                    support@eventeye.com
+                                <a href="mailto:support@shunyatech.com" className="hover:text-primary transition-colors">
+                                    support@shunyatech.com
                                 </a>
                             </li>
                             <li className="flex items-start gap-2 text-sm text-muted-foreground">
@@ -259,8 +231,8 @@ export default function Footer() {
                             <li className="flex items-start gap-2 text-sm text-muted-foreground">
                                 <MapPin className="w-4 h-4 mt-0.5 shrink-0 text-primary" />
                                 <span>
-                                    123 Event Street<br />
-                                    Tech City, TC 12345
+                                    Shunya Tech<br />
+                                    Innovation Hub
                                 </span>
                             </li>
                         </ul>
@@ -292,15 +264,15 @@ export default function Footer() {
                     <div className="text-center md:text-left">
                         <div className="flex items-center gap-2 justify-center md:justify-start mb-2">
                             <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-blue-600 flex items-center justify-center">
-                                <Calendar className="w-5 h-5 text-white" />
+                                <Users className="w-5 h-5 text-white" />
                             </div>
-                            <span className="text-xl font-bold">EventEye</span>
+                            <span className="text-xl font-bold">ProjectCentral</span>
                         </div>
                         <p className="text-sm text-muted-foreground">
-                            © {new Date().getFullYear()} EventEye. All rights reserved.
+                            © {new Date().getFullYear()} Shunya Tech. All rights reserved.
                         </p>
                         <p className="text-xs text-muted-foreground mt-1">
-                            Empowering event organizers worldwide
+                            Empowering teams to collaborate better
                         </p>
                     </div>
                     <div className="flex items-center gap-4">
@@ -324,25 +296,25 @@ export default function Footer() {
                     </div>
                 </div>
                 <div className="mt-8 pt-6 border-t border-border text-center">
-                    <p className="text-xs text-muted-foreground mb-3">Trusted Payment Partners</p>
+                    <p className="text-xs text-muted-foreground mb-3">Secure & Reliable Infrastructure</p>
                     <div className="flex items-center justify-center gap-6 flex-wrap">
                         <div className="px-4 py-2 rounded-lg bg-card border border-border text-sm font-medium text-muted-foreground">
-                            Razorpay
+                            AWS Cloud
                         </div>
                         <div className="px-4 py-2 rounded-lg bg-card border border-border text-sm font-medium text-muted-foreground">
-                            Stripe
+                            End-to-End Encryption
                         </div>
                         <div className="px-4 py-2 rounded-lg bg-card border border-border text-sm font-medium text-muted-foreground">
                             SSL Secured
                         </div>
                         <div className="px-4 py-2 rounded-lg bg-card border border-border text-sm font-medium text-muted-foreground">
-                            PCI DSS Compliant
+                            GDPR Compliant
                         </div>
                     </div>
                 </div>
                 <div className="mt-8 border-t border-neutral-200/20 dark:border-neutral-800/20 pt-6 flex flex-col md:flex-row items-center justify-between gap-4">
                     <p className="text-xs text-neutral-500 dark:text-neutral-400">
-                        © {new Date().getFullYear()} EventEye. All rights reserved.
+                        © {new Date().getFullYear()} Shunya Tech. All rights reserved.
                     </p>
                     <div className="flex items-center gap-3">
                         <Button
@@ -354,7 +326,7 @@ export default function Footer() {
                             <ArrowUp className="h-4 w-4 mr-1" />
                             Back to Top
                         </Button>
-                        <Link href="/signin?ref=organizer">
+                        <Link href="/signin">
                             <Button
                                 variant="ghost"
                                 className="text-neutral-700 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white rounded-2xl"
@@ -362,7 +334,7 @@ export default function Footer() {
                                 Sign In
                             </Button>
                         </Link>
-                        <Link href="/signup?ref=organizer">
+                        <Link href="/signup">
                             <Button className="bg-neutral-900 hover:bg-neutral-800 dark:bg-white dark:hover:bg-neutral-100 text-white dark:text-black rounded-2xl font-semibold transition-all duration-200">
                                 Get Started
                             </Button>

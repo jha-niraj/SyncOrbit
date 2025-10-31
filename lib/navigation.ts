@@ -341,6 +341,18 @@ export const roleFeatures = {
             "Manage billing information",
             "Rate service quality"
         ]
+    },
+    [Role.ADMIN]: {
+        name: "Admin",
+        color: "bg-red-500",
+        permissions: [
+            "Full system access",
+            "Manage all companies",
+            "Manage all users",
+            "System configuration",
+            "View all data",
+            "Platform administration"
+        ]
     }
 }
 

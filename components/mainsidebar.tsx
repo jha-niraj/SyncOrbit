@@ -3,7 +3,10 @@
 import React from "react"
 import { useState, useEffect } from "react"
 import { usePathname, useRouter } from "next/navigation"
-import { LogOut, UserPlus, Users, Briefcase, BarChart3, Home, Building2, Bell, Sun, Moon, User } from "lucide-react"
+import { 
+    LogOut, UserPlus, Users, Briefcase, BarChart3, Home, Building2, Bell, Sun, 
+    Moon, User 
+} from "lucide-react"
 import Link from "next/link"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { toast } from "sonner"
@@ -11,7 +14,10 @@ import { signOut, useSession } from "next-auth/react"
 import { useTheme } from "next-themes"
 import { cn } from "@/lib/utils"
 import Image from "next/image"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { 
+    DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, 
+    DropdownMenuSeparator, DropdownMenuTrigger
+} from "@/components/ui/dropdown-menu"
 import { getRecentNotifications, markNotificationAsRead } from "@/actions/notifications.action"
 import { Notification } from "@/types/notifications"
 import { format } from "date-fns"
@@ -130,7 +136,6 @@ const Sidebar = () => {
         <TooltipProvider>
             <div className="fixed top-0 left-0 h-full w-[100px] bg-background dark:bg-background border-r border-border z-20 sm:block hidden">
                 <div className="flex flex-col h-full">
-                    {/* Logo Section */}
                     <div className="flex items-center justify-center p-4 h-[80px]">
                         <Link href={session ? "/dashboard" : "/"} className="transition-opacity hover:opacity-80">
                             <div className="relative h-[40px] w-[40px]">
@@ -144,34 +149,33 @@ const Sidebar = () => {
                             </div>
                         </Link>
                     </div>
-
-                    {/* Navigation Routes */}
                     <div className="flex-grow overflow-y-auto py-4">
                         <div className="flex flex-col items-center space-y-4">
                             <SidebarLinks routes={displayRoutes} isActiveRoute={isActiveRoute} />
                         </div>
                     </div>
-                    
-                    {/* Bottom Section - Notifications, Theme, Profile, Logout */}
-                    <div className="px-2 mb-4 mt-auto space-y-2">
-                        {/* Notifications - Only for Developers and PMs */}
-                        {session?.user && ["DEVELOPER", "PRODUCTMANAGER"].includes(session.user.role) && (
+                                        <div className="px-2 mb-4 mt-auto space-y-2">
+                        {
+                        session?.user && ["DEVELOPER", "PRODUCTMANAGER"].includes(session.user.role) && (
                             <DropdownMenu open={notificationsDropdownOpen} onOpenChange={setNotificationsDropdownOpen}>
                                 <DropdownMenuTrigger asChild>
                                     <button className="relative flex items-center justify-center w-full rounded-lg p-3 text-sm font-medium text-muted-foreground hover:text-foreground transition-all hover:bg-muted group">
                                         <Bell className="h-5 w-5 stroke-2" />
-                                        {unreadCount > 0 && (
+                                        {
+                                        unreadCount > 0 && (
                                             <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-destructive text-destructive-foreground text-xs flex items-center justify-center">
                                                 {unreadCount > 9 ? "9+" : unreadCount}
                                             </span>
-                                        )}
+                                        )
+                                        }
                                     </button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent className="w-80 ml-4" align="start" side="right">
                                     <DropdownMenuLabel className="font-semibold">Notifications</DropdownMenuLabel>
                                     <DropdownMenuSeparator />
                                     <div className="max-h-80 overflow-y-auto">
-                                        {notifications.length === 0 ? (
+                                        {
+                                        notifications.length === 0 ? (
                                             <div className="p-4 text-center text-muted-foreground">
                                                 No notifications
                                             </div>
@@ -187,18 +191,21 @@ const Sidebar = () => {
                                                 >
                                                     <div className="flex flex-col gap-1 w-full">
                                                         <p className="font-medium text-sm">{notification.title}</p>
-                                                        {notification.description && (
+                                                        {
+                                                        notification.description && (
                                                             <p className="text-xs text-muted-foreground line-clamp-2">
                                                                 {notification.description}
                                                             </p>
-                                                        )}
+                                                        )
+                                                        }
                                                         <p className="text-xs text-muted-foreground">
                                                             {format(new Date(notification.createdAt), "MMM d, h:mm a")}
                                                         </p>
                                                     </div>
                                                 </DropdownMenuItem>
                                             ))
-                                        )}
+                                        )
+                                        }
                                     </div>
                                     <DropdownMenuSeparator />
                                     <DropdownMenuItem onClick={() => handleLinkClick('notifications')} className="cursor-pointer text-center">
@@ -206,27 +213,30 @@ const Sidebar = () => {
                                     </DropdownMenuItem>
                                 </DropdownMenuContent>
                             </DropdownMenu>
-                        )}
+                        )
+                        }
 
-                        {/* Theme Switcher */}
                         <button
                             onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
                             className="flex items-center justify-center w-full rounded-lg p-3 text-sm font-medium text-muted-foreground hover:text-foreground transition-all hover:bg-muted group"
                             title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
                         >
-                            {theme === 'dark' ? (
+                            {
+                            theme === 'dark' ? (
                                 <Sun className="h-5 w-5 stroke-2" />
                             ) : (
                                 <Moon className="h-5 w-5 stroke-2" />
-                            )}
+                            )
+                            }
                         </button>
 
-                        {/* Profile Dropdown */}
-                        {status === "authenticated" && session ? (
+                        {
+                        status === "authenticated" && session ? (
                             <DropdownMenu open={profileDropdownOpen} onOpenChange={setProfileDropdownOpen}>
                                 <DropdownMenuTrigger asChild>
                                     <button className="flex items-center justify-center w-full rounded-lg p-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-all hover:bg-muted group">
-                                        {session?.user?.image ? (
+                                        {
+                                        session?.user?.image ? (
                                             <Image
                                                 className="h-6 w-6 rounded-full"
                                                 src={session.user.image}
@@ -283,7 +293,7 @@ const Sidebar = () => {
                                     </DropdownMenuItem>
 
                                     {/* Role Settings for Product Managers */}
-                                    {session.user.role === "PRODUCTMANAGER" && (
+                                    {session.user.role === "TEAM_HEAD" && (
                                         <DropdownMenuItem onClick={() => handleLinkClick('role-settings')} className="cursor-pointer">
                                             <div className="flex items-center gap-3 w-full">
                                                 <div className="w-8 h-8 bg-orange-100 dark:bg-orange-900 rounded-lg flex items-center justify-center">

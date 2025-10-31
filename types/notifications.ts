@@ -1,6 +1,6 @@
 // Notifications related types and interfaces
 
-// Notification types
+// Notification types - must match Prisma schema enum
 export type NotificationType = 
     | 'PROJECT_ASSIGNED' 
     | 'TASK_ASSIGNED' 
@@ -10,6 +10,7 @@ export type NotificationType =
     | 'CLIENT_ONBOARDED' 
     | 'FEEDBACK_RECEIVED' 
     | 'MENTION'
+    | 'TEAM_INVITATION'
     | 'GENERAL';
     
 export interface Notification {

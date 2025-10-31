@@ -1,21 +1,21 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { 
+    Select, SelectContent, SelectItem, SelectTrigger, SelectValue 
+} from "@/components/ui/select"
 import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { 
-    CalendarIcon, Plus, Loader2, Users, Eye, EyeOff, 
-    Building2, DollarSign, X, Code, Megaphone, 
-    ShoppingCart, Palette, Briefcase, Settings
+    CalendarIcon, Plus, Loader2, Users, Eye, EyeOff, Building2, DollarSign, X, 
+    Code, Megaphone, ShoppingCart, Palette, Briefcase, Settings
 } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { format } from "date-fns"
@@ -24,6 +24,7 @@ import { createProject } from "@/actions/projects.action"
 import { getCompanyTeams } from "@/actions/teams.action"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "../ui/sheet"
 
 // Team type icon mapping
 const TEAM_ICONS = {
@@ -46,12 +47,12 @@ interface Team {
     name: string
     displayName: string
     teamType: TeamType
-    color?: string
+    color?: string | null
     head?: {
         id: string
-        name: string
-        image?: string
-    }
+        name: string | null
+        image?: string | null
+    } | null
 }
 
 export function CreateProjectModal({ trigger, onSuccess }: CreateProjectModalProps) {
@@ -194,26 +195,24 @@ export function CreateProjectModal({ trigger, onSuccess }: CreateProjectModalPro
     const selectedTeams = availableTeams.filter(team => selectedTeamIds.includes(team.id))
 
     return (
-        <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger asChild>
+        <Sheet open={open} onOpenChange={setOpen}>
+            <SheetTrigger asChild>
                 {trigger || (
                     <Button className="gap-2">
                         <Plus className="h-4 w-4" />
                         New Project
                     </Button>
                 )}
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto">
-                <DialogHeader>
-                    <DialogTitle className="flex items-center gap-2">
+            </SheetTrigger>
+            <SheetContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto">
+                <SheetHeader>
+                    <SheetTitle className="flex items-center gap-2">
                         <Building2 className="w-5 h-5" />
                         Create New Project
-                    </DialogTitle>
-                </DialogHeader>
-                
+                    </SheetTitle>
+                </SheetHeader>
                 <form onSubmit={handleSubmit} className="space-y-6">
-                    {/* Basic Information */}
-                    <div className="space-y-4">
+                                        <div className="space-y-4">
                         <h3 className="text-lg font-semibold">Project Details</h3>
                         
                         <div className="space-y-2">
@@ -227,7 +226,6 @@ export function CreateProjectModal({ trigger, onSuccess }: CreateProjectModalPro
                                 disabled={isLoading}
                             />
                         </div>
-
                         <div className="space-y-2">
                             <Label htmlFor="description">Description</Label>
                             <Textarea
@@ -239,7 +237,6 @@ export function CreateProjectModal({ trigger, onSuccess }: CreateProjectModalPro
                                 disabled={isLoading}
                             />
                         </div>
-
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
                                 <Label htmlFor="budget">Budget *</Label>
@@ -273,7 +270,6 @@ export function CreateProjectModal({ trigger, onSuccess }: CreateProjectModalPro
                                 </Select>
                             </div>
                         </div>
-
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
                                 <Label>Start Date *</Label>
@@ -333,7 +329,6 @@ export function CreateProjectModal({ trigger, onSuccess }: CreateProjectModalPro
 
                     <Separator />
 
-                    {/* Client Information */}
                     <div className="space-y-4">
                         <h3 className="text-lg font-semibold">Client Information</h3>
                         
@@ -350,7 +345,8 @@ export function CreateProjectModal({ trigger, onSuccess }: CreateProjectModalPro
                             </Select>
                         </div>
 
-                        {clientType === ClientType.EXTERNAL && (
+                        {
+                        clientType === ClientType.EXTERNAL && (
                             <div className="space-y-2">
                                 <Label htmlFor="clientEmail">Client Email *</Label>
                                 <Input
@@ -365,23 +361,26 @@ export function CreateProjectModal({ trigger, onSuccess }: CreateProjectModalPro
                                     If the client doesn&apos;t exist, a new account will be created
                                 </p>
                             </div>
-                        )}
+                        )
+                        }
                     </div>
 
                     <Separator />
 
-                    {/* Team Assignment */}
                     <div className="space-y-4">
                         <div className="flex items-center justify-between">
                             <h3 className="text-lg font-semibold">Assign Teams</h3>
-                            {selectedTeams.length > 0 && (
+                            {
+                            selectedTeams.length > 0 && (
                                 <Badge variant="secondary">
                                     {selectedTeams.length} team{selectedTeams.length > 1 ? 's' : ''} selected
                                 </Badge>
-                            )}
+                            )
+                            }
                         </div>
                         
-                        {teamsLoading ? (
+                        {
+                        teamsLoading ? (
                             <div className="flex items-center justify-center py-8">
                                 <Loader2 className="w-6 h-6 animate-spin" />
                                 <span className="ml-2 text-sm text-muted-foreground">Loading teams...</span>
@@ -393,7 +392,8 @@ export function CreateProjectModal({ trigger, onSuccess }: CreateProjectModalPro
                             </div>
                         ) : (
                             <div className="space-y-3">
-                                {availableTeams.map((team) => {
+                                {
+                                availableTeams.map((team) => {
                                     const IconComponent = TEAM_ICONS[team.teamType] || Users
                                     const isSelected = selectedTeamIds.includes(team.id)
                                     
@@ -428,10 +428,11 @@ export function CreateProjectModal({ trigger, onSuccess }: CreateProjectModalPro
                                                     {team.teamType.charAt(0) + team.teamType.slice(1).toLowerCase()} Team
                                                 </p>
                                             </div>
-                                            {team.head && (
+                                            {
+                                            team.head && (
                                                 <div className="flex items-center gap-2">
                                                     <Avatar className="w-6 h-6">
-                                                        <AvatarImage src={team.head.image} />
+                                                        <AvatarImage src={team.head.image!} />
                                                         <AvatarFallback className="text-xs">
                                                             {team.head.name?.[0] || 'U'}
                                                         </AvatarFallback>
@@ -440,16 +441,21 @@ export function CreateProjectModal({ trigger, onSuccess }: CreateProjectModalPro
                                                         {team.head.name}
                                                     </span>
                                                 </div>
-                                            )}
+                                            )
+                                            }
                                         </div>
                                     )
-                                })}
+                                })
+                                }
                             </div>
-                        )}
+                        )
+                        }
                         
-                        {selectedTeams.length > 0 && (
+                        {
+                        selectedTeams.length > 0 && (
                             <div className="flex flex-wrap gap-2 pt-2">
-                                {selectedTeams.map((team) => (
+                                {
+                                selectedTeams.map((team) => (
                                     <Badge key={team.id} variant="secondary" className="gap-1">
                                         {team.displayName}
                                         <X 
@@ -457,14 +463,15 @@ export function CreateProjectModal({ trigger, onSuccess }: CreateProjectModalPro
                                             onClick={() => handleTeamToggle(team.id)}
                                         />
                                     </Badge>
-                                ))}
+                                ))
+                                }
                             </div>
-                        )}
+                        )
+                        }
                     </div>
 
                     <Separator />
 
-                    {/* Project Visibility */}
                     <div className="space-y-4">
                         <h3 className="text-lg font-semibold">Project Visibility</h3>
                         
@@ -497,7 +504,8 @@ export function CreateProjectModal({ trigger, onSuccess }: CreateProjectModalPro
                             </Select>
                             
                             <p className="text-xs text-muted-foreground">
-                                {visibility === ProjectVisibility.PUBLIC 
+                                {
+                                visibility === ProjectVisibility.PUBLIC 
                                     ? "Team members can see this project if it's assigned to their team."
                                     : "Only invited members and assigned teams can access this project."
                                 }
@@ -507,7 +515,6 @@ export function CreateProjectModal({ trigger, onSuccess }: CreateProjectModalPro
 
                     <Separator />
 
-                    {/* Project Links (Optional) */}
                     <div className="space-y-4">
                         <h3 className="text-lg font-semibold">Project Links (Optional)</h3>
                         
@@ -570,8 +577,6 @@ export function CreateProjectModal({ trigger, onSuccess }: CreateProjectModalPro
                             />
                         </div>
                     </div>
-
-                    {/* Actions */}
                     <div className="flex justify-end gap-3 pt-4">
                         <Button
                             type="button"
@@ -586,16 +591,18 @@ export function CreateProjectModal({ trigger, onSuccess }: CreateProjectModalPro
                             disabled={isLoading || selectedTeamIds.length === 0}
                             className="gap-2"
                         >
-                            {isLoading ? (
+                            {
+                            isLoading ? (
                                 <Loader2 className="w-4 h-4 animate-spin" />
                             ) : (
                                 <Plus className="w-4 h-4" />
-                            )}
+                            )
+                            }
                             Create Project
                         </Button>
                     </div>
                 </form>
-            </DialogContent>
-        </Dialog>
+            </SheetContent>
+        </Sheet>
     )
 }

@@ -25,6 +25,7 @@ import { cn } from "@/lib/utils"
 import { getRecentNotifications, markNotificationAsRead } from "@/actions/notifications.action"
 import { format } from "date-fns"
 import { Notification } from "@/types/notifications"
+import { ThemeToggle } from "./themeswitcher"
 
 const MainNavbar = ({ isCollapsed }: { isCollapsed: boolean }) => {
     const { data: session } = useSession();
@@ -248,32 +249,7 @@ const MainNavbar = ({ isCollapsed }: { isCollapsed: boolean }) => {
                             )
                         }
                         <div className="hidden md:flex items-center bg-muted/50 rounded-xl p-1 border border-border/50">
-                            <Button
-                                variant="ghost"
-                                size="sm"
-                                className={cn(
-                                    "h-8 w-8 p-0 rounded-lg transition-all cursor-pointer",
-                                    theme === "light"
-                                        ? "bg-background shadow-sm border border-border/50"
-                                        : "hover:bg-muted"
-                                )}
-                                onClick={() => setTheme("light")}
-                            >
-                                <Sun className="h-4 w-4 text-foreground" />
-                            </Button>
-                            <Button
-                                variant="ghost"
-                                size="sm"
-                                className={cn(
-                                    "h-8 w-8 p-0 rounded-lg transition-all cursor-pointer",
-                                    theme === "dark"
-                                        ? "bg-background shadow-sm border border-border/50"
-                                        : "hover:bg-muted"
-                                )}
-                                onClick={() => setTheme("dark")}
-                            >
-                                <Moon className="h-4 w-4 text-foreground" />
-                            </Button>
+                            <ThemeToggle />
                         </div>
                         {
                             session?.user ? (
@@ -337,9 +313,8 @@ const MainNavbar = ({ isCollapsed }: { isCollapsed: boolean }) => {
                                             <Users className="mr-2 h-4 w-4" />
                                             <span>Associations</span>
                                         </DropdownMenuItem>
-                                        {/* Role Settings for Product Managers */}
                                         {
-                                            session.user.role === "PRODUCTMANAGER" && (
+                                            session.user.role === "TEAM_HEAD" && (
                                                 <DropdownMenuItem className="cursor-pointer" onClick={() => router.push("/role-settings")}>
                                                     <Settings className="mr-2 h-4 w-4" />
                                                     <span>Role Settings</span>
