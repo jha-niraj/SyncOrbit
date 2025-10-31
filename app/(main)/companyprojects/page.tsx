@@ -1,18 +1,20 @@
 import { auth } from "@/auth"
-import { getUserProjects } from "@/actions/projects.action"
+import { getCompanyProjects } from "@/actions/projects.action"
 import {
     Card, CardContent, CardHeader, CardTitle
 } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import {
+    Avatar, AvatarFallback, AvatarImage
+} from "@/components/ui/avatar"
 import { Progress } from "@/components/ui/progress"
 import {
     Building2, Users, DollarSign, EyeOff, Code, Megaphone, ShoppingCart, Palette,
-    Briefcase, Settings, MessageSquare, FileText, CheckCircle, Clock, AlertCircle
+    Briefcase, Settings, MessageSquare, FileText, Plus, TrendingUp
 } from "lucide-react"
 import {
-    ProjectVisibility, Status, TaskStatus, TeamType
+    ProjectVisibility, Status, TaskStatus, TeamType, Role
 } from "@prisma/client"
 import { redirect } from "next/navigation"
 import Link from "next/link"
@@ -37,14 +39,6 @@ const STATUS_COLORS = {
     [Status.CANCELLED]: "bg-red-500",
 }
 
-// Status icons
-const STATUS_ICONS = {
-    [Status.IN_PROGRESS]: Clock,
-    [Status.COMPLETED]: CheckCircle,
-    [Status.ON_HOLD]: AlertCircle,
-    [Status.CANCELLED]: AlertCircle,
-}
-
 function getTaskProgress(tasks: any[]) {
     if (tasks.length === 0) return 0
     const completedTasks = tasks.filter(task => task.status === TaskStatus.COMPLETED).length
@@ -60,21 +54,26 @@ function formatCurrency(amount: number, currency: string) {
     return `${symbols[currency] || '$'}${amount.toLocaleString()}`
 }
 
-export default async function ProjectsPage() {
+export default async function CompanyProjectsPage() {
     const session = await auth()
 
     if (!session?.user) {
         redirect('/signin')
     }
 
-    const result = await getUserProjects()
+    // Only Company Owners and Team Heads can access this page
+    if (session.user.role !== Role.COMPANY_OWNER && session.user.role !== Role.TEAM_HEAD) {
+        redirect('/projects')
+    }
+
+    const result = await getCompanyProjects()
 
     if (!result.success) {
         return (
             <div className="container mx-auto py-8">
                 <Card>
                     <CardContent className="py-8 text-center">
-                        <p className="text-muted-foreground">Failed to load projects</p>
+                        <p className="text-muted-foreground">Failed to load company projects</p>
                         <p className="text-sm text-muted-foreground mt-2">
                             {result.error}
                         </p>
@@ -85,24 +84,103 @@ export default async function ProjectsPage() {
     }
 
     const { projects } = result
+    const isCompanyOwner = session.user.role === Role.COMPANY_OWNER
+
+    // Calculate company-wide statistics
+    const stats = {
+        total: projects.length,
+        active: projects.filter(p => p.status === Status.IN_PROGRESS).length,
+        completed: projects.filter(p => p.status === Status.COMPLETED).length,
+        onHold: projects.filter(p => p.status === Status.ON_HOLD).length,
+        totalBudget: projects.reduce((sum, p) => sum + p.budget, 0),
+        totalTasks: projects.reduce((sum, p) => sum + (p._count?.tasks || 0), 0),
+        completedTasks: projects.reduce((sum, p) => sum + p.tasks.filter(t => t.status === TaskStatus.COMPLETED).length, 0)
+    }
+
+    const overallProgress = stats.totalTasks > 0 ? Math.round((stats.completedTasks / stats.totalTasks) * 100) : 0
 
     return (
         <div className="container mx-auto py-8">
             <div className="flex items-center justify-between mb-8">
                 <div>
-                    <h1 className="text-3xl font-bold">My Projects</h1>
+                    <h1 className="text-3xl font-bold">
+                        {isCompanyOwner ? 'All Company Projects' : 'Team Projects Overview'}
+                    </h1>
                     <p className="text-muted-foreground mt-1">
-                        Manage your assigned projects and collaborate with your teams
+                        {
+                            isCompanyOwner
+                                ? 'Manage and oversee all projects across your company'
+                                : 'View projects assigned to your teams'
+                        }
                     </p>
                 </div>
-                <CreateProjectModal
-                    trigger={
-                        <Button className="gap-2">
-                            <Building2 className="w-4 h-4" />
-                            New Project
-                        </Button>
-                    }
-                />
+                {
+                    isCompanyOwner && (
+                        <CreateProjectModal
+                            trigger={
+                                <Button className="gap-2">
+                                    <Plus className="w-4 h-4" />
+                                    New Project
+                                </Button>
+                            }
+                        />
+                    )
+                }
+            </div>
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 mb-8">
+                <Card>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium">Total Projects</CardTitle>
+                        <Building2 className="h-4 w-4 text-muted-foreground" />
+                    </CardHeader>
+                    <CardContent>
+                        <div className="text-2xl font-bold">{stats.total}</div>
+                        <div className="flex gap-2 mt-2">
+                            <Badge variant="outline" className="text-xs">
+                                {stats.active} Active
+                            </Badge>
+                            <Badge variant="outline" className="text-xs">
+                                {stats.completed} Done
+                            </Badge>
+                        </div>
+                    </CardContent>
+                </Card>
+                <Card>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium">Total Budget</CardTitle>
+                        <DollarSign className="h-4 w-4 text-muted-foreground" />
+                    </CardHeader>
+                    <CardContent>
+                        <div className="text-2xl font-bold">
+                            ${stats.totalBudget.toLocaleString()}
+                        </div>
+                        <p className="text-xs text-muted-foreground">
+                            Across all projects
+                        </p>
+                    </CardContent>
+                </Card>
+                <Card>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium">Overall Progress</CardTitle>
+                        <TrendingUp className="h-4 w-4 text-muted-foreground" />
+                    </CardHeader>
+                    <CardContent>
+                        <div className="text-2xl font-bold">{overallProgress}%</div>
+                        <Progress value={overallProgress} className="h-2 mt-2" />
+                    </CardContent>
+                </Card>
+                <Card>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium">Total Tasks</CardTitle>
+                        <FileText className="h-4 w-4 text-muted-foreground" />
+                    </CardHeader>
+                    <CardContent>
+                        <div className="text-2xl font-bold">{stats.totalTasks}</div>
+                        <p className="text-xs text-muted-foreground">
+                            {stats.completedTasks} completed
+                        </p>
+                    </CardContent>
+                </Card>
             </div>
             {
                 projects.length === 0 ? (
@@ -111,16 +189,24 @@ export default async function ProjectsPage() {
                             <Building2 className="w-16 h-16 mx-auto text-muted-foreground mb-4 opacity-50" />
                             <h3 className="text-lg font-semibold mb-2">No projects found</h3>
                             <p className="text-muted-foreground mb-4">
-                                You haven&apos;t been assigned to any projects yet, or there are no projects created.
-                            </p>
-                            <CreateProjectModal
-                                trigger={
-                                    <Button className="gap-2">
-                                        <Building2 className="w-4 h-4" />
-                                        Create First Project
-                                    </Button>
+                                {
+                                    isCompanyOwner
+                                        ? "No projects have been created in your company yet."
+                                        : "No projects are assigned to your teams yet."
                                 }
-                            />
+                            </p>
+                            {
+                                isCompanyOwner && (
+                                    <CreateProjectModal
+                                        trigger={
+                                            <Button className="gap-2">
+                                                <Plus className="w-4 h-4" />
+                                                Create First Project
+                                            </Button>
+                                        }
+                                    />
+                                )
+                            }
                         </CardContent>
                     </Card>
                 ) : (
@@ -128,7 +214,6 @@ export default async function ProjectsPage() {
                         {
                             projects.map((project) => {
                                 const progress = getTaskProgress(project.tasks)
-                                // const StatusIcon = STATUS_ICONS[project.status]
 
                                 return (
                                     <Card key={project.id} className="group hover:shadow-lg transition-shadow">
@@ -144,6 +229,9 @@ export default async function ProjectsPage() {
                                                                 <EyeOff className="w-4 h-4 text-muted-foreground" />
                                                             )
                                                         }
+                                                        <Badge variant="outline" className="text-xs">
+                                                            {project.status.toLowerCase().replace('_', ' ')}
+                                                        </Badge>
                                                     </div>
 
                                                     {

@@ -1,15 +1,23 @@
 "use client"
 
 import { useState, useRef, useEffect } from "react"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { 
+    Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger 
+} from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { 
+    Select, SelectContent, SelectItem, SelectTrigger, SelectValue 
+} from "@/components/ui/select"
 import { Calendar } from "@/components/ui/calendar"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { CalendarIcon, Plus, Loader2, Search, Users, X } from "lucide-react"
+import { 
+    Popover, PopoverContent, PopoverTrigger 
+} from "@/components/ui/popover"
+import { 
+    CalendarIcon, Plus, Loader2, Search, X 
+} from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { motion, AnimatePresence } from "framer-motion"
 import { format } from "date-fns"
@@ -120,7 +128,7 @@ export function CreateProjectModal({ trigger, onSuccess }: CreateProjectModalPro
 
     // Close dropdown when clicking outside
     useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
+        const handleClickOutside = () => {
             if (showSearchDropdown) {
                 setShowSearchDropdown(false)
             }

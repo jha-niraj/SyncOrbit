@@ -1,6 +1,7 @@
 
 import React, { useState } from "react";
 import { toast } from "sonner";
+
 const DetailsSection = () => {
     const [formData, setFormData] = useState({
         fullName: "",
@@ -39,9 +40,7 @@ const DetailsSection = () => {
     return <section id="details" className="w-full bg-white py-0">
         <div className="container px-4 sm:px-6 lg:px-8 mx-auto">
             <div className="grid grid-cols-1 gap-6 md:gap-8 lg:grid-cols-2">
-                {/* Left Card - The Details */}
                 <div className="rounded-2xl sm:rounded-3xl overflow-hidden shadow-elegant">
-                    {/* Card Header with background image instead of gradient */}
                     <div className="relative h-48 sm:h-64 p-6 sm:p-8 flex items-end" style={{
                         backgroundImage: "url('/background-section3.png')",
                         backgroundSize: "cover",
@@ -52,7 +51,6 @@ const DetailsSection = () => {
                         </h2>
                     </div>
 
-                    {/* Card Content */}
                     <div className="bg-white p-4 sm:p-8" style={{
                         backgroundColor: "#FFFFFF",
                         border: "1px solid #ECECEC"
@@ -70,7 +68,7 @@ const DetailsSection = () => {
                                 </div>
                                 <div className="flex-1">
                                     <div className="p-3 rounded-lg bg-gray-50/80 backdrop-blur-sm border border-gray-100">
-                                        <span className="font-semibold text-base">Height:</span> 5'8"
+                                        <span className="font-semibold text-base">Height:</span> 5&apos;8&quot;
                                     </div>
                                 </div>
                             </div>

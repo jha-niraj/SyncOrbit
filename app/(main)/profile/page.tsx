@@ -4,7 +4,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Separator } from "@/components/ui/separator"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -14,10 +13,9 @@ import {
     DropdownMenuTrigger, DropdownMenuSeparator
 } from "@/components/ui/dropdown-menu"
 import {
-    User, Mail, Calendar, MapPin, Building2, Shield, Settings,
-    Users, Plus, Edit, Trash2, MoreVertical, Star, Award,
-    Code, Megaphone, ShoppingCart, Palette, Briefcase, Settings as SettingsIcon,
-    Crown, UserCheck, UserX, Send, Clock
+    User, Mail, Calendar, Building2, Shield, Users, Plus, Edit, Trash2, MoreVertical,
+    Star, Award, Code, Megaphone, ShoppingCart, Palette, Briefcase, Settings as SettingsIcon,
+    Crown, UserCheck
 } from "lucide-react"
 import { Role, TeamType } from "@prisma/client"
 import { prisma } from "@/lib/prisma"
@@ -157,13 +155,13 @@ async function getUserProfile(userId: string) {
 
 export default async function ProfilePage() {
     const session = await auth()
-    
+
     if (!session?.user) {
         redirect('/signin')
     }
 
     const userProfile = await getUserProfile(session.user.id)
-    
+
     if (!userProfile) {
         redirect('/signin')
     }
@@ -174,7 +172,6 @@ export default async function ProfilePage() {
 
     return (
         <div className="container mx-auto py-8 space-y-8">
-            {/* Header */}
             <div className="flex items-center gap-6">
                 <Avatar className="w-20 h-20">
                     <AvatarImage src={userProfile.image || undefined} />
@@ -182,7 +179,6 @@ export default async function ProfilePage() {
                         {userProfile.name?.[0] || userProfile.email?.[0] || 'U'}
                     </AvatarFallback>
                 </Avatar>
-                
                 <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2">
                         <h1 className="text-3xl font-bold">
@@ -193,34 +189,30 @@ export default async function ProfilePage() {
                             {userProfile.role.replace('_', ' ').toLowerCase()}
                         </Badge>
                     </div>
-                    
                     <div className="flex items-center gap-4 text-muted-foreground">
                         <div className="flex items-center gap-1">
                             <Mail className="w-4 h-4" />
                             <span>{userProfile.email}</span>
                         </div>
-                        
-                        {userProfile.company && (
-                            <div className="flex items-center gap-1">
-                                <Building2 className="w-4 h-4" />
-                                <span>{userProfile.company.name}</span>
-                            </div>
-                        )}
-                        
+                        {
+                            userProfile.company && (
+                                <div className="flex items-center gap-1">
+                                    <Building2 className="w-4 h-4" />
+                                    <span>{userProfile.company.name}</span>
+                                </div>
+                            )
+                        }
                         <div className="flex items-center gap-1">
                             <Calendar className="w-4 h-4" />
                             <span>Joined {format(new Date(userProfile.createdAt), 'MMM yyyy')}</span>
                         </div>
                     </div>
                 </div>
-                
                 <Button className="gap-2">
                     <Edit className="w-4 h-4" />
                     Edit Profile
                 </Button>
             </div>
-
-            {/* Stats Cards */}
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
                 <Card>
                     <CardContent className="pt-6">
@@ -237,7 +229,6 @@ export default async function ProfilePage() {
                         </div>
                     </CardContent>
                 </Card>
-
                 <Card>
                     <CardContent className="pt-6">
                         <div className="flex items-center gap-4">
@@ -251,7 +242,6 @@ export default async function ProfilePage() {
                         </div>
                     </CardContent>
                 </Card>
-
                 <Card>
                     <CardContent className="pt-6">
                         <div className="flex items-center gap-4">
@@ -265,7 +255,6 @@ export default async function ProfilePage() {
                         </div>
                     </CardContent>
                 </Card>
-
                 <Card>
                     <CardContent className="pt-6">
                         <div className="flex items-center gap-4">
@@ -280,8 +269,6 @@ export default async function ProfilePage() {
                     </CardContent>
                 </Card>
             </div>
-
-            {/* Main Content Tabs */}
             <Tabs defaultValue="overview" className="space-y-4">
                 <TabsList className="grid w-full grid-cols-4">
                     <TabsTrigger value="overview">Overview</TabsTrigger>
@@ -289,238 +276,245 @@ export default async function ProfilePage() {
                     <TabsTrigger value="company">Company</TabsTrigger>
                     <TabsTrigger value="settings">Settings</TabsTrigger>
                 </TabsList>
-
                 <TabsContent value="overview" className="space-y-6">
-                    {/* Team Memberships */}
                     <Card>
                         <CardHeader>
                             <CardTitle>Team Memberships</CardTitle>
                         </CardHeader>
                         <CardContent>
-                            {userProfile.teamMemberships.length > 0 ? (
-                                <div className="space-y-4">
-                                    {userProfile.teamMemberships.map((membership) => {
-                                        const TeamIcon = TEAM_ICONS[membership.team.teamType] || Users
-                                        return (
-                                            <div key={membership.id} className="flex items-center justify-between p-4 border rounded-lg">
-                                                <div className="flex items-center gap-3">
-                                                    <div
-                                                        className="w-10 h-10 rounded-lg flex items-center justify-center"
-                                                        style={{
-                                                            backgroundColor: membership.team.color ? `${membership.team.color}20` : '#f1f5f9',
-                                                            color: membership.team.color || '#64748b'
-                                                        }}
-                                                    >
-                                                        <TeamIcon className="w-5 h-5" />
-                                                    </div>
-                                                    <div>
-                                                        <h3 className="font-medium">{membership.team.displayName}</h3>
-                                                        <p className="text-sm text-muted-foreground">
-                                                            Led by {membership.team.head?.name || 'No head assigned'}
-                                                        </p>
-                                                    </div>
-                                                </div>
-                                                
-                                                <div className="flex items-center gap-2">
-                                                    <Badge variant="outline" className="capitalize">
-                                                        {membership.roleTitle}
-                                                    </Badge>
-                                                    <Badge variant="secondary">
-                                                        {membership.team.teamType.toLowerCase()}
-                                                    </Badge>
-                                                </div>
-                                            </div>
-                                        )
-                                    })}
-                                </div>
-                            ) : (
-                                <div className="text-center py-8 text-muted-foreground">
-                                    <Users className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                                    <p>You&apos;re not a member of any teams yet.</p>
-                                </div>
-                            )}
-                        </CardContent>
-                    </Card>
-                </TabsContent>
-
-                <TabsContent value="teams" className="space-y-6">
-                    {/* Teams I Lead */}
-                    {userProfile.role !== Role.CLIENT && userProfile.ledTeams.length > 0 && (
-                        <Card>
-                            <CardHeader>
-                                <CardTitle className="flex items-center gap-2">
-                                    <Shield className="w-5 h-5" />
-                                    Teams I Lead
-                                </CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="space-y-4">
-                                    {userProfile.ledTeams.map((team) => {
-                                        const TeamIcon = TEAM_ICONS[team.teamType] || Users
-                                        return (
-                                            <Card key={team.id}>
-                                                <CardHeader>
-                                                    <div className="flex items-center justify-between">
+                            {
+                                userProfile.teamMemberships.length > 0 ? (
+                                    <div className="space-y-4">
+                                        {
+                                            userProfile.teamMemberships.map((membership) => {
+                                                const TeamIcon = TEAM_ICONS[membership.team.teamType] || Users
+                                                return (
+                                                    <div key={membership.id} className="flex items-center justify-between p-4 border rounded-lg">
                                                         <div className="flex items-center gap-3">
                                                             <div
                                                                 className="w-10 h-10 rounded-lg flex items-center justify-center"
                                                                 style={{
-                                                                    backgroundColor: team.color ? `${team.color}20` : '#f1f5f9',
-                                                                    color: team.color || '#64748b'
+                                                                    backgroundColor: membership.team.color ? `${membership.team.color}20` : '#f1f5f9',
+                                                                    color: membership.team.color || '#64748b'
                                                                 }}
                                                             >
                                                                 <TeamIcon className="w-5 h-5" />
                                                             </div>
                                                             <div>
-                                                                <h3 className="font-semibold">{team.displayName}</h3>
+                                                                <h3 className="font-medium">{membership.team.displayName}</h3>
                                                                 <p className="text-sm text-muted-foreground">
-                                                                    {team.teamType.toLowerCase()} team
+                                                                    Led by {membership.team.head?.name || 'No head assigned'}
                                                                 </p>
                                                             </div>
                                                         </div>
-                                                        
-                                                        <div className="flex items-center gap-4">
-                                                            <div className="text-center">
-                                                                <div className="text-lg font-semibold">{team._count.members}</div>
-                                                                <div className="text-xs text-muted-foreground">Members</div>
-                                                            </div>
-                                                            <div className="text-center">
-                                                                <div className="text-lg font-semibold">{team._count.assignedProjects}</div>
-                                                                <div className="text-xs text-muted-foreground">Projects</div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </CardHeader>
-                                                
-                                                <CardContent>
-                                                    <div className="space-y-3">
-                                                        <h4 className="text-sm font-medium">Team Members</h4>
-                                                        {team.members.length > 0 ? (
-                                                            <div className="grid gap-3 md:grid-cols-2">
-                                                                {team.members.map((member) => (
-                                                                    <div key={member.id} className="flex items-center gap-3">
-                                                                        <Avatar className="w-8 h-8">
-                                                                            <AvatarImage src={member.user.image || undefined} />
-                                                                            <AvatarFallback className="text-xs">
-                                                                                {member.user.name?.[0] || 'U'}
-                                                                            </AvatarFallback>
-                                                                        </Avatar>
-                                                                        <div className="flex-1">
-                                                                            <p className="text-sm font-medium">{member.user.name}</p>
-                                                                            <p className="text-xs text-muted-foreground">
-                                                                                {member.roleTitle}
-                                                                            </p>
-                                                                        </div>
-                                                                    </div>
-                                                                ))}
-                                                            </div>
-                                                        ) : (
-                                                            <p className="text-sm text-muted-foreground">No members yet</p>
-                                                        )}
-                                                    </div>
-                                                </CardContent>
-                                            </Card>
-                                        )
-                                    })}
-                                </div>
-                            </CardContent>
-                        </Card>
-                    )}
 
-                    {/* All Company Teams (for Company Owners) */}
-                    {userProfile.role === Role.COMPANY_OWNER && userProfile.ownedCompany && (
-                        <Card>
-                            <CardHeader>
-                                <CardTitle className="flex items-center justify-between">
-                                    <div className="flex items-center gap-2">
-                                        <Building2 className="w-5 h-5" />
-                                        Company Teams
-                                    </div>
-                                    <Button className="gap-2">
-                                        <Plus className="w-4 h-4" />
-                                        Add Team
-                                    </Button>
-                                </CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                {userProfile.ownedCompany.teams.length > 0 ? (
-                                    <div className="space-y-4">
-                                        {userProfile.ownedCompany.teams.map((team) => {
-                                            const TeamIcon = TEAM_ICONS[team.teamType] || Users
-                                            return (
-                                                <div key={team.id} className="flex items-center justify-between p-4 border rounded-lg">
-                                                    <div className="flex items-center gap-3">
-                                                        <div
-                                                            className="w-10 h-10 rounded-lg flex items-center justify-center"
-                                                            style={{
-                                                                backgroundColor: team.color ? `${team.color}20` : '#f1f5f9',
-                                                                color: team.color || '#64748b'
-                                                            }}
-                                                        >
-                                                            <TeamIcon className="w-5 h-5" />
-                                                        </div>
-                                                        <div>
-                                                            <h3 className="font-medium">{team.displayName}</h3>
-                                                            <p className="text-sm text-muted-foreground">
-                                                                {team.head?.name ? `Led by ${team.head.name}` : 'No head assigned'}
-                                                            </p>
+                                                        <div className="flex items-center gap-2">
+                                                            <Badge variant="outline" className="capitalize">
+                                                                {membership.roleTitle}
+                                                            </Badge>
+                                                            <Badge variant="secondary">
+                                                                {membership.team.teamType.toLowerCase()}
+                                                            </Badge>
                                                         </div>
                                                     </div>
-                                                    
-                                                    <div className="flex items-center gap-4">
-                                                        <div className="text-center">
-                                                            <div className="text-sm font-semibold">{team._count.members}</div>
-                                                            <div className="text-xs text-muted-foreground">Members</div>
-                                                        </div>
-                                                        <div className="text-center">
-                                                            <div className="text-sm font-semibold">{team._count.assignedProjects}</div>
-                                                            <div className="text-xs text-muted-foreground">Projects</div>
-                                                        </div>
-                                                        
-                                                        <DropdownMenu>
-                                                            <DropdownMenuTrigger asChild>
-                                                                <Button variant="ghost" size="sm">
-                                                                    <MoreVertical className="w-4 h-4" />
-                                                                </Button>
-                                                            </DropdownMenuTrigger>
-                                                            <DropdownMenuContent align="end">
-                                                                <DropdownMenuItem>
-                                                                    <Edit className="w-4 h-4 mr-2" />
-                                                                    Edit Team
-                                                                </DropdownMenuItem>
-                                                                <DropdownMenuItem>
-                                                                    <Users className="w-4 h-4 mr-2" />
-                                                                    Manage Members
-                                                                </DropdownMenuItem>
-                                                                <DropdownMenuSeparator />
-                                                                <DropdownMenuItem className="text-red-600">
-                                                                    <Trash2 className="w-4 h-4 mr-2" />
-                                                                    Delete Team
-                                                                </DropdownMenuItem>
-                                                            </DropdownMenuContent>
-                                                        </DropdownMenu>
-                                                    </div>
-                                                </div>
-                                            )
-                                        })}
+                                                )
+                                            })
+                                        }
                                     </div>
                                 ) : (
                                     <div className="text-center py-8 text-muted-foreground">
                                         <Users className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                                        <p>No teams created yet.</p>
-                                        <Button className="mt-4 gap-2">
-                                            <Plus className="w-4 h-4" />
-                                            Create First Team
-                                        </Button>
+                                        <p>You&apos;re not a member of any teams yet.</p>
                                     </div>
-                                )}
-                            </CardContent>
-                        </Card>
-                    )}
+                                )
+                            }
+                        </CardContent>
+                    </Card>
                 </TabsContent>
+                <TabsContent value="teams" className="space-y-6">
+                    {
+                        userProfile.role !== Role.CLIENT && userProfile.ledTeams.length > 0 && (
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle className="flex items-center gap-2">
+                                        <Shield className="w-5 h-5" />
+                                        Teams I Lead
+                                    </CardTitle>
+                                </CardHeader>
+                                <CardContent>
+                                    <div className="space-y-4">
+                                        {
+                                            userProfile.ledTeams.map((team) => {
+                                                const TeamIcon = TEAM_ICONS[team.teamType] || Users
+                                                return (
+                                                    <Card key={team.id}>
+                                                        <CardHeader>
+                                                            <div className="flex items-center justify-between">
+                                                                <div className="flex items-center gap-3">
+                                                                    <div
+                                                                        className="w-10 h-10 rounded-lg flex items-center justify-center"
+                                                                        style={{
+                                                                            backgroundColor: team.color ? `${team.color}20` : '#f1f5f9',
+                                                                            color: team.color || '#64748b'
+                                                                        }}
+                                                                    >
+                                                                        <TeamIcon className="w-5 h-5" />
+                                                                    </div>
+                                                                    <div>
+                                                                        <h3 className="font-semibold">{team.displayName}</h3>
+                                                                        <p className="text-sm text-muted-foreground">
+                                                                            {team.teamType.toLowerCase()} team
+                                                                        </p>
+                                                                    </div>
+                                                                </div>
+                                                                <div className="flex items-center gap-4">
+                                                                    <div className="text-center">
+                                                                        <div className="text-lg font-semibold">{team._count.members}</div>
+                                                                        <div className="text-xs text-muted-foreground">Members</div>
+                                                                    </div>
+                                                                    <div className="text-center">
+                                                                        <div className="text-lg font-semibold">{team._count.assignedProjects}</div>
+                                                                        <div className="text-xs text-muted-foreground">Projects</div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </CardHeader>
+                                                        <CardContent>
+                                                            <div className="space-y-3">
+                                                                <h4 className="text-sm font-medium">Team Members</h4>
+                                                                {
+                                                                    team.members.length > 0 ? (
+                                                                        <div className="grid gap-3 md:grid-cols-2">
+                                                                            {
+                                                                                team.members.map((member) => (
+                                                                                    <div key={member.id} className="flex items-center gap-3">
+                                                                                        <Avatar className="w-8 h-8">
+                                                                                            <AvatarImage src={member.user.image || undefined} />
+                                                                                            <AvatarFallback className="text-xs">
+                                                                                                {member.user.name?.[0] || 'U'}
+                                                                                            </AvatarFallback>
+                                                                                        </Avatar>
+                                                                                        <div className="flex-1">
+                                                                                            <p className="text-sm font-medium">{member.user.name}</p>
+                                                                                            <p className="text-xs text-muted-foreground">
+                                                                                                {member.roleTitle}
+                                                                                            </p>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                ))
+                                                                            }
+                                                                        </div>
+                                                                    ) : (
+                                                                        <p className="text-sm text-muted-foreground">No members yet</p>
+                                                                    )
+                                                                }
+                                                            </div>
+                                                        </CardContent>
+                                                    </Card>
+                                                )
+                                            })
+                                        }
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        )
+                    }
 
+                    {
+                        userProfile.role === Role.COMPANY_OWNER && userProfile.ownedCompany && (
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle className="flex items-center justify-between">
+                                        <div className="flex items-center gap-2">
+                                            <Building2 className="w-5 h-5" />
+                                            Company Teams
+                                        </div>
+                                        <Button className="gap-2">
+                                            <Plus className="w-4 h-4" />
+                                            Add Team
+                                        </Button>
+                                    </CardTitle>
+                                </CardHeader>
+                                <CardContent>
+                                    {
+                                        userProfile.ownedCompany.teams.length > 0 ? (
+                                            <div className="space-y-4">
+                                                {
+                                                    userProfile.ownedCompany.teams.map((team) => {
+                                                        const TeamIcon = TEAM_ICONS[team.teamType] || Users
+                                                        return (
+                                                            <div key={team.id} className="flex items-center justify-between p-4 border rounded-lg">
+                                                                <div className="flex items-center gap-3">
+                                                                    <div
+                                                                        className="w-10 h-10 rounded-lg flex items-center justify-center"
+                                                                        style={{
+                                                                            backgroundColor: team.color ? `${team.color}20` : '#f1f5f9',
+                                                                            color: team.color || '#64748b'
+                                                                        }}
+                                                                    >
+                                                                        <TeamIcon className="w-5 h-5" />
+                                                                    </div>
+                                                                    <div>
+                                                                        <h3 className="font-medium">{team.displayName}</h3>
+                                                                        <p className="text-sm text-muted-foreground">
+                                                                            {team.head?.name ? `Led by ${team.head.name}` : 'No head assigned'}
+                                                                        </p>
+                                                                    </div>
+                                                                </div>
+                                                                <div className="flex items-center gap-4">
+                                                                    <div className="text-center">
+                                                                        <div className="text-sm font-semibold">{team._count.members}</div>
+                                                                        <div className="text-xs text-muted-foreground">Members</div>
+                                                                    </div>
+                                                                    <div className="text-center">
+                                                                        <div className="text-sm font-semibold">{team._count.assignedProjects}</div>
+                                                                        <div className="text-xs text-muted-foreground">Projects</div>
+                                                                    </div>
+                                                                    <DropdownMenu>
+                                                                        <DropdownMenuTrigger asChild>
+                                                                            <Button variant="ghost" size="sm">
+                                                                                <MoreVertical className="w-4 h-4" />
+                                                                            </Button>
+                                                                        </DropdownMenuTrigger>
+                                                                        <DropdownMenuContent align="end">
+                                                                            <DropdownMenuItem>
+                                                                                <Edit className="w-4 h-4 mr-2" />
+                                                                                Edit Team
+                                                                            </DropdownMenuItem>
+                                                                            <DropdownMenuItem>
+                                                                                <Users className="w-4 h-4 mr-2" />
+                                                                                Manage Members
+                                                                            </DropdownMenuItem>
+                                                                            <DropdownMenuSeparator />
+                                                                            <DropdownMenuItem className="text-red-600">
+                                                                                <Trash2 className="w-4 h-4 mr-2" />
+                                                                                Delete Team
+                                                                            </DropdownMenuItem>
+                                                                        </DropdownMenuContent>
+                                                                    </DropdownMenu>
+                                                                </div>
+                                                            </div>
+                                                        )
+                                                    })
+                                                }
+                                            </div>
+                                        ) : (
+                                            <div className="text-center py-8 text-muted-foreground">
+                                                <Users className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                                                <p>No teams created yet.</p>
+                                                <Button className="mt-4 gap-2">
+                                                    <Plus className="w-4 h-4" />
+                                                    Create First Team
+                                                </Button>
+                                            </div>
+                                        )
+                                    }
+                                </CardContent>
+                            </Card>
+                        )
+                    }
+                </TabsContent>
                 <TabsContent value="company" className="space-y-6">
-                    {/* Company Information */}
                     <Card>
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2">
@@ -529,60 +523,61 @@ export default async function ProfilePage() {
                             </CardTitle>
                         </CardHeader>
                         <CardContent>
-                            {userProfile.company || userProfile.ownedCompany ? (
-                                <div className="space-y-4">
-                                    <div className="grid gap-4 md:grid-cols-2">
-                                        <div>
-                                            <Label className="text-sm font-medium">Company Name</Label>
-                                            <p className="text-lg">
-                                                {userProfile.ownedCompany?.name || userProfile.company?.name}
-                                            </p>
-                                        </div>
-                                        
-                                        {(userProfile.ownedCompany?.website || userProfile.company?.website) && (
+                            {
+                                userProfile.company || userProfile.ownedCompany ? (
+                                    <div className="space-y-4">
+                                        <div className="grid gap-4 md:grid-cols-2">
                                             <div>
-                                                <Label className="text-sm font-medium">Website</Label>
+                                                <Label className="text-sm font-medium">Company Name</Label>
                                                 <p className="text-lg">
-                                                    {userProfile.ownedCompany?.website || userProfile.company?.website}
+                                                    {userProfile.ownedCompany?.name || userProfile.company?.name}
                                                 </p>
                                             </div>
-                                        )}
-                                        
-                                        <div>
-                                            <Label className="text-sm font-medium">Your Role</Label>
-                                            <Badge className={`${roleBadge.color}`}>
-                                                {userProfile.role === Role.COMPANY_OWNER ? 'Owner' : 'Employee'}
-                                            </Badge>
-                                        </div>
-                                        
-                                        {userProfile.company?.owner && (
+                                            {
+                                                (userProfile.ownedCompany?.website || userProfile.company?.website) && (
+                                                    <div>
+                                                        <Label className="text-sm font-medium">Website</Label>
+                                                        <p className="text-lg">
+                                                            {userProfile.ownedCompany?.website || userProfile.company?.website}
+                                                        </p>
+                                                    </div>
+                                                )
+                                            }
                                             <div>
-                                                <Label className="text-sm font-medium">Company Owner</Label>
-                                                <div className="flex items-center gap-2 mt-1">
-                                                    <Avatar className="w-6 h-6">
-                                                        <AvatarImage src={userProfile.company.owner.image || undefined} />
-                                                        <AvatarFallback className="text-xs">
-                                                            {userProfile.company.owner.name?.[0] || 'O'}
-                                                        </AvatarFallback>
-                                                    </Avatar>
-                                                    <span>{userProfile.company.owner.name}</span>
-                                                </div>
+                                                <Label className="text-sm font-medium">Your Role</Label>
+                                                <Badge className={`${roleBadge.color}`}>
+                                                    {userProfile.role === Role.COMPANY_OWNER ? 'Owner' : 'Employee'}
+                                                </Badge>
                                             </div>
-                                        )}
+                                            {
+                                                userProfile.company?.owner && (
+                                                    <div>
+                                                        <Label className="text-sm font-medium">Company Owner</Label>
+                                                        <div className="flex items-center gap-2 mt-1">
+                                                            <Avatar className="w-6 h-6">
+                                                                <AvatarImage src={userProfile.company.owner.image || undefined} />
+                                                                <AvatarFallback className="text-xs">
+                                                                    {userProfile.company.owner.name?.[0] || 'O'}
+                                                                </AvatarFallback>
+                                                            </Avatar>
+                                                            <span>{userProfile.company.owner.name}</span>
+                                                        </div>
+                                                    </div>
+                                                )
+                                            }
+                                        </div>
                                     </div>
-                                </div>
-                            ) : (
-                                <div className="text-center py-8 text-muted-foreground">
-                                    <Building2 className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                                    <p>No company information available.</p>
-                                </div>
-                            )}
+                                ) : (
+                                    <div className="text-center py-8 text-muted-foreground">
+                                        <Building2 className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                                        <p>No company information available.</p>
+                                    </div>
+                                )
+                            }
                         </CardContent>
                     </Card>
                 </TabsContent>
-
                 <TabsContent value="settings" className="space-y-6">
-                    {/* Account Settings */}
                     <Card>
                         <CardHeader>
                             <CardTitle>Account Settings</CardTitle>
@@ -597,7 +592,6 @@ export default async function ProfilePage() {
                                         placeholder="Enter your name"
                                     />
                                 </div>
-                                
                                 <div className="space-y-2">
                                     <Label htmlFor="email">Email</Label>
                                     <Input
@@ -608,7 +602,6 @@ export default async function ProfilePage() {
                                     />
                                 </div>
                             </div>
-                            
                             <div className="space-y-2">
                                 <Label htmlFor="bio">Bio</Label>
                                 <Textarea
@@ -617,14 +610,11 @@ export default async function ProfilePage() {
                                     rows={3}
                                 />
                             </div>
-                            
                             <div className="flex justify-end">
                                 <Button>Save Changes</Button>
                             </div>
                         </CardContent>
                     </Card>
-
-                    {/* Danger Zone */}
                     <Card className="border-red-200">
                         <CardHeader>
                             <CardTitle className="text-red-700">Danger Zone</CardTitle>

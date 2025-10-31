@@ -156,11 +156,13 @@ const Pricing = () => {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-                    {pricingPlans.map((plan, index) => (
-                        <div key={plan.title} className="opacity-0 fade-in-element">
-                            <PricingCard {...plan} />
-                        </div>
-                    ))}
+                    {
+                        pricingPlans.map((plan) => (
+                            <div key={plan.title} className="opacity-0 fade-in-element">
+                                <PricingCard {...plan} />
+                            </div>
+                        ))
+                    }
                 </div>
 
                 <div className="text-center mt-12 opacity-0 fade-in-element">

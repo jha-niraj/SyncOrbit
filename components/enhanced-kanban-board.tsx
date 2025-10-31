@@ -8,7 +8,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Progress } from "@/components/ui/progress"
 import {
     Dialog, DialogContent, DialogDescription, DialogHeader,
-    DialogTitle, DialogTrigger, DialogFooter
+    DialogTitle, DialogFooter
 } from "@/components/ui/dialog"
 import {
     Select, SelectContent, SelectItem, SelectTrigger, SelectValue
@@ -18,18 +18,15 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import {
     DropdownMenu, DropdownMenuContent, DropdownMenuItem,
-    DropdownMenuTrigger, DropdownMenuSeparator
+    DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu"
 import {
-    Users, Calendar, Clock, AlertCircle, CheckCircle,
-    Plus, MoreVertical, Edit, Trash2, User, Flag,
-    Code, Megaphone, ShoppingCart, Palette, Briefcase, Settings,
-    ArrowRight, ArrowLeft, Timer, Target
+    Users, Plus, MoreVertical, Edit, Flag, Code, Megaphone, ShoppingCart, 
+    Palette, Briefcase, Settings, Timer
 } from "lucide-react"
 import { TaskStatus, Priority, TeamType, Role } from "@prisma/client"
 import { createTask, updateTask, getAssignmentOptions } from "@/actions/tasks.action"
 import { toast } from "sonner"
-import { formatDistanceToNow, format } from "date-fns"
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd"
 
 // Team type icons
@@ -146,8 +143,8 @@ export function EnhancedKanbanBoard({
 
     // Permission checks
     const canCreateTasks = userRole === Role.COMPANY_OWNER || userRole === Role.TEAM_HEAD
-    const canEditAllTasks = userRole === Role.COMPANY_OWNER || userRole === Role.TEAM_HEAD
-    const canEditMyTasks = userRole === Role.TEAM_MEMBER
+    // const canEditAllTasks = userRole === Role.COMPANY_OWNER || userRole === Role.TEAM_HEAD
+    // const canEditMyTasks = userRole === Role.TEAM_MEMBER
 
     useEffect(() => {
         setLocalTasks(tasks)
@@ -234,6 +231,7 @@ export function EnhancedKanbanBoard({
             }
         } catch (error) {
             setLocalTasks(tasks)
+            console.log("Failed to update task: " + error);
             toast.error("Failed to update task")
         }
     }
@@ -260,6 +258,7 @@ export function EnhancedKanbanBoard({
                 toast.error(result.error || "Failed to create task")
             }
         } catch (error) {
+            console.log("Failed to create task: " + error);
             toast.error("Failed to create task")
         }
     }
@@ -286,6 +285,7 @@ export function EnhancedKanbanBoard({
                 toast.error(result.error || "Failed to update task")
             }
         } catch (error) {
+            console.log("Failed to update task: " + error);
             toast.error("Failed to update task")
         }
     }

@@ -1,18 +1,25 @@
 import { auth } from "@/auth"
 import { getTeamDetails } from "@/actions/teams.action"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+    Card, CardContent, CardHeader, CardTitle
+} from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import {
+    Avatar, AvatarFallback, AvatarImage
+} from "@/components/ui/avatar"
 import { Separator } from "@/components/ui/separator"
-import { 
-    Users, Plus, Settings, Crown, Mail, Calendar, 
+import {
+    Users, Settings, Crown, Mail, Calendar,
     Code, Megaphone, ShoppingCart, Palette, Briefcase,
     ArrowLeft, MoreVertical, UserPlus, Edit
 } from "lucide-react"
 import { TeamType } from "@prisma/client"
 import { redirect } from "next/navigation"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import {
+    DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator,
+    DropdownMenuTrigger
+} from "@/components/ui/dropdown-menu"
 import TeamInviteDialog from "@/components/teams/TeamInviteDialog"
 import Link from "next/link"
 
@@ -34,13 +41,13 @@ interface TeamDetailsPageProps {
 export default async function TeamDetailsPage({ params }: TeamDetailsPageProps) {
     const session = await auth()
     const { teamId } = await params
-    
+
     if (!session?.user) {
         redirect('/signin')
     }
 
     const result = await getTeamDetails(teamId)
-    
+
     if (!result.success || !result.team) {
         return (
             <div className="container mx-auto py-8">
@@ -59,13 +66,12 @@ export default async function TeamDetailsPage({ params }: TeamDetailsPageProps) 
         )
     }
 
-    const { team, canManage, userRole } = result
+    const { team, canManage } = result
     const IconComponent = TEAM_ICONS[team.teamType] || Users
     const isTeamHead = team.headId === session.user.id
 
     return (
         <div className="container mx-auto py-8">
-            {/* Header */}
             <div className="mb-8">
                 <div className="flex items-center gap-4 mb-4">
                     <Link href="/teams">
@@ -75,9 +81,9 @@ export default async function TeamDetailsPage({ params }: TeamDetailsPageProps) 
                         </Button>
                     </Link>
                     <div className="flex items-center gap-4">
-                        <div 
+                        <div
                             className="w-16 h-16 rounded-lg flex items-center justify-center"
-                            style={{ 
+                            style={{
                                 backgroundColor: team.color ? `${team.color}15` : '#f3f4f6',
                                 color: team.color || '#6b7280'
                             }}
@@ -93,17 +99,16 @@ export default async function TeamDetailsPage({ params }: TeamDetailsPageProps) 
                     </div>
                 </div>
 
-                {team.description && (
-                    <p className="text-lg text-muted-foreground max-w-3xl">
-                        {team.description}
-                    </p>
-                )}
+                {
+                    team.description && (
+                        <p className="text-lg text-muted-foreground max-w-3xl">
+                            {team.description}
+                        </p>
+                    )
+                }
             </div>
-
             <div className="grid gap-6 lg:grid-cols-3">
-                {/* Main Content */}
                 <div className="lg:col-span-2 space-y-6">
-                    {/* Team Members */}
                     <Card>
                         <CardHeader>
                             <div className="flex items-center justify-between">
@@ -111,86 +116,96 @@ export default async function TeamDetailsPage({ params }: TeamDetailsPageProps) 
                                     <Users className="w-5 h-5" />
                                     Team Members ({team.members?.length || 0})
                                 </CardTitle>
-                                {canManage && (
-                                    <TeamInviteDialog teamId={team.id} type="member">
-                                        <Button size="sm" className="gap-2">
-                                            <UserPlus className="w-4 h-4" />
-                                            Invite Member
-                                        </Button>
-                                    </TeamInviteDialog>
-                                )}
+                                {
+                                    canManage && (
+                                        <TeamInviteDialog teamId={team.id} type="member">
+                                            <Button size="sm" className="gap-2">
+                                                <UserPlus className="w-4 h-4" />
+                                                Invite Member
+                                            </Button>
+                                        </TeamInviteDialog>
+                                    )
+                                }
                             </div>
                         </CardHeader>
                         <CardContent>
-                            {team.members && team.members.length > 0 ? (
-                                <div className="space-y-4">
-                                    {team.members.map((member) => (
-                                        <div key={member.id} className="flex items-center justify-between p-4 border rounded-lg">
-                                            <div className="flex items-center gap-3">
-                                                <Avatar className="w-10 h-10">
-                                                    <AvatarImage src={member.user.image || undefined} />
-                                                    <AvatarFallback>
-                                                        {member.user.name?.[0] || 'U'}
-                                                    </AvatarFallback>
-                                                </Avatar>
-                                                <div>
-                                                    <div className="flex items-center gap-2">
-                                                        <p className="font-medium">{member.user.name}</p>
-                                                        {team.headId === member.user.id && (
-                                                            <Badge variant="secondary" className="text-xs">
-                                                                Head
-                                                            </Badge>
-                                                        )}
+                            {
+                                team.members && team.members.length > 0 ? (
+                                    <div className="space-y-4">
+                                        {
+                                            team.members.map((member) => (
+                                                <div key={member.id} className="flex items-center justify-between p-4 border rounded-lg">
+                                                    <div className="flex items-center gap-3">
+                                                        <Avatar className="w-10 h-10">
+                                                            <AvatarImage src={member.user.image || undefined} />
+                                                            <AvatarFallback>
+                                                                {member.user.name?.[0] || 'U'}
+                                                            </AvatarFallback>
+                                                        </Avatar>
+                                                        <div>
+                                                            <div className="flex items-center gap-2">
+                                                                <p className="font-medium">{member.user.name}</p>
+                                                                {
+                                                                    team.headId === member.user.id && (
+                                                                        <Badge variant="secondary" className="text-xs">
+                                                                            Head
+                                                                        </Badge>
+                                                                    )
+                                                                }
+                                                            </div>
+                                                            <p className="text-sm text-muted-foreground">
+                                                                {member.roleTitle}
+                                                            </p>
+                                                            <p className="text-xs text-muted-foreground">
+                                                                Joined {member.joinedAt?.toLocaleDateString()}
+                                                            </p>
+                                                        </div>
                                                     </div>
-                                                    <p className="text-sm text-muted-foreground">
-                                                        {member.roleTitle}
-                                                    </p>
-                                                    <p className="text-xs text-muted-foreground">
-                                                        Joined {member.joinedAt?.toLocaleDateString()}
-                                                    </p>
+
+                                                    {
+                                                        canManage && team.headId !== member.user.id && (
+                                                            <DropdownMenu>
+                                                                <DropdownMenuTrigger asChild>
+                                                                    <Button variant="ghost" size="sm">
+                                                                        <MoreVertical className="w-4 h-4" />
+                                                                    </Button>
+                                                                </DropdownMenuTrigger>
+                                                                <DropdownMenuContent align="end">
+                                                                    <DropdownMenuItem>
+                                                                        <Edit className="w-4 h-4 mr-2" />
+                                                                        Update Role
+                                                                    </DropdownMenuItem>
+                                                                    <DropdownMenuSeparator />
+                                                                    <DropdownMenuItem className="text-destructive">
+                                                                        Remove from Team
+                                                                    </DropdownMenuItem>
+                                                                </DropdownMenuContent>
+                                                            </DropdownMenu>
+                                                        )
+                                                    }
                                                 </div>
-                                            </div>
-                                            
-                                            {canManage && team.headId !== member.user.id && (
-                                                <DropdownMenu>
-                                                    <DropdownMenuTrigger asChild>
-                                                        <Button variant="ghost" size="sm">
-                                                            <MoreVertical className="w-4 h-4" />
-                                                        </Button>
-                                                    </DropdownMenuTrigger>
-                                                    <DropdownMenuContent align="end">
-                                                        <DropdownMenuItem>
-                                                            <Edit className="w-4 h-4 mr-2" />
-                                                            Update Role
-                                                        </DropdownMenuItem>
-                                                        <DropdownMenuSeparator />
-                                                        <DropdownMenuItem className="text-destructive">
-                                                            Remove from Team
-                                                        </DropdownMenuItem>
-                                                    </DropdownMenuContent>
-                                                </DropdownMenu>
-                                            )}
-                                        </div>
-                                    ))}
-                                </div>
-                            ) : (
-                                <div className="text-center py-8 text-muted-foreground">
-                                    <Users className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                                    <p>No team members yet.</p>
-                                    {canManage && (
-                                        <TeamInviteDialog teamId={team.id} type="member">
-                                            <Button variant="outline" className="mt-4 gap-2">
-                                                <UserPlus className="w-4 h-4" />
-                                                Invite First Member
-                                            </Button>
-                                        </TeamInviteDialog>
-                                    )}
-                                </div>
-                            )}
+                                            ))
+                                        }
+                                    </div>
+                                ) : (
+                                    <div className="text-center py-8 text-muted-foreground">
+                                        <Users className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                                        <p>No team members yet.</p>
+                                        {
+                                            canManage && (
+                                                <TeamInviteDialog teamId={team.id} type="member">
+                                                    <Button variant="outline" className="mt-4 gap-2">
+                                                        <UserPlus className="w-4 h-4" />
+                                                        Invite First Member
+                                                    </Button>
+                                                </TeamInviteDialog>
+                                            )
+                                        }
+                                    </div>
+                                )
+                            }
                         </CardContent>
                     </Card>
-
-                    {/* Assigned Projects */}
                     <Card>
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2">
@@ -199,44 +214,47 @@ export default async function TeamDetailsPage({ params }: TeamDetailsPageProps) 
                             </CardTitle>
                         </CardHeader>
                         <CardContent>
-                            {team.assignedProjects && team.assignedProjects.length > 0 ? (
-                                <div className="space-y-3">
-                                    {team.assignedProjects.map((assignment) => (
-                                        <div key={assignment.id} className="flex items-center justify-between p-3 border rounded-lg">
-                                            <div>
-                                                <p className="font-medium">{assignment.project.title}</p>
-                                                <p className="text-sm text-muted-foreground">
-                                                    Status: <Badge variant="outline" className="text-xs">
-                                                        {assignment.project.status}
-                                                    </Badge>
-                                                </p>
-                                                {assignment.project.startDate && (
-                                                    <p className="text-xs text-muted-foreground flex items-center gap-1 mt-1">
-                                                        <Calendar className="w-3 h-3" />
-                                                        {assignment.project.startDate.toLocaleDateString()}
-                                                        {assignment.project.endDate && ` - ${assignment.project.endDate.toLocaleDateString()}`}
-                                                    </p>
-                                                )}
-                                            </div>
-                                            <Button variant="outline" size="sm">
-                                                View Project
-                                            </Button>
-                                        </div>
-                                    ))}
-                                </div>
-                            ) : (
-                                <div className="text-center py-8 text-muted-foreground">
-                                    <Briefcase className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                                    <p>No projects assigned to this team yet.</p>
-                                </div>
-                            )}
+                            {
+                                team.assignedProjects && team.assignedProjects.length > 0 ? (
+                                    <div className="space-y-3">
+                                        {
+                                            team.assignedProjects.map((assignment) => (
+                                                <div key={assignment.id} className="flex items-center justify-between p-3 border rounded-lg">
+                                                    <div>
+                                                        <p className="font-medium">{assignment.project.title}</p>
+                                                        <p className="text-sm text-muted-foreground">
+                                                            Status: <Badge variant="outline" className="text-xs">
+                                                                {assignment.project.status}
+                                                            </Badge>
+                                                        </p>
+                                                        {
+                                                            assignment.project.startDate && (
+                                                                <p className="text-xs text-muted-foreground flex items-center gap-1 mt-1">
+                                                                    <Calendar className="w-3 h-3" />
+                                                                    {assignment.project.startDate.toLocaleDateString()}
+                                                                    {assignment.project.endDate && ` - ${assignment.project.endDate.toLocaleDateString()}`}
+                                                                </p>
+                                                            )
+                                                        }
+                                                    </div>
+                                                    <Button variant="outline" size="sm">
+                                                        View Project
+                                                    </Button>
+                                                </div>
+                                            ))
+                                        }
+                                    </div>
+                                ) : (
+                                    <div className="text-center py-8 text-muted-foreground">
+                                        <Briefcase className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                                        <p>No projects assigned to this team yet.</p>
+                                    </div>
+                                )
+                            }
                         </CardContent>
                     </Card>
                 </div>
-
-                {/* Sidebar */}
                 <div className="space-y-6">
-                    {/* Team Head */}
                     <Card>
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2">
@@ -245,40 +263,44 @@ export default async function TeamDetailsPage({ params }: TeamDetailsPageProps) 
                             </CardTitle>
                         </CardHeader>
                         <CardContent>
-                            {team.head ? (
-                                <div className="flex items-center gap-3">
-                                    <Avatar className="w-12 h-12">
-                                        <AvatarImage src={team.head.image || undefined} />
-                                        <AvatarFallback>
-                                            {team.head.name?.[0] || 'U'}
-                                        </AvatarFallback>
-                                    </Avatar>
-                                    <div>
-                                        <p className="font-medium">{team.head.name}</p>
-                                        <p className="text-sm text-muted-foreground">{team.head.email}</p>
-                                        {isTeamHead && (
-                                            <Badge variant="secondary" className="text-xs mt-1">You</Badge>
-                                        )}
+                            {
+                                team.head ? (
+                                    <div className="flex items-center gap-3">
+                                        <Avatar className="w-12 h-12">
+                                            <AvatarImage src={team.head.image || undefined} />
+                                            <AvatarFallback>
+                                                {team.head.name?.[0] || 'U'}
+                                            </AvatarFallback>
+                                        </Avatar>
+                                        <div>
+                                            <p className="font-medium">{team.head.name}</p>
+                                            <p className="text-sm text-muted-foreground">{team.head.email}</p>
+                                            {
+                                                isTeamHead && (
+                                                    <Badge variant="secondary" className="text-xs mt-1">You</Badge>
+                                                )
+                                            }
+                                        </div>
                                     </div>
-                                </div>
-                            ) : (
-                                <div className="text-center py-4 text-muted-foreground">
-                                    <Crown className="w-8 h-8 mx-auto mb-2 opacity-50" />
-                                    <p className="text-sm">No head assigned</p>
-                                    {canManage && (
-                                        <TeamInviteDialog teamId={team.id} type="head">
-                                            <Button size="sm" variant="outline" className="mt-3 gap-2">
-                                                <Mail className="w-4 h-4" />
-                                                Invite Head
-                                            </Button>
-                                        </TeamInviteDialog>
-                                    )}
-                                </div>
-                            )}
+                                ) : (
+                                    <div className="text-center py-4 text-muted-foreground">
+                                        <Crown className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                                        <p className="text-sm">No head assigned</p>
+                                        {
+                                            canManage && (
+                                                <TeamInviteDialog teamId={team.id} type="head">
+                                                    <Button size="sm" variant="outline" className="mt-3 gap-2">
+                                                        <Mail className="w-4 h-4" />
+                                                        Invite Head
+                                                    </Button>
+                                                </TeamInviteDialog>
+                                            )
+                                        }
+                                    </div>
+                                )
+                            }
                         </CardContent>
                     </Card>
-
-                    {/* Team Stats */}
                     <Card>
                         <CardHeader>
                             <CardTitle>Team Stats</CardTitle>
@@ -305,35 +327,37 @@ export default async function TeamDetailsPage({ params }: TeamDetailsPageProps) 
                             </div>
                         </CardContent>
                     </Card>
-
-                    {/* Quick Actions */}
-                    {canManage && (
-                        <Card>
-                            <CardHeader>
-                                <CardTitle>Quick Actions</CardTitle>
-                            </CardHeader>
-                            <CardContent className="space-y-3">
-                                <TeamInviteDialog teamId={team.id} type="member">
-                                    <Button className="w-full gap-2" size="sm">
-                                        <UserPlus className="w-4 h-4" />
-                                        Invite Member
-                                    </Button>
-                                </TeamInviteDialog>
-                                {!team.head && (
-                                    <TeamInviteDialog teamId={team.id} type="head">
-                                        <Button variant="outline" className="w-full gap-2" size="sm">
-                                            <Crown className="w-4 h-4" />
-                                            Invite Team Head
+                    {
+                        canManage && (
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle>Quick Actions</CardTitle>
+                                </CardHeader>
+                                <CardContent className="space-y-3">
+                                    <TeamInviteDialog teamId={team.id} type="member">
+                                        <Button className="w-full gap-2" size="sm">
+                                            <UserPlus className="w-4 h-4" />
+                                            Invite Member
                                         </Button>
                                     </TeamInviteDialog>
-                                )}
-                                <Button variant="outline" className="w-full gap-2" size="sm">
-                                    <Settings className="w-4 h-4" />
-                                    Team Settings
-                                </Button>
-                            </CardContent>
-                        </Card>
-                    )}
+                                    {
+                                        !team.head && (
+                                            <TeamInviteDialog teamId={team.id} type="head">
+                                                <Button variant="outline" className="w-full gap-2" size="sm">
+                                                    <Crown className="w-4 h-4" />
+                                                    Invite Team Head
+                                                </Button>
+                                            </TeamInviteDialog>
+                                        )
+                                    }
+                                    <Button variant="outline" className="w-full gap-2" size="sm">
+                                        <Settings className="w-4 h-4" />
+                                        Team Settings
+                                    </Button>
+                                </CardContent>
+                            </Card>
+                        )
+                    }
                 </div>
             </div>
         </div>

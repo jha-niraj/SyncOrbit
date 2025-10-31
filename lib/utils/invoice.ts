@@ -1,306 +1,306 @@
 export interface InvoiceItem {
-  id: string
-  description: string
-  quantity: number
-  rate: number
-  amount: number
-  category?: string
+	id: string
+	description: string
+	quantity: number
+	rate: number
+	amount: number
+	category?: string
 }
 
 export interface InvoiceDetails {
-  id: string
-  invoiceNumber: string
-  issueDate: Date
-  dueDate: Date
-  status: 'DRAFT' | 'SENT' | 'PAID' | 'OVERDUE' | 'CANCELLED'
-  subtotal: number
-  taxRate: number
-  taxAmount: number
-  discountRate?: number
-  discountAmount?: number
-  total: number
-  currency: 'USD' | 'INR' | 'NPR'
-  paymentTerms: string
-  notes?: string
-  items: InvoiceItem[]
+	id: string
+	invoiceNumber: string
+	issueDate: Date
+	dueDate: Date
+	status: 'DRAFT' | 'SENT' | 'PAID' | 'OVERDUE' | 'CANCELLED'
+	subtotal: number
+	taxRate: number
+	taxAmount: number
+	discountRate?: number
+	discountAmount?: number
+	total: number
+	currency: 'USD' | 'INR' | 'NPR'
+	paymentTerms: string
+	notes?: string
+	items: InvoiceItem[]
 }
 
 export interface InvoiceBranding {
-  companyLogo?: string
-  companyName: string
-  companyAddress: string
-  companyEmail: string
-  companyPhone?: string
-  companyWebsite?: string
-  primaryColor: string
-  accentColor: string
+	companyLogo?: string
+	companyName: string
+	companyAddress: string
+	companyEmail: string
+	companyPhone?: string
+	companyWebsite?: string
+	primaryColor: string
+	accentColor: string
 }
 
 export interface InvoiceRecipient {
-  name: string
-  email: string
-  address?: string
-  company?: string
+	name: string
+	email: string
+	address?: string
+	company?: string
 }
 
 export interface FullInvoice {
-  details: InvoiceDetails
-  branding: InvoiceBranding
-  recipient: InvoiceRecipient
-  project?: {
-    id: string
-    title: string
-    slug: string
-  }
+	details: InvoiceDetails
+	branding: InvoiceBranding
+	recipient: InvoiceRecipient
+	project?: {
+		id: string
+		title: string
+		slug: string
+	}
 }
 
 /**
  * Generate invoice number
  */
 export function generateInvoiceNumber(companyPrefix: string = 'INV'): string {
-  const now = new Date()
-  const year = now.getFullYear()
-  const month = String(now.getMonth() + 1).padStart(2, '0')
-  const timestamp = now.getTime().toString().slice(-6)
-  
-  return `${companyPrefix}-${year}${month}-${timestamp}`
+	const now = new Date()
+	const year = now.getFullYear()
+	const month = String(now.getMonth() + 1).padStart(2, '0')
+	const timestamp = now.getTime().toString().slice(-6)
+
+	return `${companyPrefix}-${year}${month}-${timestamp}`
 }
 
 /**
  * Calculate invoice totals
  */
 export function calculateInvoiceTotals(
-  items: InvoiceItem[],
-  taxRate: number = 0,
-  discountRate: number = 0
+	items: InvoiceItem[],
+	taxRate: number = 0,
+	discountRate: number = 0
 ): {
-  subtotal: number
-  discountAmount: number
-  taxAmount: number
-  total: number
+	subtotal: number
+	discountAmount: number
+	taxAmount: number
+	total: number
 } {
-  const subtotal = items.reduce((sum, item) => sum + item.amount, 0)
-  const discountAmount = (subtotal * discountRate) / 100
-  const discountedSubtotal = subtotal - discountAmount
-  const taxAmount = (discountedSubtotal * taxRate) / 100
-  const total = discountedSubtotal + taxAmount
-  
-  return {
-    subtotal,
-    discountAmount,
-    taxAmount,
-    total
-  }
+	const subtotal = items.reduce((sum, item) => sum + item.amount, 0)
+	const discountAmount = (subtotal * discountRate) / 100
+	const discountedSubtotal = subtotal - discountAmount
+	const taxAmount = (discountedSubtotal * taxRate) / 100
+	const total = discountedSubtotal + taxAmount
+
+	return {
+		subtotal,
+		discountAmount,
+		taxAmount,
+		total
+	}
 }
 
 /**
  * Format currency for display
  */
 export function formatInvoiceCurrency(
-  amount: number, 
-  currency: 'USD' | 'INR' | 'NPR' = 'USD'
+	amount: number,
+	currency: 'USD' | 'INR' | 'NPR' = 'USD'
 ): string {
-  const formatters = {
-    USD: new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD'
-    }),
-    INR: new Intl.NumberFormat('en-IN', {
-      style: 'currency',
-      currency: 'INR'
-    }),
-    NPR: new Intl.NumberFormat('en-NP', {
-      style: 'currency',
-      currency: 'NPR',
-      minimumFractionDigits: 2
-    })
-  }
-  
-  return formatters[currency]?.format(amount) || `$${amount.toFixed(2)}`
+	const formatters = {
+		USD: new Intl.NumberFormat('en-US', {
+			style: 'currency',
+			currency: 'USD'
+		}),
+		INR: new Intl.NumberFormat('en-IN', {
+			style: 'currency',
+			currency: 'INR'
+		}),
+		NPR: new Intl.NumberFormat('en-NP', {
+			style: 'currency',
+			currency: 'NPR',
+			minimumFractionDigits: 2
+		})
+	}
+
+	return formatters[currency]?.format(amount) || `$${amount.toFixed(2)}`
 }
 
 /**
  * Calculate due date based on payment terms
  */
 export function calculateDueDate(issueDate: Date, paymentTerms: string): Date {
-  const due = new Date(issueDate)
-  
-  switch (paymentTerms.toLowerCase()) {
-    case 'immediate':
-    case 'due on receipt':
-      return due
-    case 'net 7':
-      due.setDate(due.getDate() + 7)
-      return due
-    case 'net 15':
-      due.setDate(due.getDate() + 15)
-      return due
-    case 'net 30':
-    default:
-      due.setDate(due.getDate() + 30)
-      return due
-    case 'net 60':
-      due.setDate(due.getDate() + 60)
-      return due
-    case 'net 90':
-      due.setDate(due.getDate() + 90)
-      return due
-  }
+	const due = new Date(issueDate)
+
+	switch (paymentTerms.toLowerCase()) {
+		case 'immediate':
+		case 'due on receipt':
+			return due
+		case 'net 7':
+			due.setDate(due.getDate() + 7)
+			return due
+		case 'net 15':
+			due.setDate(due.getDate() + 15)
+			return due
+		case 'net 30':
+		default:
+			due.setDate(due.getDate() + 30)
+			return due
+		case 'net 60':
+			due.setDate(due.getDate() + 60)
+			return due
+		case 'net 90':
+			due.setDate(due.getDate() + 90)
+			return due
+	}
 }
 
 /**
  * Generate invoice items from project data
  */
 export function generateInvoiceItemsFromProject(
-  project: any,
-  hourlyRate: number = 50,
-  includeExpenses: boolean = false
+	project: any,
+	hourlyRate: number = 50,
+	includeExpenses: boolean = false
 ): InvoiceItem[] {
-  const items: InvoiceItem[] = []
-  
-  // Add project base fee
-  items.push({
-    id: 'project-base',
-    description: `${project.title} - Development Services`,
-    quantity: 1,
-    rate: project.budget || 0,
-    amount: project.budget || 0,
-    category: 'Development'
-  })
-  
-  // Add task-based items if needed
-  if (project.tasks && project.tasks.length > 0) {
-    const completedTasks = project.tasks.filter((t: any) => t.status === 'COMPLETED')
-    
-    if (completedTasks.length > 0) {
-      const taskHours = completedTasks.length * 8 // Assuming 8 hours per task
-      
-      items.push({
-        id: 'task-hours',
-        description: `Development Hours (${completedTasks.length} tasks completed)`,
-        quantity: taskHours,
-        rate: hourlyRate,
-        amount: taskHours * hourlyRate,
-        category: 'Development'
-      })
-    }
-  }
-  
-  // Add expenses if requested
-  if (includeExpenses) {
-    items.push({
-      id: 'expenses',
-      description: 'Project Expenses (hosting, tools, etc.)',
-      quantity: 1,
-      rate: 200,
-      amount: 200,
-      category: 'Expenses'
-    })
-  }
-  
-  return items
+	const items: InvoiceItem[] = []
+
+	// Add project base fee
+	items.push({
+		id: 'project-base',
+		description: `${project.title} - Development Services`,
+		quantity: 1,
+		rate: project.budget || 0,
+		amount: project.budget || 0,
+		category: 'Development'
+	})
+
+	// Add task-based items if needed
+	if (project.tasks && project.tasks.length > 0) {
+		const completedTasks = project.tasks.filter((t: any) => t.status === 'COMPLETED')
+
+		if (completedTasks.length > 0) {
+			const taskHours = completedTasks.length * 8 // Assuming 8 hours per task
+
+			items.push({
+				id: 'task-hours',
+				description: `Development Hours (${completedTasks.length} tasks completed)`,
+				quantity: taskHours,
+				rate: hourlyRate,
+				amount: taskHours * hourlyRate,
+				category: 'Development'
+			})
+		}
+	}
+
+	// Add expenses if requested
+	if (includeExpenses) {
+		items.push({
+			id: 'expenses',
+			description: 'Project Expenses (hosting, tools, etc.)',
+			quantity: 1,
+			rate: 200,
+			amount: 200,
+			category: 'Expenses'
+		})
+	}
+
+	return items
 }
 
 /**
  * Validate invoice data
  */
 export function validateInvoiceData(invoice: Partial<InvoiceDetails>): {
-  isValid: boolean
-  errors: string[]
+	isValid: boolean
+	errors: string[]
 } {
-  const errors: string[] = []
-  
-  if (!invoice.invoiceNumber?.trim()) {
-    errors.push('Invoice number is required')
-  }
-  
-  if (!invoice.issueDate) {
-    errors.push('Issue date is required')
-  }
-  
-  if (!invoice.dueDate) {
-    errors.push('Due date is required')
-  }
-  
-  if (!invoice.items || invoice.items.length === 0) {
-    errors.push('At least one invoice item is required')
-  }
-  
-  if (invoice.items) {
-    invoice.items.forEach((item, index) => {
-      if (!item.description?.trim()) {
-        errors.push(`Item ${index + 1}: Description is required`)
-      }
-      if (item.quantity <= 0) {
-        errors.push(`Item ${index + 1}: Quantity must be greater than 0`)
-      }
-      if (item.rate < 0) {
-        errors.push(`Item ${index + 1}: Rate cannot be negative`)
-      }
-    })
-  }
-  
-  return {
-    isValid: errors.length === 0,
-    errors
-  }
+	const errors: string[] = []
+
+	if (!invoice.invoiceNumber?.trim()) {
+		errors.push('Invoice number is required')
+	}
+
+	if (!invoice.issueDate) {
+		errors.push('Issue date is required')
+	}
+
+	if (!invoice.dueDate) {
+		errors.push('Due date is required')
+	}
+
+	if (!invoice.items || invoice.items.length === 0) {
+		errors.push('At least one invoice item is required')
+	}
+
+	if (invoice.items) {
+		invoice.items.forEach((item, index) => {
+			if (!item.description?.trim()) {
+				errors.push(`Item ${index + 1}: Description is required`)
+			}
+			if (item.quantity <= 0) {
+				errors.push(`Item ${index + 1}: Quantity must be greater than 0`)
+			}
+			if (item.rate < 0) {
+				errors.push(`Item ${index + 1}: Rate cannot be negative`)
+			}
+		})
+	}
+
+	return {
+		isValid: errors.length === 0,
+		errors
+	}
 }
 
 /**
  * Get invoice status color
  */
 export function getInvoiceStatusColor(status: InvoiceDetails['status']): string {
-  switch (status) {
-    case 'DRAFT':
-      return 'text-gray-600 bg-gray-100'
-    case 'SENT':
-      return 'text-blue-600 bg-blue-100'
-    case 'PAID':
-      return 'text-green-600 bg-green-100'
-    case 'OVERDUE':
-      return 'text-red-600 bg-red-100'
-    case 'CANCELLED':
-      return 'text-gray-500 bg-gray-50'
-    default:
-      return 'text-gray-600 bg-gray-100'
-  }
+	switch (status) {
+		case 'DRAFT':
+			return 'text-gray-600 bg-gray-100'
+		case 'SENT':
+			return 'text-blue-600 bg-blue-100'
+		case 'PAID':
+			return 'text-green-600 bg-green-100'
+		case 'OVERDUE':
+			return 'text-red-600 bg-red-100'
+		case 'CANCELLED':
+			return 'text-gray-500 bg-gray-50'
+		default:
+			return 'text-gray-600 bg-gray-100'
+	}
 }
 
 /**
  * Check if invoice is overdue
  */
 export function isInvoiceOverdue(invoice: InvoiceDetails): boolean {
-  if (invoice.status === 'PAID' || invoice.status === 'CANCELLED') {
-    return false
-  }
-  
-  const now = new Date()
-  const dueDate = new Date(invoice.dueDate)
-  
-  return now > dueDate
+	if (invoice.status === 'PAID' || invoice.status === 'CANCELLED') {
+		return false
+	}
+
+	const now = new Date()
+	const dueDate = new Date(invoice.dueDate)
+
+	return now > dueDate
 }
 
 /**
  * Get payment terms options
  */
 export function getPaymentTermsOptions(): Array<{ value: string; label: string }> {
-  return [
-    { value: 'immediate', label: 'Due on Receipt' },
-    { value: 'net 7', label: 'Net 7 Days' },
-    { value: 'net 15', label: 'Net 15 Days' },
-    { value: 'net 30', label: 'Net 30 Days' },
-    { value: 'net 60', label: 'Net 60 Days' },
-    { value: 'net 90', label: 'Net 90 Days' }
-  ]
+	return [
+		{ value: 'immediate', label: 'Due on Receipt' },
+		{ value: 'net 7', label: 'Net 7 Days' },
+		{ value: 'net 15', label: 'Net 15 Days' },
+		{ value: 'net 30', label: 'Net 30 Days' },
+		{ value: 'net 60', label: 'Net 60 Days' },
+		{ value: 'net 90', label: 'Net 90 Days' }
+	]
 }
 
 /**
  * Generate invoice HTML template
  */
 export function generateInvoiceHTML(invoice: FullInvoice): string {
-  const { details, branding, recipient, project } = invoice
-  
-  return `
+	const { details, branding, recipient, project } = invoice
+
+	return `
     <!DOCTYPE html>
     <html lang="en">
     <head>

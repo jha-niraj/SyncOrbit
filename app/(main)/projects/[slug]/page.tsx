@@ -1,4 +1,4 @@
-import ProjectDetail from "./project-detail"
+import ProjectDetail from "./projectdetail"
 
 interface ProjectPageProps {
 	params: Promise<{

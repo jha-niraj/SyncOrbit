@@ -10,7 +10,6 @@ import ImageShowcaseSection from "@/components/(landingpage)/imageshowcasesectio
 import Features from "@/components/(landingpage)/featuressection";
 import Pricing from "@/components/(landingpage)/pricing";
 import Security from "@/components/(landingpage)/security";
-import Newsletter from "@/components/(landingpage)/newsletter";
 import MadeByShunyaTech from "@/components/(landingpage)/madebyshunyatech";
 import Footer from "@/components/footer";
 import HowItWorks from "@/components/(landingpage)/howitworks";
@@ -76,7 +75,6 @@ const LandingPage = () => {
                 <Testimonials />
                 <Pricing />
                 <Security />
-                <Newsletter />
                 <MadeByShunyaTech />
             </main>
             <Footer />

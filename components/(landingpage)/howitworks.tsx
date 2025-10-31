@@ -1,6 +1,8 @@
 
 import React, { useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
+import Image from "next/image";
+import Link from "next/link";
 
 interface StepCardProps {
     number: string;
@@ -103,7 +105,6 @@ const HowItWorks = () => {
 
     return (
         <section className="py-20 bg-white relative" id="how-it-works" ref={sectionRef}>
-            {/* Background decorative elements */}
             <div className="absolute -top-20 right-0 w-72 h-72 bg-pulse-50 rounded-full opacity-60 blur-3xl -z-10"></div>
             <div className="absolute bottom-0 left-10 w-64 h-64 bg-gray-50 rounded-full opacity-70 blur-3xl -z-10"></div>
 
@@ -117,53 +118,56 @@ const HowItWorks = () => {
                         From setup to delivery — ProjectCentral gets your team productive fast.
                     </p>
                 </div>
-
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
                     <div className="space-y-4 order-2 lg:order-1 opacity-0 fade-in-stagger">
-                        {stepsData.map((step, index) => (
-                            <StepCard
-                                key={step.number}
-                                number={step.number}
-                                title={step.title}
-                                description={step.description}
-                                isActive={activeStep === index}
-                                onClick={() => setActiveStep(index)}
-                            />
-                        ))}
-
+                        {
+                            stepsData.map((step, index) => (
+                                <StepCard
+                                    key={step.number}
+                                    number={step.number}
+                                    title={step.title}
+                                    description={step.description}
+                                    isActive={activeStep === index}
+                                    onClick={() => setActiveStep(index)}
+                                />
+                            ))
+                        }
                         <div className="mt-8 pt-4 border-t border-gray-100">
-                            <a
+                            <Link
                                 href="#get-access"
                                 className="inline-flex items-center justify-center bg-pulse-500 hover:bg-pulse-600 text-white font-medium py-3 px-6 rounded-full transition-all duration-300"
                             >
                                 Start a free workspace →
-                            </a>
+                            </Link>
                         </div>
                     </div>
-
                     <div className="relative rounded-3xl overflow-hidden h-[400px] shadow-elegant order-1 lg:order-2 opacity-0 fade-in-stagger">
-                        {stepsData.map((step, index) => (
-                            <div
-                                key={index}
-                                className={cn(
-                                    "absolute inset-0 transition-opacity duration-1000",
-                                    activeStep === index ? "opacity-100" : "opacity-0 pointer-events-none"
-                                )}
-                            >
-                                <img
-                                    src={step.image}
-                                    alt={step.title}
-                                    className="w-full h-full object-cover"
-                                />
-                                <div className="absolute inset-0 bg-gradient-to-t from-dark-900/70 to-transparent">
-                                    <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
-                                        <span className="text-pulse-400 font-medium mb-2 block">{step.number}</span>
-                                        <h3 className="text-2xl font-semibold mb-2">{step.title}</h3>
-                                        <p className="text-white/80">{step.description}</p>
+                        {
+                            stepsData.map((step, index) => (
+                                <div
+                                    key={index}
+                                    className={cn(
+                                        "absolute inset-0 transition-opacity duration-1000",
+                                        activeStep === index ? "opacity-100" : "opacity-0 pointer-events-none"
+                                    )}
+                                >
+                                    <Image
+                                        src={step.image}
+                                        alt={step.title}
+                                        className="w-full h-full object-cover"
+                                        height={48}
+                                        width={48}
+                                    />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-dark-900/70 to-transparent">
+                                        <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
+                                            <span className="text-pulse-400 font-medium mb-2 block">{step.number}</span>
+                                            <h3 className="text-2xl font-semibold mb-2">{step.title}</h3>
+                                            <p className="text-white/80">{step.description}</p>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        ))}
+                            ))
+                        }
                     </div>
                 </div>
             </div>

@@ -2,23 +2,27 @@
 
 import { useState, useEffect, Suspense } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { 
+    Card, CardContent, CardHeader 
+} from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Checkbox } from "@/components/ui/checkbox"
+import { 
+    Select, SelectContent, SelectItem, SelectTrigger, SelectValue 
+} from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
 import { Badge } from "@/components/ui/badge"
 import { motion, AnimatePresence } from "framer-motion"
 import { 
-    User, Building, Mail, Users, ChevronRight, ChevronLeft, 
-    Code, Megaphone, ShoppingCart, Palette, Settings, Plus,
-    Check, Star, Briefcase, Globe
+    User, Building, Mail, Users, ChevronRight, ChevronLeft, Code, Megaphone, 
+    ShoppingCart, Palette, Settings, Check, Briefcase
 } from "lucide-react"
 import { toast } from "sonner"
 import { useSession } from "next-auth/react"
-import { completeCompanyOnboarding, completeInvitationOnboarding, completeClientOnboarding } from "@/actions/auth/onboarding.action"
+import { 
+    completeCompanyOnboarding, completeInvitationOnboarding, completeClientOnboarding 
+} from "@/actions/auth/onboarding.action"
 import { TeamType } from "@prisma/client"
 
 // Team templates with predefined configurations

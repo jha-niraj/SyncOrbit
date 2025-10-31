@@ -1,19 +1,15 @@
 import { auth } from "@/auth"
 import { getUserProjects } from "@/actions/projects.action"
-import {
-    Card, CardContent, CardHeader, CardTitle
-} from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Progress } from "@/components/ui/progress"
 import {
-    Building2, Users, DollarSign, EyeOff, Code, Megaphone, ShoppingCart, Palette,
-    Briefcase, Settings, MessageSquare, FileText, CheckCircle, Clock, AlertCircle
+    User, Users, DollarSign, EyeOff, Code, Megaphone, ShoppingCart, Palette,
+    Briefcase, Settings, MessageSquare, FileText, Plus, Target, Activity
 } from "lucide-react"
-import {
-    ProjectVisibility, Status, TaskStatus, TeamType
-} from "@prisma/client"
+import { ProjectVisibility, Status, TaskStatus, TeamType, Role } from "@prisma/client"
 import { redirect } from "next/navigation"
 import Link from "next/link"
 import { CreateProjectModal } from "@/components/projects/CreateProjectModal"
@@ -37,14 +33,6 @@ const STATUS_COLORS = {
     [Status.CANCELLED]: "bg-red-500",
 }
 
-// Status icons
-const STATUS_ICONS = {
-    [Status.IN_PROGRESS]: Clock,
-    [Status.COMPLETED]: CheckCircle,
-    [Status.ON_HOLD]: AlertCircle,
-    [Status.CANCELLED]: AlertCircle,
-}
-
 function getTaskProgress(tasks: any[]) {
     if (tasks.length === 0) return 0
     const completedTasks = tasks.filter(task => task.status === TaskStatus.COMPLETED).length
@@ -60,7 +48,7 @@ function formatCurrency(amount: number, currency: string) {
     return `${symbols[currency] || '$'}${amount.toLocaleString()}`
 }
 
-export default async function ProjectsPage() {
+export default async function MyProjectsPage() {
     const session = await auth()
 
     if (!session?.user) {
@@ -74,7 +62,7 @@ export default async function ProjectsPage() {
             <div className="container mx-auto py-8">
                 <Card>
                     <CardContent className="py-8 text-center">
-                        <p className="text-muted-foreground">Failed to load projects</p>
+                        <p className="text-muted-foreground">Failed to load your projects</p>
                         <p className="text-sm text-muted-foreground mt-2">
                             {result.error}
                         </p>
@@ -85,42 +73,163 @@ export default async function ProjectsPage() {
     }
 
     const { projects } = result
+    const userRole = session.user.role
+
+    // Calculate user's project statistics
+    const stats = {
+        total: projects.length,
+        active: projects.filter(p => p.status === Status.IN_PROGRESS).length,
+        completed: projects.filter(p => p.status === Status.COMPLETED).length,
+        onHold: projects.filter(p => p.status === Status.ON_HOLD).length,
+        totalTasks: projects.reduce((sum, p) => sum + (p._count?.tasks || 0), 0),
+        completedTasks: projects.reduce((sum, p) => sum + p.tasks.filter(t => t.status === TaskStatus.COMPLETED).length, 0),
+        myTasks: projects.reduce((sum, p) => sum + p.tasks.filter(t => t.assignedDeveloper?.id === session.user.id).length, 0),
+        myCompletedTasks: projects.reduce((sum, p) => sum + p.tasks.filter(t => t.assignedDeveloper?.id === session.user.id && t.status === TaskStatus.COMPLETED).length, 0)
+    }
+
+    const overallProgress = stats.totalTasks > 0 ? Math.round((stats.completedTasks / stats.totalTasks) * 100) : 0
+    const myTaskProgress = stats.myTasks > 0 ? Math.round((stats.myCompletedTasks / stats.myTasks) * 100) : 0
+
+    // Role-specific title and description
+    const getTitleAndDescription = () => {
+        switch (userRole) {
+            case Role.CLIENT:
+                return {
+                    title: "My Projects",
+                    description: "Track the progress of your commissioned projects"
+                }
+            case Role.TEAM_MEMBER:
+                return {
+                    title: "My Assigned Projects",
+                    description: "Projects and tasks you're working on"
+                }
+            case Role.TEAM_HEAD:
+                return {
+                    title: "My Team's Projects",
+                    description: "Projects assigned to teams you lead"
+                }
+            case Role.COMPANY_OWNER:
+                return {
+                    title: "My Projects Overview",
+                    description: "Personal view of your company's projects"
+                }
+            default:
+                return {
+                    title: "My Projects",
+                    description: "Your personal project dashboard"
+                }
+        }
+    }
+
+    const { title, description } = getTitleAndDescription()
+    const canCreateProjects = userRole === Role.COMPANY_OWNER || userRole === Role.TEAM_HEAD
 
     return (
         <div className="container mx-auto py-8">
             <div className="flex items-center justify-between mb-8">
                 <div>
-                    <h1 className="text-3xl font-bold">My Projects</h1>
-                    <p className="text-muted-foreground mt-1">
-                        Manage your assigned projects and collaborate with your teams
-                    </p>
+                    <h1 className="text-3xl font-bold">{title}</h1>
+                    <p className="text-muted-foreground mt-1">{description}</p>
                 </div>
-                <CreateProjectModal
-                    trigger={
-                        <Button className="gap-2">
-                            <Building2 className="w-4 h-4" />
-                            New Project
-                        </Button>
-                    }
-                />
+
+                {
+                    canCreateProjects && (
+                        <CreateProjectModal
+                            trigger={
+                                <Button className="gap-2">
+                                    <Plus className="w-4 h-4" />
+                                    New Project
+                                </Button>
+                            }
+                        />
+                    )
+                }
+            </div>
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 mb-8">
+                <Card>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium">My Projects</CardTitle>
+                        <Target className="h-4 w-4 text-muted-foreground" />
+                    </CardHeader>
+                    <CardContent>
+                        <div className="text-2xl font-bold">{stats.total}</div>
+                        <div className="flex gap-2 mt-2">
+                            <Badge variant="outline" className="text-xs">
+                                {stats.active} Active
+                            </Badge>
+                            <Badge variant="outline" className="text-xs">
+                                {stats.completed} Done
+                            </Badge>
+                        </div>
+                    </CardContent>
+                </Card>
+                <Card>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium">Overall Progress</CardTitle>
+                        <Activity className="h-4 w-4 text-muted-foreground" />
+                    </CardHeader>
+                    <CardContent>
+                        <div className="text-2xl font-bold">{overallProgress}%</div>
+                        <Progress value={overallProgress} className="h-2 mt-2" />
+                    </CardContent>
+                </Card>
+                <Card>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium">All Tasks</CardTitle>
+                        <FileText className="h-4 w-4 text-muted-foreground" />
+                    </CardHeader>
+                    <CardContent>
+                        <div className="text-2xl font-bold">{stats.totalTasks}</div>
+                        <p className="text-xs text-muted-foreground">
+                            {stats.completedTasks} completed
+                        </p>
+                    </CardContent>
+                </Card>
+                {
+                    userRole !== Role.CLIENT && (
+                        <Card>
+                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                                <CardTitle className="text-sm font-medium">My Tasks</CardTitle>
+                                <User className="h-4 w-4 text-muted-foreground" />
+                            </CardHeader>
+                            <CardContent>
+                                <div className="text-2xl font-bold">{stats.myTasks}</div>
+                                <div className="flex items-center gap-2 mt-2">
+                                    <Progress value={myTaskProgress} className="h-1 flex-1" />
+                                    <span className="text-xs font-medium">{myTaskProgress}%</span>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    )
+                }
             </div>
             {
                 projects.length === 0 ? (
                     <Card className="text-center py-12">
                         <CardContent>
-                            <Building2 className="w-16 h-16 mx-auto text-muted-foreground mb-4 opacity-50" />
+                            <Target className="w-16 h-16 mx-auto text-muted-foreground mb-4 opacity-50" />
                             <h3 className="text-lg font-semibold mb-2">No projects found</h3>
                             <p className="text-muted-foreground mb-4">
-                                You haven&apos;t been assigned to any projects yet, or there are no projects created.
-                            </p>
-                            <CreateProjectModal
-                                trigger={
-                                    <Button className="gap-2">
-                                        <Building2 className="w-4 h-4" />
-                                        Create First Project
-                                    </Button>
+                                {
+                                    userRole === Role.CLIENT
+                                        ? "You haven't commissioned any projects yet."
+                                        : userRole === Role.TEAM_MEMBER
+                                            ? "No projects have been assigned to your teams yet."
+                                            : "You don't have any projects assigned yet."
                                 }
-                            />
+                            </p>
+                            {
+                                canCreateProjects && (
+                                    <CreateProjectModal
+                                        trigger={
+                                            <Button className="gap-2">
+                                                <Plus className="w-4 h-4" />
+                                                Create First Project
+                                            </Button>
+                                        }
+                                    />
+                                )
+                            }
                         </CardContent>
                     </Card>
                 ) : (
@@ -128,7 +237,9 @@ export default async function ProjectsPage() {
                         {
                             projects.map((project) => {
                                 const progress = getTaskProgress(project.tasks)
-                                // const StatusIcon = STATUS_ICONS[project.status]
+                                const myTasksInProject = project.tasks.filter(t => t.assignedDeveloper?.id === session.user.id)
+                                const myTasksCount = myTasksInProject.length
+                                const myCompletedTasksCount = myTasksInProject.filter(t => t.status === TaskStatus.COMPLETED).length
 
                                 return (
                                     <Card key={project.id} className="group hover:shadow-lg transition-shadow">
@@ -144,6 +255,9 @@ export default async function ProjectsPage() {
                                                                 <EyeOff className="w-4 h-4 text-muted-foreground" />
                                                             )
                                                         }
+                                                        <Badge variant="outline" className="text-xs">
+                                                            {project.status.toLowerCase().replace('_', ' ')}
+                                                        </Badge>
                                                     </div>
 
                                                     {
@@ -163,18 +277,24 @@ export default async function ProjectsPage() {
                                                 </div>
                                             </div>
                                         </CardHeader>
+
                                         <CardContent className="pt-0 space-y-4">
-                                            <div className="flex items-center gap-2">
-                                                <Avatar className="w-6 h-6">
-                                                    <AvatarImage src={project.user.image || undefined} />
-                                                    <AvatarFallback className="text-xs">
-                                                        {project.user.name?.[0] || project.user.email?.[0] || 'C'}
-                                                    </AvatarFallback>
-                                                </Avatar>
-                                                <span className="text-sm text-muted-foreground">
-                                                    {project.user.name || project.user.email}
-                                                </span>
-                                            </div>
+                                            {
+                                                userRole !== Role.CLIENT && (
+                                                    <div className="flex items-center gap-2">
+                                                        <Avatar className="w-6 h-6">
+                                                            <AvatarImage src={project.user.image || undefined} />
+                                                            <AvatarFallback className="text-xs">
+                                                                {project.user.name?.[0] || project.user.email?.[0] || 'C'}
+                                                            </AvatarFallback>
+                                                        </Avatar>
+                                                        <span className="text-sm text-muted-foreground">
+                                                            {project.user.name || project.user.email}
+                                                        </span>
+                                                    </div>
+                                                )
+                                            }
+
                                             <div className="flex items-center gap-2">
                                                 <DollarSign className="w-4 h-4 text-muted-foreground" />
                                                 <span className="text-sm font-medium">
@@ -188,6 +308,22 @@ export default async function ProjectsPage() {
                                                 </div>
                                                 <Progress value={progress} className="h-2" />
                                             </div>
+                                            {
+                                                userRole !== Role.CLIENT && myTasksCount > 0 && (
+                                                    <div className="bg-muted/50 rounded-lg p-3 space-y-2">
+                                                        <div className="flex items-center justify-between">
+                                                            <span className="text-sm text-muted-foreground">My Tasks</span>
+                                                            <Badge variant="secondary" className="text-xs">
+                                                                {myCompletedTasksCount}/{myTasksCount}
+                                                            </Badge>
+                                                        </div>
+                                                        <Progress
+                                                            value={myTasksCount > 0 ? (myCompletedTasksCount / myTasksCount) * 100 : 0}
+                                                            className="h-1"
+                                                        />
+                                                    </div>
+                                                )
+                                            }
                                             <div className="space-y-2">
                                                 <p className="text-sm text-muted-foreground">Teams</p>
                                                 <div className="flex flex-wrap gap-2">

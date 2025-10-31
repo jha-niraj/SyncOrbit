@@ -88,15 +88,17 @@ const Security = () => {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-                    {securityFeatures.map((feature, index) => (
-                        <div key={feature.title} className="opacity-0 fade-in-element">
-                            <SecurityFeature
-                                icon={feature.icon}
-                                title={feature.title}
-                                description={feature.description}
-                            />
-                        </div>
-                    ))}
+                    {
+                        securityFeatures.map((feature) => (
+                            <div key={feature.title} className="opacity-0 fade-in-element">
+                                <SecurityFeature
+                                    icon={feature.icon}
+                                    title={feature.title}
+                                    description={feature.description}
+                                />
+                            </div>
+                        ))
+                    }
                 </div>
 
                 <div className="bg-gray-50 rounded-2xl p-8 text-center opacity-0 fade-in-element">

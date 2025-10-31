@@ -2,15 +2,18 @@ import { getClientDashboardData, getDeveloperDashboardData } from "@/actions/(cl
 import { getOwnerDashboardData } from "@/actions/(productmanager)/pm.action";
 import { getDashboardMetrics } from "@/actions/dashboard.action";
 import { auth } from "@/auth";
-import { DashboardStats } from "./_components/DashboardStats";
 import QuickStatsCards from "@/components/dashboard/QuickStatsCards";
 import { ProjectCard } from "./_components/ProjectCard";
 import { CompletedProjects } from "./_components/CompletedProjects";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card, CardContent, CardHeader, CardTitle
+} from "@/components/ui/card";
 import { Status } from "@prisma/client";
-import { MessageCircle, Calendar, ArrowRight, Code, Users, BarChart3 } from "lucide-react";
+import {
+	MessageCircle, Calendar, ArrowRight, Code, Users, BarChart3
+} from "lucide-react";
 import Link from "next/link";
 import { DeveloperDashboard } from "./_components/developerdashboard";
 import { PMDashboard } from "./_components/pmdashboard";
@@ -32,7 +35,7 @@ export default async function DashboardPage() {
 	}
 
 	const userRole = session.user.role;
-    console.log(session.user);
+	console.log(session.user);
 
 	if (userRole === 'COMPANY_OWNER') {
 		const result = await getOwnerDashboardData();
@@ -91,7 +94,7 @@ function PMSetupView() {
 async function ClientDashboardView({ data }: { data: any }) {
 	const inProgressProjects = data.projects.filter((p: any) => p.status === Status.IN_PROGRESS);
 	const completedProjects = data.projects.filter((p: any) => p.status === Status.COMPLETED);
-	
+
 	// Get enhanced dashboard metrics
 	const dashboardMetrics = await getDashboardMetrics();
 
@@ -163,8 +166,7 @@ async function ClientDashboardView({ data }: { data: any }) {
 							Here&apos;s an overview of your projects and progress.
 						</p>
 					</div>
-					{/* Enhanced Quick Stats Cards */}
-					<QuickStatsCards 
+					<QuickStatsCards
 						metrics={dashboardMetrics}
 						loading={false}
 					/>
@@ -207,25 +209,24 @@ async function ClientDashboardView({ data }: { data: any }) {
 								)
 							}
 						</div>
-					<div className="space-y-6">
-						<div className="flex items-center justify-between">
-							<h2 className="text-xl font-semibold tracking-tight text-gray-900 dark:text-white">
-								Completed Projects
-							</h2>
-							<span className="text-sm text-gray-500 dark:text-gray-400">
-								{completedProjects.length} done
-							</span>
+						<div className="space-y-6">
+							<div className="flex items-center justify-between">
+								<h2 className="text-xl font-semibold tracking-tight text-gray-900 dark:text-white">
+									Completed Projects
+								</h2>
+								<span className="text-sm text-gray-500 dark:text-gray-400">
+									{completedProjects.length} done
+								</span>
+							</div>
+							<CompletedProjects projects={completedProjects} />
+
+							<ActivityFeed
+								variant="dashboard"
+								maxItems={8}
+								showFilters={false}
+								autoRefresh={true}
+							/>
 						</div>
-						<CompletedProjects projects={completedProjects} />
-						
-						{/* Activity Feed */}
-						<ActivityFeed 
-							variant="dashboard" 
-							maxItems={8}
-							showFilters={false}
-							autoRefresh={true}
-						/>
-					</div>
 					</div>
 				</div>
 			</div>

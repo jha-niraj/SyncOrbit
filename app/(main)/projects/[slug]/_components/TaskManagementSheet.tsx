@@ -1,22 +1,34 @@
 "use client"
 
 import { useState, useEffect, useCallback } from "react"
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
+import {
+	Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger
+} from "@/components/ui/sheet"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Progress } from "@/components/ui/progress"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+	Card, CardContent, CardHeader, CardTitle
+} from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Checkbox } from "@/components/ui/checkbox"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import {
+	Avatar, AvatarFallback, AvatarImage
+} from "@/components/ui/avatar"
 import { Separator } from "@/components/ui/separator"
-import { Plus, Trash2, CheckCircle, Clock, AlertCircle, User, Calendar, Loader2, ImageIcon, Link2, ExternalLink, FileIcon, Download } from "lucide-react"
+import {
+	Plus, Trash2, CheckCircle, Clock, AlertCircle, User, Calendar, Loader2,
+	ImageIcon, ExternalLink, FileIcon, Download
+} from "lucide-react"
 import { toast } from "sonner"
-import { createSubTask, updateSubTask, deleteSubTask, getTaskWithSubTasks } from "@/actions/(developers)/developers.action"
+import {
+	createSubTask, updateSubTask, deleteSubTask, getTaskWithSubTasks
+} from "@/actions/(developers)/developers.action"
 import { uploadImageToCloudinary } from "@/actions/shared/upload.action"
 import { TaskStatus } from "@prisma/client"
+import Image from "next/image"
 
 interface SubTask {
 	id: string
@@ -98,30 +110,30 @@ export function TaskManagementSheet({ taskId, trigger, userRole }: TaskManagemen
 			// Validate file type
 			const imageTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp']
 			const documentTypes = [
-				'application/pdf', 'application/msword', 
+				'application/pdf', 'application/msword',
 				'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
 				'application/vnd.ms-excel',
 				'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
 				'text/plain', 'application/zip', 'application/x-zip-compressed'
 			]
-			
+
 			const validTypes = [...imageTypes, ...documentTypes]
 			const isImage = imageTypes.includes(file.type)
-			
+
 			if (!validTypes.includes(file.type)) {
 				toast.error('Please select a valid image or document file')
 				return
 			}
-			
+
 			// Validate file size (5MB)
 			if (file.size > 5 * 1024 * 1024) {
 				toast.error('File size must be less than 5MB')
 				return
 			}
-			
+
 			setSelectedFile(file)
 			setSelectedFileType(isImage ? 'image' : 'document')
-			
+
 			// Create preview for images only
 			if (isImage) {
 				const reader = new FileReader()
@@ -170,18 +182,18 @@ export function TaskManagementSheet({ taskId, trigger, userRole }: TaskManagemen
 		setCreatingSubTask(true)
 		try {
 			let description = newSubTask.description
-			
+
 			// Upload file if selected
 			if (selectedFile) {
 				setUploadingFile(true)
 				const formData = new FormData()
 				formData.append('file', selectedFile)
-				
+
 				const uploadResult = await uploadImageToCloudinary(formData)
 				if (uploadResult.success && uploadResult.url) {
 					const filePrefix = selectedFileType === 'image' ? 'Image' : 'File'
 					const fileName = selectedFile.name
-					description = description 
+					description = description
 						? `${description}\n\n${filePrefix}: ${fileName} - ${uploadResult.url}`
 						: `${filePrefix}: ${fileName} - ${uploadResult.url}`
 					toast.success(`${filePrefix} uploaded successfully`)
@@ -389,8 +401,6 @@ export function TaskManagementSheet({ taskId, trigger, userRole }: TaskManagemen
 													disabled={creatingSubTask || uploadingFile}
 												/>
 											</div>
-											
-											{/* File Upload Section */}
 											<div className="space-y-2">
 												<Label>Attach File (Optional)</Label>
 												<div className="flex items-center gap-2">
@@ -427,25 +437,27 @@ export function TaskManagementSheet({ taskId, trigger, userRole }: TaskManagemen
 														)
 													}
 												</div>
-												
-												{/* File Preview */}
 												{
 													selectedFile && (
 														<div className="relative p-3 border rounded-lg bg-muted/20">
 															<div className="flex items-center gap-3">
-																{selectedFileType === 'image' ? (
-																	<div className="relative">
-																		<img
-																			src={filePreview || ''}
-																			alt="Preview"
-																			className="w-16 h-16 object-cover rounded"
-																		/>
-																	</div>
-																) : (
-																	<div className="w-16 h-16 bg-muted rounded flex items-center justify-center">
-																		<FileIcon className="h-8 w-8 text-muted-foreground" />
-																	</div>
-																)}
+																{
+																	selectedFileType === 'image' ? (
+																		<div className="relative">
+																			<Image
+																				src={filePreview || ''}
+																				alt="Preview"
+																				className="w-16 h-16 object-cover rounded"
+																				height={16}
+																				width={16}
+																			/>
+																		</div>
+																	) : (
+																		<div className="w-16 h-16 bg-muted rounded flex items-center justify-center">
+																			<FileIcon className="h-8 w-8 text-muted-foreground" />
+																		</div>
+																	)
+																}
 																<div className="flex-1 min-w-0">
 																	<p className="text-sm font-medium truncate">{selectedFile.name}</p>
 																	<p className="text-xs text-muted-foreground">
@@ -466,12 +478,10 @@ export function TaskManagementSheet({ taskId, trigger, userRole }: TaskManagemen
 														</div>
 													)
 												}
-												
 												<p className="text-xs text-muted-foreground">
 													Supports images and documents up to 5MB (JPG, PNG, WebP, PDF, DOC, DOCX, XLS, XLSX, TXT, ZIP)
 												</p>
 											</div>
-											
 											<Button
 												onClick={handleCreateSubTask}
 												disabled={creatingSubTask || uploadingFile || !newSubTask.title.trim()}
@@ -509,96 +519,94 @@ export function TaskManagementSheet({ taskId, trigger, userRole }: TaskManagemen
 									task.subtasks.length > 0 ? (
 										<div className="space-y-3">
 											{
-											task.subtasks.map((subTask) => {
-												// Parse file attachments from description
-												const imageUrlMatch = subTask.description?.match(/Image: ([^\s]+) - (https?:\/\/[^\s]+)/)
-												const fileUrlMatch = subTask.description?.match(/File: ([^\s]+) - (https?:\/\/[^\s]+)/)
-												
-												const imageUrl = imageUrlMatch?.[2]
-												const imageName = imageUrlMatch?.[1]
-												const fileUrl = fileUrlMatch?.[2]
-												const fileName = fileUrlMatch?.[1]
-												
-												const descriptionWithoutFiles = subTask.description
-													?.replace(/Image: [^\s]+ - https?:\/\/[^\s]+/, '')
-													?.replace(/File: [^\s]+ - https?:\/\/[^\s]+/, '')
-													?.trim()
-												
-												return (
-													<Card key={subTask.id} className={`${subTask.completed ? 'bg-gray-50 dark:bg-gray-900/50' : ''}`}>
-														<CardContent className="p-4">
-															<div className="flex items-start gap-3">
-																<Checkbox
-																	checked={subTask.completed}
-																	onCheckedChange={(checked) =>
-																		handleToggleSubTask(subTask.id, checked as boolean)
-																	}
-																	disabled={!isDeveloper}
-																	className="mt-1"
-																/>
-																<div className="flex-1 min-w-0">
-																	<h4 className={`font-medium ${subTask.completed ? 'line-through text-gray-500' : ''}`}>
-																		{subTask.title}
-																	</h4>
-																	{
-																		descriptionWithoutFiles && (
-																			<div className={`text-sm mt-1 ${subTask.completed ? 'line-through text-gray-400' : 'text-gray-600 dark:text-gray-400'}`}>
-																				{detectLinksInText(descriptionWithoutFiles)}
-																			</div>
-																		)
-																	}
-																	
-																	{/* Image Attachment */}
-																	{
-																		imageUrl && (
-																			<div className="mt-2">
-																				<p className="text-xs text-muted-foreground mb-1">📎 {imageName}</p>
-																				<img
-																					src={imageUrl}
-																					alt={imageName || "Subtask attachment"}
-																					className="max-w-full h-auto max-h-48 object-contain rounded-lg border cursor-pointer hover:opacity-90 transition-opacity"
-																					onClick={() => window.open(imageUrl, '_blank')}
-																				/>
-																			</div>
-																		)
-																	}
-																	
-																	{/* File Attachment */}
-																	{
-																		fileUrl && fileName && (
-																			<div className="mt-2">
-																				<div 
-																					className="flex items-center gap-2 p-2 border rounded-lg hover:bg-muted/50 cursor-pointer transition-colors"
-																					onClick={() => window.open(fileUrl, '_blank')}
-																				>
-																					<FileIcon className="h-4 w-4 text-muted-foreground flex-shrink-0" />
-																					<span className="text-sm font-medium truncate">{fileName}</span>
-																					<Download className="h-4 w-4 text-muted-foreground flex-shrink-0 ml-auto" />
+												task.subtasks.map((subTask) => {
+													// Parse file attachments from description
+													const imageUrlMatch = subTask.description?.match(/Image: ([^\s]+) - (https?:\/\/[^\s]+)/)
+													const fileUrlMatch = subTask.description?.match(/File: ([^\s]+) - (https?:\/\/[^\s]+)/)
+
+													const imageUrl = imageUrlMatch?.[2]
+													const imageName = imageUrlMatch?.[1]
+													const fileUrl = fileUrlMatch?.[2]
+													const fileName = fileUrlMatch?.[1]
+
+													const descriptionWithoutFiles = subTask.description
+														?.replace(/Image: [^\s]+ - https?:\/\/[^\s]+/, '')
+														?.replace(/File: [^\s]+ - https?:\/\/[^\s]+/, '')
+														?.trim()
+
+													return (
+														<Card key={subTask.id} className={`${subTask.completed ? 'bg-gray-50 dark:bg-gray-900/50' : ''}`}>
+															<CardContent className="p-4">
+																<div className="flex items-start gap-3">
+																	<Checkbox
+																		checked={subTask.completed}
+																		onCheckedChange={(checked) =>
+																			handleToggleSubTask(subTask.id, checked as boolean)
+																		}
+																		disabled={!isDeveloper}
+																		className="mt-1"
+																	/>
+																	<div className="flex-1 min-w-0">
+																		<h4 className={`font-medium ${subTask.completed ? 'line-through text-gray-500' : ''}`}>
+																			{subTask.title}
+																		</h4>
+																		{
+																			descriptionWithoutFiles && (
+																				<div className={`text-sm mt-1 ${subTask.completed ? 'line-through text-gray-400' : 'text-gray-600 dark:text-gray-400'}`}>
+																					{detectLinksInText(descriptionWithoutFiles)}
 																				</div>
-																			</div>
+																			)
+																		}
+																		{
+																			imageUrl && (
+																				<div className="mt-2">
+																					<p className="text-xs text-muted-foreground mb-1">📎 {imageName}</p>
+																					<Image
+																						src={imageUrl}
+																						alt={imageName || "Subtask attachment"}
+																						className="max-w-full h-auto max-h-48 object-contain rounded-lg border cursor-pointer hover:opacity-90 transition-opacity"
+																						onClick={() => window.open(imageUrl, '_blank')}
+																						width={48}
+																						height={48}
+																					/>
+																				</div>
+																			)
+																		}
+																		{
+																			fileUrl && fileName && (
+																				<div className="mt-2">
+																					<div
+																						className="flex items-center gap-2 p-2 border rounded-lg hover:bg-muted/50 cursor-pointer transition-colors"
+																						onClick={() => window.open(fileUrl, '_blank')}
+																					>
+																						<FileIcon className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+																						<span className="text-sm font-medium truncate">{fileName}</span>
+																						<Download className="h-4 w-4 text-muted-foreground flex-shrink-0 ml-auto" />
+																					</div>
+																				</div>
+																			)
+																		}
+																		<p className="text-xs text-gray-500 mt-2">
+																			Created {new Date(subTask.createdAt).toLocaleDateString()}
+																		</p>
+																	</div>
+																	{
+																		isDeveloper && (
+																			<Button
+																				variant="ghost"
+																				size="sm"
+																				onClick={() => handleDeleteSubTask(subTask.id)}
+																				className="text-red-500 hover:text-red-700 hover:bg-red-50"
+																			>
+																				<Trash2 className="h-4 w-4" />
+																			</Button>
 																		)
 																	}
-																	<p className="text-xs text-gray-500 mt-2">
-																		Created {new Date(subTask.createdAt).toLocaleDateString()}
-																	</p>
 																</div>
-																{
-																	isDeveloper && (
-																		<Button
-																			variant="ghost"
-																			size="sm"
-																			onClick={() => handleDeleteSubTask(subTask.id)}
-																			className="text-red-500 hover:text-red-700 hover:bg-red-50"
-																		>
-																			<Trash2 className="h-4 w-4" />
-																		</Button>
-																	)
-																}
-															</div>
-														</CardContent>
-													</Card>
-												)
-											})
+															</CardContent>
+														</Card>
+													)
+												})
 											}
 										</div>
 									) : (
@@ -611,7 +619,8 @@ export function TaskManagementSheet({ taskId, trigger, userRole }: TaskManagemen
 												)
 											}
 										</div>
-									)}
+									)
+								}
 							</div>
 						</div>
 					) : (
