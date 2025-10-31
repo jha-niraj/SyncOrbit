@@ -675,3 +675,13 @@ model Notification {
     @@index([receiverId, createdAt])
     @@index([type])
 }
+
+model Newsletter {
+    id           String   @id @default(cuid())
+    email        String   @unique
+    subscribedAt DateTime @default(now())
+    isActive     Boolean  @default(true)
+    
+    @@index([email])
+    @@index([subscribedAt])
+}

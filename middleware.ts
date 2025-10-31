@@ -1,4 +1,4 @@
-import { auth } from "@/auth"
+import { withAuth } from "next-auth/middleware"
 import { NextResponse } from "next/server"
 
 const protectedRoutes = [
@@ -8,7 +8,11 @@ const protectedRoutes = [
 	'/admin',
 	'/settings',
 	'/notifications',
-	'/role-settings'
+	'/role-settings',
+	'/projects',
+	'/companies',
+	'/associations',
+	'/analytics'
 ]
 
 const publicRoutes = [
@@ -28,7 +32,10 @@ const publicRoutes = [
 	'/accelerator',
 	'/budgetestimator',
 	'/nexinvoice',
-	'/projectsdelivered'
+	'/projectsdelivered',
+	'/pricing',
+	'/terms',
+	'/privacy'
 ]
 
 const apiRoutes = [
@@ -43,55 +50,69 @@ const apiRoutes = [
 	'/api/sendinvoice'
 ]
 
-export default auth((req) => {
-	const { nextUrl } = req
-	const isLoggedIn = !!req.auth
+export default withAuth(
+	function middleware(req) {
+		const { nextUrl, nextauth } = req
+		const isLoggedIn = !!nextauth?.token
 
-	console.log(`Middleware: ${nextUrl.pathname}, isLoggedIn: ${isLoggedIn}`) // Debug log
+		console.log(`Middleware: ${nextUrl.pathname}, isLoggedIn: ${isLoggedIn}`) // Debug log
 
-	if (apiRoutes.some(route => nextUrl.pathname.startsWith(route))) {
+		// If user is logged in and trying to access auth pages, redirect to dashboard
+		if (isLoggedIn && (nextUrl.pathname === '/signin' || nextUrl.pathname === '/signup' || nextUrl.pathname === '/register')) {
+			return NextResponse.redirect(new URL('/dashboard', nextUrl.origin))
+		}
+
 		return NextResponse.next()
+	},
+	{
+		callbacks: {
+			authorized: ({ req, token }) => {
+				const { pathname } = req.nextUrl
+
+				// Allow API routes
+				if (apiRoutes.some(route => pathname.startsWith(route))) {
+					return true
+				}
+
+				// Allow static files and Next.js internals
+				if (
+					pathname.startsWith('/_next/') ||
+					pathname.startsWith('/api/') ||
+					pathname.includes('.') ||
+					pathname.startsWith('/favicon')
+				) {
+					return true
+				}
+
+				// Check if current path is a public route
+				const isPublicRoute = publicRoutes.some(route =>
+					pathname === route || pathname.startsWith(route)
+				)
+
+				// If it's a public route, allow access
+				if (isPublicRoute) {
+					return true
+				}
+
+				// Check if current path is a protected route
+				const isProtectedRoute = protectedRoutes.some(route =>
+					pathname.startsWith(route)
+				)
+
+				// If it's a protected route, require authentication
+				if (isProtectedRoute) {
+					return !!token
+				}
+
+				// Default: allow access
+				return true
+			},
+		},
+		pages: {
+			signIn: '/signin',
+		},
 	}
-
-	// Allow static files and Next.js internals
-	if (
-		nextUrl.pathname.startsWith('/_next/') ||
-		nextUrl.pathname.startsWith('/api/') ||
-		nextUrl.pathname.includes('.') ||
-		nextUrl.pathname.startsWith('/favicon')
-	) {
-		return NextResponse.next()
-	}
-
-	// Check if current path is a protected route
-	const isProtectedRoute = protectedRoutes.some(route =>
-		nextUrl.pathname.startsWith(route)
-	)
-
-	// Check if current path is a public route
-	const isPublicRoute = publicRoutes.some(route =>
-		nextUrl.pathname === route || nextUrl.pathname.startsWith(route)
-	)
-
-	// If it's a public route, allow access
-	if (isPublicRoute) {
-		return NextResponse.next()
-	}
-
-	// If user is not logged in and trying to access protected route
-	if (!isLoggedIn && isProtectedRoute) {
-		const signInUrl = new URL('/signin', nextUrl.origin)
-		signInUrl.searchParams.set('callbackUrl', nextUrl.pathname)
-		return NextResponse.redirect(signInUrl)
-	}
-
-	// If user is logged in and trying to access auth pages, redirect based on role
-	if (isLoggedIn && (nextUrl.pathname === '/signin' || nextUrl.pathname === '/signup' || nextUrl.pathname === '/register')) {
-		return NextResponse.redirect(new URL('/dashboard', nextUrl.origin))
-	}
-
-	return NextResponse.next()
-})
+)
 
 export const config = {
 	matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],

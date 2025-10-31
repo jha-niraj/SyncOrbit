@@ -1,12 +1,12 @@
+import type { NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import GoogleProvider from "next-auth/providers/google";
 import { prisma } from "@/lib/prisma";
 import { PrismaAdapter } from "@next-auth/prisma-adapter"
-import NextAuth from "next-auth";
 import { Role } from '@prisma/client';
 import bcryptjs from "bcryptjs";
 
-export const { auth, handlers, signIn, signOut } = NextAuth({
+export const authOptions: NextAuthOptions = {
     adapter: PrismaAdapter(prisma),
     providers: [
         CredentialsProvider({
@@ -257,4 +257,13 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
         },
     },
     debug: process.env.NODE_ENV === "development"
-})
+}
+
+// Helper function for server-side auth check (compatible with v5 syntax used in the app)
+export async function auth() {
+	const { getServerSession } = await import('next-auth/next');
+	return await getServerSession(authOptions);
+}
+
+// Export getServerSession for direct use if needed
+export { getServerSession } from 'next-auth/next';
