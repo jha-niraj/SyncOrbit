@@ -13,8 +13,23 @@ import { acceptInvitationByToken } from "@/actions/invitations.action"
 import { signIn } from "next-auth/react"
 import { useRouter } from "next/navigation"
 
+interface Invitation {
+    token: string
+    email: string
+    roleTitle: string | null
+    company?: {
+        name: string | null
+    } | null
+    team?: {
+        displayName: string | null
+    } | null
+    sender?: {
+        name: string | null
+    } | null
+}
+
 interface AcceptInvitationFormProps {
-    invitation: any // Type from your invitation data
+    invitation: Invitation
     isAuthenticated: boolean
     currentUserEmail?: string | null
 }
@@ -28,11 +43,6 @@ export function AcceptInvitationForm({
     const [isLoading, setIsLoading] = useState(false)
     const [error, setError] = useState<string>("")
     const [success, setSuccess] = useState(false)
-    const [formData, setFormData] = useState({
-        name: "",
-        email: invitation.email,
-        createAccount: false
-    })
 
     // Check if user is authenticated with different email
     const isWrongUser = isAuthenticated && currentUserEmail !== invitation.email
@@ -53,7 +63,7 @@ export function AcceptInvitationForm({
             } else {
                 setError(result.error || "Failed to accept invitation")
             }
-        } catch (err) {
+        } catch (err: unknown) {
             console.log("Error occurred while accepting the invitation: " + err);
             setError("An unexpected error occurred")
         } finally {
@@ -69,7 +79,7 @@ export function AcceptInvitationForm({
             // You may want to create a declineInvitation action
             // For now, just redirect
             router.push('/')
-        } catch (err) {
+        } catch (err: unknown) {
             console.log("Error occurred while declining the invitation: " + err);
             setError("An unexpected error occurred")
         } finally {

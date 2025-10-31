@@ -66,13 +66,14 @@ const HumanoidSection = () => {
             }
         };
 
+        const currentSection = sectionRef.current;
         window.addEventListener('scroll', handleScroll, { passive: true });
         handleScroll(); // Initial calculation
 
         return () => {
             window.removeEventListener('scroll', handleScroll);
-            if (sectionRef.current) {
-                observer.unobserve(sectionRef.current);
+            if (currentSection) {
+                observer.unobserve(currentSection);
             }
         };
     }, []);

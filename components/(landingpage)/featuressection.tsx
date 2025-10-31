@@ -25,13 +25,14 @@ const FeatureCard = ({ icon, title, description, index }: FeatureCardProps) => {
             { threshold: 0.1 }
         );
 
-        if (cardRef.current) {
-            observer.observe(cardRef.current);
+        const currentCard = cardRef.current;
+        if (currentCard) {
+            observer.observe(currentCard);
         }
 
         return () => {
-            if (cardRef.current) {
-                observer.unobserve(cardRef.current);
+            if (currentCard) {
+                observer.unobserve(currentCard);
             }
         };
     }, []);
@@ -76,13 +77,14 @@ const Features = () => {
             { threshold: 0.1 }
         );
 
-        if (sectionRef.current) {
-            observer.observe(sectionRef.current);
+        const currentSection = sectionRef.current;
+        if (currentSection) {
+            observer.observe(currentSection);
         }
 
         return () => {
-            if (sectionRef.current) {
-                observer.unobserve(sectionRef.current);
+            if (currentSection) {
+                observer.unobserve(currentSection);
             }
         };
     }, []);

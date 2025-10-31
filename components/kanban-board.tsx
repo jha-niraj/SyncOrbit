@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useCallback } from "react"
+import { useState, useCallback, useMemo } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
@@ -58,7 +58,7 @@ export function KanbanBoard({ tasks, userRole, onTaskUpdate }: KanbanBoardProps)
 	}
 
 	// Define columns
-	const columns: KanbanColumn[] = [
+	const columns: KanbanColumn[] = useMemo(() => [
 		{
 			id: TaskStatus.YET_TO_START,
 			title: "To Start",
@@ -80,7 +80,7 @@ export function KanbanBoard({ tasks, userRole, onTaskUpdate }: KanbanBoardProps)
 			color: "bg-green-50 border-green-200 dark:bg-green-900/20 dark:border-green-800",
 			tasks: tasks.filter(task => task.status === TaskStatus.COMPLETED)
 		}
-	]
+	], [tasks])
 
 	const handleDragStart = useCallback((e: React.DragEvent, task: Task) => {
 		if (!isDeveloper) return

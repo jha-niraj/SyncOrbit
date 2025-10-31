@@ -39,7 +39,11 @@ const STATUS_COLORS = {
     [Status.CANCELLED]: "bg-red-500",
 }
 
-function getTaskProgress(tasks: any[]) {
+interface ProjectTask {
+    status: TaskStatus
+}
+
+function getTaskProgress(tasks: ProjectTask[]) {
     if (tasks.length === 0) return 0
     const completedTasks = tasks.filter(task => task.status === TaskStatus.COMPLETED).length
     return Math.round((completedTasks / tasks.length) * 100)

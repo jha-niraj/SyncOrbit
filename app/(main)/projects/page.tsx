@@ -9,7 +9,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Progress } from "@/components/ui/progress"
 import {
     Building2, Users, DollarSign, EyeOff, Code, Megaphone, ShoppingCart, Palette,
-    Briefcase, Settings, MessageSquare, FileText, CheckCircle, Clock, AlertCircle
+    Briefcase, Settings, MessageSquare, FileText
 } from "lucide-react"
 import {
     ProjectVisibility, Status, TaskStatus, TeamType
@@ -37,15 +37,11 @@ const STATUS_COLORS = {
     [Status.CANCELLED]: "bg-red-500",
 }
 
-// Status icons
-const STATUS_ICONS = {
-    [Status.IN_PROGRESS]: Clock,
-    [Status.COMPLETED]: CheckCircle,
-    [Status.ON_HOLD]: AlertCircle,
-    [Status.CANCELLED]: AlertCircle,
+interface ProjectTask {
+    status: TaskStatus
 }
 
-function getTaskProgress(tasks: any[]) {
+function getTaskProgress(tasks: ProjectTask[]) {
     if (tasks.length === 0) return 0
     const completedTasks = tasks.filter(task => task.status === TaskStatus.COMPLETED).length
     return Math.round((completedTasks / tasks.length) * 100)

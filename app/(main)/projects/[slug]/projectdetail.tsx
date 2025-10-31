@@ -8,10 +8,10 @@ import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Progress } from "@/components/ui/progress"
 import {
-    ArrowLeft, DollarSign, Users, Calendar, EyeOff, Settings, Code, Megaphone,
-    ShoppingCart, Palette, Briefcase, Settings as SettingsIcon, MessageSquare,
-    FileText, CheckCircle, Clock, AlertCircle, Target, MessageCircle, Plus, Activity,
-    Building2, User, Star, ExternalLink, Github, Figma, File, BarChart3
+    Users, Calendar, DollarSign, MessageSquare, FileText, Clock, AlertCircle, 
+    EyeOff, Code, Megaphone, ShoppingCart, Palette, SettingsIcon, Briefcase, 
+    Activity, CheckCircle, ArrowLeft, MessageCircle, Settings, ExternalLink, 
+    Figma, Github, File, Target, User, Plus, Building2, BarChart3
 } from "lucide-react"
 import {
     ProjectVisibility, Status, TaskStatus, TeamType, Role, ClientType
@@ -39,7 +39,11 @@ const STATUS_CONFIG = {
     [Status.CANCELLED]: { color: "bg-red-500", bgColor: "bg-red-50 dark:bg-red-950/20", textColor: "text-red-700 dark:text-red-300", icon: AlertCircle },
 }
 
-function getTaskProgress(tasks: any[]) {
+interface ProjectTask {
+    status: TaskStatus
+}
+
+function getTaskProgress(tasks: ProjectTask[]) {
     if (tasks.length === 0) return 0
     const completedTasks = tasks.filter(task => task.status === TaskStatus.COMPLETED).length
     return Math.round((completedTasks / tasks.length) * 100)
@@ -313,17 +317,18 @@ export default async function ProjectDetail({ params }: ProjectDetailProps) {
                                 </CardHeader>
                                 <CardContent className="space-y-4">
                                     {
-                                        project.feedbacks.slice(0, 3).map((feedback: any, index: number) => (
+                                        project.feedbacks.slice(0, 3).map((feedback, index: number) => (
                                             <div key={index} className="border-l-4 border-blue-500 pl-4">
                                                 <div className="flex items-start gap-3">
                                                     <Avatar className="w-8 h-8">
-                                                        <AvatarImage src={feedback.user?.image} />
+                                                        <AvatarImage src={feedback.user?.image ?? undefined} />
                                                         <AvatarFallback>
                                                             {feedback.user?.name?.[0] || 'U'}
                                                         </AvatarFallback>
                                                     </Avatar>
                                                     <div className="flex-1">
-                                                        <p className="text-sm">{feedback.message}</p>
+                                                        <p className="text-sm font-medium">{feedback.title}</p>
+                                                        <p className="text-xs text-muted-foreground mt-1">{feedback.description}</p>
                                                         <div className="flex items-center gap-2 mt-1">
                                                             <span className="text-xs text-muted-foreground">
                                                                 {feedback.user?.name}
@@ -332,17 +337,6 @@ export default async function ProjectDetail({ params }: ProjectDetailProps) {
                                                             <span className="text-xs text-muted-foreground">
                                                                 {formatDistanceToNow(new Date(feedback.createdAt))} ago
                                                             </span>
-                                                            {
-                                                                feedback.rating && (
-                                                                    <>
-                                                                        <span className="text-xs text-muted-foreground">•</span>
-                                                                        <div className="flex items-center gap-1">
-                                                                            <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
-                                                                            <span className="text-xs">{feedback.rating}</span>
-                                                                        </div>
-                                                                    </>
-                                                                )
-                                                            }
                                                         </div>
                                                     </div>
                                                 </div>
@@ -462,7 +456,7 @@ export default async function ProjectDetail({ params }: ProjectDetailProps) {
                         </CardHeader>
                         <CardContent className="space-y-3">
                             {
-                                project.assignedTeams?.map((assignment: any) => {
+                                project.assignedTeams?.map((assignment) => {
                                     const IconComponent = TEAM_ICONS[assignment.team.teamType as keyof typeof TEAM_ICONS] || Users
                                     return (
                                         <div key={assignment.id} className="flex items-center gap-3">

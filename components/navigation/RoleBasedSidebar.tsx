@@ -59,7 +59,7 @@ export default function RoleBasedSidebar({ collapsed = false }: RoleBasedSidebar
         try {
             await signOut({ callbackUrl: '/' })
             toast.success("Signed out successfully")
-        } catch (error) {
+        } catch {
             toast.error("Failed to sign out")
         }
     }
@@ -317,8 +317,7 @@ function NavigationSection({
     isActiveRoute,
     onNavigate,
     expanded,
-    onToggle,
-    defaultCollapsed = false
+    onToggle
 }: NavigationSectionProps) {
     if (collapsed) {
         return (

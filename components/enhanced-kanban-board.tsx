@@ -1,11 +1,11 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import type { DropResult } from "@hello-pangea/dnd"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Progress } from "@/components/ui/progress"
 import {
     Dialog, DialogContent, DialogDescription, DialogHeader,
     DialogTitle, DialogFooter
@@ -95,7 +95,7 @@ interface AssignmentOption {
         displayName: string
         teamType: TeamType
         color?: string | null
-        members: any[]
+        members: unknown[]
     }>
     members: Array<{
         id: string
@@ -190,7 +190,7 @@ export function EnhancedKanbanBoard({
     }
 
     // Handle drag and drop
-    const onDragEnd = async (result: any) => {
+    const onDragEnd = async (result: DropResult) => {
         if (!result.destination) return
 
         const { source, destination, draggableId } = result

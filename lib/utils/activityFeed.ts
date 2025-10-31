@@ -41,7 +41,7 @@ export interface ActivityItem {
 		newValue?: string
 		targetUserId?: string
 		targetUserName?: string
-		[key: string]: any
+		[key: string]: string | number | boolean | undefined
 	}
 	actionUrl?: string
 }

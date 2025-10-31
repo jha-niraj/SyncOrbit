@@ -30,11 +30,7 @@ const TEAM_ICONS = {
     [TeamType.CUSTOM]: Users,
 }
 
-interface TeamsPageProps {
-    searchParams: Promise<{ [key: string]: string | string[] | undefined }>
-}
-
-export default async function TeamsPage({ searchParams }: TeamsPageProps) {
+export default async function TeamsPage() {
     const session = await auth()
 
     if (!session?.user) {

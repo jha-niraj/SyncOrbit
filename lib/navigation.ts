@@ -8,7 +8,7 @@ import {
 export interface NavigationItem {
     path: string
     name: string
-    icon: React.ComponentType<any>
+    icon: React.ComponentType<{ className?: string }>
     description?: string
     badge?: {
         text: string

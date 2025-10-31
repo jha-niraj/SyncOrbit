@@ -7,7 +7,7 @@ import Image from "next/image";
 const Hero = () => {
     const containerRef = useRef<HTMLDivElement>(null);
     const imageRef = useRef<HTMLImageElement>(null);
-    const [lottieData, setLottieData] = useState<any>(null);
+    const [lottieData, setLottieData] = useState<Record<string, unknown> | null>(null);
     const [isMobile, setIsMobile] = useState(false);
 
     useEffect(() => {

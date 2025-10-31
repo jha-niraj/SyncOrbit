@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import {
 	Card, CardContent, CardDescription, CardHeader, CardTitle
 } from "@/components/ui/card"
@@ -21,7 +21,7 @@ import {
 import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
 import {
-	ActivityItem, ActivityType, ActivityFilters, getActivityTypeColor,
+	ActivityItem, ActivityType, getActivityTypeColor,
 	getActivityTypeIcon, formatActivityTime, groupActivitiesByDate,
 	getRelativeDateLabel, getActivityTypeDisplayName
 } from "@/lib/utils/activityFeed"
@@ -64,20 +64,21 @@ export function ActivityFeed({
 }: ActivityFeedProps) {
 	const [activities, setActivities] = useState<ActivityItem[]>([])
 	const [loading, setLoading] = useState(true)
-	const [filters, setFilters] = useState<ActivityFilters>({
-		limit: maxItems
-	})
 
 	// Filter states
 	const [selectedTypes, setSelectedTypes] = useState<ActivityType[]>([])
 	const [selectedDateRange, setSelectedDateRange] = useState<string>('7d')
 
-	const loadActivities = async () => {
+	const loadActivities = useCallback(async () => {
 		try {
 			setLoading(true)
 
-			const options: any = {
-				...filters,
+			const options: {
+				limit: number
+				dateFrom?: Date
+				types?: ActivityType[]
+				projectIds?: string[]
+			} = {
 				limit: maxItems
 			}
 
@@ -112,11 +113,11 @@ export function ActivityFeed({
 		} finally {
 			setLoading(false)
 		}
-	}
+	}, [maxItems, selectedDateRange, selectedTypes, projectId])
 
 	useEffect(() => {
 		loadActivities()
-	}, [selectedTypes, selectedDateRange, projectId])
+	}, [loadActivities])
 
 	// Auto-refresh
 	useEffect(() => {
@@ -124,15 +125,7 @@ export function ActivityFeed({
 			const interval = setInterval(loadActivities, refreshInterval)
 			return () => clearInterval(interval)
 		}
-	}, [autoRefresh, refreshInterval])
-
-	const handleFilterChange = (filterType: 'types' | 'dateRange', value: any) => {
-		if (filterType === 'types') {
-			setSelectedTypes(value)
-		} else if (filterType === 'dateRange') {
-			setSelectedDateRange(value)
-		}
-	}
+	}, [autoRefresh, refreshInterval, loadActivities])
 
 	const getActivityIcon = (type: ActivityType) => {
 		const iconName = getActivityTypeIcon(type) as keyof typeof iconMap

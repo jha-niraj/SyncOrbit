@@ -1,4 +1,4 @@
-import { differenceInDays, startOfMonth, endOfMonth, subMonths, startOfWeek, endOfWeek, subWeeks, startOfDay, endOfDay, subDays } from "date-fns"
+import { startOfMonth, endOfMonth, subMonths, startOfWeek, endOfWeek, subWeeks, startOfDay, endOfDay, subDays } from "date-fns"
 
 export interface StatCard {
   id: string
@@ -73,7 +73,7 @@ export function calculatePercentageChange(current: number, previous: number): nu
 /**
  * Determine change type based on percentage
  */
-export function getChangeType(change: number, isRevenueRelated: boolean = false): 'increase' | 'decrease' | 'neutral' {
+export function getChangeType(change: number): 'increase' | 'decrease' | 'neutral' {
   if (change > 0) return 'increase'
   if (change < 0) return 'decrease'
   return 'neutral'

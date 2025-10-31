@@ -7,6 +7,19 @@ export interface InvoiceItem {
 	category?: string
 }
 
+interface ProjectTask {
+	id: string
+	status: string
+	title: string
+	estimatedHours?: number | null
+}
+
+interface ProjectData {
+	title: string
+	budget?: number | null
+	tasks?: ProjectTask[]
+}
+
 export interface InvoiceDetails {
 	id: string
 	invoiceNumber: string
@@ -152,7 +165,7 @@ export function calculateDueDate(issueDate: Date, paymentTerms: string): Date {
  * Generate invoice items from project data
  */
 export function generateInvoiceItemsFromProject(
-	project: any,
+	project: ProjectData,
 	hourlyRate: number = 50,
 	includeExpenses: boolean = false
 ): InvoiceItem[] {
@@ -170,7 +183,7 @@ export function generateInvoiceItemsFromProject(
 
 	// Add task-based items if needed
 	if (project.tasks && project.tasks.length > 0) {
-		const completedTasks = project.tasks.filter((t: any) => t.status === 'COMPLETED')
+		const completedTasks = project.tasks.filter((t: ProjectTask) => t.status === 'COMPLETED')
 
 		if (completedTasks.length > 0) {
 			const taskHours = completedTasks.length * 8 // Assuming 8 hours per task

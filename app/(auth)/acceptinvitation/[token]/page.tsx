@@ -199,7 +199,7 @@ export default async function AcceptInvitationPage({ params }: AcceptInvitationP
                     </CardContent>
                 </Card>
                 <AcceptInvitationForm
-                    invitation={invitation}
+                    invitation={{ ...invitation, token }}
                     isAuthenticated={!!session?.user}
                     currentUserEmail={session?.user?.email}
                 />
