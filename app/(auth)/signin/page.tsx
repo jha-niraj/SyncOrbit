@@ -7,7 +7,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Eye, EyeOff } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { toast } from "sonner";
@@ -15,6 +15,7 @@ import { toast } from "sonner";
 function SignInContent() {
 	const [email, setEmail] = useState("")
 	const [password, setPassword] = useState("")
+	const [showPassword, setShowPassword] = useState(false)
 	const [isLoading, setIsLoading] = useState(false)
 	const [isGoogleLoading, setIsGoogleLoading] = useState(false)
 	const router = useRouter()
@@ -94,7 +95,7 @@ function SignInContent() {
 		try {
 			// Get referral code from URL params
 			const ref = searchParams.get('ref')
-			
+
 			// Create callback URL with referral code if present
 			let redirectUrl = callbackUrl
 			if (ref) {
@@ -157,62 +158,7 @@ function SignInContent() {
 							<h2 className="text-2xl font-bold text-neutral-900 dark:text-white">Welcome back</h2>
 							<p className="text-neutral-600 dark:text-neutral-400 mt-2">Sign in to your Project Central account</p>
 						</div>
-						<form onSubmit={handleSubmit} className="space-y-6">
-							<div className="space-y-2">
-								<Label htmlFor="email" className="text-neutral-700 dark:text-neutral-300 font-medium">Email</Label>
-								<Input
-									id="email"
-									type="email"
-									placeholder="you@example.com"
-									value={email}
-									onChange={(e) => setEmail(e.target.value)}
-									required
-									disabled={isLoading}
-									className="h-12 rounded-2xl border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 focus:border-neutral-400 dark:focus:border-neutral-500 focus:ring-0 placeholder:text-neutral-400 dark:placeholder:text-neutral-500"
-								/>
-							</div>
-							<div className="space-y-2">
-								<div className="flex items-center justify-between">
-									<Label htmlFor="password" className="text-neutral-700 dark:text-neutral-300 font-medium">Password</Label>
-									<Link 
-										href={callbackUrl ? `/forgotpassword?callbackUrl=${encodeURIComponent(callbackUrl)}` : '/forgotpassword'}
-										className="text-sm text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white hover:underline"
-									>
-										Forgot password?
-									</Link>
-								</div>
-								<Input
-									id="password"
-									type="password"
-									placeholder="••••••••"
-									value={password}
-									onChange={(e) => setPassword(e.target.value)}
-									required
-									disabled={isLoading}
-									className="h-12 rounded-2xl border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 focus:border-neutral-400 dark:focus:border-neutral-500 focus:ring-0 placeholder:text-neutral-400 dark:placeholder:text-neutral-500"
-								/>
-							</div>
-							<Button
-								type="submit"
-								className="w-full h-12 bg-neutral-900 hover:bg-neutral-800 dark:bg-white dark:hover:bg-neutral-100 text-white dark:text-black rounded-2xl font-semibold transition-all duration-200 hover:shadow-lg"
-								disabled={isLoading}
-							>
-								{isLoading ? "Signing in..." : "Sign In"}
-								{!isLoading && <ArrowRight className="ml-2 h-4 w-4" />}
-							</Button>
-						</form>
-						<div className="mt-8 text-center">
-							<p className="text-sm text-neutral-600 dark:text-neutral-400">
-								Don&apos;t have an account?{" "}
-								<Link 
-									href={callbackUrl ? `/signup?callbackUrl=${encodeURIComponent(callbackUrl)}` : '/signup'}
-									className="text-neutral-900 dark:text-white hover:underline font-medium"
-								>
-									Sign up
-								</Link>
-							</p>
-						</div>
-						<div className="mt-8 pt-6 border-t border-neutral-200 dark:border-neutral-700">
+						{/* <div className="mt-8 pt-6 border-t border-neutral-200 dark:border-neutral-700">
 							<p className="text-xs text-center text-neutral-500 dark:text-neutral-400 mb-4">Or continue with</p>
 							<Button
 								type="button"
@@ -241,6 +187,71 @@ function SignInContent() {
 								</svg>
 								{isGoogleLoading ? "Signing in..." : "Continue with Google"}
 							</Button>
+						</div> */}
+						<form onSubmit={handleSubmit} className="space-y-6">
+							<div className="space-y-2">
+								<Label htmlFor="email" className="text-neutral-700 dark:text-neutral-300 font-medium">Email</Label>
+								<Input
+									id="email"
+									type="email"
+									placeholder="you@example.com"
+									value={email}
+									onChange={(e) => setEmail(e.target.value)}
+									required
+									disabled={isLoading}
+									className="h-12 rounded-2xl border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 focus:border-neutral-400 dark:focus:border-neutral-500 focus:ring-0 placeholder:text-neutral-400 dark:placeholder:text-neutral-500"
+								/>
+							</div>
+							<div className="space-y-2">
+								<div className="flex items-center justify-between">
+									<Label htmlFor="password" className="text-neutral-700 dark:text-neutral-300 font-medium">Password</Label>
+									<Link
+										href={callbackUrl ? `/forgotpassword?callbackUrl=${encodeURIComponent(callbackUrl)}` : '/forgotpassword'}
+										className="text-sm text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white hover:underline"
+									>
+										Forgot password?
+									</Link>
+								</div>
+								<div className="relative">
+									<Input
+										id="password"
+										type={showPassword ? "text" : "password"}
+										placeholder="••••••••"
+										value={password}
+										onChange={(e) => setPassword(e.target.value)}
+										required
+										disabled={isLoading}
+										className="h-12 rounded-2xl border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 focus:border-neutral-400 dark:focus:border-neutral-500 focus:ring-0 placeholder:text-neutral-400 dark:placeholder:text-neutral-500 pr-10"
+									/>
+									<button
+										type="button"
+										onClick={() => setShowPassword(!showPassword)}
+										className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-500 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-200 transition-colors"
+										disabled={isLoading}
+									>
+										{showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+									</button>
+								</div>
+							</div>
+							<Button
+								type="submit"
+								className="w-full h-12 bg-neutral-900 hover:bg-neutral-800 dark:bg-white dark:hover:bg-neutral-100 text-white dark:text-black rounded-2xl font-semibold transition-all duration-200 hover:shadow-lg"
+								disabled={isLoading}
+							>
+								{isLoading ? "Signing in..." : "Sign In"}
+								{!isLoading && <ArrowRight className="ml-2 h-4 w-4" />}
+							</Button>
+						</form>
+						<div className="mt-8 text-center">
+							<p className="text-sm text-neutral-600 dark:text-neutral-400">
+								Don&apos;t have an account?{" "}
+								<Link
+									href={callbackUrl ? `/signup?callbackUrl=${encodeURIComponent(callbackUrl)}` : '/signup'}
+									className="text-neutral-900 dark:text-white hover:underline font-medium"
+								>
+									Sign up
+								</Link>
+							</p>
 						</div>
 					</div>
 				</div>

@@ -1,8 +1,6 @@
 import { Resend } from 'resend';
 import {
-	VerificationEmailTemplate,
-	PasswordResetEmailTemplate,
-	WelcomeEmailTemplate,
+	VerificationEmailTemplate, PasswordResetEmailTemplate, WelcomeEmailTemplate, 
 	InvitationEmailTemplate,
 } from '@/lib/email-templates';
 

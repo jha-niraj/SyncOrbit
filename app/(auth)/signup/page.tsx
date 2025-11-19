@@ -8,38 +8,72 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Card, CardContent } from "@/components/ui/card";
+import {
+    Select, SelectContent, SelectItem, SelectTrigger, SelectValue
+} from "@/components/ui/select";
+import {
+    Card, CardContent
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowRight, Loader2, Building2 } from "lucide-react";
+import {
+    ArrowRight, Loader2, Building2, Eye, EyeOff, Check, X
+} from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { toast } from "sonner";
 import axios from "axios";
+import { Company } from "@prisma/client";
 
-interface Company {
-    id: string;
-    name: string;
-    shortName: string;
+export default function SignUpPage() {
+    return (
+        <Suspense fallback={
+            <div className="flex min-h-screen items-center justify-center">
+                <Loader2 className="h-8 w-8 animate-spin text-gray-500" />
+                <span className="ml-2 text-gray-500">Loading...</span>
+            </div>
+        }>
+            <SignUpForm />
+        </Suspense>
+    )
 }
 
-function SignUp() {
+function SignUpForm() {
+    const router = useRouter()
+    const [isLoading, setIsLoading] = useState<boolean>(false)
+    const [isGoogleLoading, setIsGoogleLoading] = useState<boolean>(false)
     const [name, setName] = useState("")
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
+    const [showPassword, setShowPassword] = useState(false)
     const [referralCode, setReferralCode] = useState("")
-    const [role, setRole] = useState<'CLIENT' | 'DEVELOPER' | 'PRODUCTMANAGER'>('PRODUCTMANAGER')
+    const [role, setRole] = useState<'CLIENT' | 'TEAM_HEAD' | 'TEAM_MEMBER' | 'COMPANY_OWNER'>('COMPANY_OWNER')
     const [companyName, setCompanyName] = useState("")
     const [company, setCompany] = useState<Company | null>(null)
     const [validatingReferral, setValidatingReferral] = useState(false)
     const [referralValidated, setReferralValidated] = useState(false)
-    const [isLoading, setIsLoading] = useState(false)
-    const [isGoogleLoading, setIsGoogleLoading] = useState(false)
-    const router = useRouter()
+
+    // Password validation states
+    const [passwordValidation, setPasswordValidation] = useState({
+        hasCapital: false,
+        hasNumber: false,
+        hasSpecial: false,
+        hasMinLength: false
+    })
+
+    // Validate password as user types
+    useEffect(() => {
+        setPasswordValidation({
+            hasCapital: /[A-Z]/.test(password),
+            hasNumber: /[0-9]/.test(password),
+            hasSpecial: /[!@#$%^&*(),.?":{}|<>]/.test(password),
+            hasMinLength: password.length >= 8
+        })
+    }, [password])
+
     const searchParams = useSearchParams()
     const callbackUrl = searchParams.get("callbackUrl") || "/dashboard"
     const urlReferralCode = searchParams.get("ref")
-    const urlRole = searchParams.get("role") as 'CLIENT' | 'DEVELOPER' | 'PRODUCTMANAGER' | null
+    const urlRole = searchParams.get("role") as 'CLIENT' | 'TEAM_HEAD' | 'TEAM_MEMBER' | 'COMPANY_OWNER' | null
 
     // Auto-populate referral code and role from URL
     useEffect(() => {
@@ -47,7 +81,7 @@ function SignUp() {
             setReferralCode(urlReferralCode)
             validateReferralCode(urlReferralCode)
         }
-        if (urlRole && ['CLIENT', 'DEVELOPER', 'PRODUCTMANAGER'].includes(urlRole)) {
+        if (urlRole && ['CLIENT', 'DEVELOPER', 'COMPANY_OWNER'].includes(urlRole)) {
             setRole(urlRole)
         }
     }, [urlReferralCode, urlRole])
@@ -97,7 +131,7 @@ function SignUp() {
                 name: string;
                 email: string;
                 password: string;
-                role: 'CLIENT' | 'DEVELOPER' | 'PRODUCTMANAGER';
+                role: 'CLIENT' | 'TEAM_HEAD' | 'TEAM_MEMBER' | 'COMPANY_OWNER';
                 referralCode?: string;
                 companyId?: string;
                 companyName?: string;
@@ -113,10 +147,18 @@ function SignUp() {
             if (referralCode && referralValidated && company) {
                 requestData.referralCode = referralCode
                 requestData.companyId = company.id
+
+                // Add team ID if present in URL
+                const teamId = searchParams.get("team")
+                if (teamId) {
+                    // We could validate this team ID belongs to the company here or in the backend
+                    // For now, let's pass it to the backend
+                    (requestData as any).teamId = teamId
+                }
             }
 
             // Add company info for PM registration
-            if (role === 'PRODUCTMANAGER') {
+            if (role === 'COMPANY_OWNER') {
                 if (!companyName.trim()) {
                     toast.error("Company name is required for Product Manager registration")
                     setIsLoading(false)
@@ -127,7 +169,7 @@ function SignUp() {
                     .replace(/[^a-zA-Z0-9\s]/g, '') // Remove special characters
                     .replace(/\s+/g, '') // Remove spaces
                     .substring(0, 20) // Limit length
-                
+
                 requestData.companyName = companyName
                 requestData.companyShortName = generatedSlug
             }
@@ -200,14 +242,14 @@ function SignUp() {
                     />
                 </svg>
             </div>
-            <div className="flex-1 flex items-center justify-center py-24">
+            <div className="flex-1 flex items-center justify-center py-16">
                 <div className="w-full max-w-lg relative z-10">
                     <div className="bg-white/80 dark:bg-black/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-neutral-200/20 dark:border-neutral-800/20 p-8">
                         <div className="text-center mb-4">
                             <h2 className="text-2xl font-bold text-neutral-900 dark:text-white">Create your account</h2>
                             <p className="text-neutral-600 dark:text-neutral-400 mt-2">Join the future of project management</p>
                         </div>
-                        <div className="">
+                        {/* <div className="">
                             <Button
                                 type="button"
                                 variant="outline"
@@ -236,9 +278,8 @@ function SignUp() {
                                 {isGoogleLoading ? "Signing up..." : "Continue with Google"}
                             </Button>
                             <p className="text-xs text-center text-neutral-500 dark:text-neutral-400 mb-4 pt-4">Or continue with</p>
-                        </div>
+                        </div> */}
 
-                        {/* Company Display for Referral Code */}
                         {
                             company && referralValidated && (
                                 <div className="mb-6">
@@ -263,26 +304,24 @@ function SignUp() {
                                 </div>
                             )
                         }
-
                         <form onSubmit={handleSubmit} className="space-y-6 w-full">
                             <div className="flex gap-4 w-full">
-                                <div className={`space-y-2 ${role === "PRODUCTMANAGER" ? "w-full" : ""}`}>
+                                <div className={`space-y-2 ${role === "COMPANY_OWNER" ? "w-full" : ""}`}>
                                     <Label htmlFor="role" className="text-neutral-700 dark:text-neutral-300 font-medium">Role</Label>
-                                    <Select value={role} onValueChange={(value: 'CLIENT' | 'DEVELOPER' | 'PRODUCTMANAGER') => setRole(value)}>
+                                    <Select value={role} onValueChange={(value: 'CLIENT' | 'TEAM_HEAD' | 'TEAM_MEMBER' | 'COMPANY_OWNER') => setRole(value)}>
                                         <SelectTrigger className="h-12 rounded-2xl border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 focus:border-neutral-400 dark:focus:border-neutral-500 focus:ring-0">
                                             <SelectValue placeholder="Select your role" />
                                         </SelectTrigger>
                                         <SelectContent>
-                                          <SelectItem value="PRODUCTMANAGER">Product Manager</SelectItem>
-                                          <SelectItem value="DEVELOPER">Developer</SelectItem>
-                                          <SelectItem value="CLIENT">Client</SelectItem>
-                                      </SelectContent>
+                                            <SelectItem value="COMPANY_OWNER">Company Owner</SelectItem>
+                                            <SelectItem value="TEAM_LEAD">Team Lead</SelectItem>
+                                            <SelectItem value="TEAM_MEMBER">Team Member</SelectItem>
+                                            <SelectItem value="CLIENT">Client</SelectItem>
+                                        </SelectContent>
                                     </Select>
                                 </div>
-
-                                {/* Referral Code Field (for developers and clients) */}
                                 {
-                                    role !== 'PRODUCTMANAGER' && (
+                                    role !== 'COMPANY_OWNER' && (
                                         <div className="space-y-2 w-full">
                                             <Label htmlFor="referralCode" className="text-neutral-700 dark:text-neutral-300 font-medium">
                                                 Referral Code <span className="text-neutral-500">(Optional)</span>
@@ -316,27 +355,27 @@ function SignUp() {
                                 }
                             </div>
 
-            {
-                role === 'PRODUCTMANAGER' && (
-                    <div className="space-y-2">
-                        <Label htmlFor="companyName" className="text-neutral-700 dark:text-neutral-300 font-medium">
-                            Company Name *
-                        </Label>
-                        <Input
-                            id="companyName"
-                            placeholder="Enter your company name..."
-                            value={companyName}
-                            onChange={(e) => setCompanyName(e.target.value)}
-                            required
-                            disabled={isLoading}
-                            className="h-12 rounded-2xl border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 focus:border-neutral-400 dark:focus:border-neutral-500 focus:ring-0 placeholder:text-neutral-400 dark:placeholder:text-neutral-500"
-                        />
-                        <p className="text-xs text-neutral-500 dark:text-neutral-400">
-                            Company slug will be auto-generated from this name
-                        </p>
-                    </div>
-                )
-            }
+                            {
+                                role === 'COMPANY_OWNER' && (
+                                    <div className="space-y-2">
+                                        <Label htmlFor="companyName" className="text-neutral-700 dark:text-neutral-300 font-medium">
+                                            Company Name *
+                                        </Label>
+                                        <Input
+                                            id="companyName"
+                                            placeholder="Enter your company name..."
+                                            value={companyName}
+                                            onChange={(e) => setCompanyName(e.target.value)}
+                                            required
+                                            disabled={isLoading}
+                                            className="h-12 rounded-2xl border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 focus:border-neutral-400 dark:focus:border-neutral-500 focus:ring-0 placeholder:text-neutral-400 dark:placeholder:text-neutral-500"
+                                        />
+                                        <p className="text-xs text-neutral-500 dark:text-neutral-400">
+                                            Company slug will be auto-generated from this name
+                                        </p>
+                                    </div>
+                                )
+                            }
                             <div className="space-y-2">
                                 <Label htmlFor="name" className="text-neutral-700 dark:text-neutral-300 font-medium">Full Name</Label>
                                 <Input
@@ -364,18 +403,84 @@ function SignUp() {
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="password" className="text-neutral-700 dark:text-neutral-300 font-medium">Password</Label>
-                                <Input
-                                    id="password"
-                                    type="password"
-                                    placeholder="••••••••"
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
-                                    required
-                                    disabled={isLoading}
-                                    minLength={8}
-                                    className="h-12 rounded-2xl border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 focus:border-neutral-400 dark:focus:border-neutral-500 focus:ring-0 placeholder:text-neutral-400 dark:placeholder:text-neutral-500"
-                                />
-                                <p className="text-xs text-neutral-500 dark:text-neutral-400">Must be at least 8 characters</p>
+                                <div className="relative">
+                                    <Input
+                                        id="password"
+                                        placeholder="••••••••"
+                                        type={showPassword ? "text" : "password"}
+                                        autoCapitalize="none"
+                                        autoComplete="new-password"
+                                        disabled={isLoading}
+                                        value={password}
+                                        onChange={(e) => setPassword(e.target.value)}
+                                        required
+                                        className="h-12 rounded-2xl border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 focus:border-neutral-400 dark:focus:border-neutral-500 focus:ring-0 placeholder:text-neutral-400 dark:placeholder:text-neutral-500 pr-10"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowPassword(!showPassword)}
+                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-500 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-200 transition-colors"
+                                        disabled={isLoading}
+                                    >
+                                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                                    </button>
+                                </div>
+
+                                {/* Password Strength Checklist */}
+                                {
+                                    password.length > 0 && (
+                                        <div className="mt-2 space-y-1.5 text-xs">
+                                            <div className="flex items-center gap-2">
+                                                {
+                                                    passwordValidation.hasMinLength ? (
+                                                        <Check className="h-3.5 w-3.5 text-green-500" />
+                                                    ) : (
+                                                        <X className="h-3.5 w-3.5 text-neutral-400" />
+                                                    )
+                                                }
+                                                <span className={passwordValidation.hasMinLength ? "text-green-500" : "text-neutral-500"}>
+                                                    At least 8 characters
+                                                </span>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                {
+                                                    passwordValidation.hasCapital ? (
+                                                        <Check className="h-3.5 w-3.5 text-green-500" />
+                                                    ) : (
+                                                        <X className="h-3.5 w-3.5 text-neutral-400" />
+                                                    )
+                                                }
+                                                <span className={passwordValidation.hasCapital ? "text-green-500" : "text-neutral-500"}>
+                                                    One uppercase letter
+                                                </span>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                {
+                                                    passwordValidation.hasNumber ? (
+                                                        <Check className="h-3.5 w-3.5 text-green-500" />
+                                                    ) : (
+                                                        <X className="h-3.5 w-3.5 text-neutral-400" />
+                                                    )
+                                                }
+                                                <span className={passwordValidation.hasNumber ? "text-green-500" : "text-neutral-500"}>
+                                                    One number
+                                                </span>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                {
+                                                    passwordValidation.hasSpecial ? (
+                                                        <Check className="h-3.5 w-3.5 text-green-500" />
+                                                    ) : (
+                                                        <X className="h-3.5 w-3.5 text-neutral-400" />
+                                                    )
+                                                }
+                                                <span className={passwordValidation.hasSpecial ? "text-green-500" : "text-neutral-500"}>
+                                                    One special character
+                                                </span>
+                                            </div>
+                                        </div>
+                                    )
+                                }
                             </div>
                             <div className="flex items-start space-x-3">
                                 <Checkbox id="terms" required disabled={isLoading} className="mt-1" />
@@ -414,13 +519,5 @@ function SignUp() {
                 </div>
             </div>
         </div>
-    )
-}
-
-export default function SignupPage() {
-    return (
-        <Suspense fallback={<div>Loading...</div>}>
-            <SignUp />
-        </Suspense>
     )
 }

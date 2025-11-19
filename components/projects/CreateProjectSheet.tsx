@@ -5,26 +5,34 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { 
-    Select, SelectContent, SelectItem, SelectTrigger, SelectValue 
+import {
+    Select, SelectContent, SelectItem, SelectTrigger, SelectValue
 } from "@/components/ui/select"
 import { Calendar } from "@/components/ui/calendar"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { 
+    Popover, PopoverContent, PopoverTrigger 
+} from "@/components/ui/popover"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
-import { 
-    CalendarIcon, Plus, Loader2, Users, Eye, EyeOff, Building2, DollarSign, X, 
-    Code, Megaphone, ShoppingCart, Palette, Briefcase, Settings
+import {
+    CalendarIcon, Plus, Loader2, Users, Eye, EyeOff, Building2, DollarSign, X, Code, 
+    Megaphone, ShoppingCart, Palette, Briefcase, Settings
 } from "lucide-react"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { 
+    Avatar, AvatarFallback, AvatarImage 
+} from "@/components/ui/avatar"
 import { format } from "date-fns"
-import { Currency, ClientType, ProjectVisibility, TeamType } from "@prisma/client"
+import { 
+    Currency, ClientType, ProjectVisibility, TeamType 
+} from "@prisma/client"
 import { createProject } from "@/actions/projects.action"
 import { getCompanyTeams } from "@/actions/teams.action"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "../ui/sheet"
+import { 
+    Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger 
+} from "../ui/sheet"
 
 // Team type icon mapping
 const TEAM_ICONS = {
@@ -37,9 +45,11 @@ const TEAM_ICONS = {
     [TeamType.CUSTOM]: Users,
 }
 
-interface CreateProjectModalProps {
+interface CreateProjectSheetProps {
     trigger?: React.ReactNode
     onSuccess?: () => void
+    open?: boolean
+    onOpenChange?: (open: boolean) => void
 }
 
 interface Team {
@@ -55,11 +65,14 @@ interface Team {
     } | null
 }
 
-export function CreateProjectModal({ trigger, onSuccess }: CreateProjectModalProps) {
-    const [open, setOpen] = useState(false)
+export function CreateProjectSheet({ trigger, onSuccess, open: controlledOpen, onOpenChange }: CreateProjectSheetProps) {
+    const [internalOpen, setInternalOpen] = useState(false)
+    const open = controlledOpen !== undefined ? controlledOpen : internalOpen
+    const setOpen = onOpenChange || setInternalOpen
+
     const [isLoading, setIsLoading] = useState(false)
     const [teamsLoading, setTeamsLoading] = useState(false)
-    
+
     // Form state
     const [title, setTitle] = useState("")
     const [description, setDescription] = useState("")
@@ -70,11 +83,11 @@ export function CreateProjectModal({ trigger, onSuccess }: CreateProjectModalPro
     const [startDate, setStartDate] = useState<Date>()
     const [endDate, setEndDate] = useState<Date>()
     const [clientEmail, setClientEmail] = useState("")
-    
+
     // Team assignment state
     const [availableTeams, setAvailableTeams] = useState<Team[]>([])
     const [selectedTeamIds, setSelectedTeamIds] = useState<string[]>([])
-    
+
     // Project links
     const [livePreviewUrl, setLivePreviewUrl] = useState("")
     const [figmaUrl, setFigmaUrl] = useState("")
@@ -107,7 +120,7 @@ export function CreateProjectModal({ trigger, onSuccess }: CreateProjectModalPro
     }
 
     const handleTeamToggle = (teamId: string) => {
-        setSelectedTeamIds(prev => 
+        setSelectedTeamIds(prev =>
             prev.includes(teamId)
                 ? prev.filter(id => id !== teamId)
                 : [...prev, teamId]
@@ -196,14 +209,7 @@ export function CreateProjectModal({ trigger, onSuccess }: CreateProjectModalPro
 
     return (
         <Sheet open={open} onOpenChange={setOpen}>
-            <SheetTrigger asChild>
-                {trigger || (
-                    <Button className="gap-2">
-                        <Plus className="h-4 w-4" />
-                        New Project
-                    </Button>
-                )}
-            </SheetTrigger>
+            {trigger && <SheetTrigger asChild>{trigger}</SheetTrigger>}
             <SheetContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto">
                 <SheetHeader>
                     <SheetTitle className="flex items-center gap-2">
@@ -212,9 +218,9 @@ export function CreateProjectModal({ trigger, onSuccess }: CreateProjectModalPro
                     </SheetTitle>
                 </SheetHeader>
                 <form onSubmit={handleSubmit} className="space-y-6">
-                                        <div className="space-y-4">
+                    <div className="space-y-4">
                         <h3 className="text-lg font-semibold">Project Details</h3>
-                        
+
                         <div className="space-y-2">
                             <Label htmlFor="title">Project Title *</Label>
                             <Input
@@ -331,7 +337,7 @@ export function CreateProjectModal({ trigger, onSuccess }: CreateProjectModalPro
 
                     <div className="space-y-4">
                         <h3 className="text-lg font-semibold">Client Information</h3>
-                        
+
                         <div className="space-y-2">
                             <Label>Client Type *</Label>
                             <Select value={clientType} onValueChange={(value: ClientType) => setClientType(value)}>
@@ -346,22 +352,22 @@ export function CreateProjectModal({ trigger, onSuccess }: CreateProjectModalPro
                         </div>
 
                         {
-                        clientType === ClientType.EXTERNAL && (
-                            <div className="space-y-2">
-                                <Label htmlFor="clientEmail">Client Email *</Label>
-                                <Input
-                                    id="clientEmail"
-                                    type="email"
-                                    placeholder="client@example.com"
-                                    value={clientEmail}
-                                    onChange={(e) => setClientEmail(e.target.value)}
-                                    disabled={isLoading}
-                                />
-                                <p className="text-xs text-muted-foreground">
-                                    If the client doesn&apos;t exist, a new account will be created
-                                </p>
-                            </div>
-                        )
+                            clientType === ClientType.EXTERNAL && (
+                                <div className="space-y-2">
+                                    <Label htmlFor="clientEmail">Client Email *</Label>
+                                    <Input
+                                        id="clientEmail"
+                                        type="email"
+                                        placeholder="client@example.com"
+                                        value={clientEmail}
+                                        onChange={(e) => setClientEmail(e.target.value)}
+                                        disabled={isLoading}
+                                    />
+                                    <p className="text-xs text-muted-foreground">
+                                        If the client doesn&apos;t exist, a new account will be created
+                                    </p>
+                                </div>
+                            )
                         }
                     </div>
 
@@ -371,102 +377,102 @@ export function CreateProjectModal({ trigger, onSuccess }: CreateProjectModalPro
                         <div className="flex items-center justify-between">
                             <h3 className="text-lg font-semibold">Assign Teams</h3>
                             {
-                            selectedTeams.length > 0 && (
-                                <Badge variant="secondary">
-                                    {selectedTeams.length} team{selectedTeams.length > 1 ? 's' : ''} selected
-                                </Badge>
-                            )
+                                selectedTeams.length > 0 && (
+                                    <Badge variant="secondary">
+                                        {selectedTeams.length} team{selectedTeams.length > 1 ? 's' : ''} selected
+                                    </Badge>
+                                )
                             }
                         </div>
-                        
+
                         {
-                        teamsLoading ? (
-                            <div className="flex items-center justify-center py-8">
-                                <Loader2 className="w-6 h-6 animate-spin" />
-                                <span className="ml-2 text-sm text-muted-foreground">Loading teams...</span>
-                            </div>
-                        ) : availableTeams.length === 0 ? (
-                            <div className="text-center py-8 text-muted-foreground">
-                                <Users className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                                <p>No teams found. Create teams first to assign to projects.</p>
-                            </div>
-                        ) : (
-                            <div className="space-y-3">
-                                {
-                                availableTeams.map((team) => {
-                                    const IconComponent = TEAM_ICONS[team.teamType] || Users
-                                    const isSelected = selectedTeamIds.includes(team.id)
-                                    
-                                    return (
-                                        <div
-                                            key={team.id}
-                                            className={cn(
-                                                "flex items-center gap-3 p-3 border rounded-lg cursor-pointer transition-colors",
-                                                isSelected 
-                                                    ? "border-primary bg-primary/5" 
-                                                    : "border-border hover:bg-muted/50"
-                                            )}
-                                            onClick={() => handleTeamToggle(team.id)}
-                                        >
-                                            <Checkbox
-                                                checked={isSelected}
-                                                onChange={() => {}}
-                                                className="pointer-events-none"
-                                            />
-                                            <div 
-                                                className="w-10 h-10 rounded-lg flex items-center justify-center"
-                                                style={{ 
-                                                    backgroundColor: team.color ? `${team.color}15` : '#f3f4f6',
-                                                    color: team.color || '#6b7280'
-                                                }}
-                                            >
-                                                <IconComponent className="w-5 h-5" />
-                                            </div>
-                                            <div className="flex-1">
-                                                <p className="font-medium">{team.displayName}</p>
-                                                <p className="text-sm text-muted-foreground">
-                                                    {team.teamType.charAt(0) + team.teamType.slice(1).toLowerCase()} Team
-                                                </p>
-                                            </div>
-                                            {
-                                            team.head && (
-                                                <div className="flex items-center gap-2">
-                                                    <Avatar className="w-6 h-6">
-                                                        <AvatarImage src={team.head.image!} />
-                                                        <AvatarFallback className="text-xs">
-                                                            {team.head.name?.[0] || 'U'}
-                                                        </AvatarFallback>
-                                                    </Avatar>
-                                                    <span className="text-xs text-muted-foreground">
-                                                        {team.head.name}
-                                                    </span>
+                            teamsLoading ? (
+                                <div className="flex items-center justify-center py-8">
+                                    <Loader2 className="w-6 h-6 animate-spin" />
+                                    <span className="ml-2 text-sm text-muted-foreground">Loading teams...</span>
+                                </div>
+                            ) : availableTeams.length === 0 ? (
+                                <div className="text-center py-8 text-muted-foreground">
+                                    <Users className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                                    <p>No teams found. Create teams first to assign to projects.</p>
+                                </div>
+                            ) : (
+                                <div className="space-y-3">
+                                    {
+                                        availableTeams.map((team) => {
+                                            const IconComponent = TEAM_ICONS[team.teamType] || Users
+                                            const isSelected = selectedTeamIds.includes(team.id)
+
+                                            return (
+                                                <div
+                                                    key={team.id}
+                                                    className={cn(
+                                                        "flex items-center gap-3 p-3 border rounded-lg cursor-pointer transition-colors",
+                                                        isSelected
+                                                            ? "border-primary bg-primary/5"
+                                                            : "border-border hover:bg-muted/50"
+                                                    )}
+                                                    onClick={() => handleTeamToggle(team.id)}
+                                                >
+                                                    <Checkbox
+                                                        checked={isSelected}
+                                                        onChange={() => { }}
+                                                        className="pointer-events-none"
+                                                    />
+                                                    <div
+                                                        className="w-10 h-10 rounded-lg flex items-center justify-center"
+                                                        style={{
+                                                            backgroundColor: team.color ? `${team.color}15` : '#f3f4f6',
+                                                            color: team.color || '#6b7280'
+                                                        }}
+                                                    >
+                                                        <IconComponent className="w-5 h-5" />
+                                                    </div>
+                                                    <div className="flex-1">
+                                                        <p className="font-medium">{team.displayName}</p>
+                                                        <p className="text-sm text-muted-foreground">
+                                                            {team.teamType.charAt(0) + team.teamType.slice(1).toLowerCase()} Team
+                                                        </p>
+                                                    </div>
+                                                    {
+                                                        team.head && (
+                                                            <div className="flex items-center gap-2">
+                                                                <Avatar className="w-6 h-6">
+                                                                    <AvatarImage src={team.head.image!} />
+                                                                    <AvatarFallback className="text-xs">
+                                                                        {team.head.name?.[0] || 'U'}
+                                                                    </AvatarFallback>
+                                                                </Avatar>
+                                                                <span className="text-xs text-muted-foreground">
+                                                                    {team.head.name}
+                                                                </span>
+                                                            </div>
+                                                        )
+                                                    }
                                                 </div>
                                             )
-                                            }
-                                        </div>
-                                    )
-                                })
-                                }
-                            </div>
-                        )
+                                        })
+                                    }
+                                </div>
+                            )
                         }
-                        
+
                         {
-                        selectedTeams.length > 0 && (
-                            <div className="flex flex-wrap gap-2 pt-2">
-                                {
-                                selectedTeams.map((team) => (
-                                    <Badge key={team.id} variant="secondary" className="gap-1">
-                                        {team.displayName}
-                                        <X 
-                                            className="w-3 h-3 cursor-pointer hover:text-destructive" 
-                                            onClick={() => handleTeamToggle(team.id)}
-                                        />
-                                    </Badge>
-                                ))
-                                }
-                            </div>
-                        )
+                            selectedTeams.length > 0 && (
+                                <div className="flex flex-wrap gap-2 pt-2">
+                                    {
+                                        selectedTeams.map((team) => (
+                                            <Badge key={team.id} variant="secondary" className="gap-1">
+                                                {team.displayName}
+                                                <X
+                                                    className="w-3 h-3 cursor-pointer hover:text-destructive"
+                                                    onClick={() => handleTeamToggle(team.id)}
+                                                />
+                                            </Badge>
+                                        ))
+                                    }
+                                </div>
+                            )
                         }
                     </div>
 
@@ -474,7 +480,7 @@ export function CreateProjectModal({ trigger, onSuccess }: CreateProjectModalPro
 
                     <div className="space-y-4">
                         <h3 className="text-lg font-semibold">Project Visibility</h3>
-                        
+
                         <div className="space-y-2">
                             <Label>Who can see this project? *</Label>
                             <Select value={visibility} onValueChange={(value: ProjectVisibility) => setVisibility(value)}>
@@ -502,12 +508,12 @@ export function CreateProjectModal({ trigger, onSuccess }: CreateProjectModalPro
                                     </SelectItem>
                                 </SelectContent>
                             </Select>
-                            
+
                             <p className="text-xs text-muted-foreground">
                                 {
-                                visibility === ProjectVisibility.PUBLIC 
-                                    ? "Team members can see this project if it's assigned to their team."
-                                    : "Only invited members and assigned teams can access this project."
+                                    visibility === ProjectVisibility.PUBLIC
+                                        ? "Team members can see this project if it's assigned to their team."
+                                        : "Only invited members and assigned teams can access this project."
                                 }
                             </p>
                         </div>
@@ -517,7 +523,7 @@ export function CreateProjectModal({ trigger, onSuccess }: CreateProjectModalPro
 
                     <div className="space-y-4">
                         <h3 className="text-lg font-semibold">Project Links (Optional)</h3>
-                        
+
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
                                 <Label htmlFor="livePreviewUrl">Live Preview URL</Label>
@@ -564,7 +570,7 @@ export function CreateProjectModal({ trigger, onSuccess }: CreateProjectModalPro
                                 />
                             </div>
                         </div>
-                        
+
                         <div className="space-y-2">
                             <Label htmlFor="otherLinks">Other Links</Label>
                             <Textarea
@@ -592,11 +598,11 @@ export function CreateProjectModal({ trigger, onSuccess }: CreateProjectModalPro
                             className="gap-2"
                         >
                             {
-                            isLoading ? (
-                                <Loader2 className="w-4 h-4 animate-spin" />
-                            ) : (
-                                <Plus className="w-4 h-4" />
-                            )
+                                isLoading ? (
+                                    <Loader2 className="w-4 h-4 animate-spin" />
+                                ) : (
+                                    <Plus className="w-4 h-4" />
+                                )
                             }
                             Create Project
                         </Button>

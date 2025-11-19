@@ -1,5 +1,6 @@
 "use client"
 
+import { useState, useRef } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -15,10 +16,13 @@ import {
 import {
     User, Mail, Calendar, Building2, Shield, Users, Plus, Edit, Trash2, MoreVertical,
     Star, Award, Code, Megaphone, ShoppingCart, Palette, Briefcase, Settings as SettingsIcon,
-    Crown, UserCheck
+    Crown, UserCheck, Camera, Loader2
 } from "lucide-react"
 import { Role, TeamType } from "@prisma/client"
 import { format } from "date-fns"
+import { toast } from "sonner"
+import { uploadImage } from "@/actions/shared/upload.action"
+import { useRouter } from "next/navigation"
 
 // Team type icons
 const TEAM_ICONS = {
@@ -45,18 +49,83 @@ interface ProfilePageClientProps {
 }
 
 export default function ProfilePageClient({ userProfile }: ProfilePageClientProps) {
+    const router = useRouter()
     const roleBadge = ROLE_BADGES[userProfile.role as Role] || ROLE_BADGES[Role.CLIENT]
     const RoleIcon = roleBadge.icon
+
+    const [uploading, setUploading] = useState(false)
+    const [companyUploading, setCompanyUploading] = useState(false)
+    const fileInputRef = useRef<HTMLInputElement>(null)
+    const companyFileInputRef = useRef<HTMLInputElement>(null)
+
+    const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, type: 'user' | 'company') => {
+        const file = e.target.files?.[0]
+        if (!file) return
+
+        // Validate file size (e.g., 5MB)
+        if (file.size > 5 * 1024 * 1024) {
+            toast.error("File size too large. Max 5MB.")
+            return
+        }
+
+        const isCompany = type === 'company'
+        const setLoader = isCompany ? setCompanyUploading : setUploading
+
+        setLoader(true)
+        try {
+            const formData = new FormData()
+            formData.append("file", file)
+            formData.append("type", type)
+            if (isCompany && userProfile.ownedCompany?.id) {
+                formData.append("companyId", userProfile.ownedCompany.id)
+            }
+
+            const result = await uploadImage(formData)
+
+            if (result.success) {
+                toast.success("Image uploaded successfully")
+                router.refresh()
+            } else {
+                toast.error(result.error || "Failed to upload image")
+            }
+        } catch (error) {
+            console.error("Upload error:", error)
+            toast.error("Failed to upload image")
+        } finally {
+            setLoader(false)
+        }
+    }
 
     return (
         <div className="container mx-auto py-8 space-y-8">
             <div className="flex items-center gap-6">
-                <Avatar className="w-20 h-20">
-                    <AvatarImage src={userProfile.image || undefined} />
-                    <AvatarFallback className="text-2xl">
-                        {userProfile.name?.[0] || userProfile.email?.[0] || 'U'}
-                    </AvatarFallback>
-                </Avatar>
+                <div className="relative group">
+                    <Avatar className="w-20 h-20 border-2 border-background shadow-sm">
+                        <AvatarImage src={userProfile.image || undefined} className="object-cover" />
+                        <AvatarFallback className="text-2xl">
+                            {userProfile.name?.[0] || userProfile.email?.[0] || 'U'}
+                        </AvatarFallback>
+                    </Avatar>
+                    <div
+                        className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                        onClick={() => fileInputRef.current?.click()}
+                    >
+                        {uploading ? (
+                            <Loader2 className="w-6 h-6 text-white animate-spin" />
+                        ) : (
+                            <Camera className="w-6 h-6 text-white" />
+                        )}
+                    </div>
+                    <input
+                        type="file"
+                        ref={fileInputRef}
+                        className="hidden"
+                        accept="image/*"
+                        onChange={(e) => handleImageUpload(e, 'user')}
+                        disabled={uploading}
+                    />
+                </div>
+
                 <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2">
                         <h1 className="text-3xl font-bold">
@@ -444,6 +513,49 @@ export default function ProfilePageClient({ userProfile }: ProfilePageClientProp
                                                 )
                                             }
                                         </div>
+
+                                        {/* Company Logo Upload for Owner */}
+                                        {userProfile.role === Role.COMPANY_OWNER && userProfile.ownedCompany && (
+                                            <div className="mt-6 pt-6 border-t">
+                                                <Label className="text-sm font-medium mb-2 block">Company Logo</Label>
+                                                <div className="flex items-center gap-4">
+                                                    <div className="relative group">
+                                                        <Avatar className="w-16 h-16 border-2 border-muted">
+                                                            <AvatarImage src={userProfile.ownedCompany.image || undefined} />
+                                                            <AvatarFallback>
+                                                                <Building2 className="w-8 h-8 text-muted-foreground" />
+                                                            </AvatarFallback>
+                                                        </Avatar>
+                                                        <div
+                                                            className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                                                            onClick={() => companyFileInputRef.current?.click()}
+                                                        >
+                                                            {companyUploading ? (
+                                                                <Loader2 className="w-5 h-5 text-white animate-spin" />
+                                                            ) : (
+                                                                <Camera className="w-5 h-5 text-white" />
+                                                            )}
+                                                        </div>
+                                                        <input
+                                                            type="file"
+                                                            ref={companyFileInputRef}
+                                                            className="hidden"
+                                                            accept="image/*"
+                                                            onChange={(e) => handleImageUpload(e, 'company')}
+                                                            disabled={companyUploading}
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <p className="text-sm text-muted-foreground">
+                                                            Click to upload a new company logo.
+                                                        </p>
+                                                        <p className="text-xs text-muted-foreground mt-1">
+                                                            Recommended size: 256x256px
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
                                     </div>
                                 ) : (
                                     <div className="text-center py-8 text-muted-foreground">

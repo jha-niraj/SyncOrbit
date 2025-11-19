@@ -149,7 +149,18 @@ export async function getClientDashboardData(): Promise<DashboardData> {
 	}
 }
 
-export async function getDeveloperDashboardData() {
+// Get Developer Internal Dashboard Data (Internal Projects)
+export async function getDeveloperInternalDashboardData() {
+	return getDeveloperDashboardDataByType('INTERNAL')
+}
+
+// Get Developer External Dashboard Data (External Projects)
+export async function getDeveloperExternalDashboardData() {
+	return getDeveloperDashboardDataByType('EXTERNAL')
+}
+
+// Helper function to get developer dashboard data by client type
+async function getDeveloperDashboardDataByType(type: 'INTERNAL' | 'EXTERNAL') {
 	try {
 		const session = await auth();
 		if (!session?.user?.id) {
@@ -157,7 +168,7 @@ export async function getDeveloperDashboardData() {
 		}
 
 		// Check if user is developer or product manager
-		if (!['DEVELOPER', 'PRODUCTMANAGER'].includes(session.user.role)) {
+		if (!['TEAM_MEMBER', 'TEAM_HEAD', 'COMPANY_OWNER'].includes(session.user.role)) {
 			throw new Error("Access denied");
 		}
 
@@ -176,14 +187,15 @@ export async function getDeveloperDashboardData() {
 			throw new Error("User not found");
 		}
 
-		// Get projects assigned to this developer
+		// Get projects assigned to this developer filtered by client type
 		const projects = await prisma.project.findMany({
 			where: {
 				tasks: {
 					some: {
 						assignedDeveloperId: session.user.id
 					}
-				}
+				},
+				clientType: type === 'INTERNAL' ? 'INTERNAL' : 'EXTERNAL'
 			},
 			include: {
 				user: {
@@ -222,7 +234,10 @@ export async function getDeveloperDashboardData() {
 		// Get task statistics
 		const allTasks = await prisma.task.findMany({
 			where: {
-				assignedDeveloperId: session.user.id
+				assignedDeveloperId: session.user.id,
+				project: {
+					clientType: type === 'INTERNAL' ? 'INTERNAL' : 'EXTERNAL'
+				}
 			},
 			select: {
 				status: true
@@ -252,7 +267,12 @@ export async function getDeveloperDashboardData() {
 			projectStats,
 		};
 	} catch (error) {
-		console.error('Error fetching developer dashboard data:', error);
+		console.error(`Error fetching developer ${type} dashboard data:`, error);
 		throw error;
 	}
+}
+
+// Deprecated: Use getDeveloperInternalDashboardData instead
+export async function getDeveloperDashboardData() {
+	return getDeveloperInternalDashboardData()
 }

@@ -33,6 +33,9 @@ interface RoleBasedSidebarProps {
     onToggle?: () => void
 }
 
+import { CreateProjectSheet } from "@/components/projects/CreateProjectSheet"
+import { ReferralSheet } from "@/components/referral/ReferralSheet"
+
 export default function RoleBasedSidebar({ collapsed = false, onToggle }: RoleBasedSidebarProps) {
     const pathname = usePathname()
     const router = useRouter()
@@ -41,6 +44,10 @@ export default function RoleBasedSidebar({ collapsed = false, onToggle }: RoleBa
 
     const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set(["primary"]))
     const [showSecondary, setShowSecondary] = useState(false)
+
+    // Sheet states
+    const [createProjectOpen, setCreateProjectOpen] = useState(false)
+    const [referralOpen, setReferralOpen] = useState(false)
 
     // Get navigation for current user role
     const userRole = session?.user?.role as Role
@@ -53,7 +60,15 @@ export default function RoleBasedSidebar({ collapsed = false, onToggle }: RoleBa
         return pathname.includes(path)
     }
 
-    const handleNavigation = (path: string) => {
+    const handleNavigation = (path: string, action?: string) => {
+        if (action) {
+            if (action === 'create_project') {
+                setCreateProjectOpen(true)
+            } else if (action === 'referral') {
+                setReferralOpen(true)
+            }
+            return
+        }
         router.push(`/${path}`)
     }
 
@@ -84,7 +99,7 @@ export default function RoleBasedSidebar({ collapsed = false, onToggle }: RoleBa
         <TooltipProvider>
             <div className={cn(
                 "fixed top-0 left-0 h-full bg-background border-r border-border z-50 flex flex-col transition-all duration-300",
-                collapsed ? "w-16" : "w-64"
+                collapsed ? "w-16" : "w-56"
             )}>
                 <div className={cn(
                     "flex items-center h-16 border-b border-border transition-all",
@@ -317,6 +332,15 @@ export default function RoleBasedSidebar({ collapsed = false, onToggle }: RoleBa
                         </DropdownMenuContent>
                     </DropdownMenu>
                 </div>
+
+                <CreateProjectSheet
+                    open={createProjectOpen}
+                    onOpenChange={setCreateProjectOpen}
+                />
+                <ReferralSheet
+                    open={referralOpen}
+                    onOpenChange={setReferralOpen}
+                />
             </div>
         </TooltipProvider>
     )
@@ -327,7 +351,7 @@ interface NavigationSectionProps {
     items: NavigationItem[]
     collapsed: boolean
     isActiveRoute: (path: string) => boolean
-    onNavigate: (path: string) => void
+    onNavigate: (path: string, action?: string) => void
     expanded: boolean
     onToggle: () => void
     defaultCollapsed?: boolean
@@ -352,7 +376,7 @@ function NavigationSection({
                             item={item}
                             collapsed={true}
                             isActive={isActiveRoute(item.path)}
-                            onClick={() => onNavigate(item.path)}
+                            onClick={() => onNavigate(item.path, item.action)}
                         />
                     ))
                 }
@@ -383,13 +407,32 @@ function NavigationSection({
                     <div className="space-y-1">
                         {
                             items.map((item) => (
-                                <NavigationItemComponent
-                                    key={item.path}
-                                    item={item}
-                                    collapsed={false}
-                                    isActive={isActiveRoute(item.path)}
-                                    onClick={() => onNavigate(item.path)}
-                                />
+                                <div key={item.path}>
+                                    <NavigationItemComponent
+                                        item={item}
+                                        collapsed={false}
+                                        isActive={isActiveRoute(item.path)}
+                                        onClick={() => onNavigate(item.path, item.action)}
+                                    />
+                                    {
+                                        item.children && item.children.length > 0 && (
+                                            <div className="ml-4 mt-1 space-y-1 border-l border-border pl-2">
+                                                {
+                                                    item.children.map((child) => (
+                                                        <NavigationItemComponent
+                                                            key={child.path}
+                                                            item={child}
+                                                            collapsed={false}
+                                                            isActive={isActiveRoute(child.path)}
+                                                            onClick={() => onNavigate(child.path, child.action)}
+                                                            isChild
+                                                        />
+                                                    ))
+                                                }
+                                            </div>
+                                        )
+                                    }
+                                </div>
                             ))
                         }
                     </div>
@@ -404,9 +447,10 @@ interface NavigationItemProps {
     collapsed: boolean
     isActive: boolean
     onClick: () => void
+    isChild?: boolean
 }
 
-function NavigationItemComponent({ item, collapsed, isActive, onClick }: NavigationItemProps) {
+function NavigationItemComponent({ item, collapsed, isActive, onClick, isChild = false }: NavigationItemProps) {
     const Icon = item.icon
 
     if (collapsed) {
@@ -443,10 +487,11 @@ function NavigationItemComponent({ item, collapsed, isActive, onClick }: Navigat
             onClick={onClick}
             className={cn(
                 "w-full justify-start gap-3 h-10 px-3",
-                isActive && "font-medium"
+                isActive && "font-medium",
+                isChild && "h-8 text-sm"
             )}
         >
-            <Icon className="h-4 w-4 flex-shrink-0" />
+            <Icon className={cn("h-4 w-4 flex-shrink-0", isChild && "h-3 w-3")} />
             <span className="flex-1 text-left truncate">{item.name}</span>
             {
                 item.badge && (

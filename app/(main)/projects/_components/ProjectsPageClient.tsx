@@ -15,7 +15,7 @@ import {
     ProjectVisibility, Status, TaskStatus, TeamType
 } from "@prisma/client"
 import Link from "next/link"
-import { CreateProjectModal } from "@/components/projects/CreateProjectModal"
+import { CreateProjectSheet } from "@/components/projects/CreateProjectSheet"
 
 // Team type icon mapping
 const TEAM_ICONS = {
@@ -99,7 +99,7 @@ export default function ProjectsPageClient({ projects }: ProjectsPageClientProps
                         Manage your assigned projects and collaborate with your teams
                     </p>
                 </div>
-                <CreateProjectModal
+                <CreateProjectSheet
                     trigger={
                         <Button className="gap-2">
                             <Building2 className="w-4 h-4" />
@@ -117,7 +117,7 @@ export default function ProjectsPageClient({ projects }: ProjectsPageClientProps
                         <p className="text-muted-foreground mb-4">
                             You haven&apos;t been assigned to any projects yet, or there are no projects created.
                         </p>
-                        <CreateProjectModal
+                        <CreateProjectSheet
                             trigger={
                                 <Button className="gap-2">
                                     <Building2 className="w-4 h-4" />

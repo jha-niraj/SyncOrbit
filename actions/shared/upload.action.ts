@@ -33,25 +33,25 @@ export async function uploadImageToCloudinary(formData: FormData) {
             'application/zip',
             'application/x-zip-compressed'
         ];
-        
+
         const validTypes = [...imageTypes, ...documentTypes];
         const isImage = imageTypes.includes(file.type);
-        
+
         if (!validTypes.includes(file.type)) {
-            return { 
-                success: false, 
-                message: "Invalid file type. Please upload images (JPG, PNG, WebP) or documents (PDF, DOC, DOCX, XLS, XLSX, TXT, ZIP).", 
-                url: null 
+            return {
+                success: false,
+                message: "Invalid file type. Please upload images (JPG, PNG, WebP) or documents (PDF, DOC, DOCX, XLS, XLSX, TXT, ZIP).",
+                url: null
             };
         }
 
         // Validate file size (max 5MB)
         const maxSize = 5 * 1024 * 1024; // 5MB
         if (file.size > maxSize) {
-            return { 
-                success: false, 
-                message: "File size too large. Please upload images smaller than 5MB.", 
-                url: null 
+            return {
+                success: false,
+                message: "File size too large. Please upload images smaller than 5MB.",
+                url: null
             };
         }
 
@@ -64,7 +64,7 @@ export async function uploadImageToCloudinary(formData: FormData) {
             folder: "projectcentral/attachments",
             resource_type: "auto", // Auto-detect resource type
         };
-        
+
         // Apply image optimizations only for images
         if (isImage) {
             uploadOptions.transformation = [
@@ -73,7 +73,7 @@ export async function uploadImageToCloudinary(formData: FormData) {
                 { format: "auto" }
             ];
         }
-        
+
         const result = await new Promise<CloudinaryUploadResult>((resolve, reject) => {
             cloudinary.uploader.upload_stream(
                 uploadOptions,
@@ -108,6 +108,9 @@ export async function uploadImageToCloudinary(formData: FormData) {
     }
 }
 
+import { prisma } from "@/lib/prisma";
+import { revalidatePath } from "next/cache";
+
 export async function deleteImageFromCloudinary(publicId: string) {
     try {
         const session = await auth();
@@ -120,5 +123,55 @@ export async function deleteImageFromCloudinary(publicId: string) {
     } catch (error) {
         console.error("Error deleting image:", error);
         return { success: false, message: "Failed to delete image" };
+    }
+}
+
+export async function uploadImage(formData: FormData) {
+    try {
+        const session = await auth();
+        if (!session?.user?.id) {
+            return { success: false, error: "Authentication required" };
+        }
+
+        const type = formData.get("type") as string;
+        const companyId = formData.get("companyId") as string;
+
+        const uploadResult = await uploadImageToCloudinary(formData);
+
+        if (!uploadResult.success || !uploadResult.url) {
+            return { success: false, error: uploadResult.message || "Failed to upload image" };
+        }
+
+        if (type === "company" && companyId) {
+            // Verify ownership
+            const company = await prisma.company.findUnique({
+                where: { id: companyId },
+                include: { owner: true }
+            });
+
+            if (!company) {
+                return { success: false, error: "Company not found" };
+            }
+
+            if (company.ownerId !== session.user.id) {
+                return { success: false, error: "Unauthorized" };
+            }
+
+            await prisma.company.update({
+                where: { id: companyId },
+                data: { logo: uploadResult.url }
+            });
+        } else if (type === "user") {
+            await prisma.user.update({
+                where: { id: session.user.id },
+                data: { image: uploadResult.url }
+            });
+        }
+
+        revalidatePath("/profile");
+        return { success: true, url: uploadResult.url };
+    } catch (error) {
+        console.error("Error in uploadImage:", error);
+        return { success: false, error: "Failed to update profile image" };
     }
 }

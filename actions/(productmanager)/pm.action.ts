@@ -59,8 +59,8 @@ export async function createCompany(data: z.infer<typeof createCompanySchema>, o
 		})
 
 		if (existingCompany) {
-			return { 
-				success: false, 
+			return {
+				success: false,
 				error: existingCompany.name === validatedData.name ? "Company name already exists" : "Short name already exists"
 			}
 		}
@@ -135,8 +135,18 @@ export async function getCompanyByReferralCode(referralCode: string) {
 	}
 }
 
-// Get Owner dashboard data
-export async function getOwnerDashboardData() {
+// Get Owner Internal Dashboard Data (Internal Projects)
+export async function getOwnerInternalDashboardData() {
+	return getOwnerDashboardDataByType('INTERNAL')
+}
+
+// Get Owner External Dashboard Data (External Projects)
+export async function getOwnerExternalDashboardData() {
+	return getOwnerDashboardDataByType('EXTERNAL')
+}
+
+// Helper function to get dashboard data by client type
+async function getOwnerDashboardDataByType(type: 'INTERNAL' | 'EXTERNAL') {
 	try {
 		const session = await auth()
 		if (!session?.user?.id || session.user.role !== 'COMPANY_OWNER') {
@@ -189,12 +199,13 @@ export async function getOwnerDashboardData() {
 			return { success: false, error: "Company not found" }
 		}
 
-		// Get all projects for the company
+		// Get projects filtered by client type
 		const projects = await prisma.project.findMany({
 			where: {
 				user: {
 					companyId: company.id
-				}
+				},
+				clientType: type === 'INTERNAL' ? 'INTERNAL' : 'EXTERNAL'
 			},
 			include: {
 				user: {
@@ -231,7 +242,7 @@ export async function getOwnerDashboardData() {
 		const paidAmount = projects.reduce((sum, p) => sum + p.paidAmount, 0)
 		const pendingAmount = totalRevenue - paidAmount
 
-		const developers = company.users.filter((u: any) => u.role === 'DEVELOPER')
+		const developers = company.users.filter((u: any) => u.role === 'TEAM_MEMBER') // Updated to TEAM_MEMBER
 		const clients = company.users.filter((u: any) => u.role === 'CLIENT')
 
 		// Calculate developer statistics
@@ -252,32 +263,37 @@ export async function getOwnerDashboardData() {
 			}
 		})
 
-	return {
-		success: true,
-		data: {
-			company: {
-				...company,
-				productManager: company.owner, // Map owner to productManager for backward compatibility
-			},
-			projects,
-			statistics: {
-				totalProjects,
-				completedProjects,
-				activeProjects,
-				totalRevenue,
-				paidAmount,
-				pendingAmount,
-				developersCount: developers.length,
-				clientsCount: clients.length,
-			},
-			developers: developerStats,
-			clients,
+		return {
+			success: true,
+			data: {
+				company: {
+					...company,
+					productManager: company.owner,
+				},
+				projects,
+				statistics: {
+					totalProjects,
+					completedProjects,
+					activeProjects,
+					totalRevenue,
+					paidAmount,
+					pendingAmount,
+					developersCount: developers.length,
+					clientsCount: clients.length,
+				},
+				developers: developerStats,
+				clients,
+			}
 		}
-	}
 	} catch (error) {
-		console.error("Get PM dashboard data error:", error)
+		console.error(`Get PM ${type} dashboard data error:`, error)
 		return { success: false, error: "Failed to fetch dashboard data" }
 	}
+}
+
+// Deprecated: Use getOwnerInternalDashboardData instead
+export async function getOwnerDashboardData() {
+	return getOwnerInternalDashboardData()
 }
 
 // Get Owner profile data
@@ -395,7 +411,7 @@ export async function uploadCompanyLogo(formData: FormData) {
 		}
 
 		const imageFile = formData.get('logo') as File;
-		
+
 		if (!imageFile) {
 			return { success: false, error: "No logo file provided" }
 		}
@@ -412,10 +428,10 @@ export async function uploadCompanyLogo(formData: FormData) {
 
 		const result = await uploadToCloudinary(imageFile);
 
-		if(!result.secure_url) {
+		if (!result.secure_url) {
 			return { success: false, error: "Failed to upload logo" }
 		}
-		
+
 		// Update company logo in database
 		await prisma.company.update({
 			where: { ownerId: session.user.id },
@@ -448,7 +464,7 @@ export async function registerWithReferralCode(
 		}
 
 		const company = companyResult.company
-		
+
 		// Validate referral code type matches role
 		const isDevReferral = company.devReferralCode === referralCode
 		const isClientReferral = company.clientReferralCode === referralCode
@@ -462,14 +478,14 @@ export async function registerWithReferralCode(
 		}
 
 		// Return success with company info for further processing
-		return { 
-			success: true, 
+		return {
+			success: true,
 			company: {
 				id: company.id,
 				name: company.name,
 				shortName: company.shortName,
 			},
-			referralCode 
+			referralCode
 		}
 	} catch (error) {
 		console.error("Register with referral code error:", error)

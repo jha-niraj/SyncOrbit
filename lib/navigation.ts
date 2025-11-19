@@ -1,6 +1,6 @@
 import { Role } from "@prisma/client"
-import { 
-    Home, Briefcase, Users, Building2, BarChart3, Settings, UserPlus, Crown, Calendar, 
+import {
+    Home, Briefcase, Users, Building2, BarChart3, Settings, UserPlus, Crown, Calendar,
     MessageSquare, FileText, Bell, Layers, Shield, Target, TrendingUp, DollarSign, Eye,
     Award, Coffee
 } from "lucide-react"
@@ -15,6 +15,7 @@ export interface NavigationItem {
         variant?: 'default' | 'secondary' | 'destructive' | 'outline'
     }
     children?: NavigationItem[]
+    action?: string
 }
 
 export interface RoleNavigation {
@@ -33,20 +34,42 @@ export const roleNavigations: RoleNavigation[] = [
                 path: "dashboard",
                 name: "Dashboard",
                 icon: Home,
-                description: "Company overview and metrics"
+                description: "Overview and metrics",
+                children: [
+                    {
+                        path: "dashboard",
+                        name: "Internal",
+                        icon: Home,
+                        description: "Internal projects overview"
+                    },
+                    {
+                        path: "dashboard/clients",
+                        name: "External",
+                        icon: Building2,
+                        description: "Client projects overview"
+                    }
+                ]
             },
             {
                 path: "projects",
-                name: "My Projects",
+                name: "Projects",
                 icon: Briefcase,
-                description: "Projects you're involved in"
-            },
-            {
-                path: "company-projects",
-                name: "All Projects",
-                icon: Layers,
-                description: "All company projects",
-                badge: { text: "Admin", variant: "secondary" }
+                description: "Manage projects",
+                children: [
+                    {
+                        path: "projects",
+                        name: "All Projects",
+                        icon: Layers,
+                        description: "View all projects"
+                    },
+                    {
+                        path: "#create-project",
+                        name: "Create Project",
+                        icon: FileText,
+                        description: "Start a new project",
+                        action: "create_project"
+                    }
+                ]
             },
             {
                 path: "teams",
@@ -68,6 +91,13 @@ export const roleNavigations: RoleNavigation[] = [
             }
         ],
         secondary: [
+            {
+                path: "#referral",
+                name: "Referral Program",
+                icon: UserPlus,
+                description: "Invite and earn",
+                action: "referral"
+            },
             {
                 path: "settings",
                 name: "Company Settings",
@@ -97,20 +127,48 @@ export const roleNavigations: RoleNavigation[] = [
                 path: "dashboard",
                 name: "Dashboard",
                 icon: Home,
-                description: "Team overview and metrics"
+                description: "Team overview and metrics",
+                children: [
+                    {
+                        path: "dashboard",
+                        name: "Internal",
+                        icon: Home,
+                        description: "Internal projects overview"
+                    },
+                    {
+                        path: "dashboard/clients",
+                        name: "External",
+                        icon: Building2,
+                        description: "Client projects overview"
+                    }
+                ]
             },
             {
                 path: "projects",
-                name: "My Projects",
+                name: "Projects",
                 icon: Briefcase,
-                description: "Your assigned projects"
-            },
-            {
-                path: "team-projects",
-                name: "Team Projects",
-                icon: Target,
-                description: "Projects assigned to your teams",
-                badge: { text: "Head", variant: "outline" }
+                description: "Manage projects",
+                children: [
+                    {
+                        path: "projects",
+                        name: "My Projects",
+                        icon: Briefcase,
+                        description: "Your assigned projects"
+                    },
+                    {
+                        path: "team-projects",
+                        name: "Team Projects",
+                        icon: Target,
+                        description: "Projects assigned to your teams"
+                    },
+                    {
+                        path: "#create-project",
+                        name: "Create Project",
+                        icon: FileText,
+                        description: "Start a new project",
+                        action: "create_project"
+                    }
+                ]
             },
             {
                 path: "teams",
@@ -132,6 +190,13 @@ export const roleNavigations: RoleNavigation[] = [
             }
         ],
         secondary: [
+            {
+                path: "#referral",
+                name: "Referral Program",
+                icon: UserPlus,
+                description: "Invite and earn",
+                action: "referral"
+            },
             {
                 path: "team-settings",
                 name: "Team Settings",
@@ -161,7 +226,21 @@ export const roleNavigations: RoleNavigation[] = [
                 path: "dashboard",
                 name: "Dashboard",
                 icon: Home,
-                description: "Your work overview"
+                description: "Your work overview",
+                children: [
+                    {
+                        path: "dashboard",
+                        name: "Internal",
+                        icon: Home,
+                        description: "Internal projects overview"
+                    },
+                    {
+                        path: "dashboard/clients",
+                        name: "External",
+                        icon: Building2,
+                        description: "Client projects overview"
+                    }
+                ]
             },
             {
                 path: "projects",
@@ -195,6 +274,13 @@ export const roleNavigations: RoleNavigation[] = [
             }
         ],
         secondary: [
+            {
+                path: "#referral",
+                name: "Referral Program",
+                icon: UserPlus,
+                description: "Invite and earn",
+                action: "referral"
+            },
             {
                 path: "profile",
                 name: "Profile",
@@ -299,7 +385,7 @@ export const roleFeatures = {
         color: "bg-purple-500",
         permissions: [
             "Create and manage teams",
-            "Invite team heads and members", 
+            "Invite team heads and members",
             "View all company projects",
             "Access analytics and reports",
             "Manage company settings",
@@ -308,7 +394,7 @@ export const roleFeatures = {
     },
     [Role.TEAM_HEAD]: {
         name: "Team Head",
-        color: "bg-blue-500", 
+        color: "bg-blue-500",
         permissions: [
             "Lead assigned teams",
             "Create team projects",

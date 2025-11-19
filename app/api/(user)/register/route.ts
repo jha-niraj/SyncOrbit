@@ -9,7 +9,9 @@ import { createCompany } from "@/actions/(productmanager)/pm.action";
 export async function POST(request: NextRequest) {
     try {
         const body: RequestBody = await request.json();
-        const { name, email, password, role, companyName, companyShortName, referralCode, companyId } = body;
+        const {
+            name, email, password, role, companyName, companyShortName, referralCode, companyId
+        } = body;
 
         console.log(name, email, password, role, companyName, companyShortName, referralCode, companyId);
 
@@ -109,9 +111,9 @@ export async function POST(request: NextRequest) {
         });
 
         if (existingUser) {
-            return NextResponse.json({ 
-                success: false, 
-                error: "User already exists with this email" 
+            return NextResponse.json({
+                success: false,
+                error: "User already exists with this email"
             }, { status: 409 });
         }
 
@@ -163,6 +165,43 @@ export async function POST(request: NextRequest) {
             } catch (referralError) {
                 console.error("Failed to update referral code usage:", referralError);
                 // Note: We don't fail the registration for this, just log the error
+            }
+        }
+
+        // Handle team assignment if teamId is provided
+        // This comes from the referral link (e.g. ?ref=CODE&team=TEAM_ID)
+        const teamId = (body as any).teamId;
+        if (teamId && (userRole === Role.TEAM_MEMBER || userRole === Role.TEAM_HEAD)) {
+            try {
+                // Verify team exists and belongs to the company
+                const team = await prisma.team.findUnique({
+                    where: { id: teamId }
+                });
+
+                if (team && (!companyIdToUse || team.companyId === companyIdToUse)) {
+                    await prisma.teamMember.create({
+                        data: {
+                            userId: user.id,
+                            teamId: teamId,
+                            roleTitle: userRole === Role.TEAM_HEAD ? "Team Lead" : "Team Member",
+                            // If we have a referral code, we could track who added them, but for now leave null
+                        }
+                    });
+
+                    // If they are a TEAM_HEAD, also update the team head
+                    if (userRole === Role.TEAM_HEAD) {
+                        // Check if team already has a head
+                        if (!team.headId) {
+                            await prisma.team.update({
+                                where: { id: teamId },
+                                data: { headId: user.id }
+                            });
+                        }
+                    }
+                }
+            } catch (teamError) {
+                console.error("Failed to assign team:", teamError);
+                // Don't fail registration for this
             }
         }
 
@@ -229,9 +268,9 @@ export async function POST(request: NextRequest) {
     } catch (error) {
         const err = error as Error;
         console.error("Registration error:", err.message);
-        return NextResponse.json({ 
-            success: false, 
-            error: "An unexpected error occurred. Please try again." 
+        return NextResponse.json({
+            success: false,
+            error: "An unexpected error occurred. Please try again."
         }, { status: 500 });
     }
 }
