@@ -68,6 +68,46 @@ export function DeveloperDashboard({ data, userRole }: DeveloperDashboardProps) 
         }
     }
 
+    if (data.projects.length === 0) {
+        return (
+            <div className="min-h-screen bg-gradient-to-bl dark:from-black dark:via-gray-900 dark:to-black flex items-center justify-center">
+                <div className="max-w-2xl mx-auto p-8 text-center">
+                    <Card className="bg-white dark:bg-gray-800 shadow-xl">
+                        <CardHeader className="pb-6">
+                            <div className="mx-auto mb-4 w-16 h-16 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
+                                <Code2 className="w-8 h-8 text-blue-600 dark:text-blue-400" />
+                            </div>
+                            <CardTitle className="text-2xl font-bold text-gray-900 dark:text-white">
+                                Welcome to the Developer Platform!
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-6">
+                            <div className="space-y-4">
+                                <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
+                                    Hi {data.user.name}! You don&apos;t have any projects assigned yet.
+                                </p>
+                                <p className="text-gray-600 dark:text-gray-400">
+                                    Once projects are assigned to you, you&apos;ll be able to track your tasks and collaborate with the team here.
+                                </p>
+                            </div>
+                            <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
+                                <h3 className="font-semibold text-blue-900 dark:text-blue-100 mb-2">
+                                    As a {userRole.toLowerCase()}, you can:
+                                </h3>
+                                <ul className="text-sm text-blue-800 dark:text-blue-200 space-y-1 text-left">
+                                    <li>• View and manage assigned tasks</li>
+                                    <li>• Collaborate with clients through project chat</li>
+                                    <li>• Update task status and progress</li>
+                                    <li>• Access project resources and documentation</li>
+                                </ul>
+                            </div>
+                        </CardContent>
+                    </Card>
+                </div>
+            </div>
+        )
+    }
+
     return (
         <div className="min-h-screen bg-gradient-to-bl dark:from-black dark:via-gray-900 dark:to-black">
             <div className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
@@ -284,8 +324,8 @@ export function DeveloperDashboard({ data, userRole }: DeveloperDashboardProps) 
                                                 project.tasks.slice(0, 2).map((task: any) => (
                                                     <div key={task.id} className="flex items-center gap-3 p-3 rounded-lg border">
                                                         <div className={`w-2 h-2 rounded-full ${task.status === 'COMPLETED' ? 'bg-green-500' :
-                                                                task.status === 'IN_PROGRESS' ? 'bg-blue-500' :
-                                                                    'bg-gray-400'
+                                                            task.status === 'IN_PROGRESS' ? 'bg-blue-500' :
+                                                                'bg-gray-400'
                                                             }`} />
                                                         <div className="flex-1 min-w-0">
                                                             <p className="text-sm font-medium text-gray-900 dark:text-white truncate">

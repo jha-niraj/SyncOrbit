@@ -613,7 +613,6 @@ export function EnhancedKanbanBoard({
                             </div>
                         </div>
                     </div>
-
                     <DialogFooter>
                         <Button variant="outline" onClick={() => {
                             setIsCreating(false)

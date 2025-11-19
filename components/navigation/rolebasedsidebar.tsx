@@ -7,7 +7,8 @@ import { useTheme } from "next-themes"
 import Link from "next/link"
 import Image from "next/image"
 import {
-    LogOut, Sun, Moon, User, Bell, ChevronDown, ChevronUp, ShieldCheck, HelpCircle
+    LogOut, Sun, Moon, User, Bell, ChevronDown, ChevronUp, ShieldCheck, HelpCircle,
+    PanelLeftClose, PanelLeftOpen
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
@@ -29,9 +30,10 @@ import { toast } from "sonner"
 
 interface RoleBasedSidebarProps {
     collapsed?: boolean
+    onToggle?: () => void
 }
 
-export default function RoleBasedSidebar({ collapsed = false }: RoleBasedSidebarProps) {
+export default function RoleBasedSidebar({ collapsed = false, onToggle }: RoleBasedSidebarProps) {
     const pathname = usePathname()
     const router = useRouter()
     const { data: session } = useSession()
@@ -84,25 +86,46 @@ export default function RoleBasedSidebar({ collapsed = false }: RoleBasedSidebar
                 "fixed top-0 left-0 h-full bg-background border-r border-border z-50 flex flex-col transition-all duration-300",
                 collapsed ? "w-16" : "w-64"
             )}>
-                <div className="flex items-center p-4 h-16 border-b border-border">
-                    <Link href="/dashboard" className="flex items-center gap-3 transition-opacity hover:opacity-80">
-                        <div className="relative h-8 w-8 flex-shrink-0">
-                            <Image
-                                src="/projectcentral.png"
-                                alt="Project Central"
-                                fill
-                                className="object-contain"
-                                priority
-                            />
-                        </div>
-                        {
-                            !collapsed && (
-                                <div>
+                <div className={cn(
+                    "flex items-center h-16 border-b border-border transition-all",
+                    collapsed ? "justify-center" : "justify-between px-4"
+                )}>
+                    {
+                        !collapsed && (
+                            <Link href="/dashboard" className="flex items-center gap-3 transition-opacity hover:opacity-80 overflow-hidden">
+                                <div className="relative h-8 w-8 flex-shrink-0">
+                                    <Image
+                                        src="/projectcentral.png"
+                                        alt="Project Central"
+                                        fill
+                                        className="object-contain"
+                                        priority
+                                    />
+                                </div>
+                                <div className="whitespace-nowrap">
                                     <h1 className="text-lg font-bold">ProjectCentral</h1>
                                 </div>
-                            )
-                        }
-                    </Link>
+                            </Link>
+                        )
+                    }
+                    {
+                        onToggle && (
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={onToggle}
+                                className={cn("h-8 w-8", collapsed && "h-10 w-10")}
+                            >
+                                {
+                                    collapsed ? (
+                                        <PanelLeftOpen className="h-5 w-5" />
+                                    ) : (
+                                        <PanelLeftClose className="h-5 w-5" />
+                                    )
+                                }
+                            </Button>
+                        )
+                    }
                 </div>
                 {
                     !collapsed && (
@@ -111,19 +134,19 @@ export default function RoleBasedSidebar({ collapsed = false }: RoleBasedSidebar
                                 <div className={cn(
                                     "w-2 h-2 rounded-full",
                                     getRoleColor(userRole)
-                                )} />
-                                <div className="flex-1">
-                                    <p className="text-sm font-medium">{getRoleDisplayName(userRole)}</p>
-                                    <p className="text-xs text-muted-foreground">
+                                )}></div>
+                                <div className="flex-1 overflow-hidden">
+                                    <p className="text-sm font-medium truncate">{getRoleDisplayName(userRole)}</p>
+                                    <p className="text-xs text-muted-foreground truncate">
                                         {session.user.name}
                                     </p>
                                 </div>
-                                <ShieldCheck className="w-4 h-4 text-muted-foreground" />
+                                <ShieldCheck className="w-4 h-4 text-muted-foreground flex-shrink-0" />
                             </div>
                         </div>
                     )
                 }
-                <div className="flex-1 overflow-y-auto py-4">
+                <div className="flex-1 overflow-y-auto py-4 min-h-0">
                     <NavigationSection
                         title="Main"
                         items={navigation.primary}
@@ -137,7 +160,7 @@ export default function RoleBasedSidebar({ collapsed = false }: RoleBasedSidebar
                     {
                         navigation.secondary && navigation.secondary.length > 0 && (
                             <>
-                                <Separator className="my-4 mx-4" />
+                                <Separator className="my-4" />
                                 <NavigationSection
                                     title="Settings"
                                     items={navigation.secondary}

@@ -5,7 +5,7 @@ import { useSession } from 'next-auth/react'
 import { useRouter, usePathname } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Menu, X } from 'lucide-react'
-import RoleBasedSidebar from '@/components/navigation/RoleBasedSidebar'
+import RoleBasedSidebar from '@/components/navigation/rolebasedsidebar'
 import LoadingScreen from '@/components/loading-screen'
 import { cn } from '@/lib/utils'
 import { hasAccessToPath } from '@/lib/navigation'
@@ -19,7 +19,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
     const { data: session, status } = useSession()
     const router = useRouter()
     const pathname = usePathname()
-    
+
     const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
     const [isMobile, setIsMobile] = useState(false)
@@ -29,7 +29,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
         const checkScreenSize = () => {
             const mobile = window.innerWidth < 768
             setIsMobile(mobile)
-            
+
             // Auto-collapse sidebar on smaller screens
             if (mobile) {
                 setSidebarCollapsed(true)
@@ -39,7 +39,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
 
         checkScreenSize()
         window.addEventListener('resize', checkScreenSize)
-        
+
         return () => window.removeEventListener('resize', checkScreenSize)
     }, [])
 
@@ -58,7 +58,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
     const currentPath = pathname.split('/')[1] || 'dashboard'
     const userRole = session.user.role as Role
     const hasAccess = hasAccessToPath(userRole, currentPath)
-    
+
     if (!hasAccess && currentPath !== 'dashboard') {
         // Redirect to dashboard if user doesn't have access to current path
         router.push('/dashboard')
@@ -76,11 +76,11 @@ export default function MainLayout({ children }: MainLayoutProps) {
             {isMobile && mobileMenuOpen && (
                 <>
                     {/* Backdrop */}
-                    <div 
+                    <div
                         className="fixed inset-0 bg-black/50 z-40 md:hidden"
                         onClick={() => setMobileMenuOpen(false)}
                     />
-                    
+
                     {/* Mobile Sidebar */}
                     <div className="fixed left-0 top-0 h-full w-64 z-50 md:hidden">
                         <RoleBasedSidebar collapsed={false} />
@@ -149,10 +149,10 @@ function PageTitle({ pathname }: PageTitleProps) {
     const getPageTitle = (path: string): string => {
         const segments = path.split('/').filter(Boolean)
         const currentPage = segments[0] || 'dashboard'
-        
+
         const titleMap: Record<string, string> = {
             'dashboard': 'Dashboard',
-            'projects': 'Projects', 
+            'projects': 'Projects',
             'company-projects': 'All Projects',
             'team-projects': 'Team Projects',
             'teams': 'Teams',
@@ -172,7 +172,7 @@ function PageTitle({ pathname }: PageTitleProps) {
             'reports': 'Reports',
             'companies': 'Service Providers'
         }
-        
+
         return titleMap[currentPage] || currentPage.charAt(0).toUpperCase() + currentPage.slice(1)
     }
 
