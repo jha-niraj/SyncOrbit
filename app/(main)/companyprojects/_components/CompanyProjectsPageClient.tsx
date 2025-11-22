@@ -11,7 +11,7 @@ import {
 } from "lucide-react"
 import { ProjectVisibility, Status, TaskStatus, TeamType, Role } from "@prisma/client"
 import Link from "next/link"
-import { CreateProjectModal } from "@/components/projects/CreateProjectModal"
+import { CreateProjectSheet } from "@/components/projects/createprojectsheet"
 
 // Team type icon mapping
 const TEAM_ICONS = {
@@ -91,7 +91,7 @@ export function CompanyProjectsPageClient({ projects, user }: CompanyProjectsPag
                 </div>
                 {
                     isCompanyOwner && (
-                        <CreateProjectModal
+                        <CreateProjectSheet
                             trigger={
                                 <Button className="gap-2">
                                     <Plus className="w-4 h-4" />
@@ -172,7 +172,7 @@ export function CompanyProjectsPageClient({ projects, user }: CompanyProjectsPag
                             </p>
                             {
                                 isCompanyOwner && (
-                                    <CreateProjectModal
+                                    <CreateProjectSheet
                                         trigger={
                                             <Button className="gap-2">
                                                 <Plus className="w-4 h-4" />
