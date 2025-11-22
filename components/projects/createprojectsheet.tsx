@@ -9,29 +9,29 @@ import {
     Select, SelectContent, SelectItem, SelectTrigger, SelectValue
 } from "@/components/ui/select"
 import { Calendar } from "@/components/ui/calendar"
-import { 
-    Popover, PopoverContent, PopoverTrigger 
+import {
+    Popover, PopoverContent, PopoverTrigger
 } from "@/components/ui/popover"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import {
-    CalendarIcon, Plus, Loader2, Users, Eye, EyeOff, Building2, DollarSign, X, Code, 
-    Megaphone, ShoppingCart, Palette, Briefcase, Settings
+    CalendarIcon, Plus, Loader2, Users, Eye, EyeOff, Building2, DollarSign, X, Code,
+    Megaphone, ShoppingCart, Palette, Briefcase, Settings, CheckCircle
 } from "lucide-react"
-import { 
-    Avatar, AvatarFallback, AvatarImage 
+import {
+    Avatar, AvatarFallback, AvatarImage
 } from "@/components/ui/avatar"
 import { format } from "date-fns"
-import { 
-    Currency, ClientType, ProjectVisibility, TeamType 
+import {
+    Currency, ClientType, ProjectVisibility, TeamType
 } from "@prisma/client"
 import { createProject } from "@/actions/projects.action"
 import { getCompanyTeams } from "@/actions/teams.action"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
-import { 
-    Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger 
+import {
+    Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger
 } from "../ui/sheet"
 
 // Team type icon mapping
@@ -414,11 +414,12 @@ export function CreateProjectSheet({ trigger, onSuccess, open: controlledOpen, o
                                                     )}
                                                     onClick={() => handleTeamToggle(team.id)}
                                                 >
-                                                    <Checkbox
-                                                        checked={isSelected}
-                                                        onChange={() => { }}
-                                                        className="pointer-events-none"
-                                                    />
+                                                    <div className={cn(
+                                                        "w-5 h-5 rounded-full border flex items-center justify-center transition-colors",
+                                                        isSelected ? "bg-primary border-primary" : "border-muted-foreground"
+                                                    )}>
+                                                        {isSelected && <CheckCircle className="w-3 h-3 text-primary-foreground" />}
+                                                    </div>
                                                     <div
                                                         className="w-10 h-10 rounded-lg flex items-center justify-center"
                                                         style={{

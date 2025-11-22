@@ -109,12 +109,6 @@ export const roleNavigations: RoleNavigation[] = [
                 name: "Invitations",
                 icon: UserPlus,
                 description: "Manage team invitations"
-            },
-            {
-                path: "permissions",
-                name: "Permissions",
-                icon: Shield,
-                description: "Role and permission management"
             }
         ]
     },
@@ -151,9 +145,9 @@ export const roleNavigations: RoleNavigation[] = [
                 children: [
                     {
                         path: "projects",
-                        name: "My Projects",
+                        name: "All Projects",
                         icon: Briefcase,
-                        description: "Your assigned projects"
+                        description: "View all projects"
                     },
                     {
                         path: "team-projects",
@@ -184,10 +178,24 @@ export const roleNavigations: RoleNavigation[] = [
             },
             {
                 path: "analytics",
-                name: "Team Analytics",
+                name: "Analytics",
                 icon: TrendingUp,
-                description: "Team performance insights"
-            }
+                description: "Performance metrics",
+                children: [
+                    {
+                        path: "analytics/clients",
+                        name: "Clients",
+                        icon: Users,
+                        description: "Client project analytics"
+                    },
+                    {
+                        path: "analytics/internal",
+                        name: "Internal",
+                        icon: TrendingUp,
+                        description: "Internal project analytics"
+                    }
+                ]
+            },
         ],
         secondary: [
             {
@@ -214,6 +222,18 @@ export const roleNavigations: RoleNavigation[] = [
                 name: "Reports",
                 icon: FileText,
                 description: "Generate team reports"
+            },
+            {
+                path: "profile",
+                name: "Profile",
+                icon: Settings,
+                description: "Manage your profile"
+            },
+            {
+                path: "notifications",
+                name: "Notifications",
+                icon: Bell,
+                description: "Your notifications"
             }
         ]
     },

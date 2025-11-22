@@ -58,7 +58,12 @@ export default withAuth(
 		console.log(`Middleware: ${nextUrl.pathname}, isLoggedIn: ${isLoggedIn}`) // Debug log
 
 		// If user is logged in and trying to access auth pages, redirect to dashboard
-		if (isLoggedIn && (nextUrl.pathname === '/signin' || nextUrl.pathname === '/signup' || nextUrl.pathname === '/register')) {
+		if (isLoggedIn && (
+			nextUrl.pathname === '/signin' ||
+			nextUrl.pathname === '/signup' ||
+			nextUrl.pathname === '/register' ||
+			nextUrl.pathname === '/' // Also redirect root to dashboard if logged in
+		)) {
 			return NextResponse.redirect(new URL('/dashboard', nextUrl.origin))
 		}
 
@@ -70,14 +75,13 @@ export default withAuth(
 				const { pathname } = req.nextUrl
 
 				// Allow API routes
-				if (apiRoutes.some(route => pathname.startsWith(route))) {
+				if (pathname.startsWith('/api/')) {
 					return true
 				}
 
 				// Allow static files and Next.js internals
 				if (
 					pathname.startsWith('/_next/') ||
-					pathname.startsWith('/api/') ||
 					pathname.includes('.') ||
 					pathname.startsWith('/favicon')
 				) {
@@ -86,7 +90,7 @@ export default withAuth(
 
 				// Check if current path is a public route
 				const isPublicRoute = publicRoutes.some(route =>
-					pathname === route || pathname.startsWith(route)
+					pathname === route || pathname.startsWith(route + '/')
 				)
 
 				// If it's a public route, allow access
@@ -96,7 +100,7 @@ export default withAuth(
 
 				// Check if current path is a protected route
 				const isProtectedRoute = protectedRoutes.some(route =>
-					pathname.startsWith(route)
+					pathname === route || pathname.startsWith(route + '/')
 				)
 
 				// If it's a protected route, require authentication
@@ -104,8 +108,8 @@ export default withAuth(
 					return !!token
 				}
 
-				// Default: allow access
-				return true
+				// Default: require authentication for any other route not explicitly public
+				return !!token
 			},
 		},
 		pages: {

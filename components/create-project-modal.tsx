@@ -1,22 +1,22 @@
 "use client"
 
 import { useState, useRef, useEffect } from "react"
-import { 
-    Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger 
+import {
+    Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { 
-    Select, SelectContent, SelectItem, SelectTrigger, SelectValue 
+import {
+    Select, SelectContent, SelectItem, SelectTrigger, SelectValue
 } from "@/components/ui/select"
 import { Calendar } from "@/components/ui/calendar"
-import { 
-    Popover, PopoverContent, PopoverTrigger 
+import {
+    Popover, PopoverContent, PopoverTrigger
 } from "@/components/ui/popover"
-import { 
-    CalendarIcon, Plus, Loader2, Search, X 
+import {
+    CalendarIcon, Plus, Loader2, Search, X
 } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { motion, AnimatePresence } from "framer-motion"
@@ -43,7 +43,7 @@ interface Client {
 export function CreateProjectModal({ trigger, onSuccess }: CreateProjectModalProps) {
     const [open, setOpen] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
-    
+
     // Form state
     const [title, setTitle] = useState("")
     const [description, setDescription] = useState("")
@@ -53,7 +53,7 @@ export function CreateProjectModal({ trigger, onSuccess }: CreateProjectModalPro
     const [startDate, setStartDate] = useState<Date>()
     const [endDate, setEndDate] = useState<Date>()
     const [clientEmail, setClientEmail] = useState("")
-    
+
     // Client search state
     const [searchTerm, setSearchTerm] = useState("")
     const [selectedClient, setSelectedClient] = useState<Client | null>(null)
@@ -61,7 +61,7 @@ export function CreateProjectModal({ trigger, onSuccess }: CreateProjectModalPro
     const [searchResults, setSearchResults] = useState<Client[]>([])
     const [showSearchDropdown, setShowSearchDropdown] = useState(false)
     const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null)
-    
+
     // Project links
     const [livePreviewUrl, setLivePreviewUrl] = useState("")
     const [figmaUrl, setFigmaUrl] = useState("")
@@ -98,11 +98,11 @@ export function CreateProjectModal({ trigger, onSuccess }: CreateProjectModalPro
     // Handle search input change with debouncing
     const handleSearchInputChange = (value: string) => {
         setSearchTerm(value)
-        
+
         if (searchTimeoutRef.current) {
             clearTimeout(searchTimeoutRef.current)
         }
-        
+
         searchTimeoutRef.current = setTimeout(() => {
             searchClients(value)
         }, 300)
@@ -324,7 +324,7 @@ export function CreateProjectModal({ trigger, onSuccess }: CreateProjectModalPro
                                                         <Loader2 className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 animate-spin text-muted-foreground" />
                                                     )}
                                                 </div>
-                                                
+
                                                 <AnimatePresence>
                                                     {showSearchDropdown && searchResults.length > 0 && (
                                                         <motion.div
@@ -360,7 +360,7 @@ export function CreateProjectModal({ trigger, onSuccess }: CreateProjectModalPro
                                                         </motion.div>
                                                     )}
                                                 </AnimatePresence>
-                                                
+
                                                 {showSearchDropdown && searchTerm.length >= 2 && !isSearching && searchResults.length === 0 && (
                                                     <div className="absolute z-50 w-full mt-1 bg-background border border-border rounded-md shadow-lg p-3 text-sm text-muted-foreground text-center">
                                                         No clients found matching &ldquo;{searchTerm}&rdquo;
@@ -368,7 +368,7 @@ export function CreateProjectModal({ trigger, onSuccess }: CreateProjectModalPro
                                                 )}
                                             </div>
                                         </div>
-                                        
+
                                         <div className="text-center">
                                             <p className="text-sm text-muted-foreground mb-2">or</p>
                                             <div className="space-y-2">
@@ -452,7 +452,7 @@ export function CreateProjectModal({ trigger, onSuccess }: CreateProjectModalPro
                                     </PopoverContent>
                                 </Popover>
                             </div>
-                            
+
                             <div className="space-y-2">
                                 <Label>End Date (Optional)</Label>
                                 <Popover>
@@ -486,7 +486,7 @@ export function CreateProjectModal({ trigger, onSuccess }: CreateProjectModalPro
                     {/* Project Links */}
                     <div className="space-y-4">
                         <h4 className="text-sm font-medium">Project Links (Optional)</h4>
-                        
+
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
                                 <Label htmlFor="livePreviewUrl">Live Preview URL</Label>
@@ -499,7 +499,7 @@ export function CreateProjectModal({ trigger, onSuccess }: CreateProjectModalPro
                                     disabled={isLoading}
                                 />
                             </div>
-                            
+
                             <div className="space-y-2">
                                 <Label htmlFor="figmaUrl">Figma URL</Label>
                                 <Input
@@ -511,7 +511,7 @@ export function CreateProjectModal({ trigger, onSuccess }: CreateProjectModalPro
                                     disabled={isLoading}
                                 />
                             </div>
-                            
+
                             <div className="space-y-2">
                                 <Label htmlFor="githubUrl">GitHub URL</Label>
                                 <Input
@@ -523,7 +523,7 @@ export function CreateProjectModal({ trigger, onSuccess }: CreateProjectModalPro
                                     disabled={isLoading}
                                 />
                             </div>
-                            
+
                             <div className="space-y-2">
                                 <Label htmlFor="documentsUrl">Documents URL</Label>
                                 <Input
@@ -561,14 +561,16 @@ export function CreateProjectModal({ trigger, onSuccess }: CreateProjectModalPro
                             Cancel
                         </Button>
                         <Button type="submit" disabled={isLoading}>
-                            {isLoading ? (
-                                <>
-                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                    Creating...
-                                </>
-                            ) : (
-                                "Create Project"
-                            )}
+                            {
+                                isLoading ? (
+                                    <>
+                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                        Creating...
+                                    </>
+                                ) : (
+                                    "Create Project"
+                                )
+                            }
                         </Button>
                     </div>
                 </form>

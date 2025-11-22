@@ -8,9 +8,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { toast } from "sonner";
 import {
-    LogOut, User, Sun, Moon, Bell, Users as UsersIcon, Award, BellOff,
-    LayoutDashboard, Briefcase, FileText, Settings, Shield, UserPlus,
-    Layers, Target, TrendingUp, Calendar, Coffee, Eye, DollarSign, MessageSquare
+    LogOut, User, Sun, Moon, Bell, Users as UsersIcon, Award, BellOff
 } from "lucide-react";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
@@ -18,14 +16,34 @@ import {
     getRecentNotifications, markNotificationAsRead, type Notification
 } from "@/actions/notifications.action";
 import { format } from "date-fns";
-import { Role } from "@prisma/client";
-import { getNavigationForRole, NavigationItem } from "@/lib/navigation";
-import { CreateProjectSheet } from "@/components/projects/createprojectsheet";
-import { ReferralSheet } from "@/components/referral/ReferralSheet";
+
+export interface Route {
+    layout: string;
+    path: string;
+    name: string;
+    icon?: React.ReactNode;
+    section?: string;
+    description?: string;
+    status: string;
+    color?: string;
+    dropdownItems?: Array<{
+        path: string;
+        name: string;
+        icon?: React.ReactNode;
+        description?: string;
+    }>;
+}
+
+interface SidebarProps {
+    routes?: Route[];
+    className?: string;
+    title?: string;
+    subtitle?: string;
+}
 
 interface NavDropdownProps {
     isActive: boolean;
-    onNavigate: (path: string, action?: string) => void;
+    onNavigate: (path: string) => void;
     icon: React.ReactNode;
     label: string;
     dropdownItems: Array<{
@@ -33,7 +51,7 @@ interface NavDropdownProps {
         name: string;
         icon?: React.ReactNode;
         iconColor?: string;
-        action?: string;
+        description?: string;
     }>;
 }
 
@@ -67,7 +85,7 @@ const NavDropdown = ({ isActive, onNavigate, icon, label, dropdownItems }: NavDr
     const handleMouseEnter = () => {
         // Only use hover on larger screens
         if (isSmallScreen) return;
-
+        
         if (dropdownTimeoutRef.current) {
             clearTimeout(dropdownTimeoutRef.current);
         }
@@ -79,7 +97,7 @@ const NavDropdown = ({ isActive, onNavigate, icon, label, dropdownItems }: NavDr
     const handleMouseLeave = () => {
         // Only use hover on larger screens
         if (isSmallScreen) return;
-
+        
         if (dropdownTimeoutRef.current) {
             clearTimeout(dropdownTimeoutRef.current);
         }
@@ -150,7 +168,7 @@ const NavDropdown = ({ isActive, onNavigate, icon, label, dropdownItems }: NavDr
                                 key={index}
                                 onClick={(e) => {
                                     e.stopPropagation();
-                                    onNavigate(item.path, item.action);
+                                    onNavigate(item.path);
                                     setIsDropdownOpen(false);
                                 }}
                                 className="w-full flex items-center gap-3 px-3 py-2.5 text-sm text-neutral-300 hover:text-white hover:bg-neutral-800 rounded-md transition-colors"
@@ -172,12 +190,11 @@ const NavDropdown = ({ isActive, onNavigate, icon, label, dropdownItems }: NavDr
     );
 };
 
-interface RoleBasedSidebarProps {
-    collapsed?: boolean; // Kept for compatibility but not used in new design
-    onToggle?: () => void; // Kept for compatibility
-}
-
-export default function RoleBasedSidebar({ collapsed, onToggle }: RoleBasedSidebarProps) {
+const Sidebar = ({
+    routes = [],
+    className = "",
+    title = "EventEye",
+}: SidebarProps) => {
     const { data: session, status } = useSession();
     const { theme, setTheme } = useTheme();
     const pathname = usePathname();
@@ -190,47 +207,38 @@ export default function RoleBasedSidebar({ collapsed, onToggle }: RoleBasedSideb
     const profileTimeoutRef = useRef<NodeJS.Timeout | null>(null);
     const notificationsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-    // Sheet states
-    const [createProjectOpen, setCreateProjectOpen] = useState(false);
-    const [referralOpen, setReferralOpen] = useState(false);
+    const isActiveRoute = (path: string) => pathname.includes(path);
+    const displayRoutes = routes.filter((route) => route.status !== "coming");
 
-    const isActiveRoute = (path: string) => {
-        if (path === 'dashboard') {
-            return pathname === '/dashboard' || pathname === '/dashboard/clients';
-        }
-        return pathname.includes(path);
-    };
-
-    const handleNavigation = (path: string, action?: string) => {
-        if (action) {
-            if (action === 'create_project') {
-                setCreateProjectOpen(true);
-            } else if (action === 'referral') {
-                setReferralOpen(true);
-            }
-            setIsSidebarOpen(false);
-            return;
-        }
-
-        // Handle hash links or empty paths
-        if (path.startsWith('#') || !path) return;
-
+    const handleNavigation = (path: string) => {
         router.push(`/${path}`);
-        setIsSidebarOpen(false);
+        setIsSidebarOpen(false); // Close sidebar on mobile after navigation
     };
 
     const handleLinkClick = (href: string) => {
         setProfileDropdownOpen(false);
-        setIsSidebarOpen(false);
+        setIsSidebarOpen(false); // Close sidebar on mobile after navigation
         router.push(`/${href}`);
     };
 
+    // Check if Speakers or Sponsors route is active
+    const isSpeakersActive = pathname.includes('/speakers');
+    const isSponsorsActive = pathname.includes('/sponsors');
+    const isBrowseActive = pathname.includes('/browse') || pathname.includes('/organizations') ||
+        pathname.includes('/myorganizations');
+    const isEventsActive = pathname.includes('/events') || pathname.includes('/hackathons') ||
+        pathname.includes('/jobfairs') || pathname.includes('/culturals') ||
+        pathname.includes('/workshops') || pathname.includes('/conferences') ||
+        pathname.includes('/orgevents');
+    const isCertificatesActive = pathname.includes('/certificates') || pathname.includes('/generate');
+    const isOrgsActive = pathname.includes('/orgs') || pathname.includes('/verifyorg');
+
     // Fetch notifications
     useEffect(() => {
-        if (session?.user?.email) {
+        if (session?.user) {
             fetchNotifications();
         }
-    }, [session?.user?.email]);
+    }, [session]);
 
     const fetchNotifications = async () => {
         try {
@@ -249,6 +257,7 @@ export default function RoleBasedSidebar({ collapsed, onToggle }: RoleBasedSideb
             if (!notification.read) {
                 await markNotificationAsRead(notification.id);
                 setUnreadCount(prev => Math.max(0, prev - 1));
+                // Update the notification in the list
                 setNotifications(prev =>
                     prev.map(n => n.id === notification.id ? { ...n, read: true } : n)
                 );
@@ -295,17 +304,6 @@ export default function RoleBasedSidebar({ collapsed, onToggle }: RoleBasedSideb
         }, 150);
     };
 
-    // Get navigation for current user role
-    const userRole = session?.user?.role as Role;
-    const navigation = userRole ? getNavigationForRole(userRole) : null;
-
-    if (!session?.user || !navigation) {
-        return null;
-    }
-
-    // Transform navigation items to match the new sidebar structure
-    const allItems = [...navigation.primary, ...(navigation.secondary || [])];
-
     return (
         <TooltipProvider>
             <button
@@ -332,7 +330,8 @@ export default function RoleBasedSidebar({ collapsed, onToggle }: RoleBasedSideb
             <div className={cn(
                 "fixed top-0 left-0 h-full w-[90px] bg-black dark:bg-black border-r border-neutral-800 z-20 transition-transform duration-300",
                 "sm:translate-x-0", // Always visible on sm and larger
-                isSidebarOpen ? "translate-x-0" : "-translate-x-full" // Toggle on small screens
+                isSidebarOpen ? "translate-x-0" : "-translate-x-full", // Toggle on small screens
+                className
             )}>
                 <div className="flex flex-col h-full">
                     <div className="flex items-center justify-center p-3 h-[70px]">
@@ -340,7 +339,7 @@ export default function RoleBasedSidebar({ collapsed, onToggle }: RoleBasedSideb
                             <div className="relative h-[36px] w-[36px]">
                                 <Image
                                     src="/logo/whitelogo.svg"
-                                    alt="ProjectCentral"
+                                    alt={title}
                                     fill
                                     className="object-contain"
                                     priority
@@ -351,36 +350,124 @@ export default function RoleBasedSidebar({ collapsed, onToggle }: RoleBasedSideb
                     <div className="flex-grow overflow-y-auto py-3 px-2">
                         <div className="flex flex-col items-center space-y-2">
                             {
-                                allItems.map((item, index) => {
-                                    const Icon = item.icon;
-                                    const hasChildren = item.children && item.children.length > 0;
-                                    const isActive = isActiveRoute(item.path);
+                                displayRoutes.map((route, index) => {
+                                    // Check if this route should be a dropdown
+                                    const shouldShowSpeakersDropdown = route.path.includes('speakers');
+                                    const shouldShowSponsorsDropdown = route.path.includes('sponsors');
+                                    const shouldShowBrowseDropdown = route.path.includes('browse') && route.dropdownItems;
+                                    const shouldShowEventsDropdown = route.path.includes('events') && route.dropdownItems;
+                                    const shouldShowCertificatesDropdown = route.path.includes('certificates') && route.dropdownItems;
+                                    const shouldShowOrgsDropdown = route.path.includes('orgs') && route.dropdownItems;
 
-                                    if (hasChildren) {
+                                    if (shouldShowSpeakersDropdown) {
                                         return (
                                             <NavDropdown
                                                 key={index}
-                                                isActive={isActive}
+                                                isActive={isSpeakersActive}
                                                 onNavigate={handleNavigation}
-                                                icon={<Icon className="w-5 h-5" />}
-                                                label={item.name}
-                                                dropdownItems={item.children!.map(child => {
-                                                    const ChildIcon = child.icon;
-                                                    return {
-                                                        path: child.path,
-                                                        name: child.name,
-                                                        icon: <ChildIcon className="w-4 h-4" />,
-                                                        action: child.action
-                                                    };
-                                                })}
+                                                icon={route.icon}
+                                                label="Speakers"
+                                                dropdownItems={[
+                                                    {
+                                                        path: 'speakers',
+                                                        name: 'My Speakers',
+                                                        icon: <UsersIcon className="w-4 h-4" />,
+                                                        iconColor: 'text-blue-400'
+                                                    },
+                                                    {
+                                                        path: 'speakers/find',
+                                                        name: 'Find Speakers',
+                                                        icon: <UsersIcon className="w-4 h-4" />,
+                                                        iconColor: 'text-green-400'
+                                                    }
+                                                ]}
                                             />
                                         );
                                     }
 
+                                    if (shouldShowSponsorsDropdown) {
+                                        return (
+                                            <NavDropdown
+                                                key={index}
+                                                isActive={isSponsorsActive}
+                                                onNavigate={handleNavigation}
+                                                icon={route.icon}
+                                                label="Sponsors"
+                                                dropdownItems={[
+                                                    {
+                                                        path: 'sponsors',
+                                                        name: 'My Sponsors',
+                                                        icon: <Award className="w-4 h-4" />,
+                                                        iconColor: 'text-yellow-400'
+                                                    },
+                                                    {
+                                                        path: 'sponsors/find',
+                                                        name: 'Find Sponsors',
+                                                        icon: <Award className="w-4 h-4" />,
+                                                        iconColor: 'text-orange-400'
+                                                    }
+                                                ]}
+                                            />
+                                        );
+                                    }
+
+                                    if (shouldShowBrowseDropdown) {
+                                        return (
+                                            <NavDropdown
+                                                key={index}
+                                                isActive={isBrowseActive}
+                                                onNavigate={handleNavigation}
+                                                icon={route.icon}
+                                                label="Browse"
+                                                dropdownItems={route.dropdownItems || []}
+                                            />
+                                        );
+                                    }
+
+                                    if (shouldShowEventsDropdown) {
+                                        return (
+                                            <NavDropdown
+                                                key={index}
+                                                isActive={isEventsActive}
+                                                onNavigate={handleNavigation}
+                                                icon={route.icon}
+                                                label="Events"
+                                                dropdownItems={route.dropdownItems || []}
+                                            />
+                                        );
+                                    }
+
+                                    if (shouldShowCertificatesDropdown) {
+                                        return (
+                                            <NavDropdown
+                                                key={index}
+                                                isActive={isCertificatesActive}
+                                                onNavigate={handleNavigation}
+                                                icon={route.icon}
+                                                label="Certificates"
+                                                dropdownItems={route.dropdownItems || []}
+                                            />
+                                        );
+                                    }
+
+                                    if (shouldShowOrgsDropdown) {
+                                        return (
+                                            <NavDropdown
+                                                key={index}
+                                                isActive={isOrgsActive}
+                                                onNavigate={handleNavigation}
+                                                icon={route.icon}
+                                                label="Orgs"
+                                                dropdownItems={route.dropdownItems || []}
+                                            />
+                                        );
+                                    }
+
+                                    const isActive = isActiveRoute(route.path);
                                     return (
                                         <button
                                             key={index}
-                                            onClick={() => handleNavigation(item.path, item.action)}
+                                            onClick={() => handleNavigation(route.path)}
                                             className="block w-full"
                                         >
                                             <div
@@ -391,10 +478,8 @@ export default function RoleBasedSidebar({ collapsed, onToggle }: RoleBasedSideb
                                                         : "hover:bg-neutral-800 text-neutral-300 hover:text-white"
                                                 )}
                                             >
-                                                <div className="h-5 w-5 stroke-2">
-                                                    <Icon className="w-5 h-5" />
-                                                </div>
-                                                <h1 className="text-xs mt-1 text-center">{item.name}</h1>
+                                                <div className="h-5 w-5 stroke-2">{route.icon}</div>
+                                                <h1 className="text-xs mt-1">{route.name}</h1>
                                             </div>
                                         </button>
                                     );
@@ -582,15 +667,6 @@ export default function RoleBasedSidebar({ collapsed, onToggle }: RoleBasedSideb
                                                         <span className="font-medium">Profile</span>
                                                     </button>
                                                     <button
-                                                        onClick={() => handleLinkClick('permissions')}
-                                                        className="w-full flex items-center gap-3 px-3 py-2.5 text-sm text-neutral-300 hover:text-white hover:bg-neutral-800 rounded-md transition-colors"
-                                                    >
-                                                        <div className="w-8 h-8 bg-blue-500/10 rounded-lg flex items-center justify-center">
-                                                            <Shield className="w-4 h-4 text-blue-400" />
-                                                        </div>
-                                                        <span className="font-medium">Permissions</span>
-                                                    </button>
-                                                    <button
                                                         onClick={async () => {
                                                             await signOut({ callbackUrl: "/" });
                                                             setProfileDropdownOpen(false);
@@ -620,16 +696,9 @@ export default function RoleBasedSidebar({ collapsed, onToggle }: RoleBasedSideb
                         }
                     </div>
                 </div>
-
-                <CreateProjectSheet
-                    open={createProjectOpen}
-                    onOpenChange={setCreateProjectOpen}
-                />
-                <ReferralSheet
-                    open={referralOpen}
-                    onOpenChange={setReferralOpen}
-                />
             </div>
         </TooltipProvider>
     );
-}
+};
+
+export default Sidebar;

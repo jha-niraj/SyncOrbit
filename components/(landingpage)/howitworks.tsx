@@ -1,8 +1,8 @@
-
 import React, { useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 
 interface StepCardProps {
     number: string;
@@ -16,28 +16,36 @@ const StepCard = ({ number, title, description, isActive, onClick }: StepCardPro
     return (
         <div
             className={cn(
-                "rounded-xl p-6 cursor-pointer transition-all duration-500 border",
+                "rounded-2xl p-6 cursor-pointer transition-all duration-300 border",
                 isActive
-                    ? "bg-white shadow-elegant border-pulse-200"
-                    : "bg-white/50 hover:bg-white/80 border-transparent"
+                    ? "bg-white shadow-xl border-orange-100 dark:bg-neutral-800 dark:border-neutral-700 scale-100"
+                    : "bg-transparent hover:bg-white/50 dark:hover:bg-neutral-800/30 border-transparent scale-[0.98]"
             )}
             onClick={onClick}
         >
-            <div className="flex items-start">
-                <div className={cn(
-                    "flex items-center justify-center rounded-full w-10 h-10 mr-4 flex-shrink-0 transition-colors duration-300",
-                    isActive ? "bg-pulse-500 text-white" : "bg-gray-100 text-gray-500"
-                )}>
+            <div className="flex gap-5">
+                <div
+                    className={cn(
+                        "flex items-center justify-center rounded-full w-12 h-12 flex-shrink-0 text-sm font-bold transition-colors duration-300",
+                        isActive
+                            ? "bg-[#FE5C02] text-white"
+                            : "bg-gray-100 text-gray-500 dark:bg-neutral-800 dark:text-gray-400"
+                    )}
+                >
                     {number}
                 </div>
                 <div>
-                    <h3 className={cn(
-                        "text-lg font-semibold mb-2 transition-colors duration-300",
-                        isActive ? "text-pulse-600" : "text-gray-800"
-                    )}>
+                    <h3
+                        className={cn(
+                            "text-xl font-bold mb-2 transition-colors duration-300",
+                            isActive ? "text-[#FE5C02] dark:text-[#FE5C02]" : "text-gray-900 dark:text-white"
+                        )}
+                    >
                         {title}
                     </h3>
-                    <p className="text-gray-600 text-sm">{description}</p>
+                    <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-sm sm:text-base">
+                        {description}
+                    </p>
                 </div>
             </div>
         </div>
@@ -46,128 +54,114 @@ const StepCard = ({ number, title, description, isActive, onClick }: StepCardPro
 
 const HowItWorks = () => {
     const [activeStep, setActiveStep] = React.useState(0);
-    const sectionRef = useRef<HTMLDivElement>(null);
     const stepsData = [
         {
             number: "01",
             title: "Create your workspace",
-            description: "Set up teams, invite members, and import work from popular tools in one click. Choose team types like Technical, Marketing, Social Media.",
-            image: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&w=800&q=80"
+            description:
+                "Set up teams, invite members, and import work from popular tools in one click. Choose team types like Technical, Marketing, Social Media.",
+            image: "https://images.unsplash.com/photo-1497215728101-856f4ea42174?auto=format&fit=crop&w=800&q=80",
         },
         {
             number: "02",
             title: "Plan & assign",
-            description: "Break work into tasks, set owners and deadlines, and visualize them on boards or timeline. Set up team heads and reward systems.",
-            image: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=800&q=80"
+            description:
+                "Break work into tasks, set owners and deadlines, and visualize them on boards or timeline. Set up team heads and reward systems.",
+            image: "https://images.unsplash.com/photo-1531403009284-440f080d1e12?auto=format&fit=crop&w=800&q=80",
         },
         {
             number: "03",
             title: "Deliver & report",
-            description: "Automations keep tasks moving; get post-sprint insights and exportable reports. Team members earn points for completed tasks.",
-            image: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&w=800&q=80"
-        }
+            description:
+                "Automations keep tasks moving; get post-sprint insights and exportable reports. Team members earn points for completed tasks.",
+            image: "https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=800&q=80",
+        },
     ];
 
     useEffect(() => {
-        // Auto-cycle through steps
         const interval = setInterval(() => {
             setActiveStep((prev) => (prev + 1) % stepsData.length);
-        }, 4000);
-
+        }, 5000);
         return () => clearInterval(interval);
     }, [stepsData.length]);
 
-    useEffect(() => {
-        const observer = new IntersectionObserver(
-            (entries) => {
-                entries.forEach((entry) => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add("animate-fade-in");
-                        observer.unobserve(entry.target);
-                    }
-                });
-            },
-            { threshold: 0.1 }
-        );
-
-        const elements = document.querySelectorAll(".fade-in-stagger");
-        elements.forEach((el, index) => {
-            (el as HTMLElement).style.animationDelay = `${0.1 * (index + 1)}s`;
-            observer.observe(el);
-        });
-
-        return () => {
-            elements.forEach((el) => {
-                observer.unobserve(el);
-            });
-        };
-    }, []);
-
     return (
-        <section className="py-20 bg-white relative" id="how-it-works" ref={sectionRef}>
-            <div className="absolute -top-20 right-0 w-72 h-72 bg-pulse-50 rounded-full opacity-60 blur-3xl -z-10"></div>
-            <div className="absolute bottom-0 left-10 w-64 h-64 bg-gray-50 rounded-full opacity-70 blur-3xl -z-10"></div>
+        <section className="py-24 bg-white dark:bg-neutral-950 relative overflow-hidden transition-colors duration-300" id="how-it-works">
+            {/* Background Blobs */}
+            <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-orange-500/10 rounded-full blur-[100px] -z-10 pointer-events-none"></div>
+            <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-blue-500/5 rounded-full blur-[100px] -z-10 pointer-events-none"></div>
 
-            <div className="section-container">
-                <div className="text-center mb-16 opacity-0 fade-in-stagger">
-                    <div className="pulse-chip mx-auto mb-4">
+            <div className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="text-center mb-16">
+                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 text-sm font-medium mb-4">
                         <span>How It Works</span>
                     </div>
-                    <h2 className="section-title mb-4">Three simple steps to transform your workflow</h2>
-                    <p className="section-subtitle mx-auto">
-                        From setup to delivery — ProjectCentral gets your team productive fast.
+                    <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
+                        Three simple steps to transform your workflow
+                    </h2>
+                    <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+                        From setup to delivery — ProjectCentral gets your team productive fast without the complex onboarding.
                     </p>
                 </div>
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-                    <div className="space-y-4 order-2 lg:order-1 opacity-0 fade-in-stagger">
-                        {
-                            stepsData.map((step, index) => (
-                                <StepCard
-                                    key={step.number}
-                                    number={step.number}
-                                    title={step.title}
-                                    description={step.description}
-                                    isActive={activeStep === index}
-                                    onClick={() => setActiveStep(index)}
-                                />
-                            ))
-                        }
-                        <div className="mt-8 pt-4 border-t border-gray-100">
+
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+                    {/* Left: Steps List */}
+                    <div className="space-y-4 order-2 lg:order-1">
+                        {stepsData.map((step, index) => (
+                            <StepCard
+                                key={step.number}
+                                number={step.number}
+                                title={step.title}
+                                description={step.description}
+                                isActive={activeStep === index}
+                                onClick={() => setActiveStep(index)}
+                            />
+                        ))}
+                        <div className="mt-10 pt-6 pl-4">
                             <Link
                                 href="#get-access"
-                                className="inline-flex items-center justify-center bg-pulse-500 hover:bg-pulse-600 text-white font-medium py-3 px-6 rounded-full transition-all duration-300"
+                                className="inline-flex items-center justify-center bg-[#FE5C02] hover:bg-orange-600 text-white font-bold py-3 px-8 rounded-full transition-all duration-300 shadow-lg shadow-orange-500/30"
                             >
-                                Start a free workspace →
+                                Start a free workspace
+                                <ArrowRight className="ml-2 w-4 h-4" />
                             </Link>
                         </div>
                     </div>
-                    <div className="relative rounded-3xl overflow-hidden h-[400px] shadow-elegant order-1 lg:order-2 opacity-0 fade-in-stagger">
-                        {
-                            stepsData.map((step, index) => (
-                                <div
-                                    key={index}
-                                    className={cn(
-                                        "absolute inset-0 transition-opacity duration-1000",
-                                        activeStep === index ? "opacity-100" : "opacity-0 pointer-events-none"
-                                    )}
-                                >
-                                    <Image
-                                        src={step.image}
-                                        alt={step.title}
-                                        className="w-full h-full object-cover"
-                                        height={48}
-                                        width={48}
-                                    />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-dark-900/70 to-transparent">
-                                        <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
-                                            <span className="text-pulse-400 font-medium mb-2 block">{step.number}</span>
-                                            <h3 className="text-2xl font-semibold mb-2">{step.title}</h3>
-                                            <p className="text-white/80">{step.description}</p>
-                                        </div>
+
+                    {/* Right: Dynamic Image */}
+                    <div className="relative rounded-3xl overflow-hidden h-[400px] sm:h-[500px] shadow-2xl bg-gray-100 dark:bg-neutral-900 order-1 lg:order-2">
+                        {stepsData.map((step, index) => (
+                            <div
+                                key={index}
+                                className={cn(
+                                    "absolute inset-0 transition-all duration-700 ease-in-out",
+                                    activeStep === index ? "opacity-100 scale-100" : "opacity-0 scale-105 pointer-events-none"
+                                )}
+                            >
+                                <Image
+                                    src={step.image}
+                                    alt={step.title}
+                                    fill
+                                    className="object-cover"
+                                    priority={index === 0}
+                                />
+
+                                {/* Gradient Overlay for Text Readability */}
+                                <div className="absolute inset-0 bg-gradient-to-t from-neutral-900 via-neutral-900/40 to-transparent opacity-90">
+                                    <div className="absolute bottom-0 left-0 right-0 p-8 sm:p-10">
+                                        <span className="text-[#FE5C02] font-bold text-lg mb-2 block">
+                                            Step {step.number}
+                                        </span>
+                                        <h3 className="text-2xl sm:text-3xl font-bold text-white mb-3">
+                                            {step.title}
+                                        </h3>
+                                        <p className="text-gray-300 text-lg leading-relaxed max-w-md">
+                                            {step.description}
+                                        </p>
                                     </div>
                                 </div>
-                            ))
-                        }
+                            </div>
+                        ))}
                     </div>
                 </div>
             </div>

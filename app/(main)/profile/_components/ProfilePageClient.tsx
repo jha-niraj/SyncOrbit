@@ -22,6 +22,7 @@ import { Role, TeamType } from "@prisma/client"
 import { format } from "date-fns"
 import { toast } from "sonner"
 import { uploadImage } from "@/actions/shared/upload.action"
+import { updateProfile } from "@/actions/user/profile.action"
 import { useRouter } from "next/navigation"
 
 // Team type icons
@@ -55,8 +56,13 @@ export default function ProfilePageClient({ userProfile }: ProfilePageClientProp
 
     const [uploading, setUploading] = useState(false)
     const [companyUploading, setCompanyUploading] = useState(false)
+    const [saving, setSaving] = useState(false)
     const fileInputRef = useRef<HTMLInputElement>(null)
     const companyFileInputRef = useRef<HTMLInputElement>(null)
+
+    // Form state
+    const [name, setName] = useState(userProfile.name || "")
+    const [bio, setBio] = useState(userProfile.bio || "")
 
     const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, type: 'user' | 'company') => {
         const file = e.target.files?.[0]
@@ -93,6 +99,24 @@ export default function ProfilePageClient({ userProfile }: ProfilePageClientProp
             toast.error("Failed to upload image")
         } finally {
             setLoader(false)
+        }
+    }
+
+    const handleSaveProfile = async () => {
+        setSaving(true)
+        try {
+            const result = await updateProfile({ name, bio })
+            if (result.success) {
+                toast.success(result.message)
+                router.refresh()
+            } else {
+                toast.error(result.error)
+            }
+        } catch (error) {
+            console.error("Save error:", error)
+            toast.error("Failed to update profile")
+        } finally {
+            setSaving(false)
         }
     }
 
@@ -155,10 +179,6 @@ export default function ProfilePageClient({ userProfile }: ProfilePageClientProp
                         </div>
                     </div>
                 </div>
-                <Button className="gap-2">
-                    <Edit className="w-4 h-4" />
-                    Edit Profile
-                </Button>
             </div>
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
                 <Card>
@@ -521,7 +541,7 @@ export default function ProfilePageClient({ userProfile }: ProfilePageClientProp
                                                 <div className="flex items-center gap-4">
                                                     <div className="relative group">
                                                         <Avatar className="w-16 h-16 border-2 border-muted">
-                                                            <AvatarImage src={userProfile.ownedCompany.image || undefined} />
+                                                            <AvatarImage src={userProfile.ownedCompany.logo || undefined} />
                                                             <AvatarFallback>
                                                                 <Building2 className="w-8 h-8 text-muted-foreground" />
                                                             </AvatarFallback>
@@ -578,7 +598,8 @@ export default function ProfilePageClient({ userProfile }: ProfilePageClientProp
                                     <Label htmlFor="name">Display Name</Label>
                                     <Input
                                         id="name"
-                                        defaultValue={userProfile.name || ''}
+                                        value={name}
+                                        onChange={(e) => setName(e.target.value)}
                                         placeholder="Enter your name"
                                     />
                                 </div>
@@ -596,12 +617,17 @@ export default function ProfilePageClient({ userProfile }: ProfilePageClientProp
                                 <Label htmlFor="bio">Bio</Label>
                                 <Textarea
                                     id="bio"
+                                    value={bio}
+                                    onChange={(e) => setBio(e.target.value)}
                                     placeholder="Tell us about yourself..."
                                     rows={3}
                                 />
                             </div>
                             <div className="flex justify-end">
-                                <Button>Save Changes</Button>
+                                <Button onClick={handleSaveProfile} disabled={saving}>
+                                    {saving && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+                                    Save Changes
+                                </Button>
                             </div>
                         </CardContent>
                     </Card>

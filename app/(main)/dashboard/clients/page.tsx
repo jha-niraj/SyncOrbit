@@ -1,57 +1,70 @@
-import { getClientDashboardData, getDeveloperExternalDashboardData } from "@/actions/(client)/dashboard.action";
-import { getOwnerExternalDashboardData } from "@/actions/(productmanager)/pm.action";
-import { getDashboardMetrics } from "@/actions/dashboard.action";
-import { auth } from "@/auth";
-import { redirect } from "next/navigation";
-import { Metadata } from "next";
-import { DeveloperDashboard } from "../_components/developerdashboard";
-import { PMDashboard } from "../_components/pmdashboard";
-import { ClientDashboard } from "../_components/ClientDashboard";
-import { PMSetupView } from "../_components/PMSetupView";
+import { auth } from "@/auth"
+import { redirect } from "next/navigation"
+import { prisma } from "@/lib/prisma"
+import { ExternalDashboard } from "@/components/dashboard/ExternalDashboard"
 
-export const metadata: Metadata = {
-	title: "External Dashboard | ProjectCentral",
-	description: "View your external project overview, statistics, and recent activity.",
-	keywords: ["dashboard", "external", "projects", "overview", "statistics", "management"],
-	openGraph: {
-		title: "External Dashboard | ProjectCentral",
-		description: "View your external project overview and statistics",
-		type: "website",
-	},
-}
+export default async function ClientDashboardPage() {
+	const session = await auth()
+	if (!session?.user) redirect("/signin")
 
-export default async function ExternalDashboardPage() {
-	const session = await auth();
+	// Fetch Client Dashboard Data
+	// For now, we assume the user sees projects they are part of or their company owns if they are a client
+	// But usually clients are added to projects via ProjectMember or they own the project via some relation?
+	// Schema says Project has `userId` (creator) and `members`.
+	// Also User has `totalSpent`.
 
-	if (!session?.user) {
-		redirect('/signin');
-	}
-
-	const userRole = session.user.role;
-
-	if (userRole === 'COMPANY_OWNER') {
-		const result = await getOwnerExternalDashboardData();
-		if (result.success && result.data) {
-			return <PMDashboard data={result.data} />;
-		} else {
-			// If no data or error, might show setup or empty state
-            // For external dashboard, if no company, it's same as internal
-			return <PMSetupView />;
+	const user = await prisma.user.findUnique({
+		where: { email: session.user.email! },
+		select: {
+			id: true,
+			name: true,
+			role: true,
+			totalSpent: true
 		}
+	})
+
+	if (!user) redirect("/signin")
+
+	// Fetch active projects for this user
+	const activeProjects = await prisma.project.findMany({
+		where: {
+			OR: [
+				{ userId: user.id }, // Created by user
+				{ members: { some: { userId: user.id } } } // Member of project
+			],
+			status: "IN_PROGRESS"
+		},
+		orderBy: {
+			updatedAt: 'desc'
+		},
+		select: {
+			id: true,
+			title: true,
+			description: true,
+			status: true,
+			startDate: true
+		}
+	})
+
+	// Mock pending invoices for now as Invoice model is not fully detailed in snippet provided (only mentioned in text)
+	// Or maybe use `paymentStatus` from Project?
+	const pendingInvoicesCount = await prisma.project.count({
+		where: {
+			OR: [
+				{ userId: user.id },
+				{ members: { some: { userId: user.id } } }
+			],
+			paymentStatus: "PENDING"
+		}
+	})
+
+	const activeProjectsCount = activeProjects.length
+
+	const stats = {
+		totalSpent: user.totalSpent || 0,
+		activeProjects: activeProjectsCount,
+		pendingInvoices: pendingInvoicesCount
 	}
 
-	if (userRole === 'TEAM_MEMBER') {
-		const data = await getDeveloperExternalDashboardData();
-		return <DeveloperDashboard data={data} userRole={userRole} />;
-	}
-
-	// Clients only see their own dashboard which is "External" by definition usually, 
-    // but if we want to be consistent, we can use the same ClientDashboard.
-    // However, clients usually don't have "Internal" vs "External" view of themselves.
-    // They just see their projects.
-	// Default to client dashboard
-	const data = await getClientDashboardData();
-	const dashboardMetrics = await getDashboardMetrics();
-
-	return <ClientDashboard data={data} dashboardMetrics={dashboardMetrics} />;
+	return <ExternalDashboard user={user} stats={stats} activeProjects={activeProjects} />
 }

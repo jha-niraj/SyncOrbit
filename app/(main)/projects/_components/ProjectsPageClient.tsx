@@ -15,7 +15,7 @@ import {
     ProjectVisibility, Status, TaskStatus, TeamType
 } from "@prisma/client"
 import Link from "next/link"
-import { CreateProjectSheet } from "@/components/projects/CreateProjectSheet"
+import { CreateProjectSheet } from "@/components/projects/createprojectsheet"
 
 // Team type icon mapping
 const TEAM_ICONS = {

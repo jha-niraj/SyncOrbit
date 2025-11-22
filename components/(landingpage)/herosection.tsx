@@ -1,226 +1,129 @@
-
-import React, { useEffect, useRef, useState } from "react";
-import { ArrowRight } from "lucide-react";
-import LottieAnimation from "./lottieanimation";
-import Image from "next/image";
+import React, { useEffect, useState } from "react";
+import { ArrowRight, ChevronRight, Play } from "lucide-react";
+import { motion } from "framer-motion";
 
 const Hero = () => {
-    const containerRef = useRef<HTMLDivElement>(null);
-    const imageRef = useRef<HTMLImageElement>(null);
-    const [lottieData, setLottieData] = useState<Record<string, unknown> | null>(null);
     const [isMobile, setIsMobile] = useState(false);
 
     useEffect(() => {
-        // Check if mobile on mount and when window resizes
         const checkMobile = () => {
             setIsMobile(window.innerWidth < 768);
         };
-
         checkMobile();
-        window.addEventListener('resize', checkMobile);
-
-        return () => window.removeEventListener('resize', checkMobile);
+        window.addEventListener("resize", checkMobile);
+        return () => window.removeEventListener("resize", checkMobile);
     }, []);
-
-    useEffect(() => {
-        fetch('/loop-header.lottie')
-            .then(response => response.json())
-            .then(data => setLottieData(data))
-            .catch(error => console.error("Error loading Lottie animation:", error));
-    }, []);
-
-    useEffect(() => {
-        // Skip effect on mobile
-        if (isMobile) return;
-
-        const handleMouseMove = (e: MouseEvent) => {
-            if (!containerRef.current || !imageRef.current) return;
-
-            const {
-                left,
-                top,
-                width,
-                height
-            } = containerRef.current.getBoundingClientRect();
-            const x = (e.clientX - left) / width - 0.5;
-            const y = (e.clientY - top) / height - 0.5;
-
-            imageRef.current.style.transform = `perspective(1000px) rotateY(${x * 2.5}deg) rotateX(${-y * 2.5}deg) scale3d(1.02, 1.02, 1.02)`;
-        };
-
-        const handleMouseLeave = () => {
-            if (!imageRef.current) return;
-            imageRef.current.style.transform = `perspective(1000px) rotateY(0deg) rotateX(0deg) scale3d(1, 1, 1)`;
-        };
-
-        const container = containerRef.current;
-        if (container) {
-            container.addEventListener("mousemove", handleMouseMove);
-            container.addEventListener("mouseleave", handleMouseLeave);
-        }
-
-        return () => {
-            if (container) {
-                container.removeEventListener("mousemove", handleMouseMove);
-                container.removeEventListener("mouseleave", handleMouseLeave);
-            }
-        };
-    }, [isMobile]);
-
-    useEffect(() => {
-        // Skip parallax on mobile
-        if (isMobile) return;
-
-        const handleScroll = () => {
-            const scrollY = window.scrollY;
-            const elements = document.querySelectorAll('.parallax');
-            elements.forEach(el => {
-                const element = el as HTMLElement;
-                const speed = parseFloat(element.dataset.speed || '0.1');
-                const yPos = -scrollY * speed;
-                element.style.setProperty('--parallax-y', `${yPos}px`);
-            });
-        };
-
-        window.addEventListener('scroll', handleScroll, { passive: true });
-        return () => window.removeEventListener('scroll', handleScroll);
-    }, [isMobile]);
 
     return (
         <section
-            className="overflow-hidden relative bg-cover"
+            className="relative overflow-hidden bg-white dark:bg-neutral-950 transition-colors duration-300 min-h-screen flex items-center justify-center"
             id="hero"
-            style={{
-                backgroundImage: 'url("/Header-background.webp")',
-                backgroundPosition: 'center 30%',
-                padding: isMobile ? '100px 12px 40px' : '120px 20px 60px'
-            }}
         >
-            <div className="absolute -top-[10%] -right-[5%] w-1/2 h-[70%] bg-pulse-gradient opacity-20 blur-3xl rounded-full"></div>
+            {/* --- Background Elements --- */}
 
-            <div className="container px-4 sm:px-6 lg:px-8" ref={containerRef}>
-                <div className="flex flex-col lg:flex-row gap-6 lg:gap-12 items-center">
-                    <div className="w-full lg:w-1/2">
-                        <div
-                            className="pulse-chip mb-3 sm:mb-6 opacity-0 animate-fade-in"
-                            style={{ animationDelay: "0.1s" }}
-                        >
-                            <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-pulse-500 text-white mr-2">01</span>
-                            <span>Project Management</span>
+            {/* 1. Subtle Grid Pattern */}
+            <div className="absolute inset-0 z-0 opacity-[0.03] dark:opacity-[0.05] pointer-events-none bg-[url('https://grainy-gradients.vercel.app/noise.svg')]"></div>
+            <div className="absolute inset-0 z-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none"></div>
+
+            {/* 2. Central Orange Glow/Gradient */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[500px] bg-[#FE5C02] rounded-full blur-[120px] opacity-10 dark:opacity-20 pointer-events-none"></div>
+
+            {/* 3. Top Spotlight Effect */}
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[500px] bg-gradient-to-b from-white via-white/50 to-transparent dark:from-neutral-950 dark:via-neutral-950/50 dark:to-transparent z-10 pointer-events-none"></div>
+
+
+            {/* --- Main Content --- */}
+            <div className="container max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-20 text-center">
+
+                {/* Badge */}
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5 }}
+                    className="flex justify-center mb-8"
+                >
+                    <div className="inline-flex items-center gap-2 pl-2 pr-4 py-1.5 rounded-full bg-white/80 dark:bg-neutral-900/80 border border-gray-200 dark:border-neutral-800 backdrop-blur-sm shadow-sm hover:border-orange-300 dark:hover:border-orange-900/50 transition-colors cursor-pointer group">
+                        <span className="flex items-center justify-center px-2 py-0.5 rounded-full bg-orange-100 dark:bg-orange-900/30 text-[#FE5C02] text-[10px] font-bold uppercase tracking-wide">
+                            New
+                        </span>
+                        <span className="text-sm font-medium text-gray-600 dark:text-gray-300 flex items-center gap-1">
+                            ProjectCentral 2.0 is live
+                            <ChevronRight className="w-3 h-3 text-gray-400 group-hover:text-[#FE5C02] transition-colors" />
+                        </span>
+                    </div>
+                </motion.div>
+
+                {/* Headline */}
+                <motion.h1
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: 0.1 }}
+                    className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold tracking-tight text-gray-900 dark:text-white leading-[1.1] mb-8"
+                >
+                    Plan. Track. <br className="hidden sm:block" />
+                    Deliver <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FE5C02] to-orange-600">Results.</span>
+                </motion.h1>
+
+                {/* Subtext */}
+                <motion.p
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: 0.2 }}
+                    className="mt-6 text-xl sm:text-2xl text-gray-600 dark:text-gray-400 leading-relaxed max-w-2xl mx-auto mb-10"
+                >
+                    A single workspace to plan, track and ship work. Built for teams that want fewer meetings and more focus.
+                </motion.p>
+
+                {/* Buttons */}
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: 0.3 }}
+                    className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6"
+                >
+                    <a
+                        href="#get-access"
+                        className="w-full sm:w-auto group flex items-center justify-center px-8 py-4 text-base font-bold text-white transition-all bg-[#FE5C02] rounded-full hover:bg-orange-600 hover:scale-105 shadow-lg shadow-orange-500/25"
+                    >
+                        Get Early Access
+                        <ArrowRight className="ml-2 w-5 h-5 transition-transform group-hover:translate-x-1" />
+                    </a>
+
+                    <a
+                        href="#demo"
+                        className="w-full sm:w-auto group flex items-center justify-center px-8 py-4 text-base font-bold text-gray-700 dark:text-white bg-white dark:bg-neutral-800 border border-gray-200 dark:border-neutral-700 rounded-full hover:bg-gray-50 dark:hover:bg-neutral-700 transition-all hover:scale-105"
+                    >
+                        <Play className="mr-2 w-4 h-4 fill-current opacity-60" />
+                        Watch Video
+                    </a>
+                </motion.div>
+
+                {/* Trust / Footer Text */}
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.5, delay: 0.5 }}
+                    className="mt-12 flex flex-col items-center justify-center gap-4"
+                >
+                    <div className="flex -space-x-2">
+                        <div className="w-8 h-8 rounded-full border-2 border-white dark:border-neutral-950 bg-gray-200 overflow-hidden">
+                            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=64&h=64" alt="User" />
                         </div>
-
-                        <h1
-                            className="section-title text-3xl sm:text-4xl lg:text-5xl xl:text-6xl leading-tight opacity-0 animate-fade-in"
-                            style={{ animationDelay: "0.3s" }}
-                        >
-                            Transform How Your Team<br className="hidden sm:inline" />Delivers — Faster, Clearer, Together
-                        </h1>
-
-                        <p
-                            style={{ animationDelay: "0.5s" }}
-                            className="section-subtitle mt-3 sm:mt-6 mb-4 sm:mb-8 leading-relaxed opacity-0 animate-fade-in text-gray-950 font-normal text-base sm:text-lg text-left"
-                        >
-                            A single workspace to plan, track and ship work — built for teams that want fewer meetings and more results.
-                        </p>
-
-                        <p
-                            style={{ animationDelay: "0.6s" }}
-                            className="mt-3 mb-6 leading-relaxed opacity-0 animate-fade-in text-gray-700 font-normal text-sm sm:text-base text-left"
-                        >
-                            Plan with clarity. Collaborate in real time. Ship with confidence. ProjectCentral turns project chaos into a smooth system so your team spends less time coordinating and more time building.
-                        </p>
-
-                        <div
-                            className="flex flex-col sm:flex-row gap-4 opacity-0 animate-fade-in"
-                            style={{ animationDelay: "0.7s" }}
-                        >
-                            <div className="flex flex-col sm:flex-row gap-4 w-full">
-                                <a
-                                    href="#get-access"
-                                    className="flex items-center justify-center group w-full sm:w-auto text-center"
-                                    style={{
-                                        backgroundColor: '#FE5C02',
-                                        borderRadius: '1440px',
-                                        boxSizing: 'border-box',
-                                        color: '#FFFFFF',
-                                        cursor: 'pointer',
-                                        fontSize: '14px',
-                                        lineHeight: '20px',
-                                        padding: '16px 24px',
-                                        border: '1px solid white',
-                                    }}
-                                >
-                                    Get Early Access
-                                    <ArrowRight className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" />
-                                </a>
-                                <a
-                                    href="#features"
-                                    className="flex items-center justify-center group w-full sm:w-auto text-center border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors"
-                                    style={{
-                                        borderRadius: '1440px',
-                                        boxSizing: 'border-box',
-                                        cursor: 'pointer',
-                                        fontSize: '14px',
-                                        lineHeight: '20px',
-                                        padding: '16px 24px',
-                                    }}
-                                >
-                                    See Live Demo
-                                    <ArrowRight className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" />
-                                </a>
-                            </div>
-
-                            <div
-                                className="text-center text-sm text-gray-600 opacity-0 animate-fade-in mt-4"
-                                style={{ animationDelay: "0.8s" }}
-                            >
-                                14-day free trial • No credit card required • Instant onboarding
-                            </div>
-
-                            <div
-                                className="flex flex-wrap items-center justify-center gap-2 sm:gap-4 mt-4 text-xs text-gray-500 opacity-0 animate-fade-in"
-                                style={{ animationDelay: "0.9s" }}
-                            >
-                                <span>Trusted by startups, agencies & teams</span>
-                                <span>•</span>
-                                <span>Integrates with Slack, GitHub, Figma, Zoom</span>
-                            </div>
+                        <div className="w-8 h-8 rounded-full border-2 border-white dark:border-neutral-950 bg-gray-200 overflow-hidden">
+                            <img src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=64&h=64" alt="User" />
+                        </div>
+                        <div className="w-8 h-8 rounded-full border-2 border-white dark:border-neutral-950 bg-gray-200 overflow-hidden">
+                            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=64&h=64" alt="User" />
+                        </div>
+                        <div className="w-8 h-8 rounded-full border-2 border-white dark:border-neutral-950 bg-gray-100 dark:bg-neutral-800 flex items-center justify-center text-[10px] font-bold text-gray-600 dark:text-gray-300">
+                            +2k
                         </div>
                     </div>
-                    <div className="w-full lg:w-1/2 relative mt-6 lg:mt-0">
-                        {
-                        lottieData ? (
-                            <div className="relative z-10 animate-fade-in" style={{ animationDelay: "0.9s" }}>
-                                <LottieAnimation
-                                    animationPath={lottieData}
-                                    className="w-full h-auto max-w-lg mx-auto"
-                                    loop={true}
-                                    autoplay={true}
-                                />
-                            </div>
-                        ) : (
-                            <>
-                                <div className="absolute inset-0 bg-dark-900 rounded-2xl sm:rounded-3xl -z-10 shadow-xl"></div>
-                                <div className="relative transition-all duration-500 ease-out overflow-hidden rounded-2xl sm:rounded-3xl shadow-2xl">
-                                    <Image
-                                        ref={imageRef}
-                                        src="/lovable-uploads/5663820f-6c97-4492-9210-9eaa1a8dc415.png"
-                                        alt="Atlas Robot"
-                                        className="w-full h-auto object-cover transition-transform duration-500 ease-out"
-                                        style={{ transformStyle: 'preserve-3d' }}
-                                        width={48}
-                                        height={48}
-                                    />
-                                    <div className="absolute inset-0" style={{ backgroundImage: 'url("/hero-image.jpg")', backgroundSize: 'cover', backgroundPosition: 'center', mixBlendMode: 'overlay', opacity: 0.5 }}></div>
-                                </div>
-                            </>
-                        )
-                        }
+                    <div className="text-sm text-gray-500 dark:text-gray-400">
+                        Join 2,000+ teams shipping faster
                     </div>
-                </div>
+                </motion.div>
             </div>
-
-            <div className="hidden lg:block absolute bottom-0 left-1/4 w-64 h-64 bg-pulse-100/30 rounded-full blur-3xl -z-10 parallax" data-speed="0.05"></div>
         </section>
     );
 };

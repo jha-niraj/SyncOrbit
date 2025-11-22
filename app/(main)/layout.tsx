@@ -89,8 +89,7 @@ const Layout = ({ children }: LayoutProps) => {
 				)
 			}
 			<div className={cn(
-				"flex-1 flex flex-col transition-all duration-300",
-				!isMobile && (sidebarCollapsed ? "ml-16" : "ml-56")
+				"flex-1 flex flex-col transition-all duration-300 ml-20",
 			)}>
 				<main className="flex-1 overflow-auto">
 					<div className="h-full">
