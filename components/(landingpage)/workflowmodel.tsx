@@ -170,7 +170,7 @@ const WorkflowSimulation = () => {
     const [activeMode, setActiveMode] = useState<ModeId>("agency"); // Default middle one
 
     return (
-        <section className="py-24 bg-white dark:bg-neutral-950 overflow-hidden" id="workflow-simulation">
+        <section id="workflow" className="py-24 bg-white dark:bg-neutral-950 overflow-hidden">
             <div className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 
                 {/* Section Header */}

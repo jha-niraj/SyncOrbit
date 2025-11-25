@@ -1,5 +1,6 @@
 import React from "react";
 import { MoveRight } from "lucide-react";
+import Link from "next/link";
 
 const SpecsSection = () => {
     return (
@@ -22,10 +23,10 @@ const SpecsSection = () => {
                         </span>
                     </h2>
                     <div className="mt-12 flex flex-col sm:flex-row items-start sm:items-center gap-8">
-                        <button className="group inline-flex items-center text-lg font-semibold text-orange-600 dark:text-orange-500">
+                        <Link href="/papers" className="group inline-flex items-center text-lg font-semibold text-orange-600 dark:text-orange-500">
                             Read the technical whitepaper
                             <MoveRight className="ml-2 w-5 h-5 transition-transform group-hover:translate-x-1" />
-                        </button>
+                        </Link>
                         <div className="hidden sm:block h-px w-12 bg-gray-300 dark:bg-neutral-700"></div>
                         <p className="text-sm text-gray-500 dark:text-gray-400 max-w-xs">
                             Trusted by 10,000+ engineering and product teams worldwide.

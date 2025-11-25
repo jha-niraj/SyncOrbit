@@ -44,7 +44,7 @@ const HowItWorks = () => {
     }, []);
 
     return (
-        <section className="py-24 bg-white dark:bg-neutral-950 relative overflow-hidden" id="how-it-works">
+        <section className="py-24 bg-white dark:bg-neutral-950 relative overflow-hidden" id="howitworks">
             <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
                 <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-orange-500/5 rounded-full blur-[120px]"></div>
                 <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-blue-500/5 rounded-full blur-[120px]"></div>

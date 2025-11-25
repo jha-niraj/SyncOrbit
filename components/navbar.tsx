@@ -19,8 +19,10 @@ import {
 const menuItems = [
     { name: 'Features', href: '#features' },
     { name: 'Solutions', href: '#solutions' },
+    { name: 'WorkFlow', href: '#workflow' },
+    { name: 'How It Works', href: '#howitworks' },
     { name: 'Pricing', href: '#pricing' },
-    { name: 'About', href: '#about' },
+    { name: 'AboutUs', href: '#about' },
 ]
 
 export const Navbar = () => {
@@ -65,7 +67,7 @@ export const Navbar = () => {
                 className="fixed z-50 w-full px-2 group">
                 <div className={cn(
                     'mx-auto mt-2 max-w-6xl px-6 transition-all duration-300 lg:px-12',
-                    isScrolled && 'bg-background/80 max-w-4xl rounded-2xl border backdrop-blur-lg lg:px-5'
+                    isScrolled && 'bg-background/80 max-w-4xl rounded-2xl backdrop-blur-lg lg:px-5'
                 )}>
                     <div className="relative flex flex-wrap items-center justify-between gap-6 py-3 lg:gap-0 lg:py-4">
                         <div className="flex w-full justify-between lg:w-auto">

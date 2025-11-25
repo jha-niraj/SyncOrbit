@@ -35,7 +35,8 @@ const publicRoutes = [
 	'/projectsdelivered',
 	'/pricing',
 	'/terms',
-	'/privacy'
+	'/privacy',
+	'/papers'
 ]
 
 const apiRoutes = [
