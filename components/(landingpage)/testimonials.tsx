@@ -85,31 +85,35 @@ const TestimonialsColumn = (props: {
                 }}
                 className="flex flex-col gap-6 pb-6"
             >
-                {[...new Array(2)].map((_, index) => (
-                    <React.Fragment key={index}>
-                        {props.testimonials.map(({ text, image, name, role }, i) => (
-                            <div
-                                key={i}
-                                className="p-8 rounded-3xl border border-gray-100 dark:border-neutral-800 bg-white dark:bg-neutral-900 shadow-lg dark:shadow-none"
-                            >
-                                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-6">"{text}"</p>
-                                <div className="flex items-center gap-3">
-                                    <Image
-                                        src={image}
-                                        alt={name}
-                                        width={40}
-                                        height={40}
-                                        className="h-10 w-10 rounded-full object-cover border border-gray-200 dark:border-neutral-700"
-                                    />
-                                    <div className="flex flex-col">
-                                        <div className="font-bold text-gray-900 dark:text-white text-sm">{name}</div>
-                                        <div className="text-gray-500 dark:text-gray-500 text-xs font-medium">{role}</div>
+                {
+                    [...new Array(2)].map((_, index) => (
+                        <React.Fragment key={index}>
+                            {
+                                props.testimonials.map(({ text, image, name, role }, i) => (
+                                    <div
+                                        key={i}
+                                        className="p-8 rounded-3xl border border-gray-100 dark:border-neutral-800 bg-white dark:bg-neutral-900 shadow-lg dark:shadow-none"
+                                    >
+                                        <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-6">"{text}"</p>
+                                        <div className="flex items-center gap-3">
+                                            <Image
+                                                src={image}
+                                                alt={name}
+                                                width={40}
+                                                height={40}
+                                                className="h-10 w-10 rounded-full object-cover border border-gray-200 dark:border-neutral-700"
+                                            />
+                                            <div className="flex flex-col">
+                                                <div className="font-bold text-gray-900 dark:text-white text-sm">{name}</div>
+                                                <div className="text-gray-500 dark:text-gray-500 text-xs font-medium">{role}</div>
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
-                            </div>
-                        ))}
-                    </React.Fragment>
-                ))}
+                                ))
+                            }
+                        </React.Fragment>
+                    ))
+                }
             </motion.div>
         </div>
     );
@@ -119,14 +123,11 @@ const Testimonials = () => {
     return (
         <section className="bg-white dark:bg-neutral-950 py-24 relative transition-colors duration-300" id="testimonials">
             <div className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-
-                {/* Header */}
                 <div className="flex flex-col items-center justify-center max-w-3xl mx-auto mb-12 text-center">
                     <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 text-sm font-medium mb-6">
                         <span className="flex items-center justify-center w-5 h-5 rounded-full bg-orange-500 text-white text-xs">04</span>
                         <span>Testimonials</span>
                     </div>
-
                     <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-gray-900 dark:text-white mb-4">
                         Trusted by teams who ship.
                     </h2>
@@ -134,8 +135,6 @@ const Testimonials = () => {
                         From startups to enterprises, see how teams are using ProjectCentral to deliver faster.
                     </p>
                 </div>
-
-                {/* Columns Container with Masking */}
                 <div className="relative flex justify-center gap-6 [mask-image:linear-gradient(to_bottom,transparent,black_20%,black_80%,transparent)] max-h-[700px] overflow-hidden">
                     <TestimonialsColumn testimonials={firstColumn} duration={15} />
                     <TestimonialsColumn testimonials={secondColumn} className="hidden md:block" duration={19} />

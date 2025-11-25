@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { toast } from "sonner";
-import { Check, ArrowRight } from "lucide-react";
+import {
+    ArrowRight, Server, Shield, Zap, Activity, Globe
+} from "lucide-react";
 
 const DetailsSection = () => {
     const [formData, setFormData] = useState({
@@ -28,124 +30,99 @@ const DetailsSection = () => {
     };
 
     return (
-        <section id="details" className="w-full bg-white dark:bg-neutral-950 py-20 transition-colors duration-300">
+        <section id="details" className="w-full bg-white dark:bg-neutral-950 py-12 sm:py-24">
             <div className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
+                <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 lg:gap-8">
+                    <div className="relative group overflow-hidden rounded-[2rem] bg-[#0A0A0A] border border-neutral-800 p-8 sm:p-12 flex flex-col justify-between min-h-[500px]">
+                        <div className="absolute top-0 right-0 -mr-20 -mt-20 w-80 h-80 bg-orange-500/20 blur-[100px] rounded-full pointer-events-none"></div>
 
-                    {/* Left Card - Specs */}
-                    <div className="flex flex-col rounded-2xl overflow-hidden shadow-2xl dark:shadow-orange-900/10 bg-white dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800">
-                        {/* Header Image/Gradient Area */}
-                        <div className="relative h-48 sm:h-64 p-8 flex items-end bg-gradient-to-br from-gray-900 to-black">
-                            <div className="absolute inset-0 bg-[url('/background-section3.png')] bg-cover bg-center opacity-40 mix-blend-overlay"></div>
-                            <div className="absolute inset-0 bg-gradient-to-t from-neutral-900 to-transparent"></div>
-                            <div className="relative z-10">
-                                <div className="inline-flex items-center justify-center px-3 py-1 mb-3 rounded-full bg-orange-500/20 border border-orange-500/30 backdrop-blur-md text-orange-300 text-xs font-medium">
-                                    Technical Specs
+                        <div className="relative z-10">
+                            <div className="flex items-center gap-3 mb-6">
+                                <div className="p-2 rounded-lg bg-neutral-900 border border-neutral-800">
+                                    <Activity className="w-5 h-5 text-orange-500" />
                                 </div>
-                                <h2 className="text-3xl font-bold text-white">
-                                    System Metrics
-                                </h2>
+                                <h3 className="text-xl font-medium text-white">System Performance</h3>
                             </div>
+                            <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4 leading-tight">
+                                Precision engineering <br />
+                                <span className="text-neutral-500">meets adaptive intelligence.</span>
+                            </h2>
                         </div>
-
-                        {/* Content Area */}
-                        <div className="flex-1 p-8">
-                            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-8">
-                                Precision engineering meets adaptive intelligence
-                            </h3>
-
-                            <div className="space-y-5">
-                                {[
-                                    { label: "Uptime Guarantee", value: "99.99%" },
-                                    { label: "Concurrent Users", value: "Unlimited" },
-                                    { label: "API Response", value: "< 50ms" },
-                                    { label: "Data Retention", value: "Unlimited" },
-                                    { label: "Encryption", value: "AES-256" },
+                        <div className="relative z-10 grid grid-cols-1 sm:grid-cols-2 gap-4 mt-8">
+                            {
+                                [
+                                    { icon: <Globe className="w-4 h-4" />, label: "Uptime", value: "99.99%" },
+                                    { icon: <Server className="w-4 h-4" />, label: "Latency", value: "< 50ms" },
+                                    { icon: <Shield className="w-4 h-4" />, label: "Security", value: "AES-256" },
+                                    { icon: <Zap className="w-4 h-4" />, label: "Updates", value: "Real-time" },
                                 ].map((item, idx) => (
-                                    <div key={idx} className="flex items-center gap-4 group">
-                                        <div className="w-8 h-8 rounded-full bg-orange-100 dark:bg-orange-900/20 flex items-center justify-center flex-shrink-0 text-orange-600 dark:text-orange-500 group-hover:scale-110 transition-transform">
-                                            <Check className="w-4 h-4" />
+                                    <div key={idx} className="p-4 rounded-xl bg-neutral-900/50 border border-neutral-800 hover:border-neutral-700 transition-colors">
+                                        <div className="flex items-center gap-2 text-neutral-400 mb-2 text-sm">
+                                            {item.icon}
+                                            {item.label}
                                         </div>
-                                        <div className="flex-1 flex justify-between items-center p-3 rounded-xl bg-gray-50 dark:bg-neutral-800/50 border border-gray-100 dark:border-neutral-800 transition-colors hover:border-orange-200 dark:hover:border-orange-900/30">
-                                            <span className="font-medium text-gray-600 dark:text-gray-400">{item.label}</span>
-                                            <span className="font-bold text-gray-900 dark:text-white">{item.value}</span>
-                                        </div>
+                                        <div className="text-2xl font-bold text-white tracking-tight">{item.value}</div>
                                     </div>
-                                ))}
-                            </div>
+                                ))
+                            }
                         </div>
                     </div>
-
-                    {/* Right Card - Contact Form */}
-                    <div className="flex flex-col rounded-2xl overflow-hidden shadow-2xl dark:shadow-orange-900/10 bg-white dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800">
-                        {/* Header Gradient Area */}
-                        <div className="relative h-48 sm:h-64 p-8 flex flex-col items-start justify-end bg-[#FE5C02]">
-                            <div className="absolute inset-0 bg-[url('/background-section1.png')] bg-cover bg-center opacity-20 mix-blend-overlay"></div>
-                            {/* Abstract shapes */}
-                            <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
-
-                            <div className="relative z-10">
-                                <div className="inline-block px-4 py-1 border border-white/40 bg-white/10 backdrop-blur-sm text-white rounded-full text-xs font-medium mb-4">
-                                    Request a demo
-                                </div>
-                                <h2 className="text-3xl font-bold text-white">
-                                    See it for yourself
-                                </h2>
+                    <div className="relative overflow-hidden rounded-[2rem] bg-gray-50 dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 p-8 sm:p-12">
+                        <div className="mb-8">
+                            <div className="inline-block px-3 py-1 rounded-full bg-white dark:bg-neutral-800 border border-gray-200 dark:border-neutral-700 text-sm font-medium text-gray-900 dark:text-white mb-4 shadow-sm">
+                                Get Early Access
                             </div>
+                            <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
+                                Ready to upgrade your workflow?
+                            </h2>
                         </div>
-
-                        {/* Form Content */}
-                        <div className="flex-1 p-8 bg-white dark:bg-neutral-900">
-                            <form onSubmit={handleSubmit} className="space-y-5">
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Full Name</label>
+                        <form onSubmit={handleSubmit} className="space-y-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <label className="text-xs font-semibold uppercase text-gray-500 dark:text-gray-400">Name</label>
                                     <input
                                         type="text"
                                         name="fullName"
                                         value={formData.fullName}
                                         onChange={handleChange}
-                                        placeholder="John Doe"
-                                        className="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-neutral-800 border border-gray-200 dark:border-neutral-700 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500/50 focus:border-orange-500 transition-all"
+                                        className="w-full px-4 py-3 rounded-xl bg-white dark:bg-neutral-950 border border-gray-200 dark:border-neutral-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all placeholder:text-gray-400"
+                                        placeholder="Jordan Smith"
                                         required
                                     />
                                 </div>
-
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Work Email</label>
+                                <div className="space-y-2">
+                                    <label className="text-xs font-semibold uppercase text-gray-500 dark:text-gray-400">Email</label>
                                     <input
                                         type="email"
                                         name="email"
                                         value={formData.email}
                                         onChange={handleChange}
-                                        placeholder="john@company.com"
-                                        className="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-neutral-800 border border-gray-200 dark:border-neutral-700 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500/50 focus:border-orange-500 transition-all"
+                                        className="w-full px-4 py-3 rounded-xl bg-white dark:bg-neutral-950 border border-gray-200 dark:border-neutral-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all placeholder:text-gray-400"
+                                        placeholder="jordan@acme.com"
                                         required
                                     />
                                 </div>
-
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Company Name</label>
-                                    <input
-                                        type="text"
-                                        name="company"
-                                        value={formData.company}
-                                        onChange={handleChange}
-                                        placeholder="Acme Inc. (Optional)"
-                                        className="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-neutral-800 border border-gray-200 dark:border-neutral-700 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500/50 focus:border-orange-500 transition-all"
-                                    />
-                                </div>
-
-                                <div className="pt-2">
-                                    <button
-                                        type="submit"
-                                        className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-[#FE5C02] hover:bg-orange-600 text-white font-bold rounded-xl transition-all duration-300 shadow-lg shadow-orange-500/25 hover:shadow-orange-500/40 transform hover:-translate-y-0.5"
-                                    >
-                                        Request Access
-                                        <ArrowRight className="w-4 h-4" />
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-xs font-semibold uppercase text-gray-500 dark:text-gray-400">Company (Optional)</label>
+                                <input
+                                    type="text"
+                                    name="company"
+                                    value={formData.company}
+                                    onChange={handleChange}
+                                    className="w-full px-4 py-3 rounded-xl bg-white dark:bg-neutral-950 border border-gray-200 dark:border-neutral-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none transition-all placeholder:text-gray-400"
+                                    placeholder="Acme Inc."
+                                />
+                            </div>
+                            <button
+                                type="submit"
+                                className="mt-4 w-full flex items-center justify-center gap-2 px-8 py-4 bg-gray-900 dark:bg-white hover:bg-orange-600 dark:hover:bg-orange-500 text-white dark:text-black hover:text-white dark:hover:text-white font-bold rounded-xl transition-all duration-300 group"
+                            >
+                                Request Demo Access
+                                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                            </button>
+                            <p className="text-center text-xs text-gray-500 mt-4">No credit card required. Free 14-day trial.</p>
+                        </form>
                     </div>
                 </div>
             </div>
