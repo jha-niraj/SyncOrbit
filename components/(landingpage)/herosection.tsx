@@ -43,7 +43,7 @@ const Hero = () => {
                             New
                         </span>
                         <span className="text-sm font-medium text-gray-600 dark:text-gray-300 flex items-center gap-1">
-                            SyncOrbit 2.0 is live
+                            SyncOrbit 1.0 is live
                             <ChevronRight className="w-3 h-3 text-gray-400 group-hover:text-[#FE5C02] transition-colors" />
                         </span>
                     </div>
@@ -73,14 +73,14 @@ const Hero = () => {
                 >
                     <Link
                         href="#get-access"
-                        className="w-full sm:w-auto group flex items-center justify-center px-8 py-4 text-base font-bold text-white transition-all bg-[#FE5C02] rounded-full hover:bg-orange-600 hover:scale-105 shadow-lg shadow-orange-500/25"
+                        className="w-full sm:w-auto group flex items-center justify-center px-8 py-4 text-base font-bold text-white transition-all duration-200 bg-[#FE5C02] rounded-2xl hover:bg-orange-600 hover:scale-105 shadow-lg shadow-orange-500/25"
                     >
                         Get Early Access
                         <ArrowRight className="ml-2 w-5 h-5 transition-transform group-hover:translate-x-1" />
                     </Link>
                     <Link
                         href="#demo"
-                        className="w-full sm:w-auto group flex items-center justify-center px-8 py-4 text-base font-bold text-gray-700 dark:text-white bg-white dark:bg-neutral-800 border border-gray-200 dark:border-neutral-700 rounded-full hover:bg-gray-50 dark:hover:bg-neutral-700 transition-all hover:scale-105"
+                        className="w-full sm:w-auto group flex items-center justify-center px-8 py-4 text-base font-bold text-gray-700 dark:text-white bg-white dark:bg-neutral-800 border border-gray-200 dark:border-neutral-700 rounded-2xl hover:bg-gray-50 dark:hover:bg-neutral-700 transition-all hover:scale-105"
                     >
                         <Play className="mr-2 w-4 h-4 fill-current opacity-60" />
                         Watch Video

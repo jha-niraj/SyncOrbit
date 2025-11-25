@@ -91,7 +91,7 @@ const HumanoidSection = () => {
         <div ref={sectionRef} className="relative h-[300vh] bg-white dark:bg-neutral-950">
             <div className="sticky top-0 h-screen flex flex-col justify-center overflow-hidden py-4 sm:py-10">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex flex-col w-full">
-                    <div className="mb-6 md:mb-10 flex flex-col items-center text-center z-10">
+                    <div className="mb-10 flex flex-col items-center text-center z-10">
                         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 text-sm font-medium mb-6 border border-neutral-200 dark:border-neutral-700">
                             <span className="relative flex h-2 w-2">
                                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
@@ -99,7 +99,7 @@ const HumanoidSection = () => {
                             </span>
                             <span>Workflow Benefits</span>
                         </div>
-                        <h2 className="text-3xl sm:text-4xl md:text-6xl font-bold text-gray-900 dark:text-white mb-6 tracking-tight">
+                        <h2 className="text-3xl sm:text-4xl md:text-6xl font-bold text-gray-900 dark:text-white mb-3 tracking-tight">
                             Why teams switch to <span className="text-orange-500">SyncOrbit</span>
                         </h2>
                         <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl leading-relaxed">

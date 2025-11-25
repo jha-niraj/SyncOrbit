@@ -22,7 +22,7 @@ const MadeByShunyaTech = () => {
                     <div className="relative z-10 p-8 sm:p-12 flex flex-col items-center">
                         <div className="mb-8 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/10 text-white">
                             <Image
-                                src="/logo.svg"
+                                src="/syncorbit.png"
                                 alt="ShunyaTech Logo"
                                 className="h-5 w-auto invert"
                                 height={20}

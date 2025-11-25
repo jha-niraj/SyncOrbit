@@ -18,11 +18,10 @@ import {
 
 const menuItems = [
     { name: 'Features', href: '#features' },
-    { name: 'Solutions', href: '#solutions' },
     { name: 'WorkFlow', href: '#workflow' },
     { name: 'How It Works', href: '#howitworks' },
     { name: 'Pricing', href: '#pricing' },
-    { name: 'AboutUs', href: '#about' },
+    { name: 'AboutUs', href: '/aboutus' },
 ]
 
 export const Navbar = () => {
