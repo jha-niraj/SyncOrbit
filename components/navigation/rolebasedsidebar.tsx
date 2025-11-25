@@ -15,7 +15,7 @@ import {
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import {
-    getRecentNotifications, markNotificationAsRead, type Notification
+    getRecentNotifications, markNotificationAsRead
 } from "@/actions/notifications.action";
 import { format } from "date-fns";
 import { Role } from "@prisma/client";

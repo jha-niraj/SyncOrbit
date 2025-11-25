@@ -2,216 +2,150 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Home, ArrowRight } from "lucide-react";
+import { Home, ArrowRight, Rocket, Compass } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Navbar } from "@/components/navbar";
+import Footer from "@/components/footer";
+import SmoothScroll from "@/components/smoothscroll";
+import Image from "next/image";
 
-export default function NotFound() {
-    return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 px-4">
-            <div className="max-w-3xl w-full text-center">
-                <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ duration: 0.5 }}
-                    className="space-y-12"
-                >
-                    <motion.div
-                        initial={{ y: -20 }}
-                        animate={{ y: 0 }}
-                        transition={{
-                            repeat: Infinity,
-                            repeatType: "reverse",
-                            duration: 2,
-                            ease: "easeInOut",
-                        }}
-                        className="w-full max-w-md mx-auto"
-                    >
-                        <NotFoundSVG />
-                    </motion.div>
-                    <div className="space-y-6">
-                        <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.3, duration: 0.7 }}
-                        >
-                            <h1 className="text-5xl md:text-7xl font-bold">
-                                <motion.span
-                                    initial={{ scale: 0.8 }}
-                                    animate={{ scale: [0.8, 1.2, 1] }}
-                                    transition={{ delay: 0.6, duration: 0.5 }}
-                                    className="inline-block text-gray-900 dark:text-gray-100"
-                                >
-                                    404
-                                </motion.span>
-                            </h1>
-                            <motion.h2
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                transition={{ delay: 0.8, duration: 0.5 }}
-                                className="text-2xl md:text-3xl font-semibold mt-2 text-gray-800 dark:text-gray-200"
-                            >
-                                Page Not Found
-                            </motion.h2>
-                        </motion.div>
-                        <motion.p
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            transition={{ delay: 1, duration: 0.5 }}
-                            className="max-w-lg mx-auto text-lg text-gray-600 dark:text-gray-400"
-                        >
-                            Oops! The page you&apos;re looking for seems to have wandered off into
-                            the digital wilderness. Let&apos;s get you back on track.
-                        </motion.p>
-                        <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 1.2, duration: 0.5 }}
-                            className="pt-4"
-                        >
-                            <motion.div
-                                whileHover={{ scale: 1.05 }}
-                                whileTap={{ scale: 0.95 }}
-                            >
-                                <Button
-                                    asChild
-                                    size="lg"
-                                    className="bg-gradient-to-r from-gray-900 to-gray-800 hover:from-gray-800 hover:to-gray-700 dark:from-gray-100 dark:to-gray-200 dark:hover:from-gray-200 dark:hover:to-gray-300 dark:text-gray-900 hover:shadow-lg transition-all duration-300 px-8 py-6 text-lg"
-                                >
-                                    <Link href="/" className="flex items-center gap-2">
-                                        <Home className="h-5 w-5" />
-                                        <span>Back to Home</span>
-                                        <motion.div
-                                            animate={{ x: [0, 5, 0] }}
-                                            transition={{
-                                                repeat: Infinity,
-                                                repeatType: "loop",
-                                                duration: 1.5,
-                                                ease: "easeInOut",
-                                            }}
-                                        >
-                                            <ArrowRight className="h-5 w-5" />
-                                        </motion.div>
-                                    </Link>
-                                </Button>
-                            </motion.div>
-                        </motion.div>
-                    </div>
-                </motion.div>
-            </div>
-        </div>
-    );
-}
-
-function NotFoundSVG() {
-    const circleVariants = {
-        hidden: { opacity: 0, scale: 0 },
-        visible: { opacity: 1, scale: 1 },
+const LostInSpaceSVG = () => {
+    const orbitVariants = {
+        animate: {
+            rotate: 360,
+            transition: {
+                duration: 20,
+                repeat: Infinity,
+                ease: "linear"
+            }
+        }
     };
 
-    const pathVariants = {
-        hidden: { pathLength: 0, opacity: 0 },
-        visible: {
-            pathLength: 1,
-            opacity: 1,
-            transition: { duration: 2, ease: "easeInOut" },
-        },
+    const floatVariants = {
+        animate: {
+            y: [-10, 10, -10],
+            rotate: [-5, 5, -5],
+            transition: {
+                duration: 6,
+                repeat: Infinity,
+                ease: "easeInOut"
+            }
+        }
     };
 
     return (
-        <motion.svg
-            viewBox="0 0 800 400"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            className="w-full h-auto text-gray-800 dark:text-gray-200"
-        >
-            <motion.circle
-                cx="400"
-                cy="200"
-                r="180"
-                stroke="currentColor"
-                strokeWidth="2"
-                variants={pathVariants}
-                initial="hidden"
-                animate="visible"
-            />
-
-            <motion.circle
-                cx="400"
-                cy="200"
-                r="150"
-                stroke="currentColor"
-                strokeWidth="2"
-                variants={pathVariants}
-                initial="hidden"
-                animate="visible"
-                transition={{ delay: 0.3 }}
-            />
+        <div className="relative w-full max-w-md mx-auto h-[300px] md:h-[400px] flex items-center justify-center">
+            <motion.svg
+                viewBox="0 0 400 400"
+                className="absolute inset-0 w-full h-full text-neutral-200 dark:text-neutral-800"
+                variants={orbitVariants}
+                animate="animate"
+            >
+                <circle cx="200" cy="200" r="150" fill="none" stroke="currentColor" strokeWidth="1" strokeDasharray="10 10" opacity="0.5" />
+                <circle cx="200" cy="200" r="100" fill="none" stroke="currentColor" strokeWidth="1" strokeDasharray="5 5" opacity="0.3" />
+            </motion.svg>
+            <motion.div variants={floatVariants} animate="animate" className="relative z-10 flex flex-col items-center">
+                <div className="relative w-32 h-32 md:w-40 md:h-40 mb-6 opacity-80 grayscale">
+                    <Image src="/syncorbit.png" alt="SyncOrbit Logo" fill className="object-contain" />
+                </div>
+                <div className="flex items-center gap-4 text-orange-500/70 dark:text-orange-400/70">
+                    <Compass className="w-8 h-8" />
+                    <span className="text-sm font-mono tracking-widest uppercase">Coordinates Lost</span>
+                    <Rocket className="w-8 h-8 rotate-45" />
+                </div>
+            </motion.div>
             {
-                [1, 2, 3, 4, 5].map((i) => (
-                    <motion.circle
+                [...Array(5)].map((_, i) => (
+                    <motion.div
                         key={i}
-                        cx={400 + Math.cos((i * Math.PI * 2) / 5) * 120}
-                        cy={200 + Math.sin((i * Math.PI * 2) / 5) * 120}
-                        r="8"
-                        fill="currentColor"
-                        variants={circleVariants}
-                        initial="hidden"
-                        animate="visible"
+                        className="absolute w-2 h-2 bg-orange-500/30 rounded-full"
+                        style={{
+                            top: `${Math.random() * 100}%`,
+                            left: `${Math.random() * 100}%`,
+                        }}
+                        animate={{
+                            y: [0, -20, 0],
+                            opacity: [0, 1, 0],
+                        }}
                         transition={{
-                            delay: 0.5 + i * 0.1,
-                            duration: 0.5,
+                            duration: 3 + Math.random() * 2,
                             repeat: Infinity,
-                            repeatType: "reverse",
-                            repeatDelay: i * 0.2,
+                            delay: Math.random() * 2,
                         }}
                     />
                 ))
             }
-            <motion.g
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 1, duration: 0.5 }}
-            >
-                <motion.text
-                    x="320"
-                    y="230"
-                    fontFamily="sans-serif"
-                    fontSize="120"
-                    fontWeight="bold"
-                    fill="currentColor"
-                    initial={{ y: 50, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    transition={{ delay: 1.2, duration: 0.7 }}
-                >
-                    404
-                </motion.text>
-            </motion.g>
-            <motion.path
-                d="M400 100 L400 120 M400 280 L400 300 M300 200 L320 200 M480 200 L500 200"
-                stroke="currentColor"
-                strokeWidth="3"
-                variants={pathVariants}
-                initial="hidden"
-                animate="visible"
-                transition={{ delay: 1.5 }}
-            />
-            <motion.g
-                initial={{ rotate: 0 }}
-                animate={{ rotate: 360 }}
-                transition={{
-                    duration: 20,
-                    repeat: Infinity,
-                    ease: "linear",
-                }}
-                style={{ originX: "400px", originY: "200px" }}
-            >
-                <motion.path
-                    d="M400 150 L400 130"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                    strokeLinecap="round"
-                />
-            </motion.g>
-        </motion.svg>
+        </div>
+    );
+};
+
+export default function NotFound() {
+    return (
+        <SmoothScroll>
+            <div className="min-h-screen bg-white dark:bg-neutral-950 selection:bg-orange-500/30 selection:text-orange-900 dark:selection:text-white font-sans flex flex-col">
+                <Navbar />
+
+                <main className="flex-1 flex items-center justify-center px-6 py-24">
+                    <div className="max-w-3xl w-full text-center">
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+                            className="space-y-12"
+                        >
+                            <LostInSpaceSVG />
+                            <div className="space-y-6 relative z-20">
+                                <div>
+                                    <motion.h1
+                                        initial={{ scale: 0.9, opacity: 0 }}
+                                        animate={{ scale: 1, opacity: 1 }}
+                                        transition={{ delay: 0.2, duration: 0.6 }}
+                                        className="text-6xl md:text-8xl font-bold text-neutral-900 dark:text-white tracking-tighter"
+                                    >
+                                        404
+                                    </motion.h1>
+                                    <motion.h2
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 1 }}
+                                        transition={{ delay: 0.4 }}
+                                        className="text-2xl md:text-3xl font-bold mt-4 text-neutral-900 dark:text-white"
+                                    >
+                                        Off Trajectory
+                                    </motion.h2>
+                                </div>
+                                <motion.p
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    transition={{ delay: 0.6 }}
+                                    className="max-w-lg mx-auto text-lg text-neutral-600 dark:text-neutral-400 leading-relaxed"
+                                >
+                                    The page you're looking for has drifted out of orbit. Let's get you synchronized and back on track.
+                                </motion.p>
+                                <motion.div
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: 0.8 }}
+                                    className="pt-8"
+                                >
+                                    <Button
+                                        asChild
+                                        size="lg"
+                                        className="bg-orange-500 hover:bg-orange-600 text-white font-bold text-base rounded-full px-8 h-12 shadow-lg shadow-orange-500/20 hover:shadow-orange-500/40 transition-all duration-300 group"
+                                    >
+                                        <Link href="/" className="flex items-center gap-2">
+                                            <Home className="h-5 w-5" />
+                                            <span>Return to Base</span>
+                                            <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                                        </Link>
+                                    </Button>
+                                </motion.div>
+                            </div>
+                        </motion.div>
+                    </div>
+                </main>
+
+                <Footer />
+            </div>
+        </SmoothScroll>
     );
 }

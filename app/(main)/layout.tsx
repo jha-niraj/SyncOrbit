@@ -3,13 +3,14 @@
 import { useState, useEffect } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter, usePathname } from 'next/navigation'
-import { Button } from '@/components/ui/button'
-import { Menu, X } from 'lucide-react'
 import RoleBasedSidebar from '@/components/navigation/rolebasedsidebar'
 import LoadingScreen from '@/components/loading-screen'
 import { cn } from '@/lib/utils'
 import { hasAccessToPath } from '@/lib/navigation'
 import { Role } from '@prisma/client'
+import Sidebar from '@/components/navigation/sidebar'
+import { SidebarProvider } from '@/components/navigation/sidebarcontext'
+import NewSidebar from '@/components/navigation/newsidebar'
 
 interface LayoutProps {
 	children: React.ReactNode
@@ -66,8 +67,9 @@ const Layout = ({ children }: LayoutProps) => {
 	}
 
 	return (
-		<div className="flex h-screen bg-background">
-			{
+		<SidebarProvider>
+			<div className="flex h-screen bg-background">
+				{/* {
 				!isMobile && (
 					<RoleBasedSidebar
 						collapsed={sidebarCollapsed}
@@ -87,17 +89,19 @@ const Layout = ({ children }: LayoutProps) => {
 						</div>
 					</>
 				)
-			}
-			<div className={cn(
-				"flex-1 flex flex-col transition-all duration-300 ml-20",
-			)}>
-				<main className="flex-1 overflow-auto">
-					<div className="h-full">
-						{children}
-					</div>
-				</main>
+			} */}
+				<NewSidebar />
+				<div className={cn(
+					"flex-1 flex flex-col transition-all duration-300 ml-20",
+				)}>
+					<main className="flex-1 overflow-auto">
+						<div className="h-full">
+							{children}
+						</div>
+					</main>
+				</div>
 			</div>
-		</div>
+		</SidebarProvider>
 	)
 }
 

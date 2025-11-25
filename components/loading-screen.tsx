@@ -1,48 +1,91 @@
 "use client"
 
-import { motion } from "framer-motion"
+import { motion } from "framer-motion";
+import Image from "next/image";
 
 interface LoadingScreenProps {
-    routeName: string
+    routeName?: string;
 }
 
 const LoadingScreen = ({ routeName }: LoadingScreenProps) => {
     return (
-        <div className="fixed inset-0 bg-gradient-to-br from-slate-50 via-indigo-50 to-purple-50 dark:from-slate-900 dark:via-black dark:to-slate-900 flex items-center justify-center">
-            <div className="text-center">
+        <div className="fixed inset-0 bg-white dark:bg-neutral-950 flex items-center justify-center z-50">
+            <div className="text-center flex flex-col items-center">
                 <motion.div
-                    className="w-16 h-16 mb-4 mx-auto"
+                    className="relative w-24 h-24 mb-8"
                     animate={{
-                        scale: [1, 1.2, 1],
-                        rotate: [0, 180, 360],
+                        scale: [1, 1.1, 1],
+                        rotate: [0, 5, -5, 0],
                     }}
                     transition={{
-                        duration: 2,
+                        duration: 4,
                         repeat: Infinity,
                         ease: "easeInOut",
                     }}
                 >
-                    <div className="w-full h-full rounded-full border-4 border-teal-500 border-t-transparent animate-spin" />
+                    {/* Outer pulsating ring */}
+                    <motion.div
+                        className="absolute inset-0 rounded-full border-2 border-orange-500/30 dark:border-orange-500/20"
+                        animate={{
+                            scale: [1, 1.2, 1],
+                            opacity: [0.5, 0, 0.5],
+                        }}
+                        transition={{
+                            duration: 3,
+                            repeat: Infinity,
+                            ease: "easeInOut",
+                        }}
+                    />
+
+                    <Image
+                        src="/syncorbit.png"
+                        alt="SyncOrbit Logo"
+                        fill
+                        className="object-contain drop-shadow-xl"
+                        priority
+                    />
                 </motion.div>
-                <motion.h2
-                    className="text-xl font-semibold text-foreground"
+
+                <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.2 }}
+                    transition={{ delay: 0.2, duration: 0.6 }}
+                    className="space-y-3"
                 >
-                    Loading {routeName}...
-                </motion.h2>
-                <motion.p
-                    className="text-sm text-muted-foreground mt-2"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.4 }}
-                >
-                    Please wait while we set things up
-                </motion.p>
+                    <h2 className="text-2xl font-bold text-neutral-900 dark:text-white tracking-tight">
+                        Synchronizing{routeName ? ` ${routeName}` : ''}...
+                    </h2>
+                    <motion.p
+                        className="text-sm text-neutral-500 dark:text-neutral-400 max-w-[250px] mx-auto"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 0.4 }}
+                    >
+                        Aligning your workspace. This will just take a moment.
+                    </motion.p>
+
+                    {/* Subtle loading bar */}
+                    <motion.div
+                        className="h-1 w-32 bg-neutral-100 dark:bg-neutral-800 rounded-full overflow-hidden mx-auto mt-6"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 0.6 }}
+                    >
+                        <motion.div
+                            className="h-full bg-gradient-to-r from-orange-500 to-amber-500 rounded-full"
+                            initial={{ x: '-100%' }}
+                            animate={{ x: '100%' }}
+                            transition={{
+                                duration: 1.5,
+                                repeat: Infinity,
+                                ease: "linear",
+                            }}
+                        />
+                    </motion.div>
+                </motion.div>
             </div>
         </div>
     )
 }
 
-export default LoadingScreen; 
+export default LoadingScreen;
