@@ -8,11 +8,11 @@ import { Settings } from "lucide-react"
 import { UserWithRole } from "@/types/role-settings"
 
 export const metadata: Metadata = {
-    title: "Role Settings | ProjectCentral",
+    title: "Role Settings | SyncOrbit",
     description: "Manage user roles and permissions within your company.",
     keywords: ["role settings", "user management", "permissions", "admin", "company owner"],
     openGraph: {
-        title: "Role Settings | ProjectCentral",
+        title: "Role Settings | SyncOrbit",
         description: "Manage user roles and permissions",
         type: "website",
     },

@@ -5,11 +5,11 @@ import { prisma } from "@/lib/prisma"
 import ProfilePageClient from "./_components/ProfilePageClient"
 
 export const metadata: Metadata = {
-    title: "Profile | ProjectCentral",
+    title: "Profile | SyncOrbit",
     description: "View and manage your profile, teams, company information, and account settings.",
     keywords: ["profile", "account", "settings", "teams", "user management"],
     openGraph: {
-        title: "Profile | ProjectCentral",
+        title: "Profile | SyncOrbit",
         description: "Manage your profile and account settings",
         type: "website",
     },

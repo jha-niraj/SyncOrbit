@@ -11,7 +11,7 @@ import { format } from "date-fns"
 import { Mail, Calendar, DollarSign, Briefcase, ArrowLeft } from "lucide-react"
 
 export const metadata: Metadata = {
-    title: "Client Details | ProjectCentral",
+    title: "Client Details | SyncOrbit",
     description: "View client details and project history.",
 }
 

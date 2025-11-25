@@ -61,7 +61,7 @@ export async function uploadImageToCloudinary(formData: FormData) {
 
         // Upload to Cloudinary
         const uploadOptions: any = {
-            folder: "projectcentral/attachments",
+            folder: "SyncOrbit/attachments",
             resource_type: "auto", // Auto-detect resource type
         };
 

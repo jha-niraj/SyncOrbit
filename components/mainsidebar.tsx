@@ -140,8 +140,8 @@ const Sidebar = () => {
                         <Link href={session ? "/dashboard" : "/"} className="transition-opacity hover:opacity-80">
                             <div className="relative h-[40px] w-[40px]">
                                 <Image
-                                    src="/projectcentral.png"
-                                    alt="Project Central"
+                                    src="/SyncOrbit.png"
+                                    alt="SyncOrbit"
                                     fill
                                     className="object-contain"
                                     priority

@@ -25,7 +25,7 @@ const ImageShowcaseSection = () => {
                                 <div className="w-3 h-3 rounded-full bg-green-400/80"></div>
                             </div>
                             <div className="ml-4 px-3 py-1 rounded-md bg-gray-100 dark:bg-neutral-800 text-xs text-gray-500 dark:text-gray-400 flex-1 max-w-md text-center">
-                                app.projectcentral.com/dashboard
+                                app.SyncOrbit.com/dashboard
                             </div>
                         </div>
                         <div className="relative pt-10 rounded-xl overflow-hidden bg-white dark:bg-neutral-900 shadow-2xl">

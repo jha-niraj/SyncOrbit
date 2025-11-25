@@ -16,11 +16,11 @@ import { CreateProjectModal } from "@/components/projects/CreateProjectModal"
 import { Metadata } from "next"
 
 export const metadata: Metadata = {
-    title: "My Projects | ProjectCentral",
+    title: "My Projects | SyncOrbit",
     description: "View and manage your assigned projects, track progress, and monitor your tasks across all projects.",
     keywords: ["my projects", "assigned projects", "project tracking", "task management", "personal dashboard"],
     openGraph: {
-        title: "My Projects | ProjectCentral",
+        title: "My Projects | SyncOrbit",
         description: "Track your assigned projects and tasks",
         type: "website",
     },

@@ -340,7 +340,7 @@ export default function RoleBasedSidebar({ collapsed, onToggle }: RoleBasedSideb
                             <div className="relative h-[36px] w-[36px]">
                                 <Image
                                     src="/logo/whitelogo.svg"
-                                    alt="ProjectCentral"
+                                    alt="SyncOrbit"
                                     fill
                                     className="object-contain"
                                     priority

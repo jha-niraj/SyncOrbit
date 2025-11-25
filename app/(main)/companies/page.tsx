@@ -7,11 +7,11 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Building2 } from "lucide-react"
 
 export const metadata: Metadata = {
-    title: "My Companies | ProjectCentral",
+    title: "My Companies | SyncOrbit",
     description: "View and manage companies you are associated with.",
     keywords: ["companies", "client", "projects", "management"],
     openGraph: {
-        title: "My Companies | ProjectCentral",
+        title: "My Companies | SyncOrbit",
         description: "View and manage your companies",
         type: "website",
     },

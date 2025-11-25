@@ -21,8 +21,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-	title: "Project Central",
-	description: "Streamline Your Projects with Ease",
+	title: "SyncOrbit: Synchronize your team's trajectory",
+	description: "Eliminate friction and scattered workflows. Syncorbit brings your people, projects, and priorities into perfect alignment, ensuring everyone moves together in a stable, high-velocity path toward delivery.",
 };
 
 export default function RootLayout({
@@ -33,21 +33,21 @@ export default function RootLayout({
 	return (
 		<html lang="en" suppressHydrationWarning>
 			<head>
-				<link rel="icon" href="/projectcentral.ico" />
+				<link rel="icon" href="/syncorbit.ico" />
       
-                <title>Project Central</title>
+                <title>SyncOrbit</title>
                 <meta name="description" content="Streamline Your Projects with Ease" />
 
-                <meta property="og:url" content="https://projectcentral.nirajjha.xyz" />
+                <meta property="og:url" content="https://SyncOrbit.nirajjha.xyz" />
                 <meta property="og:type" content="website" />
-                <meta property="og:title" content="Project Central" />
+                <meta property="og:title" content="SyncOrbit" />
                 <meta property="og:description" content="Streamline Your Projects with Ease" />
                 <meta property="og:image" content="https://opengraph.b-cdn.net/production/images/e55831e0-2d0c-4c4e-8714-2bb667dc4170.png?token=IaDSxrXi48MuUZvj9Xp9Jk1xHZUJJpPKWwFYRxLzYJI&height=1024&width=1024&expires=33295316213" />
 
                 <meta name="twitter:card" content="summary_large_image" />
-                <meta property="twitter:domain" content="projectcentral.nirajjha.xyz" />
-                <meta property="twitter:url" content="https://projectcentral.nirajjha.xyz" />
-                <meta name="twitter:title" content="Project Central" />
+                <meta property="twitter:domain" content="SyncOrbit.nirajjha.xyz" />
+                <meta property="twitter:url" content="https://SyncOrbit.nirajjha.xyz" />
+                <meta name="twitter:title" content="SyncOrbit" />
                 <meta name="twitter:description" content="Streamline Your Projects with Ease" />
                 <meta name="twitter:image" content="https://opengraph.b-cdn.net/production/images/e55831e0-2d0c-4c4e-8714-2bb667dc4170.png?token=IaDSxrXi48MuUZvj9Xp9Jk1xHZUJJpPKWwFYRxLzYJI&height=1024&width=1024&expires=33295316213" />
 			</head>

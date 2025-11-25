@@ -146,7 +146,7 @@ export async function completeCompanyOnboarding(data: z.infer<typeof companyOnbo
             user: result.user,
             company: result.company,
             teams: result.teams,
-            message: `Welcome to ProjectCentral! ${validatedData.companyName} has been created with ${result.teams.length} teams.`
+            message: `Welcome to SyncOrbit! ${validatedData.companyName} has been created with ${result.teams.length} teams.`
         }
     } catch (error) {
         console.error("Complete company onboarding error:", error)
@@ -327,7 +327,7 @@ export async function completeClientOnboarding(data: { email: string; name: stri
         return {
             success: true,
             user,
-            message: "Welcome to ProjectCentral! You can now create projects and work with development teams."
+            message: "Welcome to SyncOrbit! You can now create projects and work with development teams."
         }
     } catch (error) {
         console.error("Complete client onboarding error:", error)

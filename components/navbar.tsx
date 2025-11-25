@@ -2,14 +2,18 @@
 
 import Link from 'next/link'
 import { useRouter, usePathname } from 'next/navigation'
-import { Menu, X, Moon, Sun, ArrowRight, User, LayoutDashboard, LogOut } from 'lucide-react'
+import { 
+    Menu, X, Moon, Sun, ArrowRight, User, LayoutDashboard, LogOut 
+} from 'lucide-react'
 import React, { useEffect, useState } from 'react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { useTheme } from 'next-themes'
 import Image from 'next/image'
 import { useSession, signOut } from 'next-auth/react'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from './ui/dropdown-menu'
+import { 
+    DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger 
+} from './ui/dropdown-menu'
 
 
 const menuItems = [
@@ -70,12 +74,12 @@ export const Navbar = () => {
                                 aria-label="home"
                                 className="flex items-center space-x-2">
                                 <Image
-                                    src="/projectcentral.png"
-                                    alt="Project Central Main Logo"
-                                    height={20}
-                                    width={20}
+                                    src="/syncorbit.png"
+                                    alt="SyncOrbit Main Logo"
+                                    height={30}
+                                    width={30}
                                 />
-                                <h1>Project Central</h1>
+                                <h1>SyncOrbit</h1>
                             </Link>
                             <button
                                 onClick={() => setMenuState(!menuState)}

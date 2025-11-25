@@ -43,7 +43,7 @@ const Hero = () => {
                             New
                         </span>
                         <span className="text-sm font-medium text-gray-600 dark:text-gray-300 flex items-center gap-1">
-                            ProjectCentral 2.0 is live
+                            SyncOrbit 2.0 is live
                             <ChevronRight className="w-3 h-3 text-gray-400 group-hover:text-[#FE5C02] transition-colors" />
                         </span>
                     </div>

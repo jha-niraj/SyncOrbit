@@ -266,7 +266,7 @@ export default function Footer() {
                             <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-blue-600 flex items-center justify-center">
                                 <Users className="w-5 h-5 text-white" />
                             </div>
-                            <span className="text-xl font-bold">ProjectCentral</span>
+                            <span className="text-xl font-bold">SyncOrbit</span>
                         </div>
                         <p className="text-sm text-muted-foreground">
                             © {new Date().getFullYear()} Shunya Tech. All rights reserved.

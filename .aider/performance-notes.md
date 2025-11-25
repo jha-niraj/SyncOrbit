@@ -1,4 +1,4 @@
-# ProjectCentral - Performance Optimizations
+# SyncOrbit - Performance Optimizations
 
 ## BeamsBackground Optimizations Applied:
 1. **Frame Rate Limiting**: Capped at 30 FPS instead of unlimited

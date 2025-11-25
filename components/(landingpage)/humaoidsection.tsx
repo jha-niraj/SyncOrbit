@@ -100,7 +100,7 @@ const HumanoidSection = () => {
                             <span>Workflow Benefits</span>
                         </div>
                         <h2 className="text-3xl sm:text-4xl md:text-6xl font-bold text-gray-900 dark:text-white mb-6 tracking-tight">
-                            Why teams switch to <span className="text-orange-500">ProjectCentral</span>
+                            Why teams switch to <span className="text-orange-500">SyncOrbit</span>
                         </h2>
                         <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl leading-relaxed">
                             Experience a workflow that adapts to you. No more context switching—just pure productivity.

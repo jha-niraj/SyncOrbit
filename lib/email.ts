@@ -19,11 +19,11 @@ export function generateOTPExpiry(minutes: number = 10): Date {
 export async function sendVerificationEmail(email: string, name: string, otp: string) {
 	try {
 		const { data, error } = await resend.emails.send({
-			from: 'Project Central <noreply@nirajjha.xyz>',
+			from: 'SyncOrbit <noreply@nirajjha.xyz>',
 			to: [email],
-			subject: 'Verify Your Email - Project Central',
+			subject: 'Verify Your Email - SyncOrbit',
 			react: VerificationEmailTemplate({ name, otp }),
-			text: 'Verify Your Email - Project Central',
+			text: 'Verify Your Email - SyncOrbit',
 		});
 
 		if (error) {
@@ -41,11 +41,11 @@ export async function sendVerificationEmail(email: string, name: string, otp: st
 export async function sendPasswordResetEmail(email: string, name: string, otp: string) {
 	try {
 		const { data, error } = await resend.emails.send({
-			from: 'Project Central <noreply@nirajjha.xyz>',
+			from: 'SyncOrbit <noreply@nirajjha.xyz>',
 			to: [email],
-			subject: 'Reset Your Password - Project Central',
+			subject: 'Reset Your Password - SyncOrbit',
 			react: PasswordResetEmailTemplate({ name, otp }),
-			text: 'Reset Your Password - Project Central',
+			text: 'Reset Your Password - SyncOrbit',
 		});
 
 		if (error) {
@@ -63,9 +63,9 @@ export async function sendPasswordResetEmail(email: string, name: string, otp: s
 export async function sendWelcomeEmail(email: string, name: string) {
 	try {
 		const { data, error } = await resend.emails.send({
-			from: 'Project Central <noreply@nirajjha.xyz>',
+			from: 'SyncOrbit <noreply@nirajjha.xyz>',
 			to: [email],
-			subject: 'Welcome to Project Central! 🎉',
+			subject: 'Welcome to SyncOrbit! 🎉',
 			react: WelcomeEmailTemplate({ name }),
 		});
 
@@ -96,9 +96,9 @@ export async function sendInvitationEmail(
 		const declineUrl = `${baseUrl}/api/invitations/decline?id=${invitationId}`
 
 		const { data, error } = await resend.emails.send({
-			from: 'Project Central <noreply@nirajjha.xyz>',
+			from: 'SyncOrbit <noreply@nirajjha.xyz>',
 			to: [email],
-			subject: `You're invited to join ${targetName} on Project Central`,
+			subject: `You're invited to join ${targetName} on SyncOrbit`,
 			react: InvitationEmailTemplate({
 				recipientName,
 				senderName,

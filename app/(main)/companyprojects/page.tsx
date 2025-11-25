@@ -6,11 +6,11 @@ import { Role } from "@prisma/client"
 import { CompanyProjectsPageClient } from "./_components/CompanyProjectsPageClient"
 
 export const metadata: Metadata = {
-    title: "Company Projects | ProjectCentral",
+    title: "Company Projects | SyncOrbit",
     description: "Manage and oversee all projects across your company or view projects assigned to your teams.",
     keywords: ["company projects", "project portfolio", "company overview", "project management"],
     openGraph: {
-        title: "Company Projects | ProjectCentral",
+        title: "Company Projects | SyncOrbit",
         description: "Manage and oversee all projects across your company or view projects assigned to your teams.",
         type: "website",
     },

@@ -1,4 +1,4 @@
-# ProjectCentral - Production Deployment Checklist
+# SyncOrbit - Production Deployment Checklist
 
 ## ✅ Build Status: **PRODUCTION READY**
 

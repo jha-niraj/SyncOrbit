@@ -4,7 +4,7 @@ import { auth } from "@/auth"
 import { redirect } from "next/navigation"
 
 export const metadata: Metadata = {
-    title: "Client Analytics | ProjectCentral",
+    title: "Client Analytics | SyncOrbit",
     description: "View client project performance and metrics.",
 }
 

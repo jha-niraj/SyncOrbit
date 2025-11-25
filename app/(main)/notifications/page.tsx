@@ -7,11 +7,11 @@ import { Card, CardContent } from "@/components/ui/card"
 import { BellOff } from "lucide-react"
 
 export const metadata: Metadata = {
-    title: "Notifications | ProjectCentral",
+    title: "Notifications | SyncOrbit",
     description: "Stay updated with your projects, tasks, and team activities.",
     keywords: ["notifications", "updates", "alerts", "project management"],
     openGraph: {
-        title: "Notifications | ProjectCentral",
+        title: "Notifications | SyncOrbit",
         description: "Stay updated with your projects and tasks",
         type: "website",
     },

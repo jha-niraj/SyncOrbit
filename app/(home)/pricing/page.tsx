@@ -355,12 +355,12 @@ export default function PricingPage() {
             </section>
             <section className="py-20 bg-gray-50 dark:bg-neutral-900/30 border-y border-gray-100 dark:border-neutral-800">
                 <div className="container max-w-7xl mx-auto px-6">
-                    <div className="text-center mb-16">
+                    <div className="text-center mb-8">
                         <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">Detailed Comparison</h2>
                         <p className="text-gray-600 dark:text-gray-400">See exactly what you get with each plan.</p>
                     </div>
                     <div className="overflow-x-auto">
-                        <div className="min-w-[800px] bg-white dark:bg-neutral-900 rounded-2xl shadow-sm border border-gray-200 dark:border-neutral-800 overflow-hidden">
+                        <div className="min-w-7xl mx-auto bg-white dark:bg-neutral-900 rounded-2xl shadow-sm border border-gray-200 dark:border-neutral-800 overflow-hidden">
                             <table className="w-full">
                                 <thead>
                                     <tr className="bg-gray-50/50 dark:bg-neutral-900">
@@ -378,7 +378,7 @@ export default function PricingPage() {
                                     {
                                         allFeatures.map((feature) => (
                                             <tr key={feature.key} className="group hover:bg-gray-50 dark:hover:bg-neutral-800/50 transition-colors">
-                                                <td className="p-6">
+                                                <td className="p-4">
                                                     <div className="font-medium text-gray-900 dark:text-white flex items-center gap-2">
                                                         {feature.name}
                                                         <HelpCircle className="w-3.5 h-3.5 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity cursor-help" />
@@ -388,7 +388,7 @@ export default function PricingPage() {
                                                     plans.map((plan) => {
                                                         const val = plan.features[feature.key];
                                                         return (
-                                                            <td key={`${plan.id}-${feature.key}`} className="p-6 text-center">
+                                                            <td key={`${plan.id}-${feature.key}`} className="p-4 text-center">
                                                                 {
                                                                     typeof val === 'boolean' ? (
                                                                         val ? (
@@ -468,7 +468,7 @@ export default function PricingPage() {
                                 Ready to streamline your workflow?
                             </h2>
                             <p className="text-lg text-neutral-400 max-w-2xl mx-auto mb-10">
-                                Join 10,000+ teams who have switched to ProjectCentral. Start your 14-day free trial today.
+                                Join 10,000+ teams who have switched to SyncOrbit. Start your 14-day free trial today.
                             </p>
                             <div className="flex flex-col sm:flex-row gap-4 justify-center">
                                 <Link

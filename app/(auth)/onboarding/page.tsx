@@ -302,7 +302,7 @@ function Onboarding() {
                 return (
                     <div className="space-y-6">
                         <div className="text-center">
-                            <h2 className="text-2xl font-bold mb-2">Welcome to ProjectCentral</h2>
+                            <h2 className="text-2xl font-bold mb-2">Welcome to SyncOrbit</h2>
                             <p className="text-muted-foreground">Let&apos;s get you set up. What would you like to do?</p>
                         </div>
                         <div className="grid gap-4">

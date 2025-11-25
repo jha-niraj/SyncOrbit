@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🚀 ProjectCentral
+# 🚀 SyncOrbit
 
 ### *The Ultimate Project Management Platform for Modern Teams*
 
@@ -21,9 +21,9 @@
 
 ## 🎯 Platform Overview
 
-**ProjectCentral** is a comprehensive project management platform designed to bridge the gap between clients, developers, product managers, and administrators. Built with modern web technologies, it provides a seamless experience for managing projects from conception to completion.
+**SyncOrbit** is a comprehensive project management platform designed to bridge the gap between clients, developers, product managers, and administrators. Built with modern web technologies, it provides a seamless experience for managing projects from conception to completion.
 
-### 🌟 Why ProjectCentral?
+### 🌟 Why SyncOrbit?
 
 - **🎨 Modern UI/UX** - Beautiful, intuitive interface built with Shadcn/UI components
 - **⚡ Real-time Updates** - Live project tracking and instant notifications
@@ -235,7 +235,7 @@
 
 ---
 
-## 🌟 Why Choose ProjectCentral?
+## 🌟 Why Choose SyncOrbit?
 
 ### **For Development Teams**
 - Streamlined workflow management
@@ -262,10 +262,10 @@
 
 ## 📞 Contact & Support
 
-**ProjectCentral** is built with ❤️ by the ShunyaTech team.
+**SyncOrbit** is built with ❤️ by the ShunyaTech team.
 
-- 🌐 **Website**: [ProjectCentral Platform](https://projectcentral.com)
-- 📧 **Email**: support@projectcentral.com
+- 🌐 **Website**: [SyncOrbit Platform](https://SyncOrbit.com)
+- 📧 **Email**: support@SyncOrbit.com
 - 💬 **Support**: 24/7 Live Chat available
 - 📅 **Schedule Demo**: [Book a consultation](https://cal.com/niraj-jha/30min)
 
@@ -275,14 +275,14 @@
 
 ### 🚀 Ready to Transform Your Project Management?
 
-**Join thousands of teams who have revolutionized their workflow with ProjectCentral**
+**Join thousands of teams who have revolutionized their workflow with SyncOrbit**
 
-[Start Free Trial](https://projectcentral.com/signup) • [Schedule Demo](https://cal.com/niraj-jha/30min) • [View Features](https://projectcentral.com/#features)
+[Start Free Trial](https://SyncOrbit.com/signup) • [Schedule Demo](https://cal.com/niraj-jha/30min) • [View Features](https://SyncOrbit.com/#features)
 
 ---
 
 *Built with Next.js, TypeScript, and modern web technologies*
 
-**© 2024 ProjectCentral. All rights reserved.**
+**© 2024 SyncOrbit. All rights reserved.**
 
 </div>

@@ -4,10 +4,10 @@ import React from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
 
-// Updated Data relevant to ProjectCentral
+// Updated Data relevant to SyncOrbit
 const testimonials = [
     {
-        text: "ProjectCentral revolutionized our sprint planning. We cut meeting times by 40% and the team actually enjoys updating their status now.",
+        text: "SyncOrbit revolutionized our sprint planning. We cut meeting times by 40% and the team actually enjoys updating their status now.",
         image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&q=80",
         name: "Sarah Chen",
         role: "Product Manager @ TechFlow",
@@ -132,7 +132,7 @@ const Testimonials = () => {
                         Trusted by teams who ship.
                     </h2>
                     <p className="text-lg text-gray-600 dark:text-gray-400">
-                        From startups to enterprises, see how teams are using ProjectCentral to deliver faster.
+                        From startups to enterprises, see how teams are using SyncOrbit to deliver faster.
                     </p>
                 </div>
                 <div className="relative flex justify-center gap-6 [mask-image:linear-gradient(to_bottom,transparent,black_20%,black_80%,transparent)] max-h-[700px] overflow-hidden">

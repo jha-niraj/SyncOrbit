@@ -4,7 +4,7 @@ This file provides guidance to WARP (warp.dev) when working with code in this re
 
 ## Project Overview
 
-ProjectCentral is a comprehensive SaaS project management platform built with Next.js 15, TypeScript, and modern web technologies. It serves multiple user roles: Clients, Developers, Product Managers, and Administrators, providing tailored dashboards and workflows for each.
+SyncOrbit is a comprehensive SaaS project management platform built with Next.js 15, TypeScript, and modern web technologies. It serves multiple user roles: Clients, Developers, Product Managers, and Administrators, providing tailored dashboards and workflows for each.
 
 ## Common Development Commands
 

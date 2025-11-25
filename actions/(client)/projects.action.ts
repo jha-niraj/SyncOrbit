@@ -44,7 +44,7 @@ async function sendProjectCreationEmail(project: any, clientEmail: string, creat
             clientEmail: clientEmail,
             managerName: creatorName,
             managerEmail: creatorEmail,
-            companyName: "ProjectCentral",
+            companyName: "SyncOrbit",
             projectUrl: `${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/projects/${project.slug}`,
             budget: project.budget,
             currency: project.currency,
@@ -55,7 +55,7 @@ async function sendProjectCreationEmail(project: any, clientEmail: string, creat
         const template = projectCreationClientTemplate(emailData)
 
         await resend.emails.send({
-            from: `ProjectCentral <noreply@${process.env.RESEND_DOMAIN || 'localhost.com'}>`,
+            from: `SyncOrbit <noreply@${process.env.RESEND_DOMAIN || 'localhost.com'}>`,
             to: clientEmail,
             subject: template.subject,
             html: template.html,
@@ -193,7 +193,7 @@ export async function createProject(data: CreateProjectInput) {
         if (validatedData.clientType === ClientType.EXTERNAL) {
             const clientEmail = validatedData.clientEmail || project.user.email
             const creatorName = session.user.name || session.user.email || 'Project Manager'
-            const creatorEmail = session.user.email || 'manager@projectcentral.com'
+            const creatorEmail = session.user.email || 'manager@SyncOrbit.com'
             
             if (clientEmail) {
                 try {

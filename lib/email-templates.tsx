@@ -23,7 +23,7 @@ export const VerificationEmailTemplate = ({ name, otp }: EmailTemplateProps): Re
 				Hi {name},
 			</p>
 			<p style={{ fontSize: '16px', lineHeight: '1.5', color: '#333333' }}>
-				Thank you for signing up with Project Central! We&apos;re excited to have you on board.
+				Thank you for signing up with SyncOrbit! We&apos;re excited to have you on board.
 			</p>
 			<p style={{ fontSize: '16px', lineHeight: '1.5', color: '#333333' }}>
 				Please use the following OTP to verify your email address:
@@ -50,7 +50,7 @@ export const VerificationEmailTemplate = ({ name, otp }: EmailTemplateProps): Re
 				</p>
 			</div>
 			<p style={{ fontSize: '16px', lineHeight: '1.5', color: '#333333' }}>
-				If you didn&apos;t create an account with Project Central, you can safely ignore this email.
+				If you didn&apos;t create an account with SyncOrbit, you can safely ignore this email.
 			</p>
 			<div style={{
 				marginTop: '30px',
@@ -59,7 +59,7 @@ export const VerificationEmailTemplate = ({ name, otp }: EmailTemplateProps): Re
 				fontSize: '14px',
 				color: '#6c757d'
 			}}>
-				<p>Need help? Contact our support team at support@projectcentral.com</p>
+				<p>Need help? Contact our support team at support@SyncOrbit.com</p>
 			</div>
 		</div>
 		<div style={{
@@ -69,7 +69,7 @@ export const VerificationEmailTemplate = ({ name, otp }: EmailTemplateProps): Re
 			fontSize: '13px',
 			color: '#6c757d'
 		}}>
-			<p>&copy; 2025 Project Central. You think we&apos;ll deliver.</p>
+			<p>&copy; 2025 SyncOrbit. You think we&apos;ll deliver.</p>
 			<p>Transform your digital dreams into reality</p>
 		</div>
 	</div>
@@ -93,7 +93,7 @@ export const PasswordResetEmailTemplate = ({ name, otp }: EmailTemplateProps): R
 				Hi {name},
 			</p>
 			<p style={{ fontSize: '16px', lineHeight: '1.5', color: '#333333' }}>
-				We received a request to reset your password for your Project Central account.
+				We received a request to reset your password for your SyncOrbit account.
 			</p>
 			<p style={{ fontSize: '16px', lineHeight: '1.5', color: '#333333' }}>
 				Please use the following OTP to reset your password:
@@ -129,7 +129,7 @@ export const PasswordResetEmailTemplate = ({ name, otp }: EmailTemplateProps): R
 				fontSize: '14px',
 				color: '#6c757d'
 			}}>
-				<p>Need help? Contact our support team at support@projectcentral.com</p>
+				<p>Need help? Contact our support team at support@SyncOrbit.com</p>
 			</div>
 		</div>
 		<div style={{
@@ -139,7 +139,7 @@ export const PasswordResetEmailTemplate = ({ name, otp }: EmailTemplateProps): R
 			fontSize: '13px',
 			color: '#6c757d'
 		}}>
-			<p>&copy; 2025 Project Central. You think we&apos;ll deliver.</p>
+			<p>&copy; 2025 SyncOrbit. You think we&apos;ll deliver.</p>
 			<p>Transform your digital dreams into reality</p>
 		</div>
 	</div>
@@ -156,7 +156,7 @@ export const WelcomeEmailTemplate = ({ name }: { name: string }): React.ReactNod
 				height={100}
 				style={{ borderRadius: '8px', marginBottom: '15px' }}
 			/>
-			<h1 style={{ margin: '0', fontWeight: '500', fontSize: '24px' }}>Welcome to Project Central!</h1>
+			<h1 style={{ margin: '0', fontWeight: '500', fontSize: '24px' }}>Welcome to SyncOrbit!</h1>
 		</div>
 		<div style={{ padding: '35px 30px', backgroundColor: '#ffffff' }}>
 			<p style={{ fontSize: '16px', lineHeight: '1.5', color: '#333333' }}>
@@ -166,7 +166,7 @@ export const WelcomeEmailTemplate = ({ name }: { name: string }): React.ReactNod
 				🎉 Congratulations! Your email has been successfully verified and your account is now active.
 			</p>
 			<p style={{ fontSize: '16px', lineHeight: '1.5', color: '#333333' }}>
-				You can now access your dashboard and explore all the features Project Central has to offer:
+				You can now access your dashboard and explore all the features SyncOrbit has to offer:
 			</p>
 			<div style={{ margin: '25px 0' }}>
 				<ul style={{ fontSize: '16px', lineHeight: '1.8', color: '#333333', paddingLeft: '20px' }}>
@@ -203,7 +203,7 @@ export const WelcomeEmailTemplate = ({ name }: { name: string }): React.ReactNod
 				fontSize: '14px',
 				color: '#6c757d'
 			}}>
-				<p>Need help? Contact our support team at support@projectcentral.com</p>
+				<p>Need help? Contact our support team at support@SyncOrbit.com</p>
 			</div>
 		</div>
 		<div style={{
@@ -213,7 +213,7 @@ export const WelcomeEmailTemplate = ({ name }: { name: string }): React.ReactNod
 			fontSize: '13px',
 			color: '#6c757d'
 		}}>
-			<p>&copy; 2025 Project Central. You think we&apos;ll deliver.</p>
+			<p>&copy; 2025 SyncOrbit. You think we&apos;ll deliver.</p>
 			<p>Transform your digital dreams into reality</p>
 		</div>
 	</div>
@@ -261,7 +261,7 @@ export const InvitationEmailTemplate = ({
 				<strong style={{ color: '#1a1a1a' }}>
 					{targetName}
 				</strong>{' '}
-				on Project Central.
+				on SyncOrbit.
 			</p>
 			
 			{message && (
@@ -340,7 +340,7 @@ export const InvitationEmailTemplate = ({
 				fontSize: '14px',
 				color: '#6c757d'
 			}}>
-				<p>Need help? Contact our support team at support@projectcentral.com</p>
+				<p>Need help? Contact our support team at support@SyncOrbit.com</p>
 			</div>
 		</div>
 		<div style={{
@@ -350,7 +350,7 @@ export const InvitationEmailTemplate = ({
 			fontSize: '13px',
 			color: '#6c757d'
 		}}>
-			<p>&copy; 2025 Project Central. You think we&apos;ll deliver.</p>
+			<p>&copy; 2025 SyncOrbit. You think we&apos;ll deliver.</p>
 			<p>Transform your digital dreams into reality</p>
 		</div>
 	</div>

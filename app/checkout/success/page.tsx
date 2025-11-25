@@ -40,7 +40,7 @@ export default function CheckoutSuccessPage() {
                             transition={{ delay: 0.4 }}
                             className="text-xl text-gray-600 dark:text-gray-300 mb-8"
                         >
-                            Welcome to ProjectCentral! Your account has been successfully activated.
+                            Welcome to SyncOrbit! Your account has been successfully activated.
                         </motion.p>
                     </div>
                     <motion.div
@@ -85,7 +85,7 @@ export default function CheckoutSuccessPage() {
                                             Onboarding support
                                         </h4>
                                         <p className="text-sm text-gray-600 dark:text-gray-300">
-                                            Our team will help you get the most out of ProjectCentral with personalized onboarding.
+                                            Our team will help you get the most out of SyncOrbit with personalized onboarding.
                                         </p>
                                     </div>
                                 </div>
@@ -107,8 +107,8 @@ export default function CheckoutSuccessPage() {
                         <div className="pt-8 border-t border-gray-200 dark:border-gray-700">
                             <p className="text-sm text-gray-500 dark:text-gray-400">
                                 Need help? Contact our support team at{" "}
-                                <Link href="mailto:support@projectcentral.com" className="text-blue-600 hover:underline">
-                                    support@projectcentral.com
+                                <Link href="mailto:support@SyncOrbit.com" className="text-blue-600 hover:underline">
+                                    support@SyncOrbit.com
                                 </Link>
                             </p>
                         </div>

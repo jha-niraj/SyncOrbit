@@ -1,13 +1,13 @@
-# ProjectCentral - AI Assistant Context
+# SyncOrbit - AI Assistant Context
 
 ## Project Overview
-**Name**: ProjectCentral  
+**Name**: SyncOrbit  
 **Type**: SaaS Project Management Platform  
 **Tech Stack**: Next.js 14, TypeScript, Tailwind CSS, Prisma, NextAuth  
 **Target**: Product Managers, Developers, and Clients  
 
 ## Key Project Information
-- **Company**: Previously ShunyaTech, now rebranded to ProjectCentral
+- **Company**: Previously ShunyaTech, now rebranded to SyncOrbit
 - **Main Purpose**: Project management and collaboration platform
 - **Deployment Target**: Production-ready SaaS application
 - **Theme Support**: Light/Dark mode with `bg-white dark:bg-neutral-900`

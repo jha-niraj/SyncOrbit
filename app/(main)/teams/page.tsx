@@ -8,11 +8,11 @@ import { Role } from "@prisma/client"
 import { Metadata } from "next"
 
 export const metadata: Metadata = {
-    title: "Teams | ProjectCentral",
+    title: "Teams | SyncOrbit",
     description: "Manage your company teams and members. Create teams, invite members, and organize your workforce efficiently.",
     keywords: ["teams", "team management", "collaboration", "project management", "workforce"],
     openGraph: {
-        title: "Teams | ProjectCentral",
+        title: "Teams | SyncOrbit",
         description: "Manage your company teams and members efficiently",
         type: "website",
     },

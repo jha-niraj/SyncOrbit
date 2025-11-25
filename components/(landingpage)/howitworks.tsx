@@ -59,7 +59,7 @@ const HowItWorks = () => {
                         Three steps to <span className="text-orange-500">clarity</span>
                     </h2>
                     <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto leading-relaxed">
-                        From setup to delivery — ProjectCentral gets your team productive fast without the complex onboarding or steep learning curves.
+                        From setup to delivery — SyncOrbit gets your team productive fast without the complex onboarding or steep learning curves.
                     </p>
                 </div>
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 items-center">

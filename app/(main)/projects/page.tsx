@@ -6,11 +6,11 @@ import ProjectsPageClient from "./_components/ProjectsPageClient"
 import { Metadata } from "next"
 
 export const metadata: Metadata = {
-    title: "Projects | ProjectCentral",
+    title: "Projects | SyncOrbit",
     description: "Manage your assigned projects and collaborate with your teams. Track progress, budgets, and team assignments.",
     keywords: ["projects", "project management", "collaboration", "teams", "tasks"],
     openGraph: {
-        title: "Projects | ProjectCentral",
+        title: "Projects | SyncOrbit",
         description: "Manage your assigned projects and collaborate with your teams",
         type: "website",
     },

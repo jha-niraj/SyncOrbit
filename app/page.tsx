@@ -15,6 +15,7 @@ import Footer from "@/components/footer";
 import HowItWorks from "@/components/(landingpage)/howitworks";
 import Testimonials from "@/components/(landingpage)/testimonials";
 import SmoothScroll from "@/components/smoothscroll";
+import WorkflowSimulation from "@/components/(landingpage)/workflowmodel";
 
 const LandingPage = () => {
     // Initialize intersection observer to detect when elements enter viewport
@@ -70,6 +71,7 @@ const LandingPage = () => {
                     <Hero />
                     <HumanoidSection />
                     <SpecsSection />
+                    <WorkflowSimulation />
                     <DetailsSection />
                     <ImageShowcaseSection />
                     <Features />
