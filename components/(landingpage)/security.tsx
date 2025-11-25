@@ -20,7 +20,7 @@ const Security = () => {
                         </h2>
                     </div>
                     <p className="text-lg text-gray-600 dark:text-gray-400 max-w-sm md:text-right">
-                        We don't just protect your data; we treat it as our most valuable asset.
+                        We don&apos;t just protect your data; we treat it as our most valuable asset.
                     </p>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

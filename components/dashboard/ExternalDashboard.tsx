@@ -34,7 +34,7 @@ export function ExternalDashboard({ user, stats, activeProjects }: ExternalDashb
                         {greeting()}, {user.name?.split(" ")[0] || "there"}! 👋
                     </h1>
                     <p className="text-muted-foreground mt-1">
-                        Welcome to your client portal. Here's an overview of your projects.
+                        Welcome to your client portal. Here&apos;s an overview of your projects.
                     </p>
                 </div>
                 <div className="flex gap-2">

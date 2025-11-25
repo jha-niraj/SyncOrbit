@@ -29,14 +29,13 @@ export function InternalDashboard({ user, stats, recentProjects }: InternalDashb
 
     return (
         <div className="p-6 space-y-8">
-            {/* Greeting Section */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
                     <h1 className="text-3xl font-bold tracking-tight">
                         {greeting()}, {user.name?.split(" ")[0] || "there"}! 👋
                     </h1>
                     <p className="text-muted-foreground mt-1">
-                        Here's what's happening with your projects today.
+                        Here's what&apos;s happening with your projects today.
                     </p>
                 </div>
                 <div className="flex gap-2">
@@ -46,8 +45,6 @@ export function InternalDashboard({ user, stats, recentProjects }: InternalDashb
                     {/* Create Project button is in sidebar, but maybe add a shortcut here? */}
                 </div>
             </div>
-
-            {/* Stats Grid */}
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">

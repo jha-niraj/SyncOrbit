@@ -1,7 +1,7 @@
 import { Role } from "@prisma/client"
 import {
     Home, Briefcase, Users, Building2, BarChart3, Settings, UserPlus, Crown, Calendar,
-    MessageSquare, FileText, Bell, Layers, Shield, Target, TrendingUp, DollarSign, Eye,
+    MessageSquare, FileText, Bell, Layers, Target, TrendingUp, DollarSign, Eye,
     Award, Coffee
 } from "lucide-react"
 

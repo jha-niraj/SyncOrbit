@@ -2,9 +2,9 @@
 
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight, Check, Zap, Star, Sparkles } from "lucide-react";
-import clsx, { ClassValue } from "clsx";
-import { twMerge } from "tailwind-merge";
+import { 
+    ArrowRight, Check, Zap, Sparkles 
+} from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { ToggleSwitch } from "@/app/(home)/pricing/page";

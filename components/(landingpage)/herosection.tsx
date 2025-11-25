@@ -6,6 +6,7 @@ import Image from "next/image";
 
 const Hero = () => {
     const [isMobile, setIsMobile] = useState(false);
+    console.log(isMobile)
 
     useEffect(() => {
         const checkMobile = () => {

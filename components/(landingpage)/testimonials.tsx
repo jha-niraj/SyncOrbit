@@ -94,7 +94,7 @@ const TestimonialsColumn = (props: {
                                         key={i}
                                         className="p-8 rounded-3xl border border-gray-100 dark:border-neutral-800 bg-white dark:bg-neutral-900 shadow-lg dark:shadow-none"
                                     >
-                                        <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-6">"{text}"</p>
+                                        <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-6">&quot;{text}&quot;</p>
                                         <div className="flex items-center gap-3">
                                             <Image
                                                 src={image}

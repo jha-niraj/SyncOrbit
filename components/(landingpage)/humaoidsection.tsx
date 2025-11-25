@@ -112,7 +112,7 @@ const HumanoidSection = () => {
                                 // Logic to determine visibility and position
                                 const isActive = index === activeCardIndex;
                                 const isPast = index < activeCardIndex;
-                                const isFuture = index > activeCardIndex;
+                                // const isFuture = index > activeCardIndex;
 
                                 // Calculate transforms based on index vs active
                                 // If it's the active card: Scale 1, Y 0
@@ -121,7 +121,7 @@ const HumanoidSection = () => {
 
                                 let transform = 'translateY(120%) scale(0.9)';
                                 let opacity = 0;
-                                let zIndex = index * 10;
+                                const zIndex = index * 10;
 
                                 if (isActive) {
                                     transform = 'translateY(0) scale(1)';

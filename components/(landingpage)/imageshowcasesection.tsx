@@ -11,7 +11,7 @@ const ImageShowcaseSection = () => {
                     </h2>
                     <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl">
                         Our cutting-edge platform is designed to transform how you interact
-                        with your team, visualizing data in ways you've never seen before.
+                        with your team, visualizing data in ways you&apos;ve never seen before.
                     </p>
                 </div>
                 <div className="relative max-w-6xl mx-auto perspective-1000">
