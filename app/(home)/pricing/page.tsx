@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
     Check, X, Star, Zap, Shield, Users, Building2, Target, ArrowRight,
@@ -9,6 +9,10 @@ import {
 import { FeatureDefinition, Plan } from "@/types/pricing";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { useSearchParams } from "next/navigation";
+import { PlanSelectionDialog } from "@/components/pricing/plan-selection-dialog";
+import { PaymentVerificationDialog } from "@/components/pricing/payment-verification-dialog";
+import { SubscriptionPlanType } from "@/lib/dodopayments";
 
 export const pricingData = {
     USD: {
@@ -105,9 +109,41 @@ export const ToggleSwitch = ({
 };
 
 export default function PricingPage() {
+    const searchParams = useSearchParams();
+    const sessionId = searchParams.get("session_id");
+
     const [currency, setCurrency] = useState<'USD' | 'INR'>('USD');
     const [billingCycle, setBillingCycle] = useState<'monthly' | 'annual'>('monthly');
     const [openFaq, setOpenFaq] = useState<number | null>(null);
+
+    // Payment dialog states
+    const [selectedPlan, setSelectedPlan] = useState<SubscriptionPlanType | null>(null);
+    const [showPlanDialog, setShowPlanDialog] = useState(false);
+    const [showVerificationDialog, setShowVerificationDialog] = useState(false);
+
+    // Show verification dialog if session_id is present
+    useEffect(() => {
+        if (sessionId) {
+            setShowVerificationDialog(true);
+        }
+    }, [sessionId]);
+
+    const handlePlanClick = (planId: string, e: React.MouseEvent) => {
+        // Map plan IDs to subscription plan types
+        const planMap: Record<string, SubscriptionPlanType> = {
+            'starter': 'FREE',
+            'professional': 'STARTER',
+            'enterprise': 'PROFESSIONAL'
+        };
+
+        const subscriptionPlan = planMap[planId];
+
+        if (subscriptionPlan && subscriptionPlan !== 'FREE') {
+            e.preventDefault();
+            setSelectedPlan(subscriptionPlan);
+            setShowPlanDialog(true);
+        }
+    };
 
     const plans: Plan[] = [
         {
@@ -335,18 +371,33 @@ export default function PricingPage() {
                                             }
                                         </div>
                                     </div>
-                                    <Link
-                                        href={plan.link}
-                                        className={cn(
-                                            "w-full py-4 rounded-xl font-bold text-sm transition-all duration-300 flex items-center justify-center group",
-                                            plan.popular
-                                                ? "bg-[#FE5C02] hover:bg-orange-600 text-white shadow-lg shadow-orange-500/25 transform hover:-translate-y-0.5"
-                                                : "bg-white dark:bg-neutral-800 border border-gray-200 dark:border-neutral-700 text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-neutral-700"
-                                        )}
-                                    >
-                                        {plan.cta}
-                                        <ArrowRight className="w-4 h-4 ml-2 transition-transform group-hover:translate-x-1" />
-                                    </Link>
+                                    {
+                                        plan.id === 'starter' ? (
+                                            <Link
+                                                href={plan.link}
+                                                className={cn(
+                                                    "w-full py-4 rounded-xl font-bold text-sm transition-all duration-300 flex items-center justify-center group",
+                                                    "bg-white dark:bg-neutral-800 border border-gray-200 dark:border-neutral-700 text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-neutral-700"
+                                                )}
+                                            >
+                                                {plan.cta}
+                                                <ArrowRight className="w-4 h-4 ml-2 transition-transform group-hover:translate-x-1" />
+                                            </Link>
+                                        ) : (
+                                            <button
+                                                onClick={(e) => handlePlanClick(plan.id, e)}
+                                                className={cn(
+                                                    "w-full py-4 rounded-xl font-bold text-sm transition-all duration-300 flex items-center justify-center group",
+                                                    plan.popular
+                                                        ? "bg-[#FE5C02] hover:bg-orange-600 text-white shadow-lg shadow-orange-500/25 transform hover:-translate-y-0.5"
+                                                        : "bg-white dark:bg-neutral-800 border border-gray-200 dark:border-neutral-700 text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-neutral-700"
+                                                )}
+                                            >
+                                                {plan.cta}
+                                                <ArrowRight className="w-4 h-4 ml-2 transition-transform group-hover:translate-x-1" />
+                                            </button>
+                                        )
+                                    }
                                 </motion.div>
                             ))
                         }
@@ -489,6 +540,24 @@ export default function PricingPage() {
                     </div>
                 </div>
             </section>
+            {
+                selectedPlan && (
+                    <PlanSelectionDialog
+                        open={showPlanDialog}
+                        onOpenChange={setShowPlanDialog}
+                        plan={selectedPlan}
+                    />
+                )
+            }
+            {
+                sessionId && (
+                    <PaymentVerificationDialog
+                        open={showVerificationDialog}
+                        onOpenChange={setShowVerificationDialog}
+                        sessionId={sessionId}
+                    />
+                )
+            }
         </div>
     );
 }

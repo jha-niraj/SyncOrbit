@@ -33,7 +33,7 @@ export const navigationConfig: NavigationConfig = {
             label: "Dashboard",
             icon: <Home className="h-5 w-5" />,
             status: "active",
-            roles: ['COMPANY_OWNER', 'TEAM_HEAD', 'TEAM_MEMBER', 'ADMIN'],
+            roles: ['COMPANY_OWNER', 'TEAM_HEAD', 'TEAM_MEMBER'],
             modes: ['internal']
         },
         {
@@ -41,7 +41,7 @@ export const navigationConfig: NavigationConfig = {
             label: "Team",
             icon: <Users className="h-5 w-5" />,
             status: "active",
-            roles: ['COMPANY_OWNER', 'TEAM_HEAD', 'TEAM_MEMBER', 'ADMIN'],
+            roles: ['COMPANY_OWNER', 'TEAM_HEAD', 'TEAM_MEMBER'],
             modes: ['internal']
         },
         {

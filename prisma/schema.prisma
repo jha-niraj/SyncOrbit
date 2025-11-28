@@ -158,6 +158,9 @@ model User {
     createdAt         DateTime  @default(now())
     updatedAt         DateTime  @updatedAt
     totalSpent        Float     @default(0)
+    
+    // Dodo Payments customer ID
+    dodoCustomerId    String?   @unique
 
     // Company relationship
     companyId      String?
@@ -211,6 +214,10 @@ model User {
     projectTeamAssignments ProjectTeam[]    @relation("ProjectTeamAssigner")
     projectInvitesSent     ProjectInvite[]  @relation("ProjectInviter")
     createdTasks           Task[]           @relation("TaskCreator")
+    
+    // Subscription and payment relations
+    subscriptions       Subscription[]
+    payments            Payment[]
 }
 
 model Company {
@@ -684,4 +691,130 @@ model Newsletter {
     
     @@index([email])
     @@index([subscribedAt])
+}
+
+// Subscription Plans
+enum SubscriptionPlan {
+    FREE
+    STARTER
+    PROFESSIONAL
+    ENTERPRISE
+}
+
+enum SubscriptionStatus {
+    ACTIVE
+    CANCELLED
+    EXPIRED
+    PAST_DUE
+    TRIALING
+}
+
+enum PaymentStatus {
+    PENDING
+    PROCESSING
+    SUCCEEDED
+    FAILED
+    REFUNDED
+    CANCELLED
+}
+
+// Subscription model
+model Subscription {
+    id                  String              @id @default(cuid())
+    
+    // User relationship
+    userId              String
+    user                User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+    
+    // Plan details
+    plan                SubscriptionPlan    @default(FREE)
+    status              SubscriptionStatus  @default(ACTIVE)
+    
+    // Dodo Payments IDs
+    dodoSubscriptionId  String?             @unique
+    dodoProductId       String?
+    dodoPriceId         String?
+    
+    // Plan limits
+    maxProjects         Int                 @default(3)      // FREE: 3, STARTER: 10, PRO: 50, ENTERPRISE: unlimited
+    maxTeams            Int                 @default(1)      // FREE: 1, STARTER: 3, PRO: 10, ENTERPRISE: unlimited
+    maxTeamMembers      Int                 @default(5)      // FREE: 5, STARTER: 15, PRO: 50, ENTERPRISE: unlimited
+    maxStorage          Int                 @default(1)      // In GB - FREE: 1, STARTER: 10, PRO: 100, ENTERPRISE: unlimited
+    
+    // Features
+    hasAdvancedAnalytics Boolean            @default(false)
+    hasPrioritySupport   Boolean            @default(false)
+    hasCustomBranding    Boolean            @default(false)
+    hasApiAccess         Boolean            @default(false)
+    
+    // Billing
+    amount              Float               @default(0)
+    currency            String              @default("USD")
+    billingCycle        String?             // monthly, yearly
+    
+    // Dates
+    currentPeriodStart  DateTime            @default(now())
+    currentPeriodEnd    DateTime?
+    trialStart          DateTime?
+    trialEnd            DateTime?
+    cancelledAt         DateTime?
+    
+    // Metadata
+    metadata            Json?
+    
+    createdAt           DateTime            @default(now())
+    updatedAt           DateTime            @updatedAt
+    
+    // Relations
+    payments            Payment[]
+    
+    @@index([userId])
+    @@index([status])
+    @@index([dodoSubscriptionId])
+}
+
+// Payment transactions
+model Payment {
+    id                      String          @id @default(cuid())
+    
+    // User and subscription
+    userId                  String
+    user                    User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+    
+    subscriptionId          String?
+    subscription            Subscription?   @relation(fields: [subscriptionId], references: [id])
+    
+    // Dodo Payments IDs
+    dodoPaymentId           String?         @unique
+    dodoCheckoutSessionId   String?         @unique
+    
+    // Payment details
+    amount                  Float
+    currency                String          @default("USD")
+    status                  PaymentStatus   @default(PENDING)
+    
+    // Payment method
+    paymentMethod           String?         // card, bank_transfer, etc.
+    
+    // Billing details
+    billingEmail            String?
+    billingName             String?
+    
+    // Metadata
+    description             String?
+    metadata                Json?
+    
+    // Dates
+    paidAt                  DateTime?
+    failedAt                DateTime?
+    refundedAt              DateTime?
+    
+    createdAt               DateTime        @default(now())
+    updatedAt               DateTime        @updatedAt
+    
+    @@index([userId])
+    @@index([subscriptionId])
+    @@index([status])
+    @@index([dodoPaymentId])
+    @@index([dodoCheckoutSessionId])
 }
