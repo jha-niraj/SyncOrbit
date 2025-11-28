@@ -50,7 +50,7 @@ export const SUBSCRIPTION_PLANS = {
         hasPrioritySupport: false,
         hasCustomBranding: false,
         hasApiAccess: false,
-        dodoProductId: 'pdt_gIC9hBW3PVV7NEq5cRdTJA', // Starter plan product ID (INR 2000)
+        dodoProductId: 'pdt_gIC9hBW3PVV7NEq5cRdTJ', // Starter plan product ID (INR 2000)
         features: [
             'Up to 10 projects',
             '3 teams',

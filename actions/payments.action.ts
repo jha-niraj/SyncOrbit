@@ -148,8 +148,8 @@ export async function createCheckoutSession(
 			const checkoutSession = await dodoClient.checkoutSessions.create(checkoutSessionData);
 			console.log('Checkout session created:', checkoutSession);
 
-			// Get the payment link URL
-			const sessionUrl = (checkoutSession as any).payment_link || (checkoutSession as any).url || '';
+			// Get the checkout URL
+			const sessionUrl = (checkoutSession as any).checkout_url || (checkoutSession as any).payment_link || (checkoutSession as any).url || '';
 			const sessionId = checkoutSession.session_id || '';
 			
 			if (!sessionUrl) {
