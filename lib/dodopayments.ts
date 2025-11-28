@@ -1,11 +1,14 @@
 import DodoPayments from 'dodopayments';
 
-if (!process.env.NEXT_PUBLIC_DODO_PAYMENTS_API_KEY) {
+// Use server-side only API key (without NEXT_PUBLIC_ prefix for security)
+const apiKey = process.env.DODO_PAYMENTS_API_KEY || process.env.NEXT_PUBLIC_DODO_PAYMENTS_API_KEY;
+
+if (!apiKey) {
     throw new Error('DODO_PAYMENTS_API_KEY is not set in environment variables');
 }
 
 export const dodoClient = new DodoPayments({
-    bearerToken: process.env.NEXT_PUBLIC_DODO_PAYMENTS_API_KEY,
+    bearerToken: apiKey,
     environment: 'test_mode', // Change to 'live_mode' for production
 });
 
@@ -24,6 +27,7 @@ export const SUBSCRIPTION_PLANS = {
         hasPrioritySupport: false,
         hasCustomBranding: false,
         hasApiAccess: false,
+        dodoProductId: null, // No product needed for free plan
         features: [
             'Up to 3 projects',
             '1 team',
@@ -46,6 +50,7 @@ export const SUBSCRIPTION_PLANS = {
         hasPrioritySupport: false,
         hasCustomBranding: false,
         hasApiAccess: false,
+        dodoProductId: 'pdt_gIC9hBW3PVV7NEq5cRdTJA', // Starter plan product ID (INR 2000)
         features: [
             'Up to 10 projects',
             '3 teams',
@@ -69,6 +74,7 @@ export const SUBSCRIPTION_PLANS = {
         hasPrioritySupport: true,
         hasCustomBranding: false,
         hasApiAccess: true,
+        dodoProductId: 'pdt_ilvOmnTjvfAS1jCXaswWRS', // Professional plan product ID
         features: [
             'Up to 50 projects',
             '10 teams',
@@ -94,6 +100,7 @@ export const SUBSCRIPTION_PLANS = {
         hasPrioritySupport: true,
         hasCustomBranding: true,
         hasApiAccess: true,
+        dodoProductId: null, // Contact sales - no direct product
         features: [
             'Unlimited projects',
             'Unlimited teams',

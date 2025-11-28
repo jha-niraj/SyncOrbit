@@ -112,7 +112,7 @@ export default function PricingPage() {
     const searchParams = useSearchParams();
     const sessionId = searchParams.get("session_id");
 
-    const [currency, setCurrency] = useState<'USD' | 'INR'>('USD');
+    const [currency, setCurrency] = useState<'USD' | 'INR'>('INR');
     const [billingCycle, setBillingCycle] = useState<'monthly' | 'annual'>('monthly');
     const [openFaq, setOpenFaq] = useState<number | null>(null);
 
@@ -143,6 +143,25 @@ export default function PricingPage() {
             setSelectedPlan(subscriptionPlan);
             setShowPlanDialog(true);
         }
+    };
+
+    // Get the current price for the selected plan
+    const getSelectedPlanPrice = () => {
+        if (!selectedPlan) return { price: 0, currency: 'USD' as const, symbol: '$' };
+        
+        const planMap: Record<SubscriptionPlanType, 'starter' | 'professional' | 'enterprise'> = {
+            'FREE': 'starter',
+            'STARTER': 'professional',
+            'PROFESSIONAL': 'enterprise',
+            'ENTERPRISE': 'enterprise'
+        };
+        
+        const planKey = planMap[selectedPlan];
+        const planData = pricingData[currency][planKey];
+        const price = typeof planData === 'object' ? planData[billingCycle] : 0;
+        const symbol = pricingData[currency].symbol;
+        
+        return { price, currency, symbol };
     };
 
     const plans: Plan[] = [
@@ -546,6 +565,10 @@ export default function PricingPage() {
                         open={showPlanDialog}
                         onOpenChange={setShowPlanDialog}
                         plan={selectedPlan}
+                        selectedCurrency={currency}
+                        selectedPrice={getSelectedPlanPrice().price}
+                        currencySymbol={getSelectedPlanPrice().symbol}
+                        billingCycle={billingCycle}
                     />
                 )
             }

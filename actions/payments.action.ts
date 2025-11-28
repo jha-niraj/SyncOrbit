@@ -8,6 +8,8 @@ import { revalidatePath } from "next/cache";
 interface CreateCheckoutSessionParams {
 	plan: SubscriptionPlanType;
 	returnUrl: string;
+	currency?: 'USD' | 'INR';
+	amount?: number;
 }
 
 interface CreateCheckoutSessionResult {
@@ -17,9 +19,6 @@ interface CreateCheckoutSessionResult {
 	error?: string;
 }
 
-/**
- * Create a checkout session for a subscription plan
- */
 export async function createCheckoutSession(
 	params: CreateCheckoutSessionParams
 ): Promise<CreateCheckoutSessionResult> {
@@ -30,7 +29,7 @@ export async function createCheckoutSession(
 			return { success: false, error: "Unauthorized" };
 		}
 
-		const { plan, returnUrl } = params;
+		const { plan, returnUrl, currency = 'USD', amount } = params;
 
 		// Validate plan
 		if (!SUBSCRIPTION_PLANS[plan]) {
@@ -46,8 +45,15 @@ export async function createCheckoutSession(
 
 		// Get or create Dodo customer
 		let user = await prisma.user.findUnique({
-			where: { id: session.user.id },
-			select: { id: true, email: true, name: true, dodoCustomerId: true },
+			where: { 
+				id: session.user.id 
+			},
+			select: { 
+				id: true, 
+				email: true, 
+				name: true, 
+				dodoCustomerId: true 
+			},
 		});
 
 		if (!user) {
@@ -59,6 +65,8 @@ export async function createCheckoutSession(
 		// Create Dodo customer if doesn't exist
 		if (!dodoCustomerId && user.email) {
 			try {
+				console.log('Creating Dodo customer for user:', user.id);
+				
 				const customerData: any = {
 					email: user.email,
 					name: user.name || undefined,
@@ -68,12 +76,16 @@ export async function createCheckoutSession(
 				};
 				
 				const customer = await dodoClient.customers.create(customerData);
+				console.log('Dodo customer created:', customer);
 
 				// Extract customer ID with fallbacks
 				const customerId = (customer.customer_id || (customer as any).id || '') as string;
 				if (!customerId) {
+					console.error('No customer ID in response:', customer);
 					throw new Error('No customer ID returned from Dodo Payments');
 				}
+				
+				console.log('Customer ID extracted:', customerId);
 				dodoCustomerId = customerId;
 
 				// Update user with Dodo customer ID
@@ -82,10 +94,15 @@ export async function createCheckoutSession(
 						where: { id: user.id },
 						data: { dodoCustomerId },
 					});
+					console.log('User updated with Dodo customer ID');
 				}
-			} catch (error) {
+			} catch (error: any) {
 				console.error("Error creating Dodo customer:", error);
-				return { success: false, error: "Failed to create customer" };
+				console.error("Error details:", error.message, error.response?.data);
+				return { 
+					success: false, 
+					error: `Failed to create customer: ${error.message || 'Unknown error'}` 
+				};
 			}
 		}
 
@@ -95,46 +112,88 @@ export async function createCheckoutSession(
 		}
 
 		// Create checkout session
-		// Note: You'll need to create products in Dodo Payments dashboard first
-		// For now, we'll create a simple checkout session
 		try {
-			const checkoutSession = await dodoClient.checkoutSessions.create({
-				payment_link: true,
+			// Prepare checkout session data
+			const paymentAmount = amount || planConfig.price;
+			const paymentCurrency = currency;
+			
+			// Get the product ID for the plan
+			const productId = (planConfig as any).dodoProductId;
+			if (!productId) {
+				return { 
+					success: false, 
+					error: `No product ID configured for ${planConfig.name} plan` 
+				};
+			}
+			
+			const checkoutSessionData: any = {
+				product_cart: [
+					{
+						product_id: productId,
+						quantity: 1,
+					},
+				],
 				success_url: returnUrl,
+				customer_id: dodoCustomerId, // Use customer_id instead of customer
 				metadata: {
 					user_id: user.id,
 					plan: plan,
 					customer_id: dodoCustomerId,
+					currency: paymentCurrency,
+					amount: paymentAmount.toString(),
 				},
-			} as any);
+			};
+			
+			console.log('Creating checkout session with data:', checkoutSessionData);
+			const checkoutSession = await dodoClient.checkoutSessions.create(checkoutSessionData);
+			console.log('Checkout session created:', checkoutSession);
+
+			// Get the payment link URL
+			const sessionUrl = (checkoutSession as any).payment_link || (checkoutSession as any).url || '';
+			const sessionId = checkoutSession.session_id || '';
+			
+			if (!sessionUrl) {
+				console.error('No payment URL in checkout session:', checkoutSession);
+				throw new Error('No payment URL returned from Dodo Payments');
+			}
+			
+			if (!sessionId) {
+				console.error('No session ID in checkout session:', checkoutSession);
+				throw new Error('No session ID returned from Dodo Payments');
+			}
 
 			// Create pending payment record
 			await prisma.payment.create({
 				data: {
 					userId: user.id,
-					dodoCheckoutSessionId: checkoutSession.session_id || '',
-					amount: planConfig.price,
-					currency: planConfig.currency,
+					dodoCheckoutSessionId: sessionId,
+					amount: paymentAmount,
+					currency: paymentCurrency,
 					status: 'PENDING',
-					description: `${planConfig.name} Plan - ${planConfig.billingCycle}`,
+					description: `${planConfig.name} Plan - ${planConfig.billingCycle} (${paymentCurrency})`,
 					metadata: {
 						plan,
 						billingCycle: planConfig.billingCycle,
+						currency: paymentCurrency,
+						amount: paymentAmount,
 					},
 				},
 			});
-
-			// Get the payment link URL
-			const sessionUrl = (checkoutSession as any).payment_link || (checkoutSession as any).url || '';
+			
+			console.log('Payment record created successfully');
 
 			return {
 				success: true,
 				sessionUrl,
-				sessionId: checkoutSession.session_id || '',
+				sessionId,
 			};
-		} catch (error) {
+		} catch (error: any) {
 			console.error("Error creating checkout session:", error);
-			return { success: false, error: "Failed to create checkout session" };
+			console.error("Error details:", error.message, error.response?.data);
+			return { 
+				success: false, 
+				error: `Failed to create checkout session: ${error.message || 'Unknown error'}` 
+			};
 		}
 	} catch (error) {
 		console.error("Error in createCheckoutSession:", error);
@@ -152,9 +211,6 @@ interface VerifyPaymentResult {
 	error?: string;
 }
 
-/**
- * Verify payment and create/update subscription
- */
 export async function verifyPayment(
 	params: VerifyPaymentParams
 ): Promise<VerifyPaymentResult> {
@@ -239,14 +295,19 @@ export async function verifyPayment(
 					},
 				});
 
+				// Get currency and amount from payment metadata
+				const paymentMetadata = payment.metadata as any;
+				const subscriptionCurrency = paymentMetadata?.currency || planConfig.currency;
+				const subscriptionAmount = paymentMetadata?.amount || planConfig.price;
+
 				// Create new subscription
 				const subscription = await prisma.subscription.create({
 					data: {
 						userId: session.user.id,
 						plan: plan,
 						status: 'ACTIVE',
-						amount: planConfig.price,
-						currency: planConfig.currency,
+						amount: subscriptionAmount,
+						currency: subscriptionCurrency,
 						billingCycle: planConfig.billingCycle,
 						maxProjects: planConfig.maxProjects,
 						maxTeams: planConfig.maxTeams,
@@ -261,6 +322,7 @@ export async function verifyPayment(
 						metadata: {
 							checkoutSessionId: sessionId,
 							paymentId: payment.id,
+							currency: subscriptionCurrency,
 						},
 					},
 				});
@@ -298,9 +360,6 @@ export async function verifyPayment(
 	}
 }
 
-/**
- * Get current user subscription
- */
 export async function getCurrentSubscription() {
 	try {
 		const session = await auth();
