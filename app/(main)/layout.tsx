@@ -6,17 +6,18 @@ import LoadingScreen from '@/components/loading-screen'
 import { cn } from '@/lib/utils'
 import { hasAccessToPath } from '@/lib/navigation'
 import { Role } from '@prisma/client'
-import { SidebarProvider } from '@/components/navigation/sidebarprovider'
+import { SidebarProvider, useSidebar } from '@/components/navigation/sidebarprovider'
 import { Sidebar } from '@/components/sidebar'
 
 interface LayoutProps {
 	children: React.ReactNode
 }
 
-const Layout = ({ children }: LayoutProps) => {
+function LayoutContent({ children }: LayoutProps) {
 	const { data: session, status } = useSession()
 	const router = useRouter()
 	const pathname = usePathname()
+	const { isCollapsed } = useSidebar()
 
 	// Handle loading state
 	if (status === 'loading') {
@@ -41,19 +42,26 @@ const Layout = ({ children }: LayoutProps) => {
 	}
 
 	return (
-		<SidebarProvider>
-			<div className="flex h-screen bg-background">
-				<Sidebar />
-				<div className={cn(
-					"flex-1 flex flex-col transition-all duration-300 lg:ml-[90px]",
-				)}>
-					<main className="flex-1 overflow-auto">
-						<div className="h-full">
-							{children}
-						</div>
-					</main>
-				</div>
+		<div className="flex h-screen bg-neutral-50 dark:bg-black">
+			<Sidebar />
+			<div className={cn(
+				"flex-1 flex flex-col transition-all duration-300",
+				isCollapsed ? "lg:ml-[90px]" : "lg:ml-64"
+			)}>
+				<main className="flex-1 overflow-auto">
+					<div className="h-full">
+						{children}
+					</div>
+				</main>
 			</div>
+		</div>
+	)
+}
+
+const Layout = ({ children }: LayoutProps) => {
+	return (
+		<SidebarProvider>
+			<LayoutContent>{children}</LayoutContent>
 		</SidebarProvider>
 	)
 }

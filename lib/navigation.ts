@@ -2,7 +2,7 @@ import { Role } from "@prisma/client"
 import {
     Home, Briefcase, Users, Building2, BarChart3, Settings, UserPlus, Crown, Calendar,
     MessageSquare, FileText, Bell, Layers, Target, TrendingUp, DollarSign, Eye,
-    Award, Coffee
+    Award, Coffee, Wrench, Receipt, FolderOpen, ClipboardList, CheckSquare, Clock
 } from "lucide-react"
 
 export interface NavigationItem {
@@ -26,7 +26,7 @@ export interface RoleNavigation {
 
 // Navigation configurations for different roles
 export const roleNavigations: RoleNavigation[] = [
-    // Company Owner Navigation
+    // Company Owner Navigation - Single unified view
     {
         role: Role.COMPANY_OWNER,
         primary: [
@@ -38,13 +38,13 @@ export const roleNavigations: RoleNavigation[] = [
                 children: [
                     {
                         path: "dashboard",
-                        name: "Internal",
+                        name: "Internal Metrics",
                         icon: Home,
-                        description: "Internal projects overview"
+                        description: "Internal operations overview"
                     },
                     {
-                        path: "dashboard/clients",
-                        name: "External",
+                        path: "dashboard/external",
+                        name: "Client Overview",
                         icon: Building2,
                         description: "Client projects overview"
                     }
@@ -54,13 +54,25 @@ export const roleNavigations: RoleNavigation[] = [
                 path: "projects",
                 name: "Projects",
                 icon: Briefcase,
-                description: "Manage projects",
+                description: "Manage all projects",
                 children: [
                     {
                         path: "projects",
                         name: "All Projects",
                         icon: Layers,
                         description: "View all projects"
+                    },
+                    {
+                        path: "projects/internal",
+                        name: "Internal Projects",
+                        icon: Briefcase,
+                        description: "Company internal projects"
+                    },
+                    {
+                        path: "projects/client",
+                        name: "Client Projects",
+                        icon: Building2,
+                        description: "Client deliverables"
                     },
                     {
                         path: "#create-project",
@@ -78,16 +90,74 @@ export const roleNavigations: RoleNavigation[] = [
                 description: "Manage company teams and members"
             },
             {
-                path: "analytics",
-                name: "Analytics",
-                icon: BarChart3,
-                description: "Business insights and reports"
-            },
-            {
                 path: "clients",
                 name: "Clients",
                 icon: Building2,
                 description: "Client management and relationships"
+            },
+            {
+                path: "tasks",
+                name: "Task Board",
+                icon: CheckSquare,
+                description: "Company-wide task management"
+            },
+            {
+                path: "schedule",
+                name: "Schedule",
+                icon: Calendar,
+                description: "Calendar and milestones"
+            },
+            {
+                path: "analytics",
+                name: "Analytics",
+                icon: BarChart3,
+                description: "Business insights and reports",
+                children: [
+                    {
+                        path: "analytics/internal",
+                        name: "Internal Analytics",
+                        icon: TrendingUp,
+                        description: "Internal productivity metrics"
+                    },
+                    {
+                        path: "analytics/clients",
+                        name: "Client Analytics",
+                        icon: Building2,
+                        description: "Client project metrics"
+                    }
+                ]
+            },
+            {
+                path: "tools",
+                name: "Tools",
+                icon: Wrench,
+                description: "Company tools and utilities",
+                children: [
+                    {
+                        path: "tools/reports",
+                        name: "Reports",
+                        icon: ClipboardList,
+                        description: "Generate company reports"
+                    },
+                    {
+                        path: "tools/invoices",
+                        name: "Invoices",
+                        icon: Receipt,
+                        description: "Manage invoices and billing"
+                    },
+                    {
+                        path: "tools/documents",
+                        name: "Documents",
+                        icon: FolderOpen,
+                        description: "Company documents"
+                    }
+                ]
+            },
+            {
+                path: "settings",
+                name: "Settings",
+                icon: Settings,
+                description: "Company configuration"
             }
         ],
         secondary: [
@@ -97,23 +167,11 @@ export const roleNavigations: RoleNavigation[] = [
                 icon: UserPlus,
                 description: "Invite and earn",
                 action: "referral"
-            },
-            {
-                path: "settings",
-                name: "Company Settings",
-                icon: Settings,
-                description: "Company configuration"
-            },
-            {
-                path: "invitations",
-                name: "Invitations",
-                icon: UserPlus,
-                description: "Manage team invitations"
             }
         ]
     },
 
-    // Team Head Navigation
+    // Team Head Navigation - Single unified view
     {
         role: Role.TEAM_HEAD,
         primary: [
@@ -125,13 +183,13 @@ export const roleNavigations: RoleNavigation[] = [
                 children: [
                     {
                         path: "dashboard",
-                        name: "Internal",
+                        name: "Team Overview",
                         icon: Home,
-                        description: "Internal projects overview"
+                        description: "Internal team metrics"
                     },
                     {
-                        path: "dashboard/clients",
-                        name: "External",
+                        path: "dashboard/external",
+                        name: "Client Work",
                         icon: Building2,
                         description: "Client projects overview"
                     }
@@ -147,13 +205,19 @@ export const roleNavigations: RoleNavigation[] = [
                         path: "projects",
                         name: "All Projects",
                         icon: Briefcase,
-                        description: "View all projects"
+                        description: "View all accessible projects"
                     },
                     {
-                        path: "team-projects",
-                        name: "Team Projects",
+                        path: "projects/my-projects",
+                        name: "My Projects",
                         icon: Target,
-                        description: "Projects assigned to your teams"
+                        description: "Projects I lead"
+                    },
+                    {
+                        path: "projects/team-projects",
+                        name: "Team Projects",
+                        icon: Users,
+                        description: "Projects assigned to my teams"
                     },
                     {
                         path: "#create-project",
@@ -173,43 +237,8 @@ export const roleNavigations: RoleNavigation[] = [
             {
                 path: "tasks",
                 name: "Task Board",
-                icon: FileText,
+                icon: CheckSquare,
                 description: "Manage team tasks and assignments"
-            },
-            {
-                path: "analytics",
-                name: "Analytics",
-                icon: TrendingUp,
-                description: "Performance metrics",
-                children: [
-                    {
-                        path: "analytics/clients",
-                        name: "Clients",
-                        icon: Users,
-                        description: "Client project analytics"
-                    },
-                    {
-                        path: "analytics/internal",
-                        name: "Internal",
-                        icon: TrendingUp,
-                        description: "Internal project analytics"
-                    }
-                ]
-            },
-        ],
-        secondary: [
-            {
-                path: "#referral",
-                name: "Referral Program",
-                icon: UserPlus,
-                description: "Invite and earn",
-                action: "referral"
-            },
-            {
-                path: "team-settings",
-                name: "Team Settings",
-                icon: Settings,
-                description: "Configure your teams"
             },
             {
                 path: "schedule",
@@ -218,27 +247,64 @@ export const roleNavigations: RoleNavigation[] = [
                 description: "Team calendar and milestones"
             },
             {
-                path: "reports",
-                name: "Reports",
-                icon: FileText,
-                description: "Generate team reports"
+                path: "analytics",
+                name: "Analytics",
+                icon: TrendingUp,
+                description: "Performance metrics",
+                children: [
+                    {
+                        path: "analytics/team",
+                        name: "Team Performance",
+                        icon: TrendingUp,
+                        description: "Internal team analytics"
+                    },
+                    {
+                        path: "analytics/clients",
+                        name: "Client Analytics",
+                        icon: Building2,
+                        description: "Client project analytics"
+                    }
+                ]
             },
             {
-                path: "profile",
-                name: "Profile",
+                path: "tools",
+                name: "Tools",
+                icon: Wrench,
+                description: "Team tools and utilities",
+                children: [
+                    {
+                        path: "tools/reports",
+                        name: "Team Reports",
+                        icon: ClipboardList,
+                        description: "Generate team reports"
+                    },
+                    {
+                        path: "tools/documents",
+                        name: "Documents",
+                        icon: FolderOpen,
+                        description: "Team documents"
+                    }
+                ]
+            },
+            {
+                path: "settings",
+                name: "Team Settings",
                 icon: Settings,
-                description: "Manage your profile"
-            },
+                description: "Configure your teams"
+            }
+        ],
+        secondary: [
             {
-                path: "notifications",
-                name: "Notifications",
-                icon: Bell,
-                description: "Your notifications"
+                path: "#referral",
+                name: "Referral Program",
+                icon: UserPlus,
+                description: "Invite and earn",
+                action: "referral"
             }
         ]
     },
 
-    // Team Member Navigation
+    // Team Member Navigation - Single unified view
     {
         role: Role.TEAM_MEMBER,
         primary: [
@@ -246,21 +312,7 @@ export const roleNavigations: RoleNavigation[] = [
                 path: "dashboard",
                 name: "Dashboard",
                 icon: Home,
-                description: "Your work overview",
-                children: [
-                    {
-                        path: "dashboard",
-                        name: "Internal",
-                        icon: Home,
-                        description: "Internal projects overview"
-                    },
-                    {
-                        path: "dashboard/clients",
-                        name: "External",
-                        icon: Building2,
-                        description: "Client projects overview"
-                    }
-                ]
+                description: "Your work overview"
             },
             {
                 path: "projects",
@@ -271,7 +323,7 @@ export const roleNavigations: RoleNavigation[] = [
             {
                 path: "tasks",
                 name: "My Tasks",
-                icon: FileText,
+                icon: CheckSquare,
                 description: "Your assigned tasks"
             },
             {
@@ -291,6 +343,12 @@ export const roleNavigations: RoleNavigation[] = [
                 name: "Progress",
                 icon: TrendingUp,
                 description: "Track your work progress"
+            },
+            {
+                path: "timesheets",
+                name: "Timesheets",
+                icon: Clock,
+                description: "Log your work hours"
             }
         ],
         secondary: [
@@ -300,29 +358,11 @@ export const roleNavigations: RoleNavigation[] = [
                 icon: UserPlus,
                 description: "Invite and earn",
                 action: "referral"
-            },
-            {
-                path: "profile",
-                name: "Profile",
-                icon: Settings,
-                description: "Manage your profile"
-            },
-            {
-                path: "notifications",
-                name: "Notifications",
-                icon: Bell,
-                description: "Your notifications"
-            },
-            {
-                path: "timesheets",
-                name: "Timesheets",
-                icon: Coffee,
-                description: "Log your work hours"
             }
         ]
     },
 
-    // Client Navigation
+    // Client Navigation - External view only with Invitations
     {
         role: Role.CLIENT,
         primary: [
@@ -357,19 +397,25 @@ export const roleNavigations: RoleNavigation[] = [
                 description: "Communicate with teams"
             },
             {
+                path: "documents",
+                name: "Documents",
+                icon: FolderOpen,
+                description: "Shared documents and files"
+            },
+            {
                 path: "feedback",
                 name: "Feedback",
                 icon: Award,
                 description: "Provide project feedback"
+            },
+            {
+                path: "invitations",
+                name: "Invitations",
+                icon: UserPlus,
+                description: "Project invitations"
             }
         ],
         secondary: [
-            {
-                path: "profile",
-                name: "Profile",
-                icon: Settings,
-                description: "Manage your profile"
-            },
             {
                 path: "companies",
                 name: "Service Providers",
@@ -445,7 +491,7 @@ export const roleFeatures = {
             "Communicate with teams",
             "Access project deliverables",
             "Manage billing information",
-            "Rate service quality"
+            "Accept project invitations"
         ]
     },
     [Role.ADMIN]: {
