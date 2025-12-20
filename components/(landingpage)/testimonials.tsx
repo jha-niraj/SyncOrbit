@@ -3,143 +3,70 @@
 import React from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
+import { Quote } from "lucide-react";
 
-// Updated Data relevant to SyncOrbit
 const testimonials = [
-    {
-        text: "SyncOrbit revolutionized our sprint planning. We cut meeting times by 40% and the team actually enjoys updating their status now.",
-        image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&q=80",
-        name: "Sarah Chen",
-        role: "Product Manager @ TechFlow",
-    },
-    {
-        text: "The gamification features are genius. My engineering team competes to clear the backlog to earn points. Productivity is at an all-time high.",
-        image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80",
-        name: "Michael Rodriguez",
-        role: "CTO @ DevCorp",
-    },
-    {
-        text: "Finally, a tool that handles complex hierarchies without feeling clunky. The 'Team Heads' feature gave our managers the autonomy they needed.",
-        image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=150&q=80",
-        name: "Dr. Amara Patel",
-        role: "Director @ Creative Agency",
-    },
-    {
-        text: "We migrated from Jira in less than a day. The import tool was flawless, and the UI is so much cleaner. No training required.",
-        image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=150&q=80",
-        name: "Omar Raza",
-        role: "Founder @ StartupX",
-    },
-    {
-        text: "The timeline view is actually usable. I can see dependencies across three different departments without the graph breaking.",
-        image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80",
-        name: "Zainab Hussain",
-        role: "Program Manager",
-    },
-    {
-        text: "Customer support is incredible. We needed a custom integration for our internal chat tool and they helped us build it via API.",
-        image: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=150&q=80",
-        name: "Aliza Khan",
-        role: "Tech Lead",
-    },
-    {
-        text: "Best investment we made this year. The ROI on clarity alone is worth it. No more 'what are you working on?' messages.",
-        image: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=150&q=80",
-        name: "Farhan Siddiqui",
-        role: "VP of Operations",
-    },
-    {
-        text: "I love the dark mode implementation. It's easy on the eyes for late-night coding sessions. The UX is top-tier.",
-        image: "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?auto=format&fit=crop&w=150&q=80",
-        name: "Sana Sheikh",
-        role: "Senior Developer",
-    },
-    {
-        text: "From a marketing perspective, managing campaigns here is a breeze. The visual boards make asset tracking very simple.",
-        image: "https://images.unsplash.com/photo-1519345182560-3f2917c472ef?auto=format&fit=crop&w=150&q=80",
-        name: "Hassan Ali",
-        role: "Marketing Lead",
-    },
+    { text: "SyncOrbit revolutionized our sprint planning. Meeting times cut by 40%.", image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&q=80", name: "Sarah Chen", role: "PM @ TechFlow" },
+    { text: "Gamification features are genius. Engineering productivity is at an all-time high.", image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80", name: "M. Rodriguez", role: "CTO @ DevCorp" },
+    { text: "Finally, a tool that handles complex hierarchies without feeling clunky.", image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=150&q=80", name: "Dr. A. Patel", role: "Dir @ Creative" },
+    { text: "Migrated from Jira in less than a day. The import tool was flawless.", image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=150&q=80", name: "Omar Raza", role: "Founder @ StartupX" },
+    { text: "The timeline view is actually usable. Dependencies are clear.", image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80", name: "Zainab H.", role: "Program Manager" },
+    { text: "We needed a custom integration and built it via API in hours.", image: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=150&q=80", name: "Aliza Khan", role: "Tech Lead" },
 ];
 
 const firstColumn = testimonials.slice(0, 3);
 const secondColumn = testimonials.slice(3, 6);
-const thirdColumn = testimonials.slice(6, 9);
 
-const TestimonialsColumn = (props: {
-    className?: string;
-    testimonials: typeof testimonials;
-    duration?: number;
-}) => {
-    return (
-        <div className={props.className}>
-            <motion.div
-                animate={{
-                    translateY: "-50%",
-                }}
-                transition={{
-                    duration: props.duration || 10,
-                    repeat: Infinity,
-                    ease: "linear",
-                    repeatType: "loop",
-                }}
-                className="flex flex-col gap-6 pb-6"
-            >
-                {
-                    [...new Array(2)].map((_, index) => (
-                        <React.Fragment key={index}>
-                            {
-                                props.testimonials.map(({ text, image, name, role }, i) => (
-                                    <div
-                                        key={i}
-                                        className="p-8 rounded-3xl border border-gray-100 dark:border-neutral-800 bg-white dark:bg-neutral-900 shadow-lg dark:shadow-none"
-                                    >
-                                        <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-6">&quot;{text}&quot;</p>
-                                        <div className="flex items-center gap-3">
-                                            <Image
-                                                src={image}
-                                                alt={name}
-                                                width={40}
-                                                height={40}
-                                                className="h-10 w-10 rounded-full object-cover border border-gray-200 dark:border-neutral-700"
-                                            />
-                                            <div className="flex flex-col">
-                                                <div className="font-bold text-gray-900 dark:text-white text-sm">{name}</div>
-                                                <div className="text-gray-500 dark:text-gray-500 text-xs font-medium">{role}</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))
-                            }
-                        </React.Fragment>
-                    ))
-                }
-            </motion.div>
+const TestimonialCard = ({ data }: { data: typeof testimonials[0] }) => (
+    <div className="p-6 rounded-lg border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 shadow-sm hover:border-neutral-300 dark:hover:border-neutral-700 transition-colors">
+        <Quote className="w-4 h-4 text-neutral-300 mb-4" />
+        <p className="text-sm text-neutral-700 dark:text-neutral-300 leading-relaxed mb-6 font-medium">
+            "{data.text}"
+        </p>
+        <div className="flex items-center gap-3 pt-4 border-t border-dashed border-neutral-100 dark:border-neutral-800">
+            <Image src={data.image} alt={data.name} width={32} height={32} className="h-8 w-8 rounded-full grayscale" />
+            <div className="flex flex-col">
+                <div className="font-mono text-xs font-bold text-neutral-900 dark:text-white uppercase">{data.name}</div>
+                <div className="font-mono text-[10px] text-neutral-500 uppercase">{data.role}</div>
+            </div>
         </div>
-    );
-};
+    </div>
+);
+
+const TestimonialsColumn = ({ testimonials, duration, className }: { testimonials: typeof firstColumn, duration: number, className?: string }) => (
+    <div className={className}>
+        <motion.div
+            animate={{ translateY: "-50%" }}
+            transition={{ duration: duration, repeat: Infinity, ease: "linear", repeatType: "loop" }}
+            className="flex flex-col gap-4 pb-4"
+        >
+            {
+                [...new Array(2)].map((_, i) => (
+                    <React.Fragment key={i}>
+                        {testimonials.map((t, index) => <TestimonialCard key={index} data={t} />)}
+                    </React.Fragment>
+                ))
+            }
+        </motion.div>
+    </div>
+);
 
 const Testimonials = () => {
     return (
-        <section className="bg-white dark:bg-neutral-950 py-24 relative transition-colors duration-300" id="testimonials">
-            <div className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="flex flex-col items-center justify-center max-w-3xl mx-auto mb-12 text-center">
-                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 text-sm font-medium mb-6">
-                        <span className="flex items-center justify-center w-5 h-5 rounded-full bg-orange-500 text-white text-xs">04</span>
-                        <span>Testimonials</span>
-                    </div>
-                    <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-gray-900 dark:text-white mb-4">
-                        Trusted by teams who ship.
-                    </h2>
-                    <p className="text-lg text-gray-600 dark:text-gray-400">
-                        From startups to enterprises, see how teams are using SyncOrbit to deliver faster.
-                    </p>
+        <section className="bg-white dark:bg-neutral-950 py-24 relative overflow-hidden border-t border-neutral-200 dark:border-neutral-800" id="testimonials">
+            <div className="container max-w-7xl mx-auto px-4 text-center mb-12">
+                <div className="inline-block px-2 py-1 mb-4 rounded border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900">
+                    <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-neutral-500">User_Transmissions</span>
                 </div>
-                <div className="relative flex justify-center gap-6 [mask-image:linear-gradient(to_bottom,transparent,black_20%,black_80%,transparent)] max-h-[700px] overflow-hidden">
-                    <TestimonialsColumn testimonials={firstColumn} duration={15} />
-                    <TestimonialsColumn testimonials={secondColumn} className="hidden md:block" duration={19} />
-                    <TestimonialsColumn testimonials={thirdColumn} className="hidden lg:block" duration={17} />
-                </div>
+                <h2 className="text-4xl font-bold tracking-tighter text-neutral-900 dark:text-white">
+                    Validated by <span className="text-neutral-400">Industry Leaders</span>
+                </h2>
+            </div>
+
+            <div className="relative flex justify-center gap-4 [mask-image:linear-gradient(to_bottom,transparent,black_20%,black_80%,transparent)] max-h-[600px] overflow-hidden max-w-5xl mx-auto">
+                <TestimonialsColumn testimonials={firstColumn} duration={20} className="w-full md:w-1/2 lg:w-1/3" />
+                <TestimonialsColumn testimonials={secondColumn} duration={25} className="hidden md:block w-full md:w-1/2 lg:w-1/3" />
+                <TestimonialsColumn testimonials={firstColumn} duration={22} className="hidden lg:block w-full lg:w-1/3" />
             </div>
         </section>
     );

@@ -2,26 +2,25 @@
 
 import Link from 'next/link'
 import { useRouter, usePathname } from 'next/navigation'
-import { 
-    Menu, X, Moon, Sun, ArrowRight, User, LayoutDashboard, LogOut 
+import {
+    Menu, X, Moon, Sun, ArrowRight, User, LayoutDashboard, LogOut,
+    Boxes, Terminal
 } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { useTheme } from 'next-themes'
-import Image from 'next/image'
 import { useSession, signOut } from 'next-auth/react'
-import { 
-    DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger 
-} from './ui/dropdown-menu'
-
+import {
+    DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator
+} from '@/components/ui/dropdown-menu'
 
 const menuItems = [
     { name: 'Features', href: '#features' },
     { name: 'WorkFlow', href: '#workflow' },
-    { name: 'How It Works', href: '#howitworks' },
+    { name: 'Protocol', href: '#howitworks' },
     { name: 'Pricing', href: '#pricing' },
-    { name: 'AboutUs', href: '/aboutus' },
+    { name: 'About', href: '/aboutus' },
 ]
 
 export const Navbar = () => {
@@ -34,24 +33,20 @@ export const Navbar = () => {
 
     useEffect(() => {
         const handleScroll = () => {
-            setIsScrolled(window.scrollY > 50)
+            setIsScrolled(window.scrollY > 20)
         }
         window.addEventListener('scroll', handleScroll)
         return () => window.removeEventListener('scroll', handleScroll)
     }, [])
 
     const handleLinkClick = (href: string, e?: React.MouseEvent) => {
+        setMenuState(false);
         if (href.startsWith('#')) {
             e?.preventDefault();
-            setMenuState(false);
-
-            // If we're not on the homepage, navigate to homepage first
             if (pathname !== '/') {
                 router.push(`/${href}`);
                 return;
             }
-
-            // If we're on homepage, scroll to the section
             const element = document.querySelector(href);
             if (element) {
                 element.scrollIntoView({ behavior: 'smooth' });
@@ -60,139 +55,151 @@ export const Navbar = () => {
     };
 
     return (
-        <header>
+        <header className="fixed top-0 left-0 w-full z-50">
             <nav
-                data-state={menuState && 'active'}
-                className="fixed z-50 w-full px-2 group">
-                <div className={cn(
-                    'mx-auto mt-2 max-w-6xl px-6 transition-all duration-300 lg:px-12',
-                    isScrolled && 'bg-background/80 max-w-4xl rounded-2xl backdrop-blur-lg lg:px-5'
-                )}>
-                    <div className="relative flex flex-wrap items-center justify-between gap-6 py-3 lg:gap-0 lg:py-4">
-                        <div className="flex w-full justify-between lg:w-auto">
-                            <Link
-                                href="/"
-                                aria-label="home"
-                                className="flex items-center space-x-2">
-                                <Image
-                                    src="/syncorbit.png"
-                                    alt="SyncOrbit Main Logo"
-                                    height={30}
-                                    width={30}
-                                />
-                                <h1>SyncOrbit</h1>
-                            </Link>
-                            <button
-                                onClick={() => setMenuState(!menuState)}
-                                aria-label={menuState ? 'Close Menu' : 'Open Menu'}
-                                className="relative z-20 -m-2.5 -mr-4 block cursor-pointer p-2.5 lg:hidden">
-                                <Menu className="group-data-[state=active]:rotate-180 group-data-[state=active]:scale-0 group-data-[state=active]:opacity-0 m-auto size-6 duration-200" />
-                                <X className="group-data-[state=active]:rotate-0 group-data-[state=active]:scale-100 group-data-[state=active]:opacity-100 absolute inset-0 m-auto size-6 -rotate-180 scale-0 opacity-0 duration-200" />
-                            </button>
-                        </div>
-                        <div className="absolute inset-0 m-auto hidden size-fit lg:block">
-                            <ul className="flex gap-8 text-sm">
-                                {
-                                    menuItems.map((item, index) => (
-                                        <li key={index}>
-                                            <Link
-                                                href={item.href}
-                                                onClick={(e) => handleLinkClick(item.href, e)}
-                                                className="text-muted-foreground hover:text-accent-foreground block duration-150">
-                                                <span>{item.name}</span>
-                                            </Link>
-                                        </li>
-                                    ))
-                                }
+                className={cn(
+                    'w-full transition-all duration-300 border-b',
+                    isScrolled
+                        ? 'bg-white/80 dark:bg-neutral-950/80 backdrop-blur-md border-neutral-200 dark:border-neutral-800 py-3'
+                        : 'bg-transparent border-transparent py-5'
+                )}
+            >
+                <div className="max-w-7xl mx-auto px-6">
+                    <div className="flex items-center justify-between">
+                        {/* Logo Area */}
+                        <Link href="/" className="flex items-center gap-2 group" aria-label="home">
+                            <div className="w-8 h-8 bg-neutral-900 dark:bg-white rounded-md flex items-center justify-center border border-neutral-800 dark:border-neutral-200">
+                                <Boxes className="w-4 h-4 text-white dark:text-black" />
+                            </div>
+                            <span className="font-bold text-lg tracking-tighter text-neutral-900 dark:text-white">
+                                SyncOrbit
+                            </span>
+                        </Link>
+
+                        {/* Desktop Menu */}
+                        <div className="hidden lg:flex items-center gap-8">
+                            <ul className="flex gap-6">
+                                {menuItems.map((item, index) => (
+                                    <li key={index}>
+                                        <Link
+                                            href={item.href}
+                                            onClick={(e) => handleLinkClick(item.href, e)}
+                                            className="text-sm font-medium text-neutral-500 hover:text-neutral-900 dark:hover:text-white transition-colors flex items-center gap-1"
+                                        >
+                                            <span className="text-[10px] font-mono opacity-50">0{index + 1}</span>
+                                            {item.name}
+                                        </Link>
+                                    </li>
+                                ))}
                             </ul>
                         </div>
-                        <div className="bg-background group-data-[state=active]:block lg:group-data-[state=active]:flex mb-6 hidden w-full flex-wrap items-center justify-end space-y-8 rounded-3xl border p-6 shadow-2xl shadow-zinc-300/20 md:flex-nowrap lg:m-0 lg:flex lg:w-fit lg:gap-6 lg:space-y-0 lg:border-transparent lg:bg-transparent lg:p-0 lg:shadow-none dark:shadow-none dark:lg:bg-transparent">
-                            <div className="lg:hidden">
-                                <ul className="space-y-6 text-base">
-                                    {
-                                        menuItems.map((item, index) => (
-                                            <li key={index}>
-                                                <Link
-                                                    href={item.href}
-                                                    onClick={(e) => handleLinkClick(item.href, e)}
-                                                    className="text-muted-foreground hover:text-accent-foreground block duration-150">
-                                                    <span>{item.name}</span>
-                                                </Link>
-                                            </li>
-                                        ))
-                                    }
-                                </ul>
-                                <div className="mt-6 pt-6 border-t border-border/20">
-                                    <button
-                                        onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-                                        className="flex items-center gap-2 text-muted-foreground hover:text-accent-foreground duration-150"
-                                    >
-                                        {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-                                        <span>{theme === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>
-                                    </button>
-                                </div>
-                            </div>
-                            <div className="flex w-full flex-col space-y-3 sm:flex-row sm:gap-3 sm:space-y-0 md:w-fit lg:items-center">
-                                <button
-                                    onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-                                    className="hidden lg:flex items-center justify-center w-9 h-9 rounded-lg border border-border/50 hover:border-border transition-colors"
-                                >
-                                    {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-                                </button>
-                                {!session ? (
-                                    <>
-                                        <Button
-                                            asChild
-                                            size="sm"
-                                            className={cn(isScrolled && 'lg:hidden')}>
-                                            <Link href="/signin">
-                                                <span>Sign In</span>
-                                            </Link>
+
+                        {/* Right Actions */}
+                        <div className="hidden lg:flex items-center gap-4">
+                            <button
+                                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                                className="p-2 rounded-md hover:bg-neutral-100 dark:hover:bg-neutral-800 text-neutral-500 transition-colors"
+                            >
+                                {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+                            </button>
+
+                            <div className="h-4 w-px bg-neutral-200 dark:bg-neutral-800" />
+
+                            {!session ? (
+                                <>
+                                    <Link href="/signin" className="text-sm font-medium text-neutral-600 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-white transition-colors">
+                                        Login
+                                    </Link>
+                                    <Link href="/signup">
+                                        <Button size="sm" className="bg-neutral-900 dark:bg-white text-white dark:text-black hover:bg-neutral-800 dark:hover:bg-neutral-200 rounded-md font-bold text-xs uppercase tracking-wider">
+                                            Initialize <ArrowRight className="ml-1 h-3 w-3" />
                                         </Button>
-                                        <Button
-                                            asChild
-                                            size="sm"
-                                            className={cn(isScrolled ? 'lg:inline-flex' : 'hidden')}>
-                                            <Link href="/signup">
-                                                <span>Get Started</span>
-                                                <ArrowRight className="ml-1 h-3 w-3" />
-                                            </Link>
+                                    </Link>
+                                </>
+                            ) : (
+                                <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                        <Button variant="ghost" className="relative h-8 w-8 rounded-full border border-neutral-200 dark:border-neutral-800">
+                                            <User className="h-4 w-4" />
                                         </Button>
-                                    </>
-                                ) : (
-                                    <DropdownMenu>
-                                        <DropdownMenuTrigger asChild>
-                                            <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-                                                <User className="h-4 w-4" />
-                                            </Button>
-                                        </DropdownMenuTrigger>
-                                        <DropdownMenuContent className="w-56" align="end" forceMount>
-                                            <DropdownMenuItem asChild>
-                                                <Link href="/dashboard" className="flex items-center">
-                                                    <LayoutDashboard className="mr-2 h-4 w-4" />
-                                                    <span>Dashboard</span>
-                                                </Link>
-                                            </DropdownMenuItem>
-                                            <DropdownMenuItem asChild>
-                                                <Link href="/profile" className="flex items-center">
-                                                    <User className="mr-2 h-4 w-4" />
-                                                    <span>Profile</span>
-                                                </Link>
-                                            </DropdownMenuItem>
-                                            <DropdownMenuItem 
-                                                onClick={() => signOut()}
-                                                className="flex items-center text-red-600 focus:text-red-600"
-                                            >
-                                                <LogOut className="mr-2 h-4 w-4" />
-                                                <span>Logout</span>
-                                            </DropdownMenuItem>
-                                        </DropdownMenuContent>
-                                    </DropdownMenu>
-                                )}
-                            </div>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent className="w-56 bg-white dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800" align="end">
+                                        <div className="flex items-center justify-start gap-2 p-2">
+                                            <div className="flex flex-col space-y-1 leading-none">
+                                                {session.user?.name && <p className="font-medium">{session.user.name}</p>}
+                                                {session.user?.email && <p className="w-[200px] truncate text-xs text-neutral-500">{session.user.email}</p>}
+                                            </div>
+                                        </div>
+                                        <DropdownMenuSeparator className="bg-neutral-200 dark:bg-neutral-800" />
+                                        <DropdownMenuItem asChild className="focus:bg-neutral-100 dark:focus:bg-neutral-900">
+                                            <Link href="/dashboard" className="cursor-pointer">
+                                                <LayoutDashboard className="mr-2 h-4 w-4" /> Dashboard
+                                            </Link>
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem onClick={() => signOut()} className="text-red-600 focus:text-red-600 focus:bg-red-50 dark:focus:bg-red-950/20 cursor-pointer">
+                                            <LogOut className="mr-2 h-4 w-4" /> Disconnect
+                                        </DropdownMenuItem>
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
+                            )}
                         </div>
+
+                        {/* Mobile Toggle */}
+                        <button
+                            onClick={() => setMenuState(!menuState)}
+                            className="lg:hidden p-2 text-neutral-900 dark:text-white"
+                        >
+                            {menuState ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+                        </button>
                     </div>
                 </div>
+
+                {/* Mobile Menu Overlay */}
+                {menuState && (
+                    <div className="absolute top-full left-0 w-full h-[calc(100vh-60px)] bg-white dark:bg-neutral-950 border-t border-neutral-200 dark:border-neutral-800 p-6 flex flex-col animate-in slide-in-from-top-5 duration-200">
+                        <ul className="flex flex-col gap-6 text-lg">
+                            {menuItems.map((item, index) => (
+                                <li key={index}>
+                                    <Link
+                                        href={item.href}
+                                        onClick={(e) => handleLinkClick(item.href, e)}
+                                        className="text-neutral-600 dark:text-neutral-400 hover:text-black dark:hover:text-white block font-medium"
+                                    >
+                                        <span className="text-xs font-mono text-neutral-400 mr-2">0{index + 1}</span>
+                                        {item.name}
+                                    </Link>
+                                </li>
+                            ))}
+                        </ul>
+                        <div className="mt-auto border-t border-neutral-200 dark:border-neutral-800 pt-6 space-y-4">
+                            {!session ? (
+                                <>
+                                    <Link href="/signin" className="block w-full">
+                                        <Button variant="outline" className="w-full justify-center border-neutral-200 dark:border-neutral-800">
+                                            Login
+                                        </Button>
+                                    </Link>
+                                    <Link href="/signup" className="block w-full">
+                                        <Button className="w-full justify-center bg-neutral-900 dark:bg-white text-white dark:text-black">
+                                            Get Started
+                                        </Button>
+                                    </Link>
+                                </>
+                            ) : (
+                                <Button onClick={() => signOut()} variant="destructive" className="w-full">
+                                    Sign Out
+                                </Button>
+                            )}
+                            <button
+                                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                                className="flex items-center gap-2 text-neutral-500 w-full justify-center py-2"
+                            >
+                                {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+                                <span className="text-sm">{theme === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>
+                            </button>
+                        </div>
+                    </div>
+                )}
             </nav>
         </header>
     )

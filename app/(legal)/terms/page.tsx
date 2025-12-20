@@ -2,109 +2,103 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Scale, ArrowLeft } from "lucide-react";
+import {
+    Scale, ArrowLeft, FileCheck
+} from "lucide-react";
 import SmoothScroll from "@/components/smoothscroll";
 
 export default function TermsPage() {
     return (
         <SmoothScroll>
-            <div className="min-h-screen bg-white dark:bg-neutral-950 selection:bg-orange-500/30 selection:text-orange-900 dark:selection:text-white font-sans">
-                <div className="pt-32 pb-24 px-6">
+            <div className="min-h-screen bg-white dark:bg-neutral-950 font-sans selection:bg-neutral-900 selection:text-white dark:selection:bg-white dark:selection:text-black">
+                <div className="fixed inset-0 z-0 pointer-events-none">
+                    <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
+                </div>
+                <div className="relative z-10 pt-32 pb-24 px-6">
                     <div className="container max-w-4xl mx-auto">
-                        <Link href="/" className="inline-flex items-center text-sm text-neutral-500 hover:text-orange-600 dark:hover:text-orange-500 transition-colors mb-8 group">
-                            <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" />
-                            Back to Home
+                        <Link href="/" className="inline-flex items-center text-xs font-mono uppercase tracking-widest text-neutral-500 hover:text-neutral-900 dark:hover:text-white transition-colors mb-8 group">
+                            <ArrowLeft className="w-3 h-3 mr-2 group-hover:-translate-x-1 transition-transform" />
+                            Return_Home
                         </Link>
-
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.5 }}
                         >
-                            <div className="text-center mb-16">
-                                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-neutral-100 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 mb-6">
-                                    <Scale className="w-4 h-4 text-orange-500" />
-                                    <span className="text-xs font-semibold uppercase tracking-wide text-neutral-600 dark:text-neutral-300">
-                                        Legal
+                            <div className="mb-12 border-b border-neutral-200 dark:border-neutral-800 pb-12">
+                                <div className="inline-flex items-center gap-2 px-3 py-1 rounded border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900 mb-6">
+                                    <Scale className="w-3 h-3 text-neutral-900 dark:text-white" />
+                                    <span className="text-[10px] font-mono uppercase tracking-widest text-neutral-500">
+                                        Legal_Doc_02
                                     </span>
                                 </div>
-                                <h1 className="text-4xl md:text-5xl font-bold text-neutral-900 dark:text-white tracking-tight mb-4 leading-tight">
+                                <h1 className="text-4xl md:text-6xl font-bold text-neutral-900 dark:text-white tracking-tighter mb-6">
                                     Terms of Service
                                 </h1>
-                                <p className="text-lg text-neutral-600 dark:text-neutral-400 max-w-2xl mx-auto">
-                                    Please read these terms carefully before using our services.
+                                <p className="text-lg text-neutral-600 dark:text-neutral-400 max-w-2xl font-light">
+                                    Operational constraints, user obligations, and liability limitations for the SyncOrbit platform.
                                 </p>
                             </div>
-
-                            <div className="bg-white dark:bg-neutral-900 rounded-[2rem] border border-neutral-200 dark:border-neutral-800 p-10 md:p-16 space-y-12 shadow-sm">
+                            <div className="space-y-12">
                                 <section>
-                                    <h2 className="text-2xl font-bold text-neutral-900 dark:text-white mb-4">1. Acceptance of Terms</h2>
-                                    <p className="text-neutral-600 dark:text-neutral-400 leading-relaxed">
-                                        By accessing and using SyncOrbit's services, you acknowledge that you have read, understood, and agree to be bound by these Terms of Service. If you do not agree with any part of these terms, you may not use our services.
+                                    <h2 className="text-xl font-bold text-neutral-900 dark:text-white mb-4 flex items-center gap-3">
+                                        <span className="font-mono text-sm text-neutral-400">01.</span> Acceptance
+                                    </h2>
+                                    <p className="text-neutral-600 dark:text-neutral-400 leading-relaxed text-sm">
+                                        By initializing an account or accessing the API, you execute a binding agreement with SyncOrbit. Unauthorized use of the infrastructure is strictly prohibited and monitored.
                                     </p>
                                 </section>
                                 <section>
-                                    <h2 className="text-2xl font-bold text-neutral-900 dark:text-white mb-4">2. Service Description</h2>
-                                    <p className="text-neutral-600 dark:text-neutral-400 mb-4 leading-relaxed">
-                                        SyncOrbit provides a project management and team collaboration platform, including but not limited to:
-                                    </p>
-                                    <ul className="list-disc pl-6 space-y-2 text-neutral-600 dark:text-neutral-400 marker:text-orange-500">
-                                        <li>Task and project management tools</li>
-                                        <li>Team collaboration features</li>
-                                        <li>Workflow automation services</li>
-                                        <li>Analytics and reporting dashboards</li>
-                                    </ul>
+                                    <h2 className="text-xl font-bold text-neutral-900 dark:text-white mb-4 flex items-center gap-3">
+                                        <span className="font-mono text-sm text-neutral-400">02.</span> Service Scope
+                                    </h2>
+                                    <div className="bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200 dark:border-neutral-800 p-6 rounded-lg">
+                                        <p className="text-xs font-mono text-neutral-500 uppercase mb-4 tracking-widest">Included Modules</p>
+                                        <div className="grid sm:grid-cols-2 gap-4">
+                                            {
+                                                ['Task Management Engine', 'Collaboration Layer', 'Workflow Automations', 'Reporting & Analytics'].map((item, i) => (
+                                                    <div key={i} className="flex items-center gap-2 text-sm text-neutral-700 dark:text-neutral-300">
+                                                        <FileCheck className="w-4 h-4 text-neutral-400" />
+                                                        {item}
+                                                    </div>
+                                                ))
+                                            }
+                                        </div>
+                                    </div>
                                 </section>
                                 <section>
-                                    <h2 className="text-2xl font-bold text-neutral-900 dark:text-white mb-4">3. User Obligations</h2>
-                                    <p className="text-neutral-600 dark:text-neutral-400 mb-4 leading-relaxed">
-                                        As a user of our services, you agree to:
-                                    </p>
-                                    <ul className="list-disc pl-6 space-y-2 text-neutral-600 dark:text-neutral-400 marker:text-orange-500">
-                                        <li>Provide accurate, current, and complete information during registration</li>
-                                        <li>Maintain the security and confidentiality of your account credentials</li>
-                                        <li>Use the services in compliance with all applicable laws and regulations</li>
-                                        <li>Not engage in any activity that interferes with or disrupts the services</li>
-                                    </ul>
-                                </section>
-                                <section>
-                                    <h2 className="text-2xl font-bold text-neutral-900 dark:text-white mb-4">4. Intellectual Property</h2>
-                                    <p className="text-neutral-600 dark:text-neutral-400 leading-relaxed">
-                                        The services and their entire contents, features, and functionality (including but not limited to all information, software, text, displays, images, video, and audio, and the design, selection, and arrangement thereof) are owned by SyncOrbit, its licensors, or other providers of such material and are protected by international copyright, trademark, patent, trade secret, and other intellectual property or proprietary rights laws.
+                                    <h2 className="text-xl font-bold text-neutral-900 dark:text-white mb-4 flex items-center gap-3">
+                                        <span className="font-mono text-sm text-neutral-400">03.</span> User Obligations
+                                    </h2>
+                                    <p className="text-neutral-600 dark:text-neutral-400 mb-4 leading-relaxed text-sm">
+                                        Users must maintain the confidentiality of credentials. Any activity stemming from a compromised node (account) is the responsibility of the registered entity.
                                     </p>
                                 </section>
                                 <section>
-                                    <h2 className="text-2xl font-bold text-neutral-900 dark:text-white mb-4">5. Privacy Policy</h2>
-                                    <p className="text-neutral-600 dark:text-neutral-400 leading-relaxed">
-                                        Your use of our services is also governed by our Privacy Policy. Please review our{" "}
-                                        <Link href="/privacy" className="text-orange-600 dark:text-orange-500 hover:underline font-medium">
-                                            Privacy Policy
-                                        </Link>
-                                        {" "}for information on how we collect, use, and share your data.
+                                    <h2 className="text-xl font-bold text-neutral-900 dark:text-white mb-4 flex items-center gap-3">
+                                        <span className="font-mono text-sm text-neutral-400">04.</span> Intellectual Property
+                                    </h2>
+                                    <p className="text-neutral-600 dark:text-neutral-400 leading-relaxed text-sm">
+                                        The codebase, design system (Engineering V2), and underlying architecture remain the exclusive property of SyncOrbit. Users retain ownership of data processed through the system.
                                     </p>
                                 </section>
                                 <section>
-                                    <h2 className="text-2xl font-bold text-neutral-900 dark:text-white mb-4">6. Limitation of Liability</h2>
-                                    <p className="text-neutral-600 dark:text-neutral-400 leading-relaxed">
-                                        In no event shall SyncOrbit, its affiliates, or their licensors, service providers, employees, agents, officers, or directors be liable for damages of any kind, under any legal theory, arising out of or in connection with your use, or inability to use, the services, including any direct, indirect, special, incidental, consequential, or punitive damages.
+                                    <h2 className="text-xl font-bold text-neutral-900 dark:text-white mb-4 flex items-center gap-3">
+                                        <span className="font-mono text-sm text-neutral-400">05.</span> Liability
+                                    </h2>
+                                    <p className="text-neutral-600 dark:text-neutral-400 leading-relaxed text-sm">
+                                        SyncOrbit operates on an "as is" basis. While we maintain 99.9% uptime targets, we assume no liability for consequential damages resulting from service interruptions or data latency.
                                     </p>
                                 </section>
-                                <section>
-                                    <h2 className="text-2xl font-bold text-neutral-900 dark:text-white mb-4">7. Changes to Terms</h2>
-                                    <p className="text-neutral-600 dark:text-neutral-400 leading-relaxed">
-                                        We reserve the right to withdraw or amend our services, and any service or material we provide, in our sole discretion without notice. We will not be liable if for any reason all or any part of the services is unavailable at any time or for any period. We may update these terms from time to time. Your continued use of the services following the posting of revised terms means that you accept and agree to the changes.
-                                    </p>
-                                </section>
-                                <div className="pt-8 mt-8 border-t border-neutral-100 dark:border-neutral-800">
-                                    <p className="text-sm text-neutral-500 dark:text-neutral-400">
-                                        Last updated: {new Date().toLocaleDateString()}
-                                    </p>
-                                    <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-2">
-                                        For any questions about these terms, please contact us at{" "}
-                                        <Link href="mailto:legal@syncorbit.com" className="text-orange-600 dark:text-orange-500 hover:underline font-medium">
-                                            legal@syncorbit.com
-                                        </Link>
-                                    </p>
+                                <div className="pt-8 mt-8 border-t border-neutral-200 dark:border-neutral-800 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                                    <div>
+                                        <p className="text-xs font-mono text-neutral-500 uppercase tracking-widest">
+                                            Last_Updated: {new Date().toLocaleDateString()}
+                                        </p>
+                                    </div>
+                                    <Link href="mailto:legal@syncorbit.com" className="text-sm font-bold text-neutral-900 dark:text-white hover:underline decoration-neutral-400 underline-offset-4">
+                                        legal@syncorbit.com
+                                    </Link>
                                 </div>
                             </div>
                         </motion.div>

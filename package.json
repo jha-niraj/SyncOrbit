@@ -7,8 +7,7 @@
 		"dev": "next dev",
 		"build": "prisma generate && next build",
 		"start": "next start",
-		"lint": "next lint",
-		"pages:build": "npm install --force && npx @cloudflare/next-on-pages"
+		"lint": "next lint"
 	},
 	"dependencies": {
 		"@calcom/embed-react": "^1.5.2",
@@ -65,20 +64,16 @@
 		"sonner": "^2.0.2",
 		"tailwind-merge": "^2.6.0",
 		"tailwindcss-animate": "^1.0.7",
+		"zod": "^3.24.1",
 		"zustand": "^5.0.8"
 	},
-	"overrides": {
-		"framer-motion": {
-			"react": "19.0.0-rc-66855b96-20241106",
-			"react-dom": "19.0.0-rc-66855b96-20241106"
-		},
-		"@calcom/embed-react": {
+	"pnpm": {
+		"overrides": {
 			"react": "^19.0.0",
 			"react-dom": "^19.0.0"
 		}
 	},
 	"devDependencies": {
-		"@cloudflare/next-on-pages": "^1.13.7",
 		"@eslint/eslintrc": "^3",
 		"@types/node": "^20",
 		"@types/react": "^19",

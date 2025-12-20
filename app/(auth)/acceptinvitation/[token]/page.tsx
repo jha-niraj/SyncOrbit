@@ -1,12 +1,15 @@
 import { auth } from "@/auth"
 import { getInvitationByToken } from "@/actions/invitations.action"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
-    Building2, Users, Crown, CheckCircle, XCircle, Mail, Code, Megaphone,
-    ShoppingCart, Palette, Briefcase, Settings
+    Card, CardContent, CardHeader, CardTitle
+} from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import {
+    Avatar, AvatarFallback, AvatarImage
+} from "@/components/ui/avatar"
+import {
+    Building2, Users, Crown, CheckCircle, XCircle, Code, Megaphone,
+    ShoppingCart, Palette, Briefcase, Settings, ShieldCheck, Terminal
 } from "lucide-react"
 import { TeamType, InvitationStatus } from "@prisma/client"
 import { redirect } from "next/navigation"
@@ -36,16 +39,14 @@ export default async function AcceptInvitationPage({ params }: AcceptInvitationP
 
     if (!invitationResult.success || !invitationResult.invitation) {
         return (
-            <div className="container mx-auto py-8 max-w-md">
-                <Card className="text-center">
-                    <CardContent className="py-8">
-                        <XCircle className="w-16 h-16 mx-auto text-destructive mb-4" />
-                        <h1 className="text-2xl font-bold mb-2">Invalid Invitation</h1>
-                        <p className="text-muted-foreground">
-                            {invitationResult.error || "This invitation link is invalid or has expired."}
-                        </p>
-                    </CardContent>
-                </Card>
+            <div className="min-h-screen bg-white dark:bg-neutral-950 flex items-center justify-center p-4 font-sans">
+                <div className="w-full max-w-md bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-lg p-8 text-center shadow-xl">
+                    <div className="w-12 h-12 bg-red-100 dark:bg-red-900/20 rounded-md flex items-center justify-center mx-auto mb-4">
+                        <XCircle className="w-6 h-6 text-red-600 dark:text-red-500" />
+                    </div>
+                    <h1 className="text-xl font-bold text-neutral-900 dark:text-white mb-2 tracking-tight">Invalid Protocol</h1>
+                    <p className="text-neutral-500 text-sm font-mono">{invitationResult.error || "Token_Expired_Or_Invalid"}</p>
+                </div>
             </div>
         )
     }
@@ -56,153 +57,121 @@ export default async function AcceptInvitationPage({ params }: AcceptInvitationP
     // Check if invitation is already accepted or expired
     if (invitation.status === InvitationStatus.ACCEPTED) {
         return (
-            <div className="container mx-auto py-8 max-w-md">
-                <Card className="text-center">
-                    <CardContent className="py-8">
-                        <CheckCircle className="w-16 h-16 mx-auto text-green-500 mb-4" />
-                        <h1 className="text-2xl font-bold mb-2">Already Accepted</h1>
-                        <p className="text-muted-foreground mb-4">
-                            This invitation has already been accepted.
-                        </p>
-                        {
-                            session?.user ? (
-                                <Button onClick={() => redirect('/dashboard')}>
-                                    Go to Dashboard
-                                </Button>
-                            ) : (
-                                <Button onClick={() => redirect('/signin')}>
-                                    Sign In
-                                </Button>
-                            )
-                        }
-                    </CardContent>
-                </Card>
+            <div className="min-h-screen bg-white dark:bg-neutral-950 flex items-center justify-center p-4 font-sans">
+                <div className="w-full max-w-md bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-lg p-8 text-center shadow-xl">
+                    <div className="w-12 h-12 bg-green-100 dark:bg-green-900/20 rounded-md flex items-center justify-center mx-auto mb-4">
+                        <CheckCircle className="w-6 h-6 text-green-600 dark:text-green-500" />
+                    </div>
+                    <h1 className="text-xl font-bold text-neutral-900 dark:text-white mb-2 tracking-tight">Access Granted</h1>
+                    <p className="text-neutral-500 text-sm mb-6">This node has already been initialized.</p>
+                    <form action={async () => { 'use server'; redirect(session?.user ? '/dashboard' : '/signin') }}>
+                        <Button className="w-full bg-neutral-900 dark:bg-white text-white dark:text-black font-mono text-xs uppercase tracking-widest">
+                            {session?.user ? "Enter_Dashboard" : "Authenticate"}
+                        </Button>
+                    </form>
+                </div>
             </div>
         )
     }
 
     if (invitation.status === InvitationStatus.DECLINED || invitation.expiresAt < new Date()) {
         return (
-            <div className="container mx-auto py-8 max-w-md">
-                <Card className="text-center">
-                    <CardContent className="py-8">
-                        <XCircle className="w-16 h-16 mx-auto text-destructive mb-4" />
-                        <h1 className="text-2xl font-bold mb-2">
-                            {invitation.status === InvitationStatus.DECLINED ? "Invitation Declined" : "Invitation Expired"}
-                        </h1>
-                        <p className="text-muted-foreground">
-                            {
-                                invitation.status === InvitationStatus.DECLINED
-                                    ? "This invitation has been declined."
-                                    : "This invitation has expired. Please contact your administrator for a new invitation."
-                            }
-                        </p>
-                    </CardContent>
-                </Card>
+            <div className="min-h-screen bg-white dark:bg-neutral-950 flex items-center justify-center p-4 font-sans">
+                <div className="w-full max-w-md bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-lg p-8 text-center shadow-xl">
+                    <div className="w-12 h-12 bg-neutral-100 dark:bg-neutral-800 rounded-md flex items-center justify-center mx-auto mb-4">
+                        <XCircle className="w-6 h-6 text-neutral-500" />
+                    </div>
+                    <h1 className="text-xl font-bold text-neutral-900 dark:text-white mb-2 tracking-tight">
+                        {invitation.status === InvitationStatus.DECLINED ? "Protocol Declined" : "Token Expired"}
+                    </h1>
+                    <p className="text-neutral-500 text-sm">
+                        Please request a new initialization sequence from the administrator.
+                    </p>
+                </div>
             </div>
         )
     }
 
     return (
-        <div className="container mx-auto py-8 max-w-2xl">
-            <div className="space-y-6">
-                <div className="text-center">
-                    <Mail className="w-16 h-16 mx-auto text-blue-500 mb-4" />
-                    <h1 className="text-3xl font-bold">You&apos;re Invited!</h1>
-                    <p className="text-muted-foreground mt-2">
-                        Join a team and start collaborating on projects
-                    </p>
+        <div className="min-h-screen bg-white dark:bg-neutral-950 flex flex-col items-center justify-center p-4 font-sans selection:bg-neutral-900 selection:text-white dark:selection:bg-white dark:selection:text-black">
+            <div className="fixed inset-0 z-0 pointer-events-none">
+                <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
+            </div>
+            <div className="w-full max-w-lg relative z-10">
+                <div className="text-center mb-8">
+                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 mb-4">
+                        <Terminal className="w-3 h-3 text-neutral-900 dark:text-white" />
+                        <span className="text-[10px] font-mono uppercase tracking-widest text-neutral-500">Incoming_Transmission</span>
+                    </div>
+                    <h1 className="text-3xl font-bold text-neutral-900 dark:text-white tracking-tighter">Team Invitation</h1>
                 </div>
-                <Card>
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                            <Building2 className="w-5 h-5" />
-                            Invitation Details
+                <Card className="bg-white dark:bg-neutral-900 border-neutral-200 dark:border-neutral-800 shadow-2xl">
+                    <CardHeader className="border-b border-neutral-100 dark:border-neutral-800 pb-4">
+                        <CardTitle className="flex items-center gap-2 text-sm font-mono uppercase tracking-widest text-neutral-500">
+                            <ShieldCheck className="w-4 h-4" />
+                            Invitation_Manifest
                         </CardTitle>
                     </CardHeader>
-                    <CardContent className="space-y-4">
-                        <div className="flex items-center gap-3">
-                            <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                                <Building2 className="w-6 h-6 text-blue-600" />
+                    <CardContent className="pt-6 space-y-6">
+                        <div className="flex items-center gap-4 p-4 bg-neutral-50 dark:bg-neutral-950 border border-neutral-100 dark:border-neutral-800 rounded-lg">
+                            <div className="w-10 h-10 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded flex items-center justify-center">
+                                <Building2 className="w-5 h-5 text-neutral-900 dark:text-white" />
                             </div>
                             <div>
-                                <p className="font-semibold">{invitation.company?.name}</p>
-                                <p className="text-sm text-muted-foreground">Company</p>
+                                <p className="font-bold text-neutral-900 dark:text-white">{invitation.company?.name}</p>
+                                <p className="text-xs font-mono text-neutral-500 uppercase">Organization_Node</p>
                             </div>
                         </div>
-                        <div className="flex items-center gap-3">
-                            <div
-                                className="w-12 h-12 rounded-lg flex items-center justify-center"
-                                style={{
-                                    backgroundColor: invitation.team?.color ? `${invitation.team.color}15` : '#f3f4f6',
-                                    color: invitation.team?.color || '#6b7280'
-                                }}
-                            >
-                                <IconComponent className="w-6 h-6" />
-                            </div>
-                            <div>
-                                <p className="font-semibold">{invitation.team?.displayName}</p>
-                                <p className="text-sm text-muted-foreground">
-                                    {invitation.team?.teamType ?
-                                        invitation.team.teamType.charAt(0) + invitation.team.teamType.slice(1).toLowerCase() + " Team" :
-                                        "Team"
-                                    }
-                                </p>
-                            </div>
-                        </div>
-                        <div className="flex items-center gap-3">
-                            <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
-                                {
-                                    invitation.type === 'TEAM_HEAD' ? (
-                                        <Crown className="w-6 h-6 text-yellow-600" />
-                                    ) : (
-                                        <Users className="w-6 h-6 text-gray-600" />
-                                    )
-                                }
-                            </div>
-                            <div>
-                                <p className="font-semibold">{invitation.roleTitle}</p>
-                                <div className="flex items-center gap-2">
-                                    <p className="text-sm text-muted-foreground">Role</p>
-                                    {
-                                        invitation.type === 'TEAM_HEAD' && (
-                                            <Badge variant="secondary" className="text-xs">
-                                                Team Head
-                                            </Badge>
-                                        )
-                                    }
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="p-3 border border-neutral-100 dark:border-neutral-800 rounded-lg">
+                                <div className="flex items-center gap-2 mb-2 text-neutral-500">
+                                    <IconComponent className="w-4 h-4" />
+                                    <span className="text-[10px] font-mono uppercase">Target_Team</span>
                                 </div>
+                                <p className="font-medium text-sm">{invitation.team?.displayName}</p>
+                            </div>
+                            <div className="p-3 border border-neutral-100 dark:border-neutral-800 rounded-lg">
+                                <div className="flex items-center gap-2 mb-2 text-neutral-500">
+                                    {invitation.type === 'TEAM_HEAD' ? <Crown className="w-4 h-4" /> : <Users className="w-4 h-4" />}
+                                    <span className="text-[10px] font-mono uppercase">Assigned_Role</span>
+                                </div>
+                                <p className="font-medium text-sm">{invitation.roleTitle}</p>
                             </div>
                         </div>
-                        <div className="flex items-center gap-3">
-                            <Avatar className="w-12 h-12">
+                        <div className="flex items-center gap-3 pt-2">
+                            <Avatar className="w-8 h-8 border border-neutral-200 dark:border-neutral-800">
                                 <AvatarImage src={invitation.sender?.image || undefined} />
-                                <AvatarFallback>
+                                <AvatarFallback className="bg-neutral-100 dark:bg-neutral-800 text-xs font-mono">
                                     {invitation.sender?.name?.[0] || 'U'}
                                 </AvatarFallback>
                             </Avatar>
-                            <div>
-                                <p className="font-semibold">{invitation.sender?.name}</p>
-                                <p className="text-sm text-muted-foreground">
-                                    Invited by • {invitation.createdAt.toLocaleDateString()}
+                            <div className="flex-1">
+                                <p className="text-sm font-medium text-neutral-900 dark:text-white">
+                                    Initialized by <span className="font-bold">{invitation.sender?.name}</span>
+                                </p>
+                                <p className="text-[10px] font-mono text-neutral-400">
+                                    {new Date(invitation.createdAt).toLocaleDateString()}
                                 </p>
                             </div>
                         </div>
+
                         {
                             invitation.message && (
-                                <div className="border-l-4 border-blue-500 pl-4 bg-blue-50 p-3 rounded-r-lg">
-                                    <p className="text-sm font-medium text-blue-900 mb-1">Personal Message</p>
-                                    <p className="text-sm text-blue-800">{invitation.message}</p>
+                                <div className="p-4 bg-neutral-50 dark:bg-neutral-950 border-l-2 border-neutral-900 dark:border-white text-sm text-neutral-600 dark:text-neutral-400 font-mono">
+                                    "{invitation.message}"
                                 </div>
                             )
                         }
+
+                        <div className="pt-4 border-t border-neutral-100 dark:border-neutral-800">
+                            <AcceptInvitationForm
+                                invitation={{ ...invitation, token }}
+                                isAuthenticated={!!session?.user}
+                                currentUserEmail={session?.user?.email}
+                            />
+                        </div>
                     </CardContent>
                 </Card>
-                <AcceptInvitationForm
-                    invitation={{ ...invitation, token }}
-                    isAuthenticated={!!session?.user}
-                    currentUserEmail={session?.user?.email}
-                />
             </div>
         </div>
     )

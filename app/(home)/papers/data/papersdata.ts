@@ -31,7 +31,7 @@ export const resourcesData: ResourcePost[] = [
         category: "Whitepapers",
         author: {
             name: "Nilesh Kumar Gupta",
-            avatar: "/aboutus/nileshkumar.jpeg", // Use your actual path
+            avatar: "/aboutus/nirajjha.jpeg",
             role: "Founder & CEO"
         },
         date: "Oct 24, 2025",

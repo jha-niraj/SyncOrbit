@@ -1,45 +1,48 @@
 import Image from "next/image";
 import React from "react";
+import { useRouter } from "next/navigation";
+import { ArrowUpRight } from "lucide-react";
 
 const MadeByShunyaTech = () => {
-    return (
-        <section id="made-by-shunyatech" className="w-full bg-white dark:bg-neutral-950 py-24 transition-colors duration-300">
-            <div className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    const router = useRouter();
 
-                <div className="relative w-full rounded-[2.5rem] overflow-hidden min-h-[500px] flex flex-col items-center justify-center text-center group">
-                    <div className="absolute inset-0 bg-black">
+    return (
+        <section className="w-full bg-white dark:bg-neutral-950 py-24 border-t border-neutral-200 dark:border-neutral-800">
+            <div className="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="relative w-full rounded-2xl overflow-hidden bg-neutral-950 text-center py-24 px-6 border border-neutral-800 group">
+
+                    <div className="absolute inset-0 opacity-20 bg-[radial-gradient(#404040_1px,transparent_1px)] [background-size:16px_16px]"></div>
+                    <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-transparent to-transparent"></div>
+
+                    <div className="relative z-10 flex flex-col items-center">
                         <div
-                            className="absolute inset-0 opacity-60 transition-transform duration-[2s] ease-in-out group-hover:scale-105"
-                            style={{
-                                backgroundImage: "url('/background-section3.png')",
-                                backgroundSize: "cover",
-                                backgroundPosition: "center"
-                            }}
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent"></div>
-                        <div className="absolute -bottom-32 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-[#FE5C02] rounded-full blur-[120px] opacity-40 animate-pulse"></div>
-                    </div>
-                    <div className="relative z-10 p-8 sm:p-12 flex flex-col items-center">
-                        <div className="mb-8 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/10 text-white">
+                            onClick={() => router.push("https://shunyatech.net")}
+                            className="mb-8 inline-flex items-center gap-3 px-4 py-2 rounded-full border border-neutral-800 bg-neutral-900/50 backdrop-blur-sm cursor-pointer hover:border-neutral-600 transition-colors"
+                        >
                             <Image
                                 src="/syncorbit.png"
-                                alt="ShunyaTech Logo"
-                                className="h-5 w-auto invert"
+                                alt="ShunyaTech"
+                                className="h-4 w-auto invert opacity-80"
                                 height={20}
                                 width={20}
                             />
-                            <span className="text-sm font-medium tracking-wide">ShunyaTech Product</span>
-                        </div>
-                        <h2 className="font-display italic font-light text-6xl sm:text-7xl md:text-8xl lg:text-9xl text-white leading-tight mb-6 mix-blend-overlay opacity-90">
-                            Made For <br />
-                            <span className="not-italic font-bold text-transparent bg-clip-text bg-gradient-to-r from-white via-white to-gray-400">
-                                Teams.
+                            <span className="text-xs font-mono text-neutral-400 uppercase tracking-widest">
+                                Engineered by ShunyaTech
                             </span>
+                        </div>
+                        <h2 className="text-5xl md:text-7xl font-bold text-white tracking-tighter mb-6">
+                            Build for <span className="text-transparent bg-clip-text bg-gradient-to-r from-neutral-200 to-neutral-600">Builders.</span>
                         </h2>
-                        <p className="text-gray-300 text-lg sm:text-xl max-w-xl mx-auto leading-relaxed mb-12">
-                            Crafted with passion and precision. We build tools that help the world move forward, one task at a time.
+                        <p className="text-neutral-500 text-lg max-w-xl mx-auto mb-10 font-light">
+                            We craft high-performance tooling for the next generation of digital products. Precision in every pixel.
                         </p>
-                        <div className="w-px h-16 bg-gradient-to-b from-transparent via-orange-500 to-transparent"></div>
+                        <button
+                            onClick={() => router.push("https://shunyatech.net")}
+                            className="group flex items-center gap-2 text-white border-b border-transparent hover:border-white transition-all pb-1"
+                        >
+                            <span className="font-mono text-sm uppercase tracking-widest">Visit our Agency</span>
+                            <ArrowUpRight className="w-4 h-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+                        </button>
                     </div>
                 </div>
             </div>

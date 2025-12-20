@@ -1,13 +1,15 @@
 "use client"
 
 import { useState } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+    Card, CardContent, CardHeader, CardTitle
+} from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Separator } from "@/components/ui/separator"
-import { 
-    CheckCircle, XCircle, User, Mail, AlertCircle, 
-    Loader2, ExternalLink
+import {
+    CheckCircle, XCircle, Mail, AlertCircle, Loader2, ExternalLink,
+    Terminal, ShieldCheck
 } from "lucide-react"
 import { acceptInvitationByToken } from "@/actions/invitations.action"
 import { signIn } from "next-auth/react"
@@ -34,10 +36,10 @@ interface AcceptInvitationFormProps {
     currentUserEmail?: string | null
 }
 
-export function AcceptInvitationForm({ 
-    invitation, 
-    isAuthenticated, 
-    currentUserEmail 
+export function AcceptInvitationForm({
+    invitation,
+    isAuthenticated,
+    currentUserEmail
 }: AcceptInvitationFormProps) {
     const router = useRouter()
     const [isLoading, setIsLoading] = useState(false)
@@ -53,19 +55,18 @@ export function AcceptInvitationForm({
 
         try {
             const result = await acceptInvitationByToken(invitation.token)
-            
+
             if (result.success) {
                 setSuccess(true)
-                // Redirect to dashboard after short delay
                 setTimeout(() => {
                     router.push('/dashboard')
                 }, 2000)
             } else {
-                setError(result.error || "Failed to accept invitation")
+                setError(result.error || "Protocol Handshake Failed")
             }
         } catch (err: unknown) {
             console.log("Error occurred while accepting the invitation: " + err);
-            setError("An unexpected error occurred")
+            setError("System Error: Handshake Interrupted")
         } finally {
             setIsLoading(false)
         }
@@ -74,177 +75,182 @@ export function AcceptInvitationForm({
     const handleDecline = async () => {
         setIsLoading(true)
         setError("")
-
         try {
-            // You may want to create a declineInvitation action
-            // For now, just redirect
             router.push('/')
         } catch (err: unknown) {
-            console.log("Error occurred while declining the invitation: " + err);
-            setError("An unexpected error occurred")
+            setError("System Error")
         } finally {
             setIsLoading(false)
         }
     }
 
     const handleSignInWithCorrectAccount = () => {
-        signIn("google", { 
+        signIn("google", {
             callbackUrl: `/accept-invitation/${invitation.token}`,
-            prompt: "select_account" 
+            prompt: "select_account"
         })
     }
 
     const handleCreateAccount = () => {
-        signIn("google", { 
-            callbackUrl: `/accept-invitation/${invitation.token}` 
+        signIn("google", {
+            callbackUrl: `/accept-invitation/${invitation.token}`
         })
     }
 
     if (success) {
         return (
-            <Card className="text-center">
-                <CardContent className="py-8">
-                    <CheckCircle className="w-16 h-16 mx-auto text-green-500 mb-4" />
-                    <h2 className="text-2xl font-bold text-green-700 mb-2">Welcome to the team!</h2>
-                    <p className="text-muted-foreground mb-4">
-                        You&apos;ve successfully joined {invitation.company?.name} as {invitation.roleTitle}.
+            <Card className="text-center bg-white dark:bg-neutral-900 border-neutral-200 dark:border-neutral-800 shadow-xl">
+                <CardContent className="py-12">
+                    <div className="w-16 h-16 bg-green-100 dark:bg-green-900/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <CheckCircle className="w-8 h-8 text-green-600 dark:text-green-500" />
+                    </div>
+                    <h2 className="text-2xl font-bold text-neutral-900 dark:text-white mb-2 tracking-tight">Access Granted</h2>
+                    <p className="text-neutral-500 mb-6 text-sm">
+                        Initializing workspace for <span className="font-bold text-neutral-900 dark:text-white">{invitation.company?.name}</span>...
                     </p>
-                    <p className="text-sm text-muted-foreground">
-                        Redirecting you to your dashboard...
-                    </p>
+                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-neutral-100 dark:bg-neutral-800 rounded text-xs font-mono text-neutral-600 dark:text-neutral-400 animate-pulse">
+                        <Loader2 className="w-3 h-3 animate-spin" />
+                        REDIRECTING_TO_DASHBOARD...
+                    </div>
                 </CardContent>
             </Card>
         )
     }
 
     return (
-        <Card>
-            <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                    <User className="w-5 h-5" />
-                    Accept Invitation
+        <Card className="bg-white dark:bg-neutral-900 border-neutral-200 dark:border-neutral-800 shadow-xl overflow-hidden">
+            <CardHeader className="border-b border-neutral-100 dark:border-neutral-800 pb-4 bg-neutral-50/50 dark:bg-neutral-900/50">
+                <CardTitle className="flex items-center gap-2 text-sm font-mono uppercase tracking-widest text-neutral-500">
+                    <Terminal className="w-4 h-4" />
+                    Access_Protocol_v2
                 </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-6">
-                {error && (
-                    <Alert variant="destructive">
-                        <AlertCircle className="h-4 w-4" />
-                        <AlertDescription>{error}</AlertDescription>
-                    </Alert>
-                )}
-
-                {/* Wrong User Warning */}
-                {isWrongUser && (
-                    <Alert>
-                        <AlertCircle className="h-4 w-4" />
-                        <AlertDescription>
-                            You&apos;re signed in as <strong>{currentUserEmail}</strong>, but this invitation is for{" "}
-                            <strong>{invitation.email}</strong>. Please sign in with the correct account.
-                        </AlertDescription>
-                    </Alert>
-                )}
-
-                {/* Invitation Details Summary */}
-                <div className="bg-muted p-4 rounded-lg">
-                    <p className="text-sm text-muted-foreground mb-2">You&apos;re being invited to join:</p>
-                    <div className="space-y-1">
-                        <p className="font-medium">{invitation.company?.name}</p>
-                        <p className="text-sm">
-                            as <strong>{invitation.roleTitle}</strong> in the <strong>{invitation.team?.displayName}</strong> team
-                        </p>
+            <CardContent className="pt-6 space-y-8">
+                {
+                    error && (
+                        <Alert variant="destructive" className="bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-900 text-red-800 dark:text-red-200">
+                            <AlertCircle className="h-4 w-4" />
+                            <AlertDescription className="font-mono text-xs">{error}</AlertDescription>
+                        </Alert>
+                    )
+                }
+                {
+                    isWrongUser && (
+                        <Alert className="bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-900">
+                            <AlertCircle className="h-4 w-4 text-amber-600 dark:text-amber-500" />
+                            <AlertDescription className="text-amber-800 dark:text-amber-200 text-xs">
+                                Identity Mismatch: Active session <strong>{currentUserEmail}</strong> does not match target <strong>{invitation.email}</strong>.
+                            </AlertDescription>
+                        </Alert>
+                    )
+                }
+                <div className="bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 p-4 rounded-lg">
+                    <p className="text-[10px] font-mono uppercase text-neutral-500 mb-3 tracking-widest">Protocol_Target</p>
+                    <div className="space-y-2">
+                        <div className="flex justify-between items-center text-sm border-b border-neutral-200 dark:border-neutral-800 pb-2">
+                            <span className="text-neutral-500">Organization</span>
+                            <span className="font-bold text-neutral-900 dark:text-white">{invitation.company?.name}</span>
+                        </div>
+                        <div className="flex justify-between items-center text-sm border-b border-neutral-200 dark:border-neutral-800 pb-2">
+                            <span className="text-neutral-500">Role Designation</span>
+                            <span className="font-mono text-neutral-900 dark:text-white">{invitation.roleTitle}</span>
+                        </div>
+                        <div className="flex justify-between items-center text-sm">
+                            <span className="text-neutral-500">Unit Assignment</span>
+                            <span className="font-mono text-neutral-900 dark:text-white">{invitation.team?.displayName}</span>
+                        </div>
                     </div>
                 </div>
+                {
+                    !isAuthenticated && (
+                        <div className="space-y-6 text-center">
+                            <div>
+                                <h3 className="text-lg font-bold text-neutral-900 dark:text-white mb-2">Authentication Required</h3>
+                                <p className="text-sm text-neutral-500 dark:text-neutral-400">
+                                    Verify identity as <span className="font-mono text-neutral-900 dark:text-white bg-neutral-100 dark:bg-neutral-800 px-1 rounded">{invitation.email}</span> to proceed.
+                                </p>
+                            </div>
+                            <div className="space-y-4">
+                                <Button
+                                    onClick={handleCreateAccount}
+                                    className="w-full bg-neutral-900 hover:bg-neutral-800 dark:bg-white dark:hover:bg-neutral-200 text-white dark:text-black font-bold uppercase tracking-widest text-xs h-11"
+                                >
+                                    <Mail className="w-4 h-4 mr-2" />
+                                    Initialize via Google
+                                </Button>
 
-                {/* Authentication Required */}
-                {!isAuthenticated && (
-                    <div className="space-y-4">
-                        <div className="text-center">
-                            <h3 className="font-semibold mb-2">Sign in to accept this invitation</h3>
-                            <p className="text-sm text-muted-foreground mb-4">
-                                You need to sign in with <strong>{invitation.email}</strong> to accept this invitation.
-                            </p>
+                                <p className="text-[10px] text-neutral-400 uppercase tracking-wide">
+                                    Secure Connection Established
+                                </p>
+                            </div>
                         </div>
-                        
-                        <div className="space-y-3">
-                            <Button 
-                                onClick={handleCreateAccount}
-                                className="w-full"
-                                size="lg"
-                            >
-                                <Mail className="w-4 h-4 mr-2" />
-                                Sign in with Google
-                            </Button>
-                            
-                            <p className="text-xs text-center text-muted-foreground">
-                                By signing in, you agree to join the team and accept the invitation.
-                            </p>
-                        </div>
-                    </div>
-                )}
+                    )
+                }
+                {
+                    isWrongUser && (
+                        <div className="space-y-6 text-center">
+                            <div>
+                                <h3 className="text-lg font-bold text-neutral-900 dark:text-white mb-2">Switch Identity</h3>
+                                <p className="text-sm text-neutral-500">
+                                    Please authenticate with the invited credentials.
+                                </p>
+                            </div>
 
-                {/* Wrong User - Show Sign In Option */}
-                {isWrongUser && (
-                    <div className="space-y-4">
-                        <div className="text-center">
-                            <h3 className="font-semibold mb-2">Sign in with the invited account</h3>
-                            <p className="text-sm text-muted-foreground mb-4">
-                                Please sign in with <strong>{invitation.email}</strong> to accept this invitation.
-                            </p>
-                        </div>
-                        
-                        <Button 
-                            onClick={handleSignInWithCorrectAccount}
-                            className="w-full"
-                            size="lg"
-                        >
-                            <ExternalLink className="w-4 h-4 mr-2" />
-                            Sign in with {invitation.email}
-                        </Button>
-                    </div>
-                )}
-
-                {/* Correct User - Show Accept/Decline */}
-                {isAuthenticated && !isWrongUser && (
-                    <div className="space-y-4">
-                        <div className="text-center">
-                            <p className="text-sm text-muted-foreground mb-4">
-                                Ready to join the team? Click accept to get started.
-                            </p>
-                        </div>
-                        
-                        <div className="flex gap-3">
                             <Button
-                                onClick={handleDecline}
-                                variant="outline"
-                                className="flex-1"
-                                disabled={isLoading}
+                                onClick={handleSignInWithCorrectAccount}
+                                className="w-full bg-neutral-900 hover:bg-neutral-800 dark:bg-white dark:hover:bg-neutral-200 text-white dark:text-black font-bold uppercase tracking-widest text-xs h-11"
                             >
-                                <XCircle className="w-4 h-4 mr-2" />
-                                Decline
-                            </Button>
-                            <Button
-                                onClick={handleAccept}
-                                className="flex-1"
-                                disabled={isLoading}
-                            >
-                                {isLoading ? (
-                                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                                ) : (
-                                    <CheckCircle className="w-4 h-4 mr-2" />
-                                )}
-                                Accept Invitation
+                                <ExternalLink className="w-4 h-4 mr-2" />
+                                Auth as {invitation.email}
                             </Button>
                         </div>
-                    </div>
-                )}
+                    )
+                }
+                {
+                    isAuthenticated && !isWrongUser && (
+                        <div className="space-y-6">
+                            <div className="text-center">
+                                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 text-xs font-medium border border-green-200 dark:border-green-800 mb-4">
+                                    <ShieldCheck className="w-3 h-3" /> Identity Verified
+                                </div>
+                                <p className="text-sm text-neutral-500">
+                                    Ready to initialize workspace uplink?
+                                </p>
+                            </div>
+                            <div className="flex gap-4">
+                                <Button
+                                    onClick={handleDecline}
+                                    variant="outline"
+                                    className="flex-1 border-neutral-200 dark:border-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-900 text-xs font-bold uppercase tracking-widest h-11"
+                                    disabled={isLoading}
+                                >
+                                    <XCircle className="w-4 h-4 mr-2" />
+                                    Abort
+                                </Button>
+                                <Button
+                                    onClick={handleAccept}
+                                    className="flex-1 bg-neutral-900 hover:bg-neutral-800 dark:bg-white dark:hover:bg-neutral-200 text-white dark:text-black text-xs font-bold uppercase tracking-widest h-11"
+                                    disabled={isLoading}
+                                >
+                                    {
+                                        isLoading ? (
+                                            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                        ) : (
+                                            <CheckCircle className="w-4 h-4 mr-2" />
+                                        )
+                                    }
+                                    Confirm Access
+                                </Button>
+                            </div>
+                        </div>
+                    )
+                }
 
-                <Separator />
+                <Separator className="bg-neutral-100 dark:bg-neutral-800" />
 
-                {/* Help Text */}
-                <div className="text-center">
-                    <p className="text-xs text-muted-foreground">
-                        Having trouble? Contact{" "}
-                        <strong>{invitation.sender?.name}</strong> or your system administrator.
+                <div className="text-center pb-2">
+                    <p className="text-[10px] text-neutral-400 font-mono uppercase tracking-wide">
+                        Administrator: <span className="text-neutral-600 dark:text-neutral-300 font-bold">{invitation.sender?.name}</span>
                     </p>
                 </div>
             </CardContent>

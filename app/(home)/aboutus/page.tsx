@@ -1,503 +1,309 @@
-"use client";
+"use client"
 
-import { motion, useScroll, useTransform } from "framer-motion";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import Link from "next/link";
+import { useRef } from "react"
 import {
-    Users, Target, Heart, Zap, Mail, Phone, MapPin,
-    Rocket, Globe, Calendar, TrendingUp, Award, Send,
-    Loader2, CheckCircle2, ArrowRight, Sparkles, Lightbulb,
-    Linkedin, Twitter, Briefcase, GitBranch, ShieldCheck
-} from "lucide-react";
-import { useState, useRef } from "react";
-import { toast } from "sonner";
-// You will need to create/update this action to handle the contact form submission
-// import { submitContactForm, type ContactFormData } from "@/actions/contact.action";
-import Image from "next/image";
-import { Label } from "@/components/ui/label";
-import SmoothScroll from "@/components/smoothscroll";
-import { cn } from "@/lib/utils";
+    motion, useScroll, useTransform, Variants
+} from "framer-motion"
+import {
+    Code2, Globe, Zap, ArrowUpRight, Linkedin, Twitter, Network
+} from "lucide-react"
+import Link from "next/link"
+import Image from "next/image"
+import SmoothScroll from "@/components/smoothscroll"
+import { toast } from "sonner"
 
-// --- Animation Variants ---
-const fadeIn = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-        opacity: 1,
-        y: 0,
-        transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] }
-    }
-};
+// --- Data ---
 
-const stagger = {
-    hidden: { opacity: 0 },
-    visible: {
-        opacity: 1,
-        transition: { staggerChildren: 0.1, delayChildren: 0.2 }
-    }
-};
-
-// --- Data Section (Updated for SyncOrbit) ---
-const timelineData = [
+const values = [
     {
-        year: "2023",
-        title: "The Chaos Problem",
-        desc: "We saw teams struggling with fragmented workflows, using five different tools just to manage a single project. Information was scattered, and context was lost."
+        icon: <Zap className="w-5 h-5" />,
+        header: "01_VELOCITY",
+        title: "Zero Latency",
+        description: "We hate waiting. Our culture is built on immediate execution and asynchronous momentum. If it can be shipped today, it doesn't wait for tomorrow's standup.",
     },
     {
-        year: "2024",
-        title: "The SyncOrbit Prototype",
-        desc: "Built from personal frustration, our first version focused on one thing: unifying tasks, docs, and communication in a single, synchronized view. Early adopters loved the clarity."
+        icon: <Network className="w-5 h-5" />,
+        header: "02_SYNTHESIS",
+        title: "Hive Intelligence",
+        description: "Silos are for grain, not code. Product, Engineering, and Design operate as a single, fused organism sharing a unified context buffer.",
     },
     {
-        year: "2025",
-        title: "The Platform Vision",
-        desc: "We expanded beyond simple task management. We built dedicated modes for product and agency teams, automated workflows, and created a true operating system for modern work."
-    }
-];
+        icon: <Code2 className="w-5 h-5" />,
+        header: "03_RIGOR",
+        title: "First Principles",
+        description: "We don't solve problems by proxy. We deconstruct challenges to their mathematical core and rebuild from the ground up using absolute logic.",
+    },
+    {
+        icon: <Globe className="w-5 h-5" />,
+        header: "04_SCALE",
+        title: "Planetary Scale",
+        description: "We engineer for the n+1 user. Our architecture is designed to handle global concurrency from the very first commit.",
+    },
+]
 
-const team = [
-    {
-        name: "Nilesh Kumar Gupta",
-        role: "Founder & CEO",
-        image: "/aboutus/nileshkumar.jpeg", // Ensure path is correct
-        bio: "A product visionary obsessed with workflow efficiency. Previously led product teams at high-growth startups.",
-        social: { linkedin: "#", twitter: "#" }
-    },
-    {
-        name: "Niraj Kumar Jha",
-        role: "Co-Founder & CTO",
-        image: "/aboutus/nirajjha.jpeg",
-        bio: "The engineering brain behind our synchronized architecture. Expert in building scalable, real-time systems.",
-        social: { linkedin: "#", twitter: "#" }
-    },
-    {
-        name: "Anoop Grover",
-        role: "COO",
-        bio: "Operations strategist ensuring our platform delivers value to every team. The bridge between customer needs and product execution.",
-        social: { linkedin: "#", twitter: "#" }
-    }
-];
+const milestones = [
+    { year: "2019", title: "INIT_KERNEL", description: "SyncOrbit researched. The hypothesis: Project management is broken by context switching." },
+    { year: "2021", title: "ALPA_DEPLOY", description: "Internal testing with 50 high-velocity engineering teams. Feedback loop integration." },
+    { year: "2023", title: "V1_RELEASE", description: "Public launch. 10,000+ workspaces initialized in first quarter. SOC2 Type II achieved." },
+    { year: "2024", title: "ENTERPRISE_LAYER", description: "Launched On-Premise and Private Cloud nodes for Fortune 500 security compliance." },
+    { year: "2025", title: "GLOBAL_MESH", description: "Expansion into APAC and EMEA regions. Real-time translation and multi-region sharding." },
+]
 
-// Define the interface for contact form data locally for now
-interface ContactFormData {
-    name: string;
-    email: string;
-    message: string;
-    company?: string;
+const teamMembers = [
+    {
+        name: "Niraj Jha",
+        role: "CO-FOUNDER / CEO & CTO",
+        bio: "The Architect. Formerly Principal Engineer at Tier-1 Tech. Obsessed with distributed systems and removing latency from human coordination.",
+        image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=1000&auto=format&fit=crop",
+        linkedin: "#",
+        colSpan: "md:col-span-2 lg:col-span-2"
+    },
+    {
+        name: "Harsh Pandey",
+        role: "CO-FOUNDER / COO",
+        bio: "The Operator. Executes the vision. Ensures that our operational velocity matches our engineering output. Master of logistics.",
+        image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=1000&auto=format&fit=crop",
+        linkedin: "#",
+        colSpan: "md:col-span-1 lg:col-span-1"
+    },
+    {
+        name: "Sarah Chen",
+        role: "HEAD OF PRODUCT",
+        bio: "Translates abstract user pain into concrete technical specifications. The bridge between the user and the metal.",
+        image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=1000&auto=format&fit=crop",
+        linkedin: "#",
+        colSpan: "md:col-span-1 lg:col-span-1"
+    },
+    {
+        name: "David Ross",
+        role: "VP OF ENGINEERING",
+        bio: "Guardian of the codebase. Enforces strict linting, 100% test coverage, and scalable architecture patterns.",
+        image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=1000&auto=format&fit=crop",
+        linkedin: "#",
+        colSpan: "md:col-span-2 lg:col-span-2"
+    },
+    {
+        name: "Elena Rodriguez",
+        role: "LEAD DESIGNER",
+        bio: "Crafting the interface between human intent and machine execution. Minimalist, functional, beautiful.",
+        image: "https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=1000&auto=format&fit=crop",
+        linkedin: "#",
+        colSpan: "md:col-span-1"
+    }
+]
+
+// --- Animations ---
+
+const fadeInUp: Variants = {
+    hidden: { opacity: 0, y: 40 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] } }
 }
 
-export default function AboutUsPage() {
-    const [formData, setFormData] = useState<ContactFormData>({
-        name: "", email: "", message: "", company: ""
-    });
-    const [isSubmitting, setIsSubmitting] = useState(false);
+const staggerContainer: Variants = {
+    hidden: { opacity: 0 },
+    visible: { opacity: 1, transition: { staggerChildren: 0.1 } }
+}
 
-    // Form Handler (Mock implementation - replace with actual server action)
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setIsSubmitting(true);
-        // Simulate API call
-        setTimeout(() => {
-            toast.success("Message sent! We'll be in touch shortly.");
-            setFormData({ name: "", email: "", message: "", company: "" });
-            setIsSubmitting(false);
-        }, 1500);
-
-        // Actual implementation would be something like:
-        /*
-        try {
-            const result = await submitContactForm(formData);
-            if (result.success) {
-                toast.success("Message sent! We'll be in touch.");
-                setFormData({ name: "", email: "", message: "", company: "" });
-            } else {
-                toast.error("Something went wrong. Please try again.");
-            }
-        } catch (error) {
-            toast.error("An error occurred.");
-        } finally {
-            setIsSubmitting(false);
-        }
-        */
-    };
+export default function AboutPage() {
+    const containerRef = useRef(null)
+    const { scrollYProgress } = useScroll({ target: containerRef, offset: ["start start", "end end"] })
+    const y = useTransform(scrollYProgress, [0, 1], ["0%", "50%"])
 
     return (
         <SmoothScroll>
-            <div className="min-h-screen bg-white dark:bg-neutral-950 selection:bg-orange-500/30 selection:text-orange-900 dark:selection:text-white font-sans">
+            <main ref={containerRef} className="min-h-screen bg-white dark:bg-neutral-950 text-neutral-900 dark:text-neutral-50 selection:bg-neutral-900 selection:text-white dark:selection:bg-white dark:selection:text-neutral-950 font-sans">
 
-                {/* --- 1. Hero Section --- */}
-                <section className="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden">
-                    {/* Background Gradients (Orange/Blue) */}
-                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-orange-500/10 dark:bg-orange-500/20 blur-[120px] rounded-full pointer-events-none" />
-                    <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-500/10 dark:bg-blue-500/20 blur-[100px] rounded-full pointer-events-none" />
-
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                <div className="fixed inset-0 z-0 pointer-events-none">
+                    <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
+                    <div className="absolute inset-0 bg-[radial-gradient(circle_800px_at_50%_-30%,rgba(120,119,198,0.05),transparent)] dark:bg-[radial-gradient(circle_800px_at_50%_-30%,rgba(255,255,255,0.05),transparent)]"></div>
+                </div>
+                <section className="relative h-screen flex flex-col items-center justify-center px-6 overflow-hidden">
+                    <div className="relative z-10 max-w-5xl mx-auto text-center">
                         <motion.div
-                            initial="hidden"
-                            animate="visible"
-                            variants={stagger}
-                            className="text-center max-w-4xl mx-auto"
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ duration: 0.5 }}
+                            className="inline-flex items-center gap-2 mb-8 px-4 py-1.5 rounded-full border border-neutral-200 dark:border-neutral-800 bg-neutral-100/50 dark:bg-neutral-900/50 backdrop-blur-md"
                         >
-                            <motion.div variants={fadeIn} className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-neutral-100 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 mb-8">
-                                <Sparkles className="w-4 h-4 text-orange-500" />
-                                <span className="text-xs font-semibold uppercase tracking-wide text-neutral-600 dark:text-neutral-300">
-                                    Our Mission
-                                </span>
-                            </motion.div>
-
-                            <motion.h1 variants={fadeIn} className="text-5xl md:text-7xl font-bold tracking-tight text-neutral-900 dark:text-white mb-8 leading-tight">
-                                We synchronize <br className="hidden md:block" />
-                                <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600">
-                                    Teams & Trajectories.
-                                </span>
-                            </motion.h1>
-
-                            <motion.p variants={fadeIn} className="text-lg md:text-xl text-neutral-600 dark:text-neutral-400 leading-relaxed mb-10 max-w-2xl mx-auto">
-                                We are building the central nervous system for modern work.
-                                Where strategy, execution, and collaboration happen in one unified orbit.
-                            </motion.p>
-
-                            <motion.div variants={fadeIn} className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                                <Button asChild size="lg" className="rounded-full h-12 px-8 text-base bg-orange-500 hover:bg-orange-600 text-white">
-                                    <Link href="#story">Read Our Story</Link>
-                                </Button>
-                                <Button asChild variant="ghost" size="lg" className="rounded-full h-12 px-8 text-base hover:bg-neutral-100 dark:hover:bg-neutral-800 text-neutral-900 dark:text-white">
-                                    <Link href="/features">Explore Features <ArrowRight className="w-4 h-4 ml-2" /></Link>
-                                </Button>
-                            </motion.div>
+                            <span className="w-2 h-2 rounded-full bg-neutral-900 dark:bg-white animate-pulse" />
+                            <span className="text-[10px] font-mono uppercase tracking-widest text-neutral-600 dark:text-neutral-400">System_Status: Operational</span>
                         </motion.div>
+                        <motion.h1
+                            initial="hidden" animate="visible" variants={staggerContainer}
+                            className="text-6xl md:text-8xl lg:text-9xl font-extrabold tracking-tighter mb-8 leading-[0.9]"
+                        >
+                            <motion.span variants={fadeInUp} className="block text-neutral-300 dark:text-neutral-700">BUILDING</motion.span>
+                            <motion.span variants={fadeInUp} className="block text-neutral-900 dark:text-white">THE ENGINE</motion.span>
+                        </motion.h1>
+                        <motion.p
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.4, duration: 0.8 }}
+                            className="text-lg md:text-xl text-neutral-600 dark:text-neutral-400 max-w-2xl mx-auto font-light leading-relaxed"
+                        >
+                            SyncOrbit is not just a tool; it's a protocol for human achievement.
+                            We combine rigorous engineering with fluid design to eliminate the friction of work.
+                        </motion.p>
                     </div>
-                </section>
-
-                {/* --- 2. Stats Section (Clean) --- */}
-                <section className="py-12 border-y border-neutral-100 dark:border-neutral-800 bg-neutral-50/50 dark:bg-neutral-900/30">
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-                            {[
-                                { label: "Active Teams", value: "2,500+", icon: Users },
-                                { label: "Projects Managed", value: "50k+", icon: Target },
-                                { label: "Tasks Completed", value: "1M+", icon: CheckCircle2 },
-                                { label: "Uptime", value: "99.99%", icon: Zap },
-                            ].map((stat, i) => (
-                                <motion.div
-                                    initial={{ opacity: 0, y: 20 }}
-                                    whileInView={{ opacity: 1, y: 0 }}
-                                    viewport={{ once: true }}
-                                    transition={{ delay: i * 0.1 }}
-                                    key={i}
-                                    className="flex flex-col items-center justify-center text-center group"
-                                >
-                                    <div className="w-12 h-12 bg-orange-100 dark:bg-orange-900/20 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                                        <stat.icon className="w-6 h-6 text-orange-600 dark:text-orange-500" />
-                                    </div>
-                                    <div className="text-3xl font-bold text-neutral-900 dark:text-white mb-1">{stat.value}</div>
-                                    <div className="text-sm font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">{stat.label}</div>
-                                </motion.div>
-                            ))}
+                    <motion.div style={{ y }} className="absolute bottom-10 left-0 w-full flex justify-center opacity-50">
+                        <div className="flex flex-col items-center gap-2">
+                            <span className="text-[10px] font-mono uppercase tracking-[0.2em]">Scroll_Down</span>
+                            <div className="w-px h-16 bg-gradient-to-b from-neutral-900 to-transparent dark:from-white" />
                         </div>
-                    </div>
+                    </motion.div>
                 </section>
-
-                {/* --- 3. The Story (Timeline Style) --- */}
-                <section id="story" className="py-24 bg-white dark:bg-neutral-950 relative">
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <div className="grid lg:grid-cols-2 gap-16 lg:gap-24 items-start">
-                            <motion.div
-                                initial="hidden"
-                                whileInView="visible"
-                                viewport={{ once: true }}
-                                variants={fadeIn}
-                                className="sticky top-32"
-                            >
-                                <h2 className="text-4xl font-bold mb-6 text-neutral-900 dark:text-white">How it started.</h2>
-                                <p className="text-lg text-neutral-600 dark:text-neutral-400 mb-6 leading-relaxed">
-                                    SyncOrbit wasn&apos;t born in a VC boardroom. It was built out of the genuine frustration of managing projects across disjointed tools.
-                                    We knew there had to be a better way to keep everyone on the same page.
-                                </p>
-                                <p className="text-lg text-neutral-600 dark:text-neutral-400 leading-relaxed">
-                                    What started as a simple tool to sync tasks has evolved into a comprehensive platform
-                                    powering product development, agency work, and everything in between for thousands of teams.
-                                </p>
-
-                                <div className="mt-8 p-6 bg-neutral-50 dark:bg-neutral-900/50 rounded-2xl border border-neutral-100 dark:border-neutral-800">
-                                    <Lightbulb className="w-6 h-6 text-orange-500 mb-4" />
-                                    <p className="italic text-neutral-700 dark:text-neutral-300 font-medium leading-relaxed">
-                                        &quot;We believe that when you remove the friction of coordination, teams don't just work faster—they do their best work. That's our North Star.&quot;
-                                    </p>
-                                </div>
-                            </motion.div>
-
-                            <div className="relative border-l-2 border-neutral-200 dark:border-neutral-800 ml-3 lg:ml-0 space-y-12 pl-8 lg:pl-12 py-4">
-                                {timelineData.map((item, index) => (
-                                    <motion.div
-                                        key={index}
-                                        initial={{ opacity: 0, x: 20 }}
-                                        whileInView={{ opacity: 1, x: 0 }}
-                                        viewport={{ once: true }}
-                                        transition={{ delay: index * 0.2 }}
-                                        className="relative"
-                                    >
-                                        {/* Timeline Dot */}
-                                        <span className="absolute -left-[43px] lg:-left-[59px] top-1.5 h-6 w-6 rounded-full border-4 border-white dark:border-neutral-950 bg-orange-500 shadow-sm" />
-                                        <span className="text-sm font-bold text-orange-600 dark:text-orange-500 tracking-wider mb-2 block">
-                                            {item.year}
-                                        </span>
-                                        <h3 className="text-xl font-bold text-neutral-900 dark:text-white mb-3">
-                                            {item.title}
-                                        </h3>
-                                        <p className="text-neutral-600 dark:text-neutral-400 leading-relaxed">
-                                            {item.desc}
-                                        </p>
-                                    </motion.div>
-                                ))}
+                <section className="py-24 px-6 relative z-10 border-t border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950">
+                    <div className="max-w-7xl mx-auto">
+                        <div className="mb-16 flex flex-col md:flex-row justify-between items-end gap-6">
+                            <div>
+                                <h2 className="text-sm font-mono text-neutral-500 uppercase tracking-widest mb-4">Core_Kernel</h2>
+                                <h3 className="text-4xl md:text-5xl font-bold text-neutral-900 dark:text-white tracking-tighter">The Operating Code</h3>
                             </div>
-                        </div>
-                    </div>
-                </section>
-
-                {/* --- 4. Core Values (Bento Grid) --- */}
-                <section className="py-24 bg-neutral-50 dark:bg-neutral-900/50 border-y border-neutral-200 dark:border-neutral-800">
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <div className="text-center max-w-2xl mx-auto mb-16">
-                            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-neutral-900 dark:text-white">Our DNA</h2>
-                            <p className="text-neutral-600 dark:text-neutral-400 text-lg">
-                                The principles that guide every feature we build.
+                            <p className="text-neutral-500 max-w-md text-right hidden md:block font-mono text-xs">
+                                // Immutable principles guiding<br />every commit and decision.
                             </p>
                         </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            {/* Card 1: Large */}
-                            <motion.div
-                                whileHover={{ y: -4 }}
-                                className="md:col-span-2 p-8 bg-white dark:bg-neutral-900 rounded-[2rem] border border-neutral-200 dark:border-neutral-800 shadow-sm relative overflow-hidden group"
-                            >
-                                <div className="absolute top-0 right-0 p-8 opacity-[0.03] dark:opacity-[0.05] group-hover:opacity-10 transition-opacity pointer-events-none">
-                                    <Target className="w-48 h-48" />
-                                </div>
-                                <div className="relative z-10">
-                                    <div className="w-12 h-12 bg-orange-100 dark:bg-orange-900/20 rounded-xl flex items-center justify-center mb-6">
-                                        <Target className="w-6 h-6 text-orange-600 dark:text-orange-500" />
-                                    </div>
-                                    <h3 className="text-2xl font-bold mb-3 text-neutral-900 dark:text-white">Clarity over Chaos</h3>
-                                    <p className="text-neutral-600 dark:text-neutral-400 max-w-md leading-relaxed">
-                                        We believe a single source of truth is non-negotiable. Our platform is designed to eliminate ambiguity and keep everyone aligned on the goal.
-                                    </p>
-                                </div>
-                            </motion.div>
-                            <motion.div
-                                whileHover={{ y: -4 }}
-                                className="p-8 bg-white dark:bg-neutral-900 rounded-[2rem] border border-neutral-200 dark:border-neutral-800 shadow-sm"
-                            >
-                                <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/20 rounded-xl flex items-center justify-center mb-6">
-                                    <Zap className="w-6 h-6 text-blue-600 dark:text-blue-500" />
-                                </div>
-                                <h3 className="text-xl font-bold mb-3 text-neutral-900 dark:text-white">Built for Speed</h3>
-                                <p className="text-neutral-600 dark:text-neutral-400 leading-relaxed">
-                                    We obsess over performance. Every interaction should feel instantaneous.
-                                </p>
-                            </motion.div>
-                            <motion.div
-                                whileHover={{ y: -4 }}
-                                className="p-8 bg-white dark:bg-neutral-900 rounded-[2rem] border border-neutral-200 dark:border-neutral-800 shadow-sm"
-                            >
-                                <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/20 rounded-xl flex items-center justify-center mb-6">
-                                    <Briefcase className="w-6 h-6 text-purple-600 dark:text-purple-500" />
-                                </div>
-                                <h3 className="text-xl font-bold mb-3 text-neutral-900 dark:text-white">Work Your Way</h3>
-                                <p className="text-neutral-600 dark:text-neutral-400 leading-relaxed">
-                                    We don't enforce a methodology. We build flexible tools that adapt to your team's unique workflow.
-                                </p>
-                            </motion.div>
-                            <motion.div
-                                whileHover={{ y: -4 }}
-                                className="md:col-span-2 p-8 bg-neutral-900 dark:bg-black text-white rounded-[2rem] shadow-sm relative overflow-hidden group"
-                            >
-                                {/* Abstract Background Pattern */}
-                                <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] opacity-20"></div>
-
-                                <div className="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
-                                    <div>
-                                        <div className="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center mb-6 backdrop-blur-sm">
-                                            <Rocket className="w-6 h-6 text-orange-500" />
-                                        </div>
-                                        <h3 className="text-2xl font-bold mb-3">Constant Evolution</h3>
-                                        <p className="text-neutral-300 max-w-md leading-relaxed">
-                                            The way teams work is always changing. So are we. We ship improvements weekly, listening closely to user feedback.
-                                        </p>
-                                    </div>
-                                    <Button variant="outline" className="border-neutral-700 text-white hover:bg-neutral-800 hover:text-white shrink-0">
-                                        View Changelog
-                                    </Button>
-                                </div>
-                            </motion.div>
-                        </div>
-                    </div>
-                </section>
-
-                {/* --- 5. Team Section --- */}
-                <section className="py-24 bg-white dark:bg-neutral-950 overflow-hidden">
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <motion.div
-                            initial="hidden"
-                            whileInView="visible"
-                            viewport={{ once: true }}
-                            variants={fadeIn}
-                            className="mb-16 text-center"
-                        >
-                            <h2 className="text-4xl font-bold mb-4 text-neutral-900 dark:text-white">Meet the Builders</h2>
-                            <p className="text-neutral-600 dark:text-neutral-400 text-lg">The minds behind the mission.</p>
-                        </motion.div>
-                        <motion.div
-                            variants={stagger}
-                            initial="hidden"
-                            whileInView="visible"
-                            viewport={{ once: true }}
-                            className="grid md:grid-cols-3 gap-8"
-                        >
+                        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
                             {
-                                team.map((member, i) => (
+                                values.map((item, index) => (
                                     <motion.div
-                                        variants={fadeIn}
-                                        key={i}
-                                        className="group relative text-center sm:text-left"
+                                        key={index}
+                                        initial={{ opacity: 0, y: 20 }}
+                                        whileInView={{ opacity: 1, y: 0 }}
+                                        viewport={{ once: true }}
+                                        transition={{ delay: index * 0.1 }}
+                                        className="group p-8 rounded-2xl bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200 dark:border-neutral-800 hover:bg-neutral-100 dark:hover:bg-neutral-900 transition-all duration-300"
                                     >
-                                        <div className="aspect-[4/5] rounded-2xl overflow-hidden bg-neutral-100 dark:bg-neutral-800 mb-6 relative">
-                                            <Image
-                                                src={member.image || "/placeholder-user.jpg"} // Fallback image
-                                                alt={member.name}
-                                                width={500}
-                                                height={600}
-                                                className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500 scale-100 group-hover:scale-105"
-                                            />
-                                            <div className="absolute inset-0 bg-neutral-900/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4">
-                                                <Link href={member.social.linkedin} className="p-3 bg-white/10 hover:bg-white text-white hover:text-black rounded-full backdrop-blur-sm transition-colors">
-                                                    <Linkedin className="w-5 h-5" />
-                                                </Link>
-                                                <Link href={member.social.twitter} className="p-3 bg-white/10 hover:bg-white text-white hover:text-black rounded-full backdrop-blur-sm transition-colors">
-                                                    <Twitter className="w-5 h-5" />
-                                                </Link>
+                                        <div className="flex justify-between items-start mb-12">
+                                            <div className="p-3 rounded-lg bg-white dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 text-neutral-900 dark:text-white">
+                                                {item.icon}
                                             </div>
+                                            <span className="text-[10px] font-mono text-neutral-400 dark:text-neutral-600 group-hover:text-neutral-900 dark:group-hover:text-white transition-colors">
+                                                {item.header}
+                                            </span>
                                         </div>
-                                        <h3 className="text-xl font-bold text-neutral-900 dark:text-white mb-1">{member.name}</h3>
-                                        <p className="text-orange-600 dark:text-orange-500 font-medium text-sm mb-3">{member.role}</p>
-                                        <p className="text-neutral-600 dark:text-neutral-400 text-sm leading-relaxed">{member.bio}</p>
+                                        <h4 className="text-lg font-bold mb-3 text-neutral-900 dark:text-white uppercase tracking-tight">{item.title}</h4>
+                                        <p className="text-neutral-600 dark:text-neutral-400 text-sm leading-relaxed">
+                                            {item.description}
+                                        </p>
                                     </motion.div>
                                 ))
                             }
-                        </motion.div>
+                        </div>
                     </div>
                 </section>
+                <section id="team" className="py-32 px-6 border-t border-neutral-200 dark:border-neutral-800">
+                    <div className="max-w-7xl mx-auto">
+                        <div className="flex flex-col md:flex-row justify-between items-end mb-20 gap-6">
+                            <div>
+                                <h2 className="text-4xl md:text-6xl font-bold tracking-tighter mb-4 text-neutral-900 dark:text-white">The Architects</h2>
+                                <p className="text-neutral-600 dark:text-neutral-400 text-lg max-w-xl font-light">
+                                    Meet the builders. A collective of founders, engineers, and creators obsessed with perfection.
+                                </p>
+                            </div>
+                            <div className="flex gap-4">
+                                <button onClick={() => toast.success("Access Denied: Hiring Protocol Closed")} className="px-6 py-3 rounded-full border border-neutral-300 dark:border-neutral-700 hover:bg-neutral-900 hover:text-white dark:hover:bg-white dark:hover:text-black transition-all text-xs font-bold uppercase tracking-widest">
+                                    Join The Collective
+                                </button>
+                            </div>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            {
+                                teamMembers.map((member, index) => (
+                                    <motion.div
+                                        key={index}
+                                        initial={{ opacity: 0, scale: 0.98 }}
+                                        whileInView={{ opacity: 1, scale: 1 }}
+                                        viewport={{ once: true }}
+                                        transition={{ duration: 0.5, delay: index * 0.1 }}
+                                        className={`group relative overflow-hidden rounded-xl bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 ${member.colSpan || ''} min-h-[450px]`}
+                                    >
+                                        <Image
+                                            src={member.image}
+                                            alt={member.name}
+                                            fill
+                                            className="object-cover grayscale group-hover:grayscale-0 transition-all duration-700 ease-in-out group-hover:scale-105 opacity-80 group-hover:opacity-100"
+                                        />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-950/20 to-transparent opacity-90" />
 
-                {/* --- 6. Contact Section --- */}
-                <section id="contact" className="py-24 bg-neutral-50 dark:bg-neutral-900/50 border-t border-neutral-200 dark:border-neutral-800">
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <div className="bg-white dark:bg-neutral-900 rounded-[2.5rem] shadow-xl border border-neutral-200 dark:border-neutral-800 overflow-hidden">
-                            <div className="grid lg:grid-cols-2">
-                                <div className="p-10 lg:p-16 bg-neutral-900 dark:bg-black text-white flex flex-col justify-between relative overflow-hidden">
-                                    {/* Background decorative glow */}
-                                    <div className="absolute top-0 right-0 w-96 h-96 bg-orange-500/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
-                                    <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 pointer-events-none" />
-
-                                    <div className="relative z-10">
-                                        <h2 className="text-3xl font-bold mb-6">Let&apos;s synchronize.</h2>
-                                        <p className="text-neutral-400 text-lg mb-12 leading-relaxed">
-                                            Have a question about our platform, pricing, or partnership opportunities? We're here to help.
-                                        </p>
-
-                                        <div className="space-y-8">
-                                            <div className="flex items-start gap-4">
-                                                <div className="p-3 bg-white/10 rounded-xl">
-                                                    <Mail className="w-6 h-6 text-orange-400" />
+                                        <div className="absolute inset-0 p-8 flex flex-col justify-end transform translate-y-2 group-hover:translate-y-0 transition-transform duration-500">
+                                            <div className="relative z-10">
+                                                <div className="flex justify-between items-end border-b border-white/20 pb-4 mb-4">
+                                                    <div>
+                                                        <span className="text-[10px] font-mono uppercase tracking-widest text-neutral-400 block mb-1">
+                                                            {member.role}
+                                                        </span>
+                                                        <h3 className="text-2xl font-bold text-white">{member.name}</h3>
+                                                    </div>
+                                                    <ArrowUpRight className="text-white w-5 h-5 opacity-0 group-hover:opacity-100 transition-opacity" />
                                                 </div>
-                                                <div>
-                                                    <p className="font-semibold mb-1">Email Us</p>
-                                                    <p className="text-neutral-400 hover:text-orange-400 transition-colors">
-                                                        <a href="mailto:hello@syncorbit.com">hello@syncorbit.com</a>
-                                                    </p>
+                                                <p className="text-neutral-300 text-sm font-light leading-relaxed mb-6 h-0 group-hover:h-auto overflow-hidden opacity-0 group-hover:opacity-100 transition-all duration-300">
+                                                    {member.bio}
+                                                </p>
+                                                <div className="flex gap-4 opacity-0 group-hover:opacity-100 transition-opacity delay-100">
+                                                    <Link href={member.linkedin} className="text-white hover:text-neutral-400 transition-colors"><Linkedin className="w-4 h-4" /></Link>
+                                                    <button className="text-white hover:text-neutral-400 transition-colors"><Twitter className="w-4 h-4" /></button>
                                                 </div>
                                             </div>
-                                            <div className="flex items-start gap-4">
-                                                <div className="p-3 bg-white/10 rounded-xl">
-                                                    <MapPin className="w-6 h-6 text-orange-400" />
-                                                </div>
-                                                <div>
-                                                    <p className="font-semibold mb-1">HQ</p>
-                                                    <p className="text-neutral-400">San Francisco, CA</p>
-                                                </div>
-                                            </div>
                                         </div>
-                                    </div>
-
-                                    <div className="mt-16 relative z-10 flex gap-4">
-                                        <Link href="#" className="text-neutral-400 hover:text-white transition-colors"><Linkedin className="w-5 h-5" /></Link>
-                                        <Link href="#" className="text-neutral-400 hover:text-white transition-colors"><Twitter className="w-5 h-5" /></Link>
-                                    </div>
-                                </div>
-                                <div className="p-10 lg:p-16 bg-white dark:bg-neutral-900">
-                                    <form onSubmit={handleSubmit} className="space-y-6">
-                                        <div className="grid sm:grid-cols-2 gap-6">
-                                            <div className="space-y-2">
-                                                <Label htmlFor="name" className="text-neutral-700 dark:text-neutral-300 font-medium">Name</Label>
-                                                <Input
-                                                    id="name"
-                                                    placeholder="Jane Doe"
-                                                    value={formData.name}
-                                                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                                    required
-                                                    className="bg-neutral-50 dark:bg-neutral-800 border-neutral-200 dark:border-neutral-700 h-12 rounded-xl focus-visible:ring-orange-500"
-                                                />
-                                            </div>
-                                            <div className="space-y-2">
-                                                <Label htmlFor="email" className="text-neutral-700 dark:text-neutral-300 font-medium">Work Email</Label>
-                                                <Input
-                                                    id="email"
-                                                    type="email"
-                                                    placeholder="jane@company.com"
-                                                    value={formData.email}
-                                                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                                                    required
-                                                    className="bg-neutral-50 dark:bg-neutral-800 border-neutral-200 dark:border-neutral-700 h-12 rounded-xl focus-visible:ring-orange-500"
-                                                />
-                                            </div>
-                                        </div>
-                                        <div className="space-y-2">
-                                            <Label htmlFor="company" className="text-neutral-700 dark:text-neutral-300 font-medium">Company (Optional)</Label>
-                                            <Input
-                                                id="company"
-                                                placeholder="Acme Inc."
-                                                value={formData.company}
-                                                onChange={(e) => setFormData({ ...formData, company: e.target.value })}
-                                                className="bg-neutral-50 dark:bg-neutral-800 border-neutral-200 dark:border-neutral-700 h-12 rounded-xl focus-visible:ring-orange-500"
-                                            />
-                                        </div>
-                                        <div className="space-y-2">
-                                            <Label htmlFor="message" className="text-neutral-700 dark:text-neutral-300 font-medium">How can we help?</Label>
-                                            <Textarea
-                                                id="message"
-                                                placeholder="Tell us about your team's needs..."
-                                                rows={5}
-                                                value={formData.message}
-                                                onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                                                required
-                                                className="bg-neutral-50 dark:bg-neutral-800 border-neutral-200 dark:border-neutral-700 rounded-xl resize-none focus-visible:ring-orange-500"
-                                            />
-                                        </div>
-                                        <Button
-                                            type="submit"
-                                            disabled={isSubmitting}
-                                            className="w-full h-12 bg-orange-500 hover:bg-orange-600 text-white font-bold text-base rounded-xl transition-all shadow-lg shadow-orange-500/20 hover:shadow-orange-500/40"
+                                    </motion.div>
+                                ))
+                            }
+                        </div>
+                    </div>
+                </section>
+                <section className="py-32 px-6 border-t border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-950/50">
+                    <div className="max-w-4xl mx-auto flex flex-col items-center justify-center">
+                        <div className="text-center mb-16">
+                            <h2 className="text-4xl font-bold text-neutral-900 dark:text-white tracking-tighter">System Logs</h2>
+                            <p className="text-neutral-500 font-mono text-xs uppercase mt-2">Execution Timeline</p>
+                        </div>
+                        <div className="relative">
+                            <div className="absolute left-[7px] top-0 bottom-0 w-px bg-neutral-300 dark:bg-neutral-800 border-l border-dashed border-neutral-400 dark:border-neutral-700" />
+                            <div className="space-y-12">
+                                {
+                                    milestones.map((milestone, index) => (
+                                        <motion.div
+                                            key={index}
+                                            initial={{ opacity: 0, x: -20 }}
+                                            whileInView={{ opacity: 1, x: 0 }}
+                                            viewport={{ once: true }}
+                                            className="relative pl-10"
                                         >
-                                            {isSubmitting ? <Loader2 className="animate-spin w-5 h-5" /> : "Send Message"}
-                                        </Button>
-                                    </form>
-                                </div>
+                                            <div className="absolute left-0 top-1.5 w-4 h-4 rounded-full bg-white dark:bg-neutral-950 border-2 border-neutral-900 dark:border-white z-10" />
+                                            <div className="flex flex-col sm:flex-row sm:items-baseline gap-2 sm:gap-4 mb-1">
+                                                <span className="font-mono text-sm font-bold text-neutral-900 dark:text-white">{milestone.year}</span>
+                                                <span className="font-mono text-xs text-neutral-500 uppercase tracking-widest">[{milestone.title}]</span>
+                                            </div>
+                                            <p className="text-neutral-600 dark:text-neutral-400 text-sm leading-relaxed max-w-xl">
+                                                {milestone.description}
+                                            </p>
+                                        </motion.div>
+                                    ))
+                                }
                             </div>
                         </div>
                     </div>
                 </section>
-            </div>
+                <section className="py-32 px-6 border-t border-neutral-200 dark:border-neutral-800">
+                    <div className="max-w-4xl mx-auto text-center">
+                        <h2 className="text-5xl md:text-7xl font-bold tracking-tighter mb-8 text-neutral-900 dark:text-white">
+                            Ready to Initialize?
+                        </h2>
+                        <p className="text-xl text-neutral-600 dark:text-neutral-400 mb-10 font-light">
+                            We are looking for partners who demand precision. If you are ready to build the future, let's look at the schematics.
+                        </p>
+                        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                            <Link href="/contactus" className="px-8 py-4 rounded-full bg-neutral-900 dark:bg-white text-white dark:text-black font-bold hover:opacity-90 transition-all text-sm uppercase tracking-widest">
+                                Start Protocol
+                            </Link>
+                            <Link href="/papers" className="px-8 py-4 rounded-full border border-neutral-200 dark:border-neutral-800 text-neutral-900 dark:text-white font-bold hover:bg-neutral-100 dark:hover:bg-neutral-900 transition-all text-sm uppercase tracking-widest">
+                                Read WhitePapers
+                            </Link>
+                        </div>
+                    </div>
+                </section>
+            </main>
         </SmoothScroll>
-    );
+    )
 }

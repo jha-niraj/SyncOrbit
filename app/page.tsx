@@ -2,9 +2,6 @@
 
 import React, { useEffect } from "react";
 import Navbar from "@/components/navbar";
-import Hero from "@/components/(landingpage)/herosection";
-import HumanoidSection from "@/components/(landingpage)/humaoidsection";
-import SpecsSection from "@/components/(landingpage)/specssection";
 import DetailsSection from "@/components/(landingpage)/detailssection";
 import ImageShowcaseSection from "@/components/(landingpage)/imageshowcasesection";
 import Features from "@/components/(landingpage)/featuressection";
@@ -15,7 +12,10 @@ import Footer from "@/components/footer";
 import HowItWorks from "@/components/(landingpage)/howitworks";
 import Testimonials from "@/components/(landingpage)/testimonials";
 import SmoothScroll from "@/components/smoothscroll";
-import WorkflowSimulation from "@/components/(landingpage)/workflowmodel";
+import { WorkflowSimulation } from "@/components/(landingpage)/workflowmodel";
+import { Hero } from "@/components/(landingpage)/herosection";
+import { HumanoidSection } from "@/components/(landingpage)/humaoidsection";
+import { SpecsSection } from "@/components/(landingpage)/specssection";
 
 const LandingPage = () => {
     // Initialize intersection observer to detect when elements enter viewport
