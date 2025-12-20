@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { useRouter, usePathname } from 'next/navigation'
 import {
     Menu, X, Moon, Sun, ArrowRight, User, LayoutDashboard, LogOut,
-    Boxes, Terminal
+    Boxes
 } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
 import { cn } from '@/lib/utils'
@@ -12,7 +12,8 @@ import { Button } from '@/components/ui/button'
 import { useTheme } from 'next-themes'
 import { useSession, signOut } from 'next-auth/react'
 import {
-    DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator
+    DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, 
+    DropdownMenuSeparator
 } from '@/components/ui/dropdown-menu'
 
 const menuItems = [

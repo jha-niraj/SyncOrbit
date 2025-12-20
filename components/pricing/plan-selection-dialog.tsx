@@ -93,7 +93,7 @@ export function PlanSelectionDialog({
 					<div className="space-y-3">
 						<h4 className="font-semibold text-gray-900 dark:text-white flex items-center gap-2">
 							<Check className="h-5 w-5 text-orange-500" />
-							What's included:
+							What&apos;s included:
 						</h4>
 						<ul className="space-y-2.5 pl-7 grid grid-cols-1 md:grid-cols-2">
 							{

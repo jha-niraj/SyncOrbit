@@ -1,11 +1,15 @@
 "use client"
 
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import { 
+    Card, CardContent, CardHeader, CardTitle, CardDescription 
+} from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import Link from "next/link"
-import { ArrowRight, Briefcase, CheckCircle, Clock, Plus, Users } from "lucide-react"
+import { 
+    ArrowRight, Briefcase, CheckCircle, Clock, Users 
+} from "lucide-react"
 import { format } from "date-fns"
 
 interface InternalDashboardProps {
@@ -35,7 +39,7 @@ export function InternalDashboard({ user, stats, recentProjects }: InternalDashb
                         {greeting()}, {user.name?.split(" ")[0] || "there"}! 👋
                     </h1>
                     <p className="text-muted-foreground mt-1">
-                        Here's what&apos;s happening with your projects today.
+                        Here&apos;s what&apos;s happening with your projects today.
                     </p>
                 </div>
                 <div className="flex gap-2">

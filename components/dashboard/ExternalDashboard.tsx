@@ -1,10 +1,14 @@
 "use client"
 
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import { 
+    Card, CardContent, CardHeader, CardTitle, CardDescription 
+} from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import Link from "next/link"
-import { ArrowRight, DollarSign, FileText, LayoutDashboard, PieChart } from "lucide-react"
+import { 
+    ArrowRight, DollarSign, FileText, LayoutDashboard
+} from "lucide-react"
 import { format } from "date-fns"
 
 interface ExternalDashboardProps {

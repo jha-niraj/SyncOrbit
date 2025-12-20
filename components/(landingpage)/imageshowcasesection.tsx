@@ -16,7 +16,7 @@ const ImageShowcaseSection = () => {
                         Command Center
                     </h2>
                     <p className="text-lg text-neutral-600 dark:text-neutral-400 max-w-2xl font-light">
-                        High-fidelity data visualization. Interact with your team's velocity in real-time.
+                        High-fidelity data visualization. Interact with your team&apos;s velocity in real-time.
                     </p>
                 </div>
                 <div className="relative max-w-6xl mx-auto">

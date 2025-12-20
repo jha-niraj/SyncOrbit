@@ -1,15 +1,31 @@
-// Request body:
-export interface RequestBody {
-    name: string;
-    email: string;
-    password: string;
-    referralCode?: string;
-    role?: 'CLIENT' | 'DEVELOPER' | 'PRODUCTMANAGER' | 'ADMIN';
-    // Company fields for PM registration
-    companyName?: string;
-    companyShortName?: string;
-    companyId?: string;
+// Re-export all types from a central location
+export * from './project'
+export * from './user'
+export * from './dashboard'
+
+// Common utility types
+export type ApiResponse<T> = {
+    success: boolean
+    data?: T
+    error?: string
+    message?: string
 }
 
-// User role types for developers
-export type UserRole = 'BASIC_DEVELOPER' | 'PROJECT_CREATOR' | 'SENIOR_DEVELOPER' | 'TEAM_LEAD';
+export type PaginatedResponse<T> = {
+    data: T[]
+    total: number
+    page: number
+    pageSize: number
+    hasMore: boolean
+}
+
+export type SortOrder = 'asc' | 'desc'
+
+export type FilterOptions = {
+    search?: string
+    status?: string[]
+    dateFrom?: Date
+    dateTo?: Date
+    sortBy?: string
+    sortOrder?: SortOrder
+}

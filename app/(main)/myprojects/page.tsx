@@ -12,8 +12,9 @@ import {
 import { ProjectVisibility, Status, TaskStatus, TeamType, Role } from "@prisma/client"
 import { redirect } from "next/navigation"
 import Link from "next/link"
-import { CreateProjectModal } from "@/components/projects/CreateProjectModal"
+import { CreateProjectSheet } from "@/components/projects/createprojectsheet"
 import { Metadata } from "next"
+import { MyProjectsPageClient } from "./_components/MyProjectsPageClient"
 
 export const metadata: Metadata = {
     title: "My Projects | SyncOrbit",

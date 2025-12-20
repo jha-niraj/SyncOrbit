@@ -43,7 +43,7 @@ const DetailsSection = () => {
                                 Operational <br /> <span className="text-neutral-500">Excellence</span>
                             </h2>
                             <p className="text-neutral-400 text-sm font-mono mt-4 max-w-sm">
-                                // REAL-TIME MONITORING <br />
+                                REAL-TIME MONITORING <br />
                                 Latency minimized. Throughput maximized.
                                 Security protocols active.
                             </p>

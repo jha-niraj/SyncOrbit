@@ -21,7 +21,7 @@ const TestimonialCard = ({ data }: { data: typeof testimonials[0] }) => (
     <div className="p-6 rounded-lg border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 shadow-sm hover:border-neutral-300 dark:hover:border-neutral-700 transition-colors">
         <Quote className="w-4 h-4 text-neutral-300 mb-4" />
         <p className="text-sm text-neutral-700 dark:text-neutral-300 leading-relaxed mb-6 font-medium">
-            "{data.text}"
+            &quot;{data.text}&quot;
         </p>
         <div className="flex items-center gap-3 pt-4 border-t border-dashed border-neutral-100 dark:border-neutral-800">
             <Image src={data.image} alt={data.name} width={32} height={32} className="h-8 w-8 rounded-full grayscale" />

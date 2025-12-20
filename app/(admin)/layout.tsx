@@ -2,11 +2,11 @@
 
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
-import AdminSidebar from '@/components/adminsidebar';
 import AdminNavbar from '@/components/adminnavbar';
 import LoadingScreen from '@/components/loading-screen';
 import { redirect } from 'next/navigation';
 import { Toaster } from 'sonner';
+import AdminSidebar from '../../components/adminsidebar';
 
 interface LayoutProps {
 	children: React.ReactNode

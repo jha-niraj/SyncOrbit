@@ -1,8 +1,8 @@
 import { Role } from "@prisma/client"
 import {
     Home, Briefcase, Users, Building2, BarChart3, Settings, UserPlus, Crown, Calendar,
-    MessageSquare, FileText, Bell, Layers, Target, TrendingUp, DollarSign, Eye,
-    Award, Coffee, Wrench, Receipt, FolderOpen, ClipboardList, CheckSquare, Clock
+    MessageSquare, FileText, Layers, Target, TrendingUp, DollarSign, Eye,
+    Award, Wrench, Receipt, FolderOpen, ClipboardList, CheckSquare, Clock
 } from "lucide-react"
 
 export interface NavigationItem {

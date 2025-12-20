@@ -68,17 +68,17 @@ export const HumanoidSection = () => {
                                 const isPast = index < activeCardIndex;
 
                                 // Engineering V2 Physics: Precise snapping
-                                let translateY = isPast ? -40 : isActive ? 0 : 100; // Simplified relative logic
-                                let scale = isActive ? 1 : isPast ? 0.95 : 0.9;
-                                let opacity = isActive ? 1 : isPast ? 0.5 : 0;
+                                // let translateY = isPast ? -40 : isActive ? 0 : 100; // Simplified relative logic
+                                // let scale = isActive ? 1 : isPast ? 0.95 : 0.9;
+                                // let opacity = isActive ? 1 : isPast ? 0.5 : 0;
 
-                                // Override for absolute positioning visual
-                                const style = {
-                                    transform: `translateY(${isActive ? 0 : index * 10}px) scale(${scale})`,
-                                    opacity: index <= activeCardIndex ? 1 - (activeCardIndex - index) * 0.3 : 0,
-                                    zIndex: index,
-                                    top: isActive ? 0 : isPast ? -50 : 1000, // Move past cards up, future down
-                                };
+                                // // Override for absolute positioning visual
+                                // const style = {
+                                //     transform: `translateY(${isActive ? 0 : index * 10}px) scale(${scale})`,
+                                //     opacity: index <= activeCardIndex ? 1 - (activeCardIndex - index) * 0.3 : 0,
+                                //     zIndex: index,
+                                //     top: isActive ? 0 : isPast ? -50 : 1000, // Move past cards up, future down
+                                // };
 
                                 // Actually, let's stick to the stacking context logic from your snippet but clean it up
                                 const cardTransform = isActive

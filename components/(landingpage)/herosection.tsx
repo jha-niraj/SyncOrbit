@@ -75,7 +75,7 @@ const CodeDecorator = ({ className }: { className?: string }) => (
             <div className="w-2 h-2 rounded-full bg-neutral-200 dark:bg-neutral-700" />
         </div>
         <div className="space-y-1.5 font-mono text-[10px] text-neutral-400">
-            <p><span className="text-purple-500">const</span> <span className="text-blue-500">velocity</span> = <span className="text-orange-500">"max"</span>;</p>
+            <p><span className="text-purple-500">const</span> <span className="text-blue-500">velocity</span> = <span className="text-orange-500">&quot;max&quot;</span>;</p>
             <p><span className="text-purple-500">await</span> <span className="text-blue-500">deploy</span>(<span className="text-neutral-500">prod</span>);</p>
             <p className="text-green-500">✓ Build success (42ms)</p>
         </div>
@@ -85,7 +85,7 @@ const CodeDecorator = ({ className }: { className?: string }) => (
 export const Hero = () => {
     const { scrollY } = useScroll();
     const y1 = useTransform(scrollY, [0, 500], [0, 200]);
-    const y2 = useTransform(scrollY, [0, 500], [0, -150]);
+    // const y2 = useTransform(scrollY, [0, 500], [0, -150]);
 
     return (
         <section className="relative min-h-[100dvh] flex flex-col bg-white dark:bg-neutral-950 overflow-hidden font-sans">
