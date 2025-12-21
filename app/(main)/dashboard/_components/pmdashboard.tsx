@@ -16,8 +16,6 @@ import {
 	CheckCircle,
 	AlertCircle,
 	Code,
-	Target,
-	Calendar,
 	Copy,
 	Share2,
 	Activity,
@@ -25,7 +23,6 @@ import {
 } from "lucide-react"
 import { formatCurrency } from "@/store/useProjectStore"
 import { toast } from "sonner"
-import Link from "next/link"
 import { Status } from "@prisma/client"
 
 interface PMDashboardData {

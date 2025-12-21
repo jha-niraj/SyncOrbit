@@ -27,7 +27,7 @@ import {
 	createSubTask, updateSubTask, deleteSubTask, getTaskWithSubTasks
 } from "@/actions/(developers)/developers.action"
 import { uploadImageToCloudinary } from "@/actions/shared/upload.action"
-import { TaskStatus } from "@prisma/client"
+import { TaskStatus, Role } from "@prisma/client"
 import Image from "next/image"
 
 interface SubTask {
@@ -77,7 +77,7 @@ export function TaskManagementSheet({ taskId, trigger, userRole }: TaskManagemen
 	const [uploadingFile, setUploadingFile] = useState(false)
 	const [selectedFileType, setSelectedFileType] = useState<'image' | 'document'>('image')
 
-	const isDeveloper = ['DEVELOPER', 'PRODUCTMANAGER', 'ADMIN'].includes(userRole)
+	const isDeveloper = userRole === Role.COMPANY_OWNER || userRole === Role.TEAM_HEAD || userRole === Role.TEAM_MEMBER || userRole === Role.ADMIN
 
 	const loadTask = useCallback(async () => {
 		if (!taskId) return

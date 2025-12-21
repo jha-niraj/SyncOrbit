@@ -38,7 +38,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
         image: user.image || ""
     })
 
-    const isDeveloper = [Role.COMPANY_OWNER, Role.TEAM_HEAD, Role.TEAM_MEMBER].includes(user.role as Role)
+    const isDeveloper = user.role === Role.COMPANY_OWNER || user.role === Role.TEAM_HEAD || user.role === Role.TEAM_MEMBER
 
     const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0]

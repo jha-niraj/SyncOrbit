@@ -1,16 +1,16 @@
 import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import bcryptjs from "bcryptjs";
-import { RequestBody } from "@/types";
+import { RegistrationData } from "@/types/user";
 import { generateOTP, generateOTPExpiry, sendVerificationEmail } from "@/lib/email";
 import { Role } from "@prisma/client";
 import { createCompany } from "@/actions/(productmanager)/pm.action";
 
 export async function POST(request: NextRequest) {
     try {
-        const body: RequestBody = await request.json();
+        const body: RegistrationData = await request.json();
         const {
-            name, email, password, role, companyName, companyShortName, referralCode, companyId
+            name, email, password, role, companyName, companyShortName, referralCode, companyId, teamId
         } = body;
 
         console.log(name, email, password, role, companyName, companyShortName, referralCode, companyId);
@@ -170,7 +170,6 @@ export async function POST(request: NextRequest) {
 
         // Handle team assignment if teamId is provided
         // This comes from the referral link (e.g. ?ref=CODE&team=TEAM_ID)
-        const teamId = (body as any).teamId;
         if (teamId && (userRole === Role.TEAM_MEMBER || userRole === Role.TEAM_HEAD)) {
             try {
                 // Verify team exists and belongs to the company

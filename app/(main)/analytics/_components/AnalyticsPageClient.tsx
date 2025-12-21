@@ -1,8 +1,8 @@
 "use client"
 
 import { useState } from "react"
-import { 
-    Card, CardContent, CardHeader, CardTitle 
+import {
+    Card, CardContent, CardHeader, CardTitle
 } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -11,12 +11,12 @@ import {
     Select, SelectContent, SelectItem, SelectTrigger, SelectValue
 } from "@/components/ui/select"
 import {
-    TrendingUp, TrendingDown, DollarSign, Users, Clock, Target, Award, 
+    TrendingUp, TrendingDown, DollarSign, Users, Clock, Target, Award,
     Activity, Download, Filter
 } from "lucide-react"
 import { motion } from "framer-motion"
-import { 
-    AnalyticsData, StatCardProps, ChartCardProps 
+import {
+    AnalyticsData, StatCardProps, ChartCardProps
 } from "@/types/analytics"
 
 interface AnalyticsPageClientProps {
@@ -24,7 +24,7 @@ interface AnalyticsPageClientProps {
 }
 
 export default function AnalyticsPageClient({ initialAnalytics }: AnalyticsPageClientProps) {
-    const [analytics, setAnalytics] = useState<AnalyticsData>(initialAnalytics)
+    const analytics = initialAnalytics
     const [timeFilter, setTimeFilter] = useState("6months")
 
     const StatCard = ({ title, value, change, icon: Icon, trend, description }: StatCardProps) => (

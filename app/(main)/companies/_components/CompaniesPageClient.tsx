@@ -1,13 +1,13 @@
 "use client"
 
 import { useState } from "react"
-import { 
-    Card, CardContent, CardHeader, CardTitle 
+import {
+    Card, CardContent, CardHeader, CardTitle
 } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { 
-    Avatar, AvatarFallback, AvatarImage 
+import {
+    Avatar, AvatarFallback, AvatarImage
 } from "@/components/ui/avatar"
 import {
     Building2, Users, FolderOpen, ArrowRight
@@ -39,42 +39,7 @@ interface CompaniesPageClientProps {
 }
 
 export default function CompaniesPageClient({ initialCompanies }: CompaniesPageClientProps) {
-    const [companies, setCompanies] = useState<Company[]>(initialCompanies)
-    const [loading, setLoading] = useState(false)
-
-    const loadCompanies = async () => {
-        setLoading(true)
-        try {
-            const result = await getClientCompanies()
-            if (result.success) {
-                setCompanies(result.companies)
-            } else {
-                toast.error(result.error)
-            }
-        } catch (error) {
-            console.error("Error loading companies:", error)
-            toast.error("Failed to load companies")
-        } finally {
-            setLoading(false)
-        }
-    }
-
-    if (loading) {
-        return (
-            <div className="container mx-auto p-6">
-                <div className="animate-pulse space-y-6">
-                    <div className="h-8 bg-muted rounded w-1/3"></div>
-                    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                        {
-                            [...Array(6)].map((_, i) => (
-                                <div key={i} className="h-64 bg-muted rounded"></div>
-                            ))
-                        }
-                    </div>
-                </div>
-            </div>
-        )
-    }
+    const companies = initialCompanies
 
     return (
         <div className="container mx-auto p-6 space-y-6">

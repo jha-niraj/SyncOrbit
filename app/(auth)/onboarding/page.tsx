@@ -244,9 +244,10 @@ function OnboardingContent() {
             } else {
                 throw new Error(result.error)
             }
-        } catch (error: any) {
+        } catch (error) {
             console.log("Error occurred while onboarding", error)
-            toast.error(error?.message || "Something went wrong")
+            const errorMessage = error instanceof Error ? error.message : "Something went wrong"
+            toast.error(errorMessage)
         } finally {
             setLoading(false)
         }
@@ -282,13 +283,13 @@ function OnboardingContent() {
                         <div className="grid gap-4">
                             {
                                 [
-                                    { id: 'company', title: "Deploy Organization", desc: "Initialize new workspace entity.", icon: Building },
-                                    { id: 'client', title: "Client Terminal", desc: "Access as external stakeholder.", icon: User },
-                                    ...(invitationId ? [{ id: 'invitation', title: "Join Protocol", desc: "Accept incoming node request.", icon: Mail }] : [])
+                                    { id: 'company' as const, title: "Deploy Organization", desc: "Initialize new workspace entity.", icon: Building },
+                                    { id: 'client' as const, title: "Client Terminal", desc: "Access as external stakeholder.", icon: User },
+                                    ...(invitationId ? [{ id: 'invitation' as const, title: "Join Protocol", desc: "Accept incoming node request.", icon: Mail }] : [])
                                 ].map((option) => (
                                     <div
                                         key={option.id}
-                                        onClick={() => setOnboardingType(option.id as any)}
+                                        onClick={() => setOnboardingType(option.id)}
                                         className={cn(
                                             "group p-6 rounded-lg border cursor-pointer transition-all flex items-center gap-4 relative overflow-hidden",
                                             onboardingType === option.id

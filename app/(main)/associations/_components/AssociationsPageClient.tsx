@@ -33,8 +33,7 @@ import { useSession } from "next-auth/react"
 import { InvitationType } from "@prisma/client"
 
 import {
-    UserAssociations, PendingInvitation as Invitation, AssociationCompany as Company, AssociationUser as User,
-    AssociationProject as Project, AssociationProjectMembership as ProjectMembership
+    UserAssociations, PendingInvitation as Invitation, AssociationUser as User
 } from "@/types/associations"
 
 interface AssociationsPageClientProps {

@@ -36,8 +36,40 @@ interface ProjectTask {
     status: TaskStatus
 }
 
+interface TeamAssignment {
+    id: string
+    team: {
+        teamType: TeamType
+        displayName: string
+        color: string | null
+    }
+}
+
+interface Project {
+    id: string
+    title: string
+    description: string | null
+    status: Status
+    visibility: ProjectVisibility
+    budget: number
+    currency: string
+    user: {
+        name: string | null
+        email: string | null
+        image: string | null
+    }
+    tasks: ProjectTask[]
+    _count?: {
+        tasks: number
+        messages: number
+    }
+    members?: { id: string }[]
+    assignedTeams?: TeamAssignment[]
+    slug: string
+}
+
 interface CompanyProjectsPageClientProps {
-    projects: any[] // Ideally typed properly
+    projects: Project[]
     user: {
         role: string
     }
@@ -69,7 +101,7 @@ export function CompanyProjectsPageClient({ projects, user }: CompanyProjectsPag
         onHold: projects.filter(p => p.status === Status.ON_HOLD).length,
         totalBudget: projects.reduce((sum, p) => sum + p.budget, 0),
         totalTasks: projects.reduce((sum, p) => sum + (p._count?.tasks || 0), 0),
-        completedTasks: projects.reduce((sum, p) => sum + p.tasks.filter((t: any) => t.status === TaskStatus.COMPLETED).length, 0)
+        completedTasks: projects.reduce((sum, p) => sum + p.tasks.filter((t: ProjectTask) => t.status === TaskStatus.COMPLETED).length, 0)
     }
 
     const overallProgress = stats.totalTasks > 0 ? Math.round((stats.completedTasks / stats.totalTasks) * 100) : 0
@@ -255,8 +287,8 @@ export function CompanyProjectsPageClient({ projects, user }: CompanyProjectsPag
                                                 <p className="text-sm text-muted-foreground">Teams</p>
                                                 <div className="flex flex-wrap gap-2">
                                                     {
-                                                        project.assignedTeams?.slice(0, 3).map((assignment: any) => {
-                                                            const IconComponent = TEAM_ICONS[assignment.team.teamType as keyof typeof TEAM_ICONS] || Users
+                                                        project.assignedTeams?.slice(0, 3).map((assignment: TeamAssignment) => {
+                                                            const IconComponent = TEAM_ICONS[assignment.team.teamType] || Users
                                                             return (
                                                                 <div
                                                                     key={assignment.id}

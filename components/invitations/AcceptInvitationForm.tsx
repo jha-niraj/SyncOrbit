@@ -77,7 +77,7 @@ export function AcceptInvitationForm({
         setError("")
         try {
             router.push('/')
-        } catch (err: unknown) {
+        } catch {
             setError("System Error")
         } finally {
             setIsLoading(false)

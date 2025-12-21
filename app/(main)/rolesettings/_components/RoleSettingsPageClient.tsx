@@ -1,23 +1,23 @@
 "use client"
 
 import { useState } from "react"
-import { 
-    Card, CardContent 
+import {
+    Card, CardContent
 } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { 
-    Avatar, AvatarFallback, AvatarImage 
+import {
+    Avatar, AvatarFallback, AvatarImage
 } from "@/components/ui/avatar"
-import { 
-    Select, SelectContent, SelectItem, SelectTrigger, SelectValue 
+import {
+    Select, SelectContent, SelectItem, SelectTrigger, SelectValue
 } from "@/components/ui/select"
 import { toast } from "sonner"
 import { motion } from "framer-motion"
-import { 
-    Users, UserCheck, Clock, Briefcase 
+import {
+    Users, UserCheck, Clock, Briefcase
 } from "lucide-react"
-import { 
-    getUsersByCompany, updateUserRole 
+import {
+    getUsersByCompany, updateUserRole
 } from "@/actions/(productmanager)/user-role.action"
 import { Role } from "@prisma/client"
 import { UserWithRole } from "@/types/role-settings"
@@ -61,28 +61,7 @@ const roleOptions = [
 
 export default function RoleSettingsPageClient({ initialDevelopers }: RoleSettingsPageClientProps) {
     const [developers, setDevelopers] = useState<UserWithRole[]>(initialDevelopers)
-    const [loading, setLoading] = useState(false)
     const [updating, setUpdating] = useState<string | null>(null)
-
-    // If initialDevelopers is empty, we might want to fetch, but ideally server passes it.
-    // Keeping fetch logic just in case or for refresh, but removing useEffect for initial load if data is passed.
-
-    const fetchDevelopers = async () => {
-        try {
-            setLoading(true)
-            const result = await getUsersByCompany()
-            if (result.success) {
-                setDevelopers(result.users as UserWithRole[])
-            } else {
-                toast.error(result.error || "Failed to fetch developers")
-            }
-        } catch (error) {
-            toast.error("Failed to fetch developers")
-            console.error(error)
-        } finally {
-            setLoading(false)
-        }
-    }
 
     const handleRoleUpdate = async (userId: string, newRole: Role) => {
         setUpdating(userId)
@@ -122,28 +101,7 @@ export default function RoleSettingsPageClient({ initialDevelopers }: RoleSettin
                 </p>
             </div>
             {
-                loading ? (
-                    <div className="space-y-4">
-                        {
-                            [1, 2, 3].map((i) => (
-                                <Card key={i}>
-                                    <CardContent className="p-6">
-                                        <div className="animate-pulse space-y-4">
-                                            <div className="flex items-center gap-4">
-                                                <div className="h-12 w-12 bg-muted rounded-full" />
-                                                <div className="space-y-2 flex-1">
-                                                    <div className="h-4 bg-muted rounded w-1/4" />
-                                                    <div className="h-3 bg-muted rounded w-1/3" />
-                                                </div>
-                                                <div className="h-8 bg-muted rounded w-32" />
-                                            </div>
-                                        </div>
-                                    </CardContent>
-                                </Card>
-                            ))
-                        }
-                    </div>
-                ) : developers.length === 0 ? (
+                developers.length === 0 ? (
                     <Card>
                         <CardContent className="flex flex-col items-center gap-4 py-12">
                             <Users className="h-12 w-12 text-muted-foreground" />

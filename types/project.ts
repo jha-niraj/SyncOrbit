@@ -1,11 +1,15 @@
 // Project related types
+import { TaskStatus, ProjectVisibility, Status } from "@prisma/client"
+
 export interface ProjectTask {
     id: string
-    status: 'TODO' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED'
+    title: string
+    status: TaskStatus
     assignedDeveloper?: {
         id: string
         name?: string | null
         email?: string | null
+        image?: string | null
     } | null
 }
 
@@ -30,11 +34,13 @@ export interface Project {
     id: string
     title: string
     description: string | null
-    status: 'IN_PROGRESS' | 'COMPLETED' | 'ON_HOLD' | 'CANCELLED'
-    visibility: 'PUBLIC' | 'PRIVATE'
+    status: Status
+    visibility: ProjectVisibility
     budget: number
     currency: string
     slug: string
+    startDate: Date
+    endDate: Date | null
     user: {
         id: string
         name: string | null

@@ -16,6 +16,7 @@ import { formatDistanceToNow } from "date-fns"
 import { getProjectMessages, sendMessage } from "@/actions/(client)/chat.action"
 import { toast } from "sonner"
 import Image from "next/image"
+import { Role } from "@prisma/client"
 
 interface ChatPageProps {
     params: Promise<{
@@ -125,11 +126,12 @@ export default function ProjectChatPage({ params }: ChatPageProps) {
 
     const getRoleColor = (role: string) => {
         switch (role) {
-            case 'CLIENT':
+            case Role.CLIENT:
                 return "bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-800"
-            case 'DEVELOPER':
+            case Role.TEAM_MEMBER:
                 return "bg-green-50 text-green-700 border-green-200 dark:bg-green-900/20 dark:text-green-300 dark:border-green-800"
-            case 'PRODUCTMANAGER':
+            case Role.TEAM_HEAD:
+            case Role.COMPANY_OWNER:
                 return "bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-900/20 dark:text-purple-300 dark:border-purple-800"
             default:
                 return "bg-gray-50 text-gray-700 border-gray-200 dark:bg-gray-900/20 dark:text-gray-300 dark:border-gray-800"
@@ -178,8 +180,8 @@ export default function ProjectChatPage({ params }: ChatPageProps) {
 
                     <div
                         className={`rounded-2xl px-4 py-2 ${isOwnMessage
-                                ? 'bg-primary text-primary-foreground'
-                                : 'bg-muted text-foreground'
+                            ? 'bg-primary text-primary-foreground'
+                            : 'bg-muted text-foreground'
                             }`}
                     >
                         <p className="text-sm whitespace-pre-wrap">{message.content}</p>

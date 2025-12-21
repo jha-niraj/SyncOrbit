@@ -108,9 +108,9 @@ export function MyProjectsPageClient({ projects, user }: MyProjectsPageClientPro
         completed: projects.filter(p => p.status === Status.COMPLETED).length,
         onHold: projects.filter(p => p.status === Status.ON_HOLD).length,
         totalTasks: projects.reduce((sum, p) => sum + (p._count?.tasks || 0), 0),
-        completedTasks: projects.reduce((sum, p) => sum + p.tasks.filter((t: any) => t.status === TaskStatus.COMPLETED).length, 0),
-        myTasks: projects.reduce((sum, p) => sum + p.tasks.filter((t: any) => t.assignedDeveloper?.id === user.id).length, 0),
-        myCompletedTasks: projects.reduce((sum, p) => sum + p.tasks.filter((t: any) => t.assignedDeveloper?.id === user.id && t.status === TaskStatus.COMPLETED).length, 0)
+        completedTasks: projects.reduce((sum, p) => sum + p.tasks.filter((t: ProjectTask) => t.status === TaskStatus.COMPLETED).length, 0),
+        myTasks: projects.reduce((sum, p) => sum + p.tasks.filter((t: ProjectTask) => t.assignedDeveloper?.id === user.id).length, 0),
+        myCompletedTasks: projects.reduce((sum, p) => sum + p.tasks.filter((t: ProjectTask) => t.assignedDeveloper?.id === user.id && t.status === TaskStatus.COMPLETED).length, 0)
     }
 
     const overallProgress = stats.totalTasks > 0 ? Math.round((stats.completedTasks / stats.totalTasks) * 100) : 0
@@ -263,9 +263,9 @@ export function MyProjectsPageClient({ projects, user }: MyProjectsPageClientPro
                         {
                             projects.map((project) => {
                                 const progress = getTaskProgress(project.tasks)
-                                const myTasksInProject = project.tasks.filter((t: any) => t.assignedDeveloper?.id === user.id)
+                                const myTasksInProject = project.tasks.filter((t: ProjectTask) => t.assignedDeveloper?.id === user.id)
                                 const myTasksCount = myTasksInProject.length
-                                const myCompletedTasksCount = myTasksInProject.filter((t: any) => t.status === TaskStatus.COMPLETED).length
+                                const myCompletedTasksCount = myTasksInProject.filter((t: ProjectTask) => t.status === TaskStatus.COMPLETED).length
 
                                 return (
                                     <Card key={project.id} className="group hover:shadow-lg transition-shadow">
@@ -354,8 +354,8 @@ export function MyProjectsPageClient({ projects, user }: MyProjectsPageClientPro
                                                 <p className="text-sm text-muted-foreground">Teams</p>
                                                 <div className="flex flex-wrap gap-2">
                                                     {
-                                                        project.assignedTeams?.slice(0, 3).map((assignment: any) => {
-                                                            const IconComponent = TEAM_ICONS[assignment.team.teamType as keyof typeof TEAM_ICONS] || Users
+                                                        project.assignedTeams?.slice(0, 3).map((assignment) => {
+                                                            const IconComponent = TEAM_ICONS[assignment.team.teamType] || Users
                                                             return (
                                                                 <div
                                                                     key={assignment.id}

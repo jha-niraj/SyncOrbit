@@ -45,8 +45,77 @@ const ROLE_BADGES = {
     [Role.ADMIN]: { color: "bg-red-100 text-red-800", icon: Shield },
 }
 
+interface Membership {
+    id: string
+    roleTitle: string
+    team: {
+        id: string
+        displayName: string
+        teamType: TeamType
+        color: string | null
+        head?: {
+            name: string | null
+        }
+    }
+}
+
+interface TeamMember {
+    id: string
+    roleTitle: string
+    user: {
+        name: string | null
+        image: string | null
+    }
+}
+
+interface Team {
+    id: string
+    displayName: string
+    teamType: TeamType
+    color: string | null
+    _count: {
+        members: number
+        assignedProjects: number
+    }
+    members: TeamMember[]
+    head?: {
+        name: string | null
+    }
+}
+
+interface Company {
+    id: string
+    name: string
+    website?: string | null
+    logo?: string | null
+    teams: Team[]
+    owner?: {
+        name: string | null
+        image: string | null
+    }
+}
+
+interface UserProfile {
+    id: string
+    name: string | null
+    email: string | null
+    image: string | null
+    bio: string | null
+    role: Role
+    createdAt: string | Date
+    company?: Company | null
+    ownedCompany?: Company | null
+    ledTeams: Team[]
+    teamMemberships: Membership[]
+    _count: {
+        assignedTasks: number
+        projects: number
+        createdTasks: number
+    }
+}
+
 interface ProfilePageClientProps {
-    userProfile: any // Using any for now to avoid complex type duplication, ideally should be typed
+    userProfile: UserProfile
 }
 
 export default function ProfilePageClient({ userProfile }: ProfilePageClientProps) {
@@ -253,8 +322,8 @@ export default function ProfilePageClient({ userProfile }: ProfilePageClientProp
                                 userProfile.teamMemberships.length > 0 ? (
                                     <div className="space-y-4">
                                         {
-                                            userProfile.teamMemberships.map((membership: any) => {
-                                                const TeamIcon = TEAM_ICONS[membership.team.teamType as TeamType] || Users
+                                            userProfile.teamMemberships.map((membership: Membership) => {
+                                                const TeamIcon = TEAM_ICONS[membership.team.teamType] || Users
                                                 return (
                                                     <div key={membership.id} className="flex items-center justify-between p-4 border rounded-lg">
                                                         <div className="flex items-center gap-3">
@@ -311,8 +380,8 @@ export default function ProfilePageClient({ userProfile }: ProfilePageClientProp
                                 <CardContent>
                                     <div className="space-y-4">
                                         {
-                                            userProfile.ledTeams.map((team: any) => {
-                                                const TeamIcon = TEAM_ICONS[team.teamType as TeamType] || Users
+                                            userProfile.ledTeams.map((team: Team) => {
+                                                const TeamIcon = TEAM_ICONS[team.teamType] || Users
                                                 return (
                                                     <Card key={team.id}>
                                                         <CardHeader>
@@ -353,7 +422,7 @@ export default function ProfilePageClient({ userProfile }: ProfilePageClientProp
                                                                     team.members.length > 0 ? (
                                                                         <div className="grid gap-3 md:grid-cols-2">
                                                                             {
-                                                                                team.members.map((member: any) => (
+                                                                                team.members.map((member: TeamMember) => (
                                                                                     <div key={member.id} className="flex items-center gap-3">
                                                                                         <Avatar className="w-8 h-8">
                                                                                             <AvatarImage src={member.user.image || undefined} />
@@ -407,8 +476,8 @@ export default function ProfilePageClient({ userProfile }: ProfilePageClientProp
                                         userProfile.ownedCompany.teams.length > 0 ? (
                                             <div className="space-y-4">
                                                 {
-                                                    userProfile.ownedCompany.teams.map((team: any) => {
-                                                        const TeamIcon = TEAM_ICONS[team.teamType as TeamType] || Users
+                                                    userProfile.ownedCompany.teams.map((team: Team) => {
+                                                        const TeamIcon = TEAM_ICONS[team.teamType] || Users
                                                         return (
                                                             <div key={team.id} className="flex items-center justify-between p-4 border rounded-lg">
                                                                 <div className="flex items-center gap-3">

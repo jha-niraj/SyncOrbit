@@ -11,14 +11,23 @@ import { CompletedProjects } from "./CompletedProjects"
 import { ActivityFeed } from "@/components/activity-feed"
 import { Status } from "@prisma/client"
 
+import { Project } from "@/types/project"
+
+interface InternalClientData {
+    user: {
+        name: string | null
+    }
+    projects: Project[]
+}
+
 interface ClientDashboardProps {
-    data: any
-    dashboardMetrics: any
+    data: InternalClientData
+    dashboardMetrics: any // Keeping as any for now until QuickStatsCards metrics is typed
 }
 
 export function ClientDashboard({ data, dashboardMetrics }: ClientDashboardProps) {
-    const inProgressProjects = data.projects.filter((p: any) => p.status === Status.IN_PROGRESS)
-    const completedProjects = data.projects.filter((p: any) => p.status === Status.COMPLETED)
+    const inProgressProjects = data.projects.filter((p: Project) => p.status === Status.IN_PROGRESS)
+    const completedProjects = data.projects.filter((p: Project) => p.status === Status.COMPLETED)
 
     if (data.projects.length === 0) {
         return (
@@ -109,7 +118,7 @@ export function ClientDashboard({ data, dashboardMetrics }: ClientDashboardProps
                                 inProgressProjects.length > 0 ? (
                                     <div className="grid gap-6">
                                         {
-                                            inProgressProjects.map((project: any) => (
+                                            data.projects.map((project: Project) => (
                                                 <ProjectCard key={project.id} project={project} />
                                             ))
                                         }
@@ -131,23 +140,22 @@ export function ClientDashboard({ data, dashboardMetrics }: ClientDashboardProps
                                 )
                             }
                         </div>
-                        <div className="space-y-6">
-                            <div className="flex items-center justify-between">
-                                <h2 className="text-xl font-semibold tracking-tight text-gray-900 dark:text-white">
+                        <div className="space-y-8">
+                            <div className="flex flex-col space-y-4">
+                                <h2 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                                    <Calendar className="w-5 h-5 text-green-600" />
                                     Completed Projects
                                 </h2>
-                                <span className="text-sm text-gray-500 dark:text-gray-400">
-                                    {completedProjects.length} done
-                                </span>
+                                <CompletedProjects projects={completedProjects as any[]} />
                             </div>
-                            <CompletedProjects projects={completedProjects} />
-
-                            <ActivityFeed
-                                variant="dashboard"
-                                maxItems={8}
-                                showFilters={false}
-                                autoRefresh={true}
-                            />
+                            <Separator className="bg-gray-200 dark:bg-gray-800" />
+                            <div className="flex flex-col space-y-4">
+                                <h2 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                                    <MessageCircle className="w-5 h-5 text-blue-600" />
+                                    Recent Activity
+                                </h2>
+                                <ActivityFeed variant="dashboard" />
+                            </div>
                         </div>
                     </div>
                 </div>
