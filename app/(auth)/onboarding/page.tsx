@@ -244,8 +244,9 @@ function OnboardingContent() {
             } else {
                 throw new Error(result.error)
             }
-        } catch (error: any) {
-            toast.error(error.message)
+        } catch (error) {
+            console.log("Error occurred while onboarding", error)
+            toast.error(error?.msg || "Something went wrong")
         } finally {
             setLoading(false)
         }

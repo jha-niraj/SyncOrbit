@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import {
 	Eye, EyeOff, Loader2, Boxes, Lock, Fingerprint
 } from "lucide-react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { toast } from "sonner";
 
@@ -46,7 +46,6 @@ function SignInContent() {
 	const [password, setPassword] = useState("")
 	const [showPassword, setShowPassword] = useState(false)
 	const [isLoading, setIsLoading] = useState(false)
-	const router = useRouter()
 	const searchParams = useSearchParams()
 	const callbackUrl = searchParams.get('callbackUrl') || '/dashboard'
 
@@ -74,6 +73,7 @@ function SignInContent() {
 				window.location.href = callbackUrl;
 			}
 		} catch (error) {
+			console.log("Error occurred while signing in", error)
 			toast.error("System Error")
 		} finally {
 			setIsLoading(false)

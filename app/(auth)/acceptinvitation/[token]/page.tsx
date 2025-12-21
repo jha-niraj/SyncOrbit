@@ -158,7 +158,7 @@ export default async function AcceptInvitationPage({ params }: AcceptInvitationP
                         {
                             invitation.message && (
                                 <div className="p-4 bg-neutral-50 dark:bg-neutral-950 border-l-2 border-neutral-900 dark:border-white text-sm text-neutral-600 dark:text-neutral-400 font-mono">
-                                    "{invitation.message}"
+                                    &quot;{invitation.message}&quot;
                                 </div>
                             )
                         }

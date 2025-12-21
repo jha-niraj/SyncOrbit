@@ -1,8 +1,9 @@
 "use client"
 
 import { Badge } from "@/components/ui/badge"
-import { Progress } from "@/components/ui/progress"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { 
+    Avatar, AvatarFallback, AvatarImage 
+} from "@/components/ui/avatar"
 
 interface PMDeveloperCardProps {
     developer: {

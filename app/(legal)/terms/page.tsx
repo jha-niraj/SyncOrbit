@@ -87,7 +87,7 @@ export default function TermsPage() {
                                         <span className="font-mono text-sm text-neutral-400">05.</span> Liability
                                     </h2>
                                     <p className="text-neutral-600 dark:text-neutral-400 leading-relaxed text-sm">
-                                        SyncOrbit operates on an "as is" basis. While we maintain 99.9% uptime targets, we assume no liability for consequential damages resulting from service interruptions or data latency.
+                                        SyncOrbit operates on an &quot;as is&quot; basis. While we maintain 99.9% uptime targets, we assume no liability for consequential damages resulting from service interruptions or data latency.
                                     </p>
                                 </section>
                                 <div className="pt-8 mt-8 border-t border-neutral-200 dark:border-neutral-800 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">

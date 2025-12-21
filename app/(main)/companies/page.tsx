@@ -3,8 +3,6 @@ import { redirect } from "next/navigation"
 import { getClientCompanies } from "@/actions/(client)/companies.action"
 import CompaniesPageClient from "./_components/CompaniesPageClient"
 import { Metadata } from "next"
-import { Card, CardContent } from "@/components/ui/card"
-import { Building2 } from "lucide-react"
 
 export const metadata: Metadata = {
     title: "My Companies | SyncOrbit",

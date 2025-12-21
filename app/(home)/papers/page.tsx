@@ -5,21 +5,13 @@ import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
 import {
-    ArrowRight, Terminal, FolderOpen, FileText, Zap
+    ArrowRight
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import SmoothScroll from "@/components/smoothscroll";
 import {
     resourcesData, categories, ResourcePost, ResourceCategory
 } from "./data/papersdata";
-
-// Mapping icons for schematic feel
-const categoryIcons = {
-    'All': FolderOpen,
-    'Whitepapers': FileText,
-    'Feature Updates': Zap,
-    'Engineering': Terminal
-};
 
 const ResourceCard = ({ post }: { post: ResourcePost }) => {
     return (

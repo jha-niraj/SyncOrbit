@@ -119,7 +119,7 @@ export default function NotFound() {
                                     transition={{ delay: 0.6 }}
                                     className="max-w-lg mx-auto text-lg text-neutral-600 dark:text-neutral-400 leading-relaxed"
                                 >
-                                    The page you're looking for has drifted out of orbit. Let's get you synchronized and back on track.
+                                    The page you&apos;re looking for has drifted out of orbit. Let&apos;s get you synchronized and back on track.
                                 </motion.p>
                                 <motion.div
                                     initial={{ opacity: 0, y: 20 }}

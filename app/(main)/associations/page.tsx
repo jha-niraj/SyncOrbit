@@ -1,10 +1,10 @@
 import { auth } from "@/auth"
 import { redirect } from "next/navigation"
-import { getUserAssociations, getPendingInvitations } from "@/actions/(productmanager)/associations.action"
+import { 
+    getUserAssociations, getPendingInvitations 
+} from "@/actions/(productmanager)/associations.action"
 import AssociationsPageClient from "./_components/AssociationsPageClient"
 import { Metadata } from "next"
-import { Card, CardContent } from "@/components/ui/card"
-import { Users } from "lucide-react"
 
 export const metadata: Metadata = {
     title: "Associations | SyncOrbit",

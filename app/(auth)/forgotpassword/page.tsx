@@ -27,6 +27,7 @@ function ForgotPassword() {
                 toast.success('Recovery sequence initiated.')
             }
         } catch (error) {
+            console.log("Error occurred while forgot password", error)
             toast.error("Sequence Failed")
         } finally {
             setIsSubmitting(false)

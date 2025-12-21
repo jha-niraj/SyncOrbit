@@ -141,7 +141,7 @@ export default function AboutPage() {
                             transition={{ delay: 0.4, duration: 0.8 }}
                             className="text-lg md:text-xl text-neutral-600 dark:text-neutral-400 max-w-2xl mx-auto font-light leading-relaxed"
                         >
-                            SyncOrbit is not just a tool; it's a protocol for human achievement.
+                            SyncOrbit is not just a tool; it&apos;s a protocol for human achievement.
                             We combine rigorous engineering with fluid design to eliminate the friction of work.
                         </motion.p>
                     </div>
@@ -160,7 +160,7 @@ export default function AboutPage() {
                                 <h3 className="text-4xl md:text-5xl font-bold text-neutral-900 dark:text-white tracking-tighter">The Operating Code</h3>
                             </div>
                             <p className="text-neutral-500 max-w-md text-right hidden md:block font-mono text-xs">
-                                // Immutable principles guiding<br />every commit and decision.
+                                Immutable principles guiding<br />every commit and decision.
                             </p>
                         </div>
                         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -291,7 +291,7 @@ export default function AboutPage() {
                             Ready to Initialize?
                         </h2>
                         <p className="text-xl text-neutral-600 dark:text-neutral-400 mb-10 font-light">
-                            We are looking for partners who demand precision. If you are ready to build the future, let's look at the schematics.
+                            We are looking for partners who demand precision. If you are ready to build the future, let&apos;s look at the schematics.
                         </p>
                         <div className="flex flex-col sm:flex-row gap-4 justify-center">
                             <Link href="/contactus" className="px-8 py-4 rounded-full bg-neutral-900 dark:bg-white text-white dark:text-black font-bold hover:opacity-90 transition-all text-sm uppercase tracking-widest">

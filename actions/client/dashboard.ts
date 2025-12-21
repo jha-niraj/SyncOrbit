@@ -1,0 +1,47 @@
+"use server"
+
+import { auth } from "@/auth"
+import { prisma } from "@/lib/prisma"
+
+export async function getClientDashboardData() {
+    try {
+        const session = await auth()
+        if (!session?.user?.id) {
+            throw new Error("Unauthorized")
+        }
+
+        // Projects owned/commissioned by the client
+        const commissionedProjects = await prisma.project.findMany({
+            where: {
+                userId: session.user.id
+            },
+            include: {
+                tasks: true,
+                _count: {
+                    select: { messages: true, files: true }
+                }
+            },
+            orderBy: { updatedAt: 'desc' }
+        })
+
+        // Recent invoices
+        const invoices = await prisma.invoice?.findMany({
+            where: { clientId: session.user.id },
+            orderBy: { createdAt: 'desc' },
+            take: 5
+        }) || []
+
+        return {
+            projects: commissionedProjects,
+            invoices,
+            stats: {
+                activeProjects: commissionedProjects.filter(p => p.status === 'IN_PROGRESS').length,
+                totalFiles: commissionedProjects.reduce((acc, curr) => acc + (curr._count?.files || 0), 0),
+                unreadMessages: commissionedProjects.reduce((acc, curr) => acc + (curr._count?.messages || 0), 0)
+            }
+        }
+    } catch (error) {
+        console.error('Error fetching client dashboard data:', error)
+        return null
+    }
+}

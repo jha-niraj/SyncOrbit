@@ -1,15 +1,18 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { useState } from "react"
+import { 
+    Card, CardContent, CardHeader, CardTitle 
+} from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { 
+    Avatar, AvatarFallback, AvatarImage 
+} from "@/components/ui/avatar"
 import {
     Building2, Users, FolderOpen, ArrowRight
 } from "lucide-react"
 import { toast } from "sonner"
-import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { getClientCompanies } from "@/actions/(client)/companies.action"
 import Image from "next/image"
@@ -36,7 +39,6 @@ interface CompaniesPageClientProps {
 }
 
 export default function CompaniesPageClient({ initialCompanies }: CompaniesPageClientProps) {
-    const router = useRouter()
     const [companies, setCompanies] = useState<Company[]>(initialCompanies)
     const [loading, setLoading] = useState(false)
 

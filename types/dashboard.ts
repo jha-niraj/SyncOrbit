@@ -1,9 +1,5 @@
 // Dashboard and analytics types
-export interface DashboardData {
-    projects: DashboardProject[]
-    stats: DashboardStats
-    recentActivity: ActivityItem[]
-}
+import { Project } from "./project"
 
 export interface DashboardProject {
     id: string
@@ -17,42 +13,60 @@ export interface DashboardProject {
     }
 }
 
-export interface DashboardStats {
-    totalProjects: number
-    activeProjects: number
-    completedTasks: number
-    teamMembers: number
-    revenue?: number
-}
-
 export interface ActivityItem {
     id: string
-    type: 'project_created' | 'task_completed' | 'member_added' | 'status_changed'
-    message: string
-    timestamp: Date
-    user?: {
-        name?: string | null
-        image?: string | null
+    type: string
+    description: string
+    createdAt: Date
+    user: {
+        name: string | null
+        image: string | null
     }
 }
 
-export interface AnalyticsData {
-    period: 'week' | 'month' | 'year'
-    metrics: {
-        projectsCompleted: number
-        tasksCompleted: number
-        revenue: number
-        teamEfficiency: number
+// Owner Dashboard
+export interface OwnerDashboardData {
+    projects: Project[]
+    stats: {
+        totalProjects: number
+        activeProjects: number
+        completedProjects: number
+        totalTeams: number
+        totalMembers: number
     }
-    charts: {
-        projectTimeline: ChartDataPoint[]
-        taskDistribution: ChartDataPoint[]
-        revenueGrowth: ChartDataPoint[]
+    recentActivity: ActivityItem[]
+}
+
+// Lead Dashboard
+export interface LeadDashboardData {
+    projects: Project[]
+    stats: {
+        activeProjects: number
+        teamSize: number
+        pendingTasks: number
+        completionRate: number
     }
 }
 
-export interface ChartDataPoint {
-    label: string
-    value: number
-    date?: Date
+// Member Dashboard
+export interface MemberDashboardData {
+    assignedTasks: any[] // Task type from prisma ideally
+    projects: Project[]
+    stats: {
+        myTasks: number
+        myInProgress: number
+        myCompleted: number
+        myProjects: number
+    }
+}
+
+// Client Dashboard
+export interface ClientDashboardData {
+    projects: Project[]
+    invoices: any[]
+    stats: {
+        activeProjects: number
+        totalFiles: number
+        unreadMessages: number
+    }
 }

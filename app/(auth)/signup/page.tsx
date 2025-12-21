@@ -11,15 +11,13 @@ import {
     Select, SelectContent, SelectItem, SelectTrigger, SelectValue
 } from "@/components/ui/select";
 import {
-    ArrowRight, Loader2, Building2, Eye, EyeOff, Check, X,
+    Loader2, Building2, Eye, EyeOff, Check, X,
     Terminal, ShieldCheck, Cpu, Activity, Server, Radio
 } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { signIn } from "next-auth/react";
 import { toast } from "sonner";
 import axios from "axios";
 import { Company } from "@prisma/client";
-import { cn } from "@/lib/utils";
 
 // --- Visual Component: The System Terminal (Left Panel) ---
 const SystemTerminal = () => {
@@ -106,7 +104,7 @@ const SystemTerminal = () => {
 function SignUpForm() {
     const router = useRouter()
     const [isLoading, setIsLoading] = useState<boolean>(false)
-    const [isGoogleLoading, setIsGoogleLoading] = useState<boolean>(false)
+    // const [isGoogleLoading, setIsGoogleLoading] = useState<boolean>(false)
     const [name, setName] = useState("")
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
@@ -166,6 +164,7 @@ function SignUpForm() {
         } catch (error) {
             setCompany(null)
             setReferralValidated(false)
+            console.log("Error occurred while validating referral code", error)
             toast.error("Invalid protocol code")
         } finally {
             setValidatingReferral(false)
@@ -180,6 +179,7 @@ function SignUpForm() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         setIsLoading(true)
+        
         try {
             const requestData: any = { name, email, password, role }
 

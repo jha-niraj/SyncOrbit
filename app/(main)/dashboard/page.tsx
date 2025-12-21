@@ -1,8 +1,23 @@
 import { auth } from "@/auth"
 import { redirect } from "next/navigation"
-import { prisma } from "@/lib/prisma"
-import { InternalDashboard } from "@/components/dashboard/InternalDashboard"
 import { Role } from "@prisma/client"
+
+// Dashboard Components
+import OwnerDashboard from "@/components/dashboard/OwnerDashboard"
+import LeadDashboard from "@/components/dashboard/LeadDashboard"
+import MemberDashboard from "@/components/dashboard/MemberDashboard"
+import ClientDashboard from "@/components/dashboard/ClientDashboard"
+
+// Server Actions
+import { getOwnerDashboardData } from "@/actions/owner/dashboard"
+import { getLeadDashboardData } from "@/actions/lead/dashboard"
+import { getMemberDashboardData } from "@/actions/member/dashboard"
+import { getClientDashboardData } from "@/actions/client/dashboard"
+
+export const metadata = {
+	title: "Dashboard | SyncOrbit",
+	description: "Manage your projects, teams, and operations."
+}
 
 export default async function DashboardPage() {
 	const session = await auth()
@@ -10,96 +25,30 @@ export default async function DashboardPage() {
 
 	const userRole = session.user.role
 
-	// Redirect clients to client dashboard
-	if (userRole === Role.CLIENT) {
-		redirect("/dashboard/clients")
+	// Role-based data fetching and component rendering
+	switch (userRole) {
+		case Role.COMPANY_OWNER: {
+			const data = await getOwnerDashboardData()
+			return <OwnerDashboard data={data} />
+		}
+		case Role.TEAM_HEAD: {
+			const data = await getLeadDashboardData()
+			return <LeadDashboard data={data} />
+		}
+		case Role.TEAM_MEMBER: {
+			const data = await getMemberDashboardData()
+			return <MemberDashboard data={data} />
+		}
+		case Role.CLIENT: {
+			const data = await getClientDashboardData()
+			return <ClientDashboard data={data} />
+		}
+		case Role.ADMIN: {
+			// Admin could have their own but for now let's show Owner view or a simple summary
+			const data = await getOwnerDashboardData()
+			return <OwnerDashboard data={data} />
+		}
+		default:
+			redirect("/signin")
 	}
-
-	// Fetch Internal Dashboard Data
-	// 1. Stats
-	const totalProjects = await prisma.project.count({
-		where: {
-			company: {
-				users: {
-					some: {
-						email: session.user.email
-					}
-				}
-			}
-		}
-	})
-
-	const activeProjectsCount = await prisma.project.count({
-		where: {
-			status: "IN_PROGRESS",
-			company: {
-				users: {
-					some: {
-						email: session.user.email
-					}
-				}
-			}
-		}
-	})
-
-	const completedProjectsCount = await prisma.project.count({
-		where: {
-			status: "COMPLETED",
-			company: {
-				users: {
-					some: {
-						email: session.user.email
-					}
-				}
-			}
-		}
-	})
-
-	const totalTeamMembers = await prisma.user.count({
-		where: {
-			company: {
-				users: {
-					some: {
-						email: session.user.email
-					}
-				}
-			},
-			role: {
-				in: [Role.TEAM_MEMBER, Role.TEAM_HEAD]
-			}
-		}
-	})
-
-	// 2. Recent Projects
-	const recentProjects = await prisma.project.findMany({
-		where: {
-			company: {
-				users: {
-					some: {
-						email: session.user.email
-					}
-				}
-			}
-		},
-		orderBy: {
-			updatedAt: 'desc'
-		},
-		take: 6,
-		select: {
-			id: true,
-			title: true,
-			description: true,
-			status: true,
-			endDate: true
-		}
-	})
-
-	const stats = {
-		totalProjects,
-		activeProjects: activeProjectsCount,
-		completedProjects: completedProjectsCount,
-		totalTeamMembers
-	}
-
-	return <InternalDashboard user={session.user} stats={stats} recentProjects={recentProjects} />
 }

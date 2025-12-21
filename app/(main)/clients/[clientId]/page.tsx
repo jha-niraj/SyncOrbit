@@ -2,13 +2,19 @@ import { Metadata } from "next"
 import { auth } from "@/auth"
 import { redirect } from "next/navigation"
 import { getClientDetails } from "@/actions/clients.action"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { 
+    Card, CardContent, CardHeader, CardTitle, CardDescription 
+} from "@/components/ui/card"
+import { 
+    Avatar, AvatarFallback, AvatarImage 
+} from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { format } from "date-fns"
-import { Mail, Calendar, DollarSign, Briefcase, ArrowLeft } from "lucide-react"
+import { 
+    Mail, Calendar, DollarSign, ArrowLeft 
+} from "lucide-react"
 
 export const metadata: Metadata = {
     title: "Client Details | SyncOrbit",

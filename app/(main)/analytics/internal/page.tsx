@@ -17,7 +17,7 @@ export default async function InternalAnalyticsPage() {
             <div className="flex flex-col gap-2">
                 <h1 className="text-3xl font-bold tracking-tight">Internal Analytics</h1>
                 <p className="text-muted-foreground">
-                    Detailed insights into your company's internal projects and team performance.
+                    Detailed insights into your company&apos;s internal projects and team performance.
                 </p>
             </div>
             <InternalAnalytics />

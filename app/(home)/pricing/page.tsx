@@ -439,7 +439,6 @@ export default function PricingPage() {
                                             </td>
                                             {
                                                 plans.map((plan) => {
-                                                    // @ts-ignore
                                                     const val = plan.features[feature.key];
                                                     return (
                                                         <td key={`${plan.id}-${feature.key}`} className="p-4 text-center">

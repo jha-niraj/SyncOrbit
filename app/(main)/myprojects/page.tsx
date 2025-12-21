@@ -1,18 +1,15 @@
 import { auth } from "@/auth"
 import { getUserProjects } from "@/actions/projects.action"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Progress } from "@/components/ui/progress"
+import { 
+    Card, CardContent 
+} from "@/components/ui/card"
 import {
-    User, Users, DollarSign, EyeOff, Code, Megaphone, ShoppingCart, Palette,
-    Briefcase, Settings, MessageSquare, FileText, Plus, Target, Activity
+    Users, Code, Megaphone, ShoppingCart, Palette, Briefcase, Settings
 } from "lucide-react"
-import { ProjectVisibility, Status, TaskStatus, TeamType, Role } from "@prisma/client"
+import { 
+    Status, TaskStatus, TeamType 
+} from "@prisma/client"
 import { redirect } from "next/navigation"
-import Link from "next/link"
-import { CreateProjectSheet } from "@/components/projects/createprojectsheet"
 import { Metadata } from "next"
 import { MyProjectsPageClient } from "./_components/MyProjectsPageClient"
 
