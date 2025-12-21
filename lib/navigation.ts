@@ -34,21 +34,7 @@ export const roleNavigations: RoleNavigation[] = [
                 path: "dashboard",
                 name: "Dashboard",
                 icon: Home,
-                description: "Overview and metrics",
-                children: [
-                    {
-                        path: "dashboard",
-                        name: "Internal Metrics",
-                        icon: Home,
-                        description: "Internal operations overview"
-                    },
-                    {
-                        path: "dashboard/external",
-                        name: "Client Overview",
-                        icon: Building2,
-                        description: "Client projects overview"
-                    }
-                ]
+                description: "Overview and metrics"
             },
             {
                 path: "projects",
@@ -179,21 +165,7 @@ export const roleNavigations: RoleNavigation[] = [
                 path: "dashboard",
                 name: "Dashboard",
                 icon: Home,
-                description: "Team overview and metrics",
-                children: [
-                    {
-                        path: "dashboard",
-                        name: "Team Overview",
-                        icon: Home,
-                        description: "Internal team metrics"
-                    },
-                    {
-                        path: "dashboard/external",
-                        name: "Client Work",
-                        icon: Building2,
-                        description: "Client projects overview"
-                    }
-                ]
+                description: "Team overview and metrics"
             },
             {
                 path: "projects",

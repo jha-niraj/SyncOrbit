@@ -1,0 +1,140 @@
+"use server"
+
+import { auth } from "@/auth";
+import { prisma } from "@/lib/prisma";
+import { uploadImageToCloudinary } from "@/actions/shared/upload.action";
+import { revalidatePath } from "next/cache";
+import { Resend } from "resend";
+import { InvoiceStatus } from "@prisma/client";
+
+const resend = new Resend(process.env.RESEND_API_KEY);
+
+export async function getInvoicePreloadData() {
+    try {
+        const session = await auth();
+        if (!session?.user?.id) {
+            return { success: false, error: "Authentication required" };
+        }
+
+        const user = await prisma.user.findUnique({
+            where: { id: session.user.id },
+            include: {
+                ownedCompany: true,
+                company: true
+            }
+        });
+
+        if (!user || (!user.ownedCompany && !user.company)) {
+            return { success: false, error: "Company not found" };
+        }
+
+        const company = user.ownedCompany || user.company;
+
+        // Get all clients associated with this company
+        // A client is a user with Role.CLIENT in the same company
+        const clients = await prisma.user.findMany({
+            where: {
+                companyId: company?.id,
+                role: "CLIENT"
+            },
+            select: {
+                id: true,
+                name: true,
+                email: true,
+            }
+        });
+
+        return {
+            success: true,
+            company,
+            clients
+        };
+    } catch (error) {
+        console.error("Error fetching invoice preload data:", error);
+        return { success: false, error: "Failed to fetch data" };
+    }
+}
+
+export async function createInvoice(formData: FormData) {
+    try {
+        const session = await auth();
+        if (!session?.user?.id) {
+            return { success: false, error: "Authentication required" };
+        }
+
+        const invoiceNumber = formData.get("invoiceNumber") as string;
+        const amount = parseFloat(formData.get("amount") as string);
+        const clientId = formData.get("clientId") as string;
+        const dueDate = new Date(formData.get("dueDate") as string);
+        const items = JSON.parse(formData.get("items") as string);
+        const notes = formData.get("notes") as string;
+        const pdfFile = formData.get("pdf") as File;
+
+        // 1. Upload PDF to Cloudinary
+        const uploadFormData = new FormData();
+        uploadFormData.append("file", pdfFile);
+        const uploadResult = await uploadImageToCloudinary(uploadFormData);
+
+        if (!uploadResult.success || !uploadResult.url) {
+            return { success: false, error: uploadResult.message || "Failed to upload PDF" };
+        }
+
+        // 2. Get User's Company
+        const user = await prisma.user.findUnique({
+            where: { id: session.user.id },
+            select: { ownedCompany: { select: { id: true } }, companyId: true }
+        });
+
+        const companyId = user?.ownedCompany?.id || user?.companyId;
+
+        if (!companyId) {
+            return { success: false, error: "Company not found" };
+        }
+
+        // 3. Save to Database
+        const invoice = await prisma.invoice.create({
+            data: {
+                invoiceNumber,
+                amount,
+                status: "SENT",
+                dueDate,
+                companyId,
+                clientId,
+                items,
+                pdfUrl: uploadResult.url,
+                notes
+            },
+            include: {
+                client: true,
+                company: true
+            }
+        });
+
+        // 4. Send Email via Resend
+        if (invoice.client.email) {
+            await resend.emails.send({
+                from: "SyncOrbit <onboarding@resend.dev>", // Replace with verified domain in production
+                to: invoice.client.email,
+                subject: `New Invoice ${invoice.invoiceNumber} from ${invoice.company.name}`,
+                html: `
+                    <h1>New Invoice Received</h1>
+                    <p>Hello ${invoice.client.name},</p>
+                    <p>You have received a new invoice from ${invoice.company.name}.</p>
+                    <p><strong>Invoice Number:</strong> ${invoice.invoiceNumber}</p>
+                    <p><strong>Amount:</strong> ${invoice.amount} ${invoice.currency}</p>
+                    <p><strong>Due Date:</strong> ${invoice.dueDate.toLocaleDateString()}</p>
+                    <p>You can view and download the invoice using the link below:</p>
+                    <a href="${invoice.pdfUrl}" style="display: inline-block; padding: 10px 20px; background-color: #007bff; color: white; text-decoration: none; border-radius: 5px;">View Invoice</a>
+                    <p>Thank you!</p>
+                `
+            });
+        }
+
+        revalidatePath("/tools/invoices");
+        return { success: true, invoice };
+
+    } catch (error) {
+        console.error("Error creating invoice:", error);
+        return { success: false, error: "Failed to create invoice" };
+    }
+}

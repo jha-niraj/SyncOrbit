@@ -8,6 +8,7 @@ import { hasAccessToPath } from '@/lib/navigation'
 import { Role } from '@prisma/client'
 import { SidebarProvider, useSidebar } from '@/components/navigation/sidebarprovider'
 import { Sidebar } from '@/components/sidebar'
+import { AIChat } from '@/components/AIChat'
 
 interface LayoutProps {
 	children: React.ReactNode
@@ -48,12 +49,13 @@ function LayoutContent({ children }: LayoutProps) {
 				"flex-1 flex flex-col transition-all duration-300",
 				isCollapsed ? "lg:ml-[90px]" : "lg:ml-64"
 			)}>
-				<main className="flex-1 overflow-auto">
+				<main className="flex-1 overflow-auto px-6">
 					<div className="h-full">
 						{children}
 					</div>
 				</main>
 			</div>
+			<AIChat />
 		</div>
 	)
 }

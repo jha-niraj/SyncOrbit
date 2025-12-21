@@ -38,7 +38,7 @@ const LoadingScreen = ({ routeName }: LoadingScreenProps) => {
                     />
 
                     <Image
-                        src="/mainicon.png"
+                        src="/mainiconwhite.png"
                         alt="SyncOrbit Logo"
                         fill
                         className="object-contain drop-shadow-xl"
