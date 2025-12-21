@@ -43,7 +43,7 @@ export const metadata: Metadata = {
 		description: "Eliminate friction and scattered workflows. Syncorbit brings your people, projects, and priorities into perfect alignment, ensuring everyone moves together in a stable, high-velocity path toward delivery.",
 		images: [
 			{
-				url: "/mainicon.png",
+				url: "/mainiconwhite.png",
 				width: 1024,
 				height: 1024,
 				alt: "SyncOrbit - Eliminate friction and scattered workflows",
@@ -54,16 +54,16 @@ export const metadata: Metadata = {
 		card: "summary_large_image",
 		title: "SyncOrbit - Eliminate friction and scattered workflows",
 		description: "Eliminate friction and scattered workflows. Syncorbit brings your people, projects, and priorities into perfect alignment, ensuring everyone moves together in a stable, high-velocity path toward delivery.",
-		images: ["/mainicon.png"],
+		images: ["/mainiconwhite.png"],
 		creator: "@syncorbit",
 	},
 	icons: {
 		icon: [
-			{ url: "/mainicon.ico", sizes: "any" },
-			{ url: "/mainicon.png", type: "image/png", sizes: "512x512" },
+			{ url: "/mainiconwhite.ico", sizes: "any" },
+			{ url: "/mainiconwhite.png", type: "image/png", sizes: "512x512" },
 		],
 		apple: [
-			{ url: "/mainicon.png", sizes: "180x180", type: "image/png" },
+			{ url: "/mainiconwhite.png", sizes: "180x180", type: "image/png" },
 		],
 	},
 	robots: {
@@ -92,8 +92,8 @@ export default function RootLayout({
 	return (
 		<html lang="en" suppressHydrationWarning>
 			<head>
-				<link rel="icon" href="/mainicon.ico" />
-				<link rel="apple-touch-icon" href="/mainicon.png" />
+				<link rel="icon" href="/mainiconwhite.ico" />
+				<link rel="apple-touch-icon" href="/mainiconwhite.png" />
 			</head>
 			<body className={`${spaceGrotesk.className} ${geistSans.variable} ${geistMono.variable} antialiased`}>
 				<Providers>
