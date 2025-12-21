@@ -46,7 +46,7 @@ const LostInSpaceSVG = () => {
             </motion.svg>
             <motion.div variants={floatVariants} animate="animate" className="relative z-10 flex flex-col items-center">
                 <div className="relative w-32 h-32 md:w-40 md:h-40 mb-6 opacity-80 grayscale">
-                    <Image src="/syncorbit.png" alt="SyncOrbit Logo" fill className="object-contain" />
+                    <Image src="/mainicon.png" alt="SyncOrbit Logo" fill className="object-contain" />
                 </div>
                 <div className="flex items-center gap-4 text-orange-500/70 dark:text-orange-400/70">
                     <Compass className="w-8 h-8" />

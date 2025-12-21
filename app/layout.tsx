@@ -21,8 +21,67 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-	title: "SyncOrbit: Synchronize your team's trajectory",
+	title: {
+		default: "SyncOrbit",
+		template: "%s | SyncOrbit"
+	},
 	description: "Eliminate friction and scattered workflows. Syncorbit brings your people, projects, and priorities into perfect alignment, ensuring everyone moves together in a stable, high-velocity path toward delivery.",
+	keywords: ["Project Management", "Eliminate Friction", "Build"],
+	authors: [{ name: "Niraj Jha" }],
+	creator: "Shunya Tech",
+	publisher: "Shunya Tech",
+	metadataBase: new URL("https://www.syncorbit.nirajjha.xyz"),
+	alternates: {
+		canonical: "/",
+	},
+	openGraph: {
+		type: "website",
+		locale: "en_US",
+		url: "https://www.syncorbit.nirajjha.xyz",
+		siteName: "SyncOrbit",
+		title: "SyncOrbit - Eliminate friction and scattered workflows",
+		description: "Eliminate friction and scattered workflows. Syncorbit brings your people, projects, and priorities into perfect alignment, ensuring everyone moves together in a stable, high-velocity path toward delivery.",
+		images: [
+			{
+				url: "/mainicon.png",
+				width: 1024,
+				height: 1024,
+				alt: "SyncOrbit - Eliminate friction and scattered workflows",
+			},
+		],
+	},
+	twitter: {
+		card: "summary_large_image",
+		title: "SyncOrbit - Eliminate friction and scattered workflows",
+		description: "Eliminate friction and scattered workflows. Syncorbit brings your people, projects, and priorities into perfect alignment, ensuring everyone moves together in a stable, high-velocity path toward delivery.",
+		images: ["/mainicon.png"],
+		creator: "@syncorbit",
+	},
+	icons: {
+		icon: [
+			{ url: "/mainicon.ico", sizes: "any" },
+			{ url: "/mainicon.png", type: "image/png", sizes: "512x512" },
+		],
+		apple: [
+			{ url: "/mainicon.png", sizes: "180x180", type: "image/png" },
+		],
+	},
+	robots: {
+		index: true,
+		follow: true,
+		googleBot: {
+			index: true,
+			follow: true,
+			"max-video-preview": -1,
+			"max-image-preview": "large",
+			"max-snippet": -1,
+		},
+	},
+	verification: {
+		// Add your verification codes here when you have them
+		// google: "your-google-verification-code",
+		// yandex: "your-yandex-verification-code",
+	},
 };
 
 export default function RootLayout({
@@ -34,22 +93,7 @@ export default function RootLayout({
 		<html lang="en" suppressHydrationWarning>
 			<head>
 				<link rel="icon" href="/syncorbit.ico" />
-      
-                <title>SyncOrbit</title>
-                <meta name="description" content="Streamline Your Projects with Ease" />
-
-                <meta property="og:url" content="https://SyncOrbit.nirajjha.xyz" />
-                <meta property="og:type" content="website" />
-                <meta property="og:title" content="SyncOrbit" />
-                <meta property="og:description" content="Streamline Your Projects with Ease" />
-                <meta property="og:image" content="https://opengraph.b-cdn.net/production/images/e55831e0-2d0c-4c4e-8714-2bb667dc4170.png?token=IaDSxrXi48MuUZvj9Xp9Jk1xHZUJJpPKWwFYRxLzYJI&height=1024&width=1024&expires=33295316213" />
-
-                <meta name="twitter:card" content="summary_large_image" />
-                <meta property="twitter:domain" content="SyncOrbit.nirajjha.xyz" />
-                <meta property="twitter:url" content="https://SyncOrbit.nirajjha.xyz" />
-                <meta name="twitter:title" content="SyncOrbit" />
-                <meta name="twitter:description" content="Streamline Your Projects with Ease" />
-                <meta name="twitter:image" content="https://opengraph.b-cdn.net/production/images/e55831e0-2d0c-4c4e-8714-2bb667dc4170.png?token=IaDSxrXi48MuUZvj9Xp9Jk1xHZUJJpPKWwFYRxLzYJI&height=1024&width=1024&expires=33295316213" />
+				<link rel="apple-touch-icon" href="/mainicon.png" />
 			</head>
 			<body className={`${spaceGrotesk.className} ${geistSans.variable} ${geistMono.variable} antialiased`}>
 				<Providers>

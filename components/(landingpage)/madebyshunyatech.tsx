@@ -20,7 +20,7 @@ const MadeByShunyaTech = () => {
                             className="mb-8 inline-flex items-center gap-3 px-4 py-2 rounded-full border border-neutral-800 bg-neutral-900/50 backdrop-blur-sm cursor-pointer hover:border-neutral-600 transition-colors"
                         >
                             <Image
-                                src="/syncorbit.png"
+                                src="/shunyatech.png"
                                 alt="ShunyaTech"
                                 className="h-4 w-auto invert opacity-80"
                                 height={20}
