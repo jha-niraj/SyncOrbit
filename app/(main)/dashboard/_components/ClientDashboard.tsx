@@ -12,6 +12,7 @@ import { ActivityFeed } from "@/components/activity-feed"
 import { Status } from "@prisma/client"
 
 import { Project } from "@/types/project"
+import { DashboardMetrics } from "@/lib/utils/dashboardStats"
 
 interface InternalClientData {
     user: {
@@ -22,7 +23,7 @@ interface InternalClientData {
 
 interface ClientDashboardProps {
     data: InternalClientData
-    dashboardMetrics: any // Keeping as any for now until QuickStatsCards metrics is typed
+    dashboardMetrics: DashboardMetrics
 }
 
 export function ClientDashboard({ data, dashboardMetrics }: ClientDashboardProps) {
@@ -146,7 +147,7 @@ export function ClientDashboard({ data, dashboardMetrics }: ClientDashboardProps
                                     <Calendar className="w-5 h-5 text-green-600" />
                                     Completed Projects
                                 </h2>
-                                <CompletedProjects projects={completedProjects as any[]} />
+                                <CompletedProjects projects={completedProjects} />
                             </div>
                             <Separator className="bg-gray-200 dark:bg-gray-800" />
                             <div className="flex flex-col space-y-4">

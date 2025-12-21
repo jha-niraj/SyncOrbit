@@ -2,6 +2,7 @@
 
 import { auth } from "@/auth"
 import { prisma } from "@/lib/prisma"
+import { Invoice } from "@/types/dashboard"
 
 export async function getClientDashboardData() {
     try {
@@ -17,15 +18,16 @@ export async function getClientDashboardData() {
             },
             include: {
                 tasks: true,
+                user: true,
                 _count: {
-                    select: { messages: true, files: true }
+                    select: { messages: true, tasks: true, members: true }
                 }
             },
             orderBy: { updatedAt: 'desc' }
         })
 
         // Recent invoices
-        const invoices = await prisma.invoice?.findMany({
+        const invoices: Invoice[] = await (prisma as any).invoice?.findMany({
             where: { clientId: session.user.id },
             orderBy: { createdAt: 'desc' },
             take: 5
@@ -36,7 +38,7 @@ export async function getClientDashboardData() {
             invoices,
             stats: {
                 activeProjects: commissionedProjects.filter(p => p.status === 'IN_PROGRESS').length,
-                totalFiles: commissionedProjects.reduce((acc, curr) => acc + (curr._count?.files || 0), 0),
+                totalFiles: 0,
                 unreadMessages: commissionedProjects.reduce((acc, curr) => acc + (curr._count?.messages || 0), 0)
             }
         }

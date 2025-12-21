@@ -9,7 +9,8 @@ import {
     CreditCard, ExternalLink, Package,
     ChevronRight, Clock
 } from "lucide-react"
-import { ClientDashboardData } from "@/types/dashboard"
+import { Project } from "@/types/project"
+import { ClientDashboardData, Invoice } from "@/types/dashboard"
 
 interface ClientDashboardProps {
     data: ClientDashboardData | null
@@ -92,7 +93,7 @@ export default function ClientDashboard({ data }: ClientDashboardProps) {
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        {projects && projects.length > 0 ? projects.map((project: any, i: number) => (
+                        {projects && projects.length > 0 ? projects.map((project: Project, i: number) => (
                             <Card key={i} className="border border-neutral-100 dark:border-neutral-800 dark:bg-neutral-900/30 hover:shadow-lg transition-all group">
                                 <CardContent className="p-6">
                                     <div className="flex justify-between items-start mb-4">
@@ -141,7 +142,7 @@ export default function ClientDashboard({ data }: ClientDashboardProps) {
                         </CardHeader>
                         <CardContent className="p-0">
                             <div className="divide-y divide-neutral-100 dark:divide-neutral-800">
-                                {invoices && invoices.length > 0 ? invoices.map((inv: any, i: number) => (
+                                {invoices && invoices.length > 0 ? invoices.map((inv: Invoice, i: number) => (
                                     <div key={i} className="flex items-center justify-between p-4 hover:bg-neutral-50 dark:hover:bg-neutral-800/10 transition-colors">
                                         <div className="flex items-center gap-3">
                                             <div className="p-2 bg-neutral-100 dark:bg-neutral-800 rounded-lg">

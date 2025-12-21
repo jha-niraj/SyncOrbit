@@ -1,22 +1,28 @@
 "use client"
 
 import { useState, useRef } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+    Card, CardContent, CardHeader, CardTitle
+} from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import {
+    Avatar, AvatarFallback, AvatarImage
+} from "@/components/ui/avatar"
+import {
+    Tabs, TabsContent, TabsList, TabsTrigger
+} from "@/components/ui/tabs"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import {
-    DropdownMenu, DropdownMenuContent, DropdownMenuItem,
-    DropdownMenuTrigger, DropdownMenuSeparator
+    DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,
+    DropdownMenuSeparator
 } from "@/components/ui/dropdown-menu"
 import {
-    User, Mail, Calendar, Building2, Shield, Users, Plus, Edit, Trash2, MoreVertical,
-    Star, Award, Code, Megaphone, ShoppingCart, Palette, Briefcase, Settings as SettingsIcon,
-    Crown, UserCheck, Camera, Loader2
+    User, Mail, Calendar, Building2, Shield, Users, Plus, Edit, Trash2,
+    MoreVertical, Star, Award, Code, Megaphone, ShoppingCart, Palette,
+    Briefcase, Settings as SettingsIcon, Crown, UserCheck, Camera, Loader2
 } from "lucide-react"
 import { Role, TeamType } from "@prisma/client"
 import { format } from "date-fns"
@@ -55,7 +61,7 @@ interface Membership {
         color: string | null
         head?: {
             name: string | null
-        }
+        } | null
     }
 }
 
@@ -80,7 +86,7 @@ interface Team {
     members: TeamMember[]
     head?: {
         name: string | null
-    }
+    } | null
 }
 
 interface Company {
@@ -88,11 +94,11 @@ interface Company {
     name: string
     website?: string | null
     logo?: string | null
-    teams: Team[]
+    teams?: Team[]
     owner?: {
         name: string | null
         image: string | null
-    }
+    } | null
 }
 
 interface UserProfile {
@@ -455,7 +461,6 @@ export default function ProfilePageClient({ userProfile }: ProfilePageClientProp
                             </Card>
                         )
                     }
-
                     {
                         userProfile.role === Role.COMPANY_OWNER && userProfile.ownedCompany && (
                             <Card>
@@ -473,7 +478,7 @@ export default function ProfilePageClient({ userProfile }: ProfilePageClientProp
                                 </CardHeader>
                                 <CardContent>
                                     {
-                                        userProfile.ownedCompany.teams.length > 0 ? (
+                                        userProfile.ownedCompany.teams && userProfile.ownedCompany.teams.length > 0 ? (
                                             <div className="space-y-4">
                                                 {
                                                     userProfile.ownedCompany.teams.map((team: Team) => {
@@ -602,49 +607,51 @@ export default function ProfilePageClient({ userProfile }: ProfilePageClientProp
                                                 )
                                             }
                                         </div>
-
-                                        {/* Company Logo Upload for Owner */}
-                                        {userProfile.role === Role.COMPANY_OWNER && userProfile.ownedCompany && (
-                                            <div className="mt-6 pt-6 border-t">
-                                                <Label className="text-sm font-medium mb-2 block">Company Logo</Label>
-                                                <div className="flex items-center gap-4">
-                                                    <div className="relative group">
-                                                        <Avatar className="w-16 h-16 border-2 border-muted">
-                                                            <AvatarImage src={userProfile.ownedCompany.logo || undefined} />
-                                                            <AvatarFallback>
-                                                                <Building2 className="w-8 h-8 text-muted-foreground" />
-                                                            </AvatarFallback>
-                                                        </Avatar>
-                                                        <div
-                                                            className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
-                                                            onClick={() => companyFileInputRef.current?.click()}
-                                                        >
-                                                            {companyUploading ? (
-                                                                <Loader2 className="w-5 h-5 text-white animate-spin" />
-                                                            ) : (
-                                                                <Camera className="w-5 h-5 text-white" />
-                                                            )}
+                                        {
+                                            userProfile.role === Role.COMPANY_OWNER && userProfile.ownedCompany && (
+                                                <div className="mt-6 pt-6 border-t">
+                                                    <Label className="text-sm font-medium mb-2 block">Company Logo</Label>
+                                                    <div className="flex items-center gap-4">
+                                                        <div className="relative group">
+                                                            <Avatar className="w-16 h-16 border-2 border-muted">
+                                                                <AvatarImage src={userProfile.ownedCompany.logo || undefined} />
+                                                                <AvatarFallback>
+                                                                    <Building2 className="w-8 h-8 text-muted-foreground" />
+                                                                </AvatarFallback>
+                                                            </Avatar>
+                                                            <div
+                                                                className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                                                                onClick={() => companyFileInputRef.current?.click()}
+                                                            >
+                                                                {
+                                                                    companyUploading ? (
+                                                                        <Loader2 className="w-5 h-5 text-white animate-spin" />
+                                                                    ) : (
+                                                                        <Camera className="w-5 h-5 text-white" />
+                                                                    )
+                                                                }
+                                                            </div>
+                                                            <input
+                                                                type="file"
+                                                                ref={companyFileInputRef}
+                                                                className="hidden"
+                                                                accept="image/*"
+                                                                onChange={(e) => handleImageUpload(e, 'company')}
+                                                                disabled={companyUploading}
+                                                            />
                                                         </div>
-                                                        <input
-                                                            type="file"
-                                                            ref={companyFileInputRef}
-                                                            className="hidden"
-                                                            accept="image/*"
-                                                            onChange={(e) => handleImageUpload(e, 'company')}
-                                                            disabled={companyUploading}
-                                                        />
-                                                    </div>
-                                                    <div>
-                                                        <p className="text-sm text-muted-foreground">
-                                                            Click to upload a new company logo.
-                                                        </p>
-                                                        <p className="text-xs text-muted-foreground mt-1">
-                                                            Recommended size: 256x256px
-                                                        </p>
+                                                        <div>
+                                                            <p className="text-sm text-muted-foreground">
+                                                                Click to upload a new company logo.
+                                                            </p>
+                                                            <p className="text-xs text-muted-foreground mt-1">
+                                                                Recommended size: 256x256px
+                                                            </p>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                        )}
+                                            )
+                                        }
                                     </div>
                                 ) : (
                                     <div className="text-center py-8 text-muted-foreground">

@@ -5,6 +5,10 @@ export interface ProjectTask {
     id: string
     title: string
     status: TaskStatus
+    priority?: string
+    project?: {
+        title: string
+    }
     assignedDeveloper?: {
         id: string
         name?: string | null

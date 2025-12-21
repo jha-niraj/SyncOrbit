@@ -2,32 +2,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { formatDate } from "@/lib/utils";
-import { Status, TaskStatus } from "@prisma/client";
+
 import { Calendar, DollarSign, CheckCircle, ArrowRight } from "lucide-react";
 import Link from "next/link";
 
+import { Project } from "@/types/project";
+
 interface CompletedProjectsProps {
-	projects: {
-		id: string;
-		title: string;
-		description: string | null;
-		slug: string;
-		status: Status;
-		budget: number;
-		currency: string;
-		startDate: Date;
-		endDate: Date | null;
-		tasks: {
-			id: string;
-			title: string;
-			status: TaskStatus;
-			assignedDeveloper: {
-				id: string;
-				name: string | null;
-				image: string | null;
-			} | null;
-		}[];
-	}[];
+	projects: Project[];
 }
 
 export function CompletedProjects({ projects }: CompletedProjectsProps) {

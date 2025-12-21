@@ -1,24 +1,26 @@
 "use client"
 
-import { 
-    Card, CardContent, CardHeader, CardTitle, CardDescription 
+import {
+    Card, CardContent, CardHeader, CardTitle, CardDescription
 } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import Link from "next/link"
-import { 
+import {
     ArrowRight, DollarSign, FileText, LayoutDashboard
 } from "lucide-react"
 import { format } from "date-fns"
+import { User } from "@/types/user"
+import { Project } from "@/types/project"
 
 interface ExternalDashboardProps {
-    user: any
+    user: User
     stats: {
         totalSpent: number
         activeProjects: number
         pendingInvoices: number
     }
-    activeProjects: any[]
+    activeProjects: Project[]
 }
 
 export function ExternalDashboard({ user, stats, activeProjects }: ExternalDashboardProps) {

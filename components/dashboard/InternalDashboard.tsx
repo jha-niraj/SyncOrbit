@@ -1,26 +1,28 @@
 "use client"
 
-import { 
-    Card, CardContent, CardHeader, CardTitle, CardDescription 
+import {
+    Card, CardContent, CardHeader, CardTitle, CardDescription
 } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import Link from "next/link"
-import { 
-    ArrowRight, Briefcase, CheckCircle, Clock, Users 
+import {
+    ArrowRight, Briefcase, CheckCircle, Clock, Users
 } from "lucide-react"
 import { format } from "date-fns"
+import { User } from "@/types/user"
+import { Project } from "@/types/project"
 
 interface InternalDashboardProps {
-    user: any
+    user: User
     stats: {
         totalProjects: number
         activeProjects: number
         completedProjects: number
         totalTeamMembers: number
     }
-    recentProjects: any[]
+    recentProjects: Project[]
 }
 
 export function InternalDashboard({ user, stats, recentProjects }: InternalDashboardProps) {

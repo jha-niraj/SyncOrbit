@@ -8,28 +8,10 @@ import { Status, TaskStatus } from "@prisma/client";
 import { Calendar, DollarSign, Users, ArrowRight, Target, Clock, CheckCircle } from "lucide-react";
 import Link from "next/link";
 
+import { Project } from "@/types/project";
+
 interface ProjectCardProps {
-	project: {
-		id: string;
-		title: string;
-		description: string | null;
-		slug: string;
-		status: Status;
-		budget: number;
-		currency: string;
-		startDate: Date;
-		endDate: Date | null;
-		tasks: {
-			id: string;
-			title: string;
-			status: TaskStatus;
-			assignedDeveloper: {
-				id: string;
-				name: string | null;
-				image: string | null;
-			} | null;
-		}[];
-	};
+	project: Project;
 }
 
 export function ProjectCard({ project }: ProjectCardProps) {

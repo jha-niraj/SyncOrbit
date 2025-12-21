@@ -14,12 +14,7 @@ export async function getLeadDashboardData() {
         // We need to find projects where their teams are assigned.
         const myLedTeams = await prisma.team.findMany({
             where: {
-                members: {
-                    some: {
-                        userId: session.user.id,
-                        role: 'TEAM_HEAD' // Assuming memberships have roles or user.role is enough
-                    }
-                }
+                headId: session.user.id
             }
         })
 
@@ -35,8 +30,9 @@ export async function getLeadDashboardData() {
             },
             include: {
                 tasks: true,
+                user: true,
                 _count: {
-                    select: { tasks: true, members: true }
+                    select: { tasks: true, members: true, messages: true }
                 }
             }
         })
@@ -60,7 +56,7 @@ export async function getLeadDashboardData() {
                         }
                     }
                 },
-                status: { in: ['TODO', 'IN_PROGRESS'] }
+                status: { in: ['YET_TO_START', 'IN_PROGRESS'] }
             }
         })
 

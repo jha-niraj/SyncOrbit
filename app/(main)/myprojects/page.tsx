@@ -3,9 +3,6 @@ import { getUserProjects } from "@/actions/projects.action"
 import {
     Card, CardContent
 } from "@/components/ui/card"
-import {
-    Briefcase
-} from "lucide-react"
 import { redirect } from "next/navigation"
 import { Metadata } from "next"
 import { MyProjectsPageClient } from "./_components/MyProjectsPageClient"

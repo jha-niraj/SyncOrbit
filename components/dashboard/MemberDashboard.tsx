@@ -10,6 +10,7 @@ import {
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { MemberDashboardData } from "@/types/dashboard"
+import { ProjectTask } from "@/types/project"
 
 interface MemberDashboardProps {
     data: MemberDashboardData | null
@@ -91,7 +92,7 @@ export default function MemberDashboard({ data }: MemberDashboardProps) {
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-neutral-100 dark:divide-neutral-800">
-                                    {assignedTasks && assignedTasks.length > 0 ? assignedTasks.map((task: any, i: number) => (
+                                    {assignedTasks && assignedTasks.length > 0 ? assignedTasks.map((task: ProjectTask, i: number) => (
                                         <tr key={i} className="hover:bg-neutral-50 dark:hover:bg-neutral-800/20 transition-colors">
                                             <td className="px-6 py-4">
                                                 <div className="flex items-center gap-3">

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
     Check, ArrowRight, HelpCircle, Sparkles, ChevronDown, Box, Layers, Cpu
@@ -13,7 +13,7 @@ import { PlanSelectionDialog } from "@/components/pricing/plan-selection-dialog"
 import { PaymentVerificationDialog } from "@/components/pricing/payment-verification-dialog";
 import { SubscriptionPlanType } from "@/lib/dodopayments";
 
-export const pricingData = {
+const pricingData = {
     USD: {
         starter: { monthly: 0, annual: 0 },
         professional: { monthly: 29, annual: 24 },
@@ -66,7 +66,7 @@ const faqs = [
     }
 ];
 
-export const ToggleSwitch = ({
+const ToggleSwitch = ({
     options,
     selected,
     onChange,
@@ -106,7 +106,7 @@ export const ToggleSwitch = ({
     );
 };
 
-export default function PricingPage() {
+function Pricing() {
     const searchParams = useSearchParams();
     const sessionId = searchParams.get("session_id");
 
@@ -562,4 +562,12 @@ export default function PricingPage() {
             }
         </div>
     );
+}
+
+export default function PricingPage() {
+    return (
+        <Suspense>
+            <Pricing />
+        </Suspense>
+    )
 }

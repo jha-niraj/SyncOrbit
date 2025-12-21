@@ -1,5 +1,4 @@
-// Dashboard and analytics types
-import { Project } from "./project"
+import { Project, ProjectTask } from "./project"
 
 export interface ActivityItem {
     id: string
@@ -46,7 +45,7 @@ export interface LeadDashboardData {
 
 // Member Dashboard
 export interface MemberDashboardData {
-    assignedTasks: any[] // We can use Task type if we define it more broadly
+    assignedTasks: ProjectTask[]
     projects: Project[]
     stats: {
         myTasks: number

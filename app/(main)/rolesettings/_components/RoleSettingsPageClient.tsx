@@ -17,7 +17,7 @@ import {
     Users, UserCheck, Clock, Briefcase
 } from "lucide-react"
 import {
-    getUsersByCompany, updateUserRole
+    updateUserRole
 } from "@/actions/(productmanager)/user-role.action"
 import { Role } from "@prisma/client"
 import { UserWithRole } from "@/types/role-settings"

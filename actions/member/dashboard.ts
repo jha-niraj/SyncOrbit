@@ -25,20 +25,22 @@ export async function getMemberDashboardData() {
         const myProjects = await prisma.project.findMany({
             where: {
                 OR: [
-                    { members: { some: { id: session.user.id } } },
+                    { members: { some: { userId: session.user.id } } },
                     { assignedTeams: { some: { team: { members: { some: { userId: session.user.id } } } } } }
                 ]
             },
             include: {
+                user: true,
+                tasks: true,
                 _count: {
-                    select: { tasks: true }
+                    select: { tasks: true, messages: true, members: true }
                 }
             }
         })
 
         const taskStats = {
             total: assignedTasks.length,
-            todo: assignedTasks.filter(t => t.status === 'TODO').length,
+            todo: assignedTasks.filter(t => t.status === 'YET_TO_START').length,
             inProgress: assignedTasks.filter(t => t.status === 'IN_PROGRESS').length,
             completed: assignedTasks.filter(t => t.status === 'COMPLETED').length
         }

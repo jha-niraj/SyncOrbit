@@ -1,6 +1,5 @@
 "use client"
 
-import { useState } from "react"
 import {
     Card, CardContent, CardHeader, CardTitle
 } from "@/components/ui/card"
@@ -12,9 +11,7 @@ import {
 import {
     Building2, Users, FolderOpen, ArrowRight
 } from "lucide-react"
-import { toast } from "sonner"
 import Link from "next/link"
-import { getClientCompanies } from "@/actions/(client)/companies.action"
 import Image from "next/image"
 
 interface Company {
