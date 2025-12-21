@@ -92,7 +92,7 @@ export default function RootLayout({
 	return (
 		<html lang="en" suppressHydrationWarning>
 			<head>
-				<link rel="icon" href="/syncorbit.ico" />
+				<link rel="icon" href="/mainicon.ico" />
 				<link rel="apple-touch-icon" href="/mainicon.png" />
 			</head>
 			<body className={`${spaceGrotesk.className} ${geistSans.variable} ${geistMono.variable} antialiased`}>
