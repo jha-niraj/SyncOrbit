@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import {
 	Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle
 } from "@/components/ui/dialog";
@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { verifyPayment } from "@/actions/payments.action";
 import { useRouter } from "next/navigation";
+import { UserSubscription } from "@/types/billing";
 
 interface PaymentVerificationDialogProps {
 	open: boolean;
@@ -25,17 +26,11 @@ export function PaymentVerificationDialog({
 	sessionId,
 }: PaymentVerificationDialogProps) {
 	const [status, setStatus] = useState<VerificationStatus>("verifying");
-	const [subscription, setSubscription] = useState<any>(null);
+	const [subscription, setSubscription] = useState<UserSubscription | null>(null);
 	const [error, setError] = useState<string>("");
 	const router = useRouter();
 
-	useEffect(() => {
-		if (open && sessionId) {
-			verifyPaymentStatus();
-		}
-	}, [open, sessionId]);
-
-	const verifyPaymentStatus = async () => {
+	const verifyPaymentStatus = useCallback(async () => {
 		setStatus("verifying");
 		setError("");
 
@@ -54,7 +49,13 @@ export function PaymentVerificationDialog({
 			setStatus("failed");
 			setError("An unexpected error occurred");
 		}
-	};
+	}, [sessionId]);
+
+	useEffect(() => {
+		if (open && sessionId) {
+			verifyPaymentStatus();
+		}
+	}, [open, sessionId, verifyPaymentStatus]);
 
 	const handleClose = () => {
 		onOpenChange(false);

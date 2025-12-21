@@ -1,8 +1,8 @@
 "use client"
 
 import { useState } from "react"
-import { 
-    Card, CardContent, CardHeader, CardTitle 
+import {
+    Card, CardContent, CardHeader, CardTitle
 } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -15,92 +15,27 @@ import {
 import {
     Select, SelectContent, SelectItem, SelectTrigger, SelectValue
 } from "@/components/ui/select"
-import { 
-    Tabs, TabsContent, TabsList, TabsTrigger 
+import {
+    Tabs, TabsContent, TabsList, TabsTrigger
 } from "@/components/ui/tabs"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import {
-    Building2, Users, FolderOpen, Mail, UserPlus, Trash2, CheckCircle, 
+    Building2, Users, FolderOpen, Mail, UserPlus, Trash2, CheckCircle,
     XCircle, Clock, Shield
 } from "lucide-react"
 import { toast } from "sonner"
 import {
-    getUserAssociations, inviteUserToCompany, inviteUserToProject, 
-    respondToInvitation, getPendingInvitations, removeUserFromCompany, 
+    getUserAssociations, inviteUserToCompany, inviteUserToProject,
+    respondToInvitation, getPendingInvitations, removeUserFromCompany,
     removeUserFromProject
 } from "@/actions/(productmanager)/associations.action"
 import { useSession } from "next-auth/react"
+import { InvitationType } from "@prisma/client"
 
-interface Company {
-    id: string
-    name: string
-    shortName: string
-    logo: string | null
-    productManager?: {
-        id: string
-        name: string | null
-        email: string | null
-    }
-    users?: User[]
-}
-
-interface User {
-    id: string
-    name: string | null
-    email: string | null
-    role: string
-}
-
-interface Project {
-    id: string
-    title: string
-    slug: string
-    status: string
-    members?: ProjectMember[]
-}
-
-interface ProjectMember {
-    id: string
-    role: string
-    user: User
-}
-
-interface ProjectMembership {
-    id: string
-    role: string
-    joinedAt: string
-    project: Project
-}
-
-interface UserAssociations {
-    user: {
-        id: string
-        name: string | null
-        email: string | null
-        role: string
-    }
-    memberOfCompany: Company | null
-    managedCompany: Company | null
-    projectMemberships: ProjectMembership[]
-    ownedProjects: Project[]
-}
-
-interface Invitation {
-    id: string
-    type: string
-    message: string | null
-    createdAt: string
-    sender: {
-        name: string | null
-        email: string | null
-    }
-    company: {
-        name: string
-    } | null
-    project: {
-        title: string
-    } | null
-}
+import {
+    UserAssociations, PendingInvitation as Invitation, AssociationCompany as Company, AssociationUser as User,
+    AssociationProject as Project, AssociationProjectMembership as ProjectMembership
+} from "@/types/associations"
 
 interface AssociationsPageClientProps {
     initialAssociations: UserAssociations | null
@@ -128,7 +63,7 @@ export default function AssociationsPageClient({ initialAssociations, initialInv
             ])
 
             if (associationsResult.success) {
-                setAssociations(associationsResult.data as unknown as UserAssociations)
+                setAssociations(associationsResult.data as UserAssociations)
             }
 
             if (invitationsResult.success) {
@@ -474,7 +409,7 @@ export default function AssociationsPageClient({ initialAssociations, initialInv
                                                                 Team Members ({project.members?.length || 0})
                                                             </h6>
                                                             {
-                                                                project.members?.map((member: ProjectMember) => (
+                                                                project.members?.map((member) => (
                                                                     <div key={member.id} className="flex items-center justify-between p-1 text-sm">
                                                                         <div className="flex items-center gap-2">
                                                                             <Avatar className="h-6 w-6">
@@ -527,7 +462,7 @@ export default function AssociationsPageClient({ initialAssociations, initialInv
                                                         <div className="space-y-2">
                                                             <div className="flex items-center gap-2">
                                                                 <Badge variant="outline">
-                                                                    {invitation.type === "COMPANY_MEMBER" ? "Company" : "Project"}
+                                                                    {invitation.type === InvitationType.TEAM_MEMBER ? "Company" : "Project"}
                                                                 </Badge>
                                                                 <Clock className="h-4 w-4 text-muted-foreground" />
                                                                 <span className="text-sm text-muted-foreground">

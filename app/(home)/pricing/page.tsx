@@ -74,7 +74,7 @@ export const ToggleSwitch = ({
 }: {
     options: { label: string; value: string }[],
     selected: string,
-    onChange: (val: any) => void,
+    onChange: (val: string) => void,
     layoutId: string
 }) => {
     return (
@@ -290,7 +290,7 @@ export default function PricingPage() {
                             <ToggleSwitch
                                 options={[{ label: 'USD', value: 'USD' }, { label: 'INR', value: 'INR' }]}
                                 selected={currency}
-                                onChange={(val) => setCurrency(val)}
+                                onChange={(val) => setCurrency(val as 'USD' | 'INR')}
                                 layoutId="currency-toggle"
                             />
                         </div>

@@ -1,18 +1,6 @@
 // Dashboard and analytics types
 import { Project } from "./project"
 
-export interface DashboardProject {
-    id: string
-    title: string
-    status: string
-    progress: number
-    dueDate?: Date
-    team?: {
-        name: string
-        color?: string | null
-    }
-}
-
 export interface ActivityItem {
     id: string
     type: string
@@ -22,6 +10,14 @@ export interface ActivityItem {
         name: string | null
         image: string | null
     }
+}
+
+export interface Invoice {
+    id: string
+    amount: number
+    status: string
+    createdAt: Date
+    dueDate?: Date
 }
 
 // Owner Dashboard
@@ -50,7 +46,7 @@ export interface LeadDashboardData {
 
 // Member Dashboard
 export interface MemberDashboardData {
-    assignedTasks: any[] // Task type from prisma ideally
+    assignedTasks: any[] // We can use Task type if we define it more broadly
     projects: Project[]
     stats: {
         myTasks: number
@@ -63,7 +59,7 @@ export interface MemberDashboardData {
 // Client Dashboard
 export interface ClientDashboardData {
     projects: Project[]
-    invoices: any[]
+    invoices: Invoice[]
     stats: {
         activeProjects: number
         totalFiles: number

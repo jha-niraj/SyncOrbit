@@ -1,20 +1,20 @@
 "use client"
 
-import { 
-    Card, CardContent, CardHeader, CardTitle 
+import {
+    Card, CardContent, CardHeader, CardTitle
 } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { 
-    Avatar, AvatarFallback, AvatarImage 
+import {
+    Avatar, AvatarFallback, AvatarImage
 } from "@/components/ui/avatar"
 import { Progress } from "@/components/ui/progress"
 import {
     User, Users, DollarSign, EyeOff, Code, Megaphone, ShoppingCart, Palette,
     Briefcase, Settings, MessageSquare, FileText, Plus, Target, Activity
 } from "lucide-react"
-import { 
-    ProjectVisibility, Status, TaskStatus, TeamType, Role 
+import {
+    ProjectVisibility, Status, TaskStatus, TeamType, Role
 } from "@prisma/client"
 import Link from "next/link"
 import { CreateProjectSheet } from "@/components/projects/createprojectsheet"
@@ -76,14 +76,14 @@ interface Project {
 }
 
 interface MyProjectsPageClientProps {
-    projects: any[] // Using any[] for now to avoid strict type matching issues with Prisma result, but ideally should be Project[]
+    projects: Project[]
     user: {
         id: string
         role: string
     }
 }
 
-function getTaskProgress(tasks: any[]) {
+function getTaskProgress(tasks: ProjectTask[]) {
     if (tasks.length === 0) return 0
     const completedTasks = tasks.filter(task => task.status === TaskStatus.COMPLETED).length
     return Math.round((completedTasks / tasks.length) * 100)

@@ -244,16 +244,22 @@ function OnboardingContent() {
             } else {
                 throw new Error(result.error)
             }
-        } catch (error) {
+        } catch (error: any) {
             console.log("Error occurred while onboarding", error)
-            toast.error(error?.msg || "Something went wrong")
+            toast.error(error?.message || "Something went wrong")
         } finally {
             setLoading(false)
         }
     }
 
     const nextStep = () => {
-        if (currentStep === 'role-selection') onboardingType === 'company' ? setCurrentStep('company-info') : handleSubmit()
+        if (currentStep === 'role-selection') {
+            if (onboardingType === 'company') {
+                setCurrentStep('company-info')
+            } else {
+                handleSubmit()
+            }
+        }
         else if (currentStep === 'company-info') setCurrentStep('team-setup')
         else if (currentStep === 'team-setup') {
             if (formData.selectedTeams.length === 0) { toast.error("Allocate at least one module"); return }
@@ -400,7 +406,6 @@ function OnboardingContent() {
                                             "w-6 h-6 rounded flex items-center justify-center",
                                             TEAM_TEMPLATES[team.type].bg
                                         )}>
-                                            {/* @ts-ignore */}
                                             <Terminal className={cn("w-3 h-3", TEAM_TEMPLATES[team.type].color)} />
                                         </div>
                                         <span className="font-bold text-xs uppercase tracking-widest text-neutral-600 dark:text-neutral-400">

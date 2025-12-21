@@ -17,7 +17,8 @@ import {
 import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import axios from "axios";
-import { Company } from "@prisma/client";
+import { Company, Role } from "@prisma/client";
+import { RegistrationData } from "@/types/user";
 
 // --- Visual Component: The System Terminal (Left Panel) ---
 const SystemTerminal = () => {
@@ -110,7 +111,7 @@ function SignUpForm() {
     const [password, setPassword] = useState("")
     const [showPassword, setShowPassword] = useState(false)
     const [referralCode, setReferralCode] = useState("")
-    const [role, setRole] = useState<'CLIENT' | 'TEAM_HEAD' | 'TEAM_MEMBER' | 'COMPANY_OWNER'>('COMPANY_OWNER')
+    const [role, setRole] = useState<Role>(Role.COMPANY_OWNER)
     const [companyName, setCompanyName] = useState("")
     const [company, setCompany] = useState<Company | null>(null)
     const [validatingReferral, setValidatingReferral] = useState(false)
@@ -131,9 +132,9 @@ function SignUpForm() {
     }, [password])
 
     const searchParams = useSearchParams()
-    const callbackUrl = searchParams.get("callbackUrl") || "/dashboard"
+    // const callbackUrl = searchParams.get("callbackUrl") || "/dashboard"
     const urlReferralCode = searchParams.get("ref")
-    const urlRole = searchParams.get("role") as 'CLIENT' | 'TEAM_HEAD' | 'TEAM_MEMBER' | 'COMPANY_OWNER' | null
+    const urlRole = searchParams.get("role") as Role | null
 
     useEffect(() => {
         if (urlReferralCode) {
@@ -179,9 +180,9 @@ function SignUpForm() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         setIsLoading(true)
-        
+
         try {
-            const requestData: any = { name, email, password, role }
+            const requestData: RegistrationData = { name, email, password, role }
 
             if (referralCode && referralValidated && company) {
                 requestData.referralCode = referralCode
@@ -251,15 +252,15 @@ function SignUpForm() {
                             <div className="flex flex-col sm:flex-row gap-4">
                                 <div className={`space-y-1.5 ${role === "COMPANY_OWNER" ? "w-full" : "sm:w-1/2"}`}>
                                     <Label className="text-[10px] font-mono uppercase font-bold text-neutral-500">Role_Type</Label>
-                                    <Select value={role} onValueChange={(value: any) => setRole(value)}>
+                                    <Select value={role} onValueChange={(value: Role) => setRole(value)}>
                                         <SelectTrigger className="h-11 rounded-md border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900 focus:ring-1 focus:ring-neutral-900 dark:focus:ring-white font-mono text-xs">
                                             <SelectValue placeholder="Select Role" />
                                         </SelectTrigger>
                                         <SelectContent className="dark:bg-neutral-900 dark:border-neutral-800">
-                                            <SelectItem value="COMPANY_OWNER">Owner</SelectItem>
-                                            <SelectItem value="TEAM_LEAD">Team Lead</SelectItem>
-                                            <SelectItem value="TEAM_MEMBER">Member</SelectItem>
-                                            <SelectItem value="CLIENT">Client</SelectItem>
+                                            <SelectItem value={Role.COMPANY_OWNER}>Owner</SelectItem>
+                                            <SelectItem value={Role.TEAM_HEAD}>Team Lead</SelectItem>
+                                            <SelectItem value={Role.TEAM_MEMBER}>Member</SelectItem>
+                                            <SelectItem value={Role.CLIENT}>Client</SelectItem>
                                         </SelectContent>
                                     </Select>
                                 </div>

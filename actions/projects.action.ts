@@ -66,10 +66,10 @@ async function canCreateProjects(userId: string) {
 
     // Company owners and team heads can create projects
     const canCreate = user.role === Role.COMPANY_OWNER || user.role === Role.TEAM_HEAD
-    
-    return { 
-        canCreate, 
-        user, 
+
+    return {
+        canCreate,
+        user,
         company: user.ownedCompany || user.company,
         error: !canCreate ? "Only Company Owners and Team Heads can create projects" : undefined
     }
@@ -93,7 +93,7 @@ async function canAssignTeams(userId: string, teamIds: string[]) {
 
     // Get teams to verify they belong to the same company
     const teams = await prisma.team.findMany({
-        where: { 
+        where: {
             id: { in: teamIds },
             companyId: companyId
         }
@@ -112,11 +112,11 @@ async function canAssignTeams(userId: string, teamIds: string[]) {
     if (user.role === Role.TEAM_HEAD) {
         const ledTeamIds = user.ledTeams.map(team => team.id)
         const canAssignAll = teamIds.every(teamId => ledTeamIds.includes(teamId))
-        
+
         if (!canAssignAll) {
             return { canAssign: false, error: "You can only assign teams you lead" }
         }
-        
+
         return { canAssign: true, user, teams }
     }
 
@@ -159,7 +159,7 @@ export async function createProject(data: z.infer<typeof createProjectSchema>) {
 
         let slug = baseSlug
         let counter = 1
-        
+
         while (await prisma.project.findUnique({ where: { slug } })) {
             slug = `${baseSlug}-${counter}`
             counter++
@@ -167,7 +167,7 @@ export async function createProject(data: z.infer<typeof createProjectSchema>) {
 
         // Handle client creation or assignment
         let clientUserId: string
-        
+
         if (validatedData.clientType === ClientType.EXTERNAL && validatedData.clientEmail) {
             let existingClient = await prisma.user.findUnique({
                 where: { email: validatedData.clientEmail }
@@ -184,7 +184,7 @@ export async function createProject(data: z.infer<typeof createProjectSchema>) {
                     }
                 })
             }
-            
+
             clientUserId = existingClient.id
         } else {
             clientUserId = session.user.id
@@ -216,7 +216,7 @@ export async function createProject(data: z.infer<typeof createProjectSchema>) {
 
             // Assign teams to the project
             const teamAssignments = await Promise.all(
-                validatedData.assignedTeamIds.map(teamId => 
+                validatedData.assignedTeamIds.map(teamId =>
                     tx.projectTeam.create({
                         data: {
                             projectId: project.id,
@@ -252,14 +252,14 @@ export async function createProject(data: z.infer<typeof createProjectSchema>) {
         }
     } catch (error) {
         console.error("Create project error:", error)
-        
+
         if (error instanceof z.ZodError) {
             return {
                 success: false,
                 error: error.errors[0]?.message || "Invalid input data"
             }
         }
-        
+
         return {
             success: false,
             error: error instanceof Error ? error.message : "Failed to create project"
@@ -306,11 +306,11 @@ export async function updateProject(data: z.infer<typeof updateProjectSchema>) {
 
         // Company owners can edit any project in their company
         // Team heads can edit projects assigned to their teams
-        const canEdit = user.role === Role.COMPANY_OWNER || 
-                        (user.role === Role.TEAM_HEAD && 
-                         existingProject.assignedTeams.some(pt => 
-                             user.ledTeams.some(lt => lt.id === pt.teamId)
-                         ))
+        const canEdit = user.role === Role.COMPANY_OWNER ||
+            (user.role === Role.TEAM_HEAD &&
+                existingProject.assignedTeams.some(pt =>
+                    user.ledTeams.some(lt => lt.id === pt.teamId)
+                ))
 
         if (!canEdit) {
             return { success: false, error: "You don't have permission to edit this project" }
@@ -358,7 +358,7 @@ export async function updateProject(data: z.infer<typeof updateProjectSchema>) {
 
                 // Add new team assignments
                 await Promise.all(
-                    validatedData.assignedTeamIds.map(teamId => 
+                    validatedData.assignedTeamIds.map(teamId =>
                         tx.projectTeam.create({
                             data: {
                                 projectId: validatedData.projectId,
@@ -383,14 +383,14 @@ export async function updateProject(data: z.infer<typeof updateProjectSchema>) {
         }
     } catch (error) {
         console.error("Update project error:", error)
-        
+
         if (error instanceof z.ZodError) {
             return {
                 success: false,
                 error: error.errors[0]?.message || "Invalid input data"
             }
         }
-        
+
         return {
             success: false,
             error: error instanceof Error ? error.message : "Failed to update project"
@@ -551,7 +551,7 @@ export async function getUserProjects() {
 }
 
 // Get company projects (all projects in the company)
-export async function getCompanyProjects() {
+export async function getCompanyProjects(providedCompanyId?: string | null) {
     try {
         const session = await auth()
         if (!session?.user?.id) {
@@ -801,9 +801,9 @@ export async function getProjectBySlug(slug: string) {
         else if (user.role === Role.TEAM_MEMBER) {
             const memberTeamIds = user.teamMemberships.map(membership => membership.teamId)
             const isAssignedToUserTeam = project.assignedTeams.some(pt => memberTeamIds.includes(pt.teamId))
-            
-            hasAccess = isAssignedToUserTeam && 
-                       (project.visibility === ProjectVisibility.PUBLIC || project.projectInvites.length > 0)
+
+            hasAccess = isAssignedToUserTeam &&
+                (project.visibility === ProjectVisibility.PUBLIC || project.projectInvites.length > 0)
         }
         // Project member
         else if (project.members.some(member => member.userId === session.user.id)) {
@@ -826,4 +826,8 @@ export async function getProjectBySlug(slug: string) {
             project: null
         }
     }
+}
+// Get projects for teams (used by team heads and members)
+export async function getTeamProjects() {
+    return await getUserProjects()
 }

@@ -2,7 +2,7 @@
 
 import { prisma } from "@/lib/prisma"
 import { auth } from "@/auth"
-import { NotificationType } from "@prisma/client"
+import { NotificationType, Role, Prisma } from "@prisma/client"
 import { revalidatePath } from "next/cache"
 
 export async function getNotifications(page: number = 1, limit: number = 20) {
@@ -12,8 +12,9 @@ export async function getNotifications(page: number = 1, limit: number = 20) {
             throw new Error("Unauthorized")
         }
 
-        // Only show notifications for developers and product managers
-        if (!["DEVELOPER", "PRODUCTMANAGER"].includes(session.user.role)) {
+        // Allow all active users to have notifications
+        const allowedRoles: Role[] = [Role.COMPANY_OWNER, Role.TEAM_HEAD, Role.TEAM_MEMBER, Role.CLIENT]
+        if (!allowedRoles.includes(session.user.role)) {
             return {
                 success: true,
                 notifications: [],
@@ -76,8 +77,9 @@ export async function getRecentNotifications(limit: number = 5) {
             throw new Error("Unauthorized")
         }
 
-        // Only show notifications for developers and product managers
-        if (!["DEVELOPER", "PRODUCTMANAGER"].includes(session.user.role)) {
+        // Allow all active users to have notifications
+        const allowedRoles: Role[] = [Role.COMPANY_OWNER, Role.TEAM_HEAD, Role.TEAM_MEMBER, Role.CLIENT]
+        if (!allowedRoles.includes(session.user.role)) {
             return {
                 success: true,
                 notifications: [],
@@ -236,7 +238,7 @@ export async function createNotification(
     description?: string,
     type: NotificationType = "GENERAL",
     actionUrl?: string,
-    metadata?: any
+    metadata?: Prisma.InputJsonValue
 ) {
     try {
         const session = await auth()
@@ -253,8 +255,9 @@ export async function createNotification(
             throw new Error("Receiver not found")
         }
 
-        if (!["DEVELOPER", "PRODUCTMANAGER"].includes(receiver.role)) {
-            throw new Error("Can only send notifications to developers and product managers")
+        const allowedRoles: Role[] = [Role.COMPANY_OWNER, Role.TEAM_HEAD, Role.TEAM_MEMBER, Role.CLIENT]
+        if (!allowedRoles.includes(receiver.role)) {
+            throw new Error("Can only send notifications to active platform users")
         }
 
         const notification = await prisma.notification.create({

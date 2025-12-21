@@ -37,6 +37,7 @@ export async function getUserAssociations() {
                             select: {
                                 id: true,
                                 title: true,
+                                slug: true,
                                 status: true,
                                 user: {
                                     select: {
@@ -90,7 +91,7 @@ export async function getUserAssociations() {
                 // Company user belongs to
                 memberOfCompany: user.company,
                 // Company user owns (if Owner)
-                ownedCompany: user.ownedCompany,
+                managedCompany: user.ownedCompany,
                 // Projects user is member of
                 projectMemberships: user.projectMemberships,
                 // Projects user owns
@@ -191,7 +192,7 @@ export async function inviteUserToCompany(email: string, message?: string) {
         }
 
         revalidatePath("/associations")
-        
+
         return {
             success: true,
             message: `Invitation sent to ${email}`,
@@ -234,10 +235,10 @@ export async function inviteUserToProject(projectId: string, email: string, role
             include: { ownedCompany: true }
         })
 
-        const canInvite = 
+        const canInvite =
             project.userId === session.user.id || // Project owner
-            (currentUser?.role === Role.COMPANY_OWNER && 
-             currentUser.ownedCompany?.id === project.user.ownedCompany?.id) // Same company Owner
+            (currentUser?.role === Role.COMPANY_OWNER &&
+                currentUser.ownedCompany?.id === project.user.ownedCompany?.id) // Same company Owner
 
         if (!canInvite) {
             throw new Error("You don't have permission to invite users to this project")
@@ -320,7 +321,7 @@ export async function inviteUserToProject(projectId: string, email: string, role
 
         revalidatePath("/associations")
         revalidatePath(`/projects/${project.slug}`)
-        
+
         return {
             success: true,
             message: `Invitation sent to ${email}`,
@@ -400,7 +401,7 @@ export async function respondToInvitation(invitationId: string, action: "accept"
 
         revalidatePath("/associations")
         revalidatePath("/dashboard")
-        
+
         return {
             success: true,
             message: action === "accept" ? "Invitation accepted" : "Invitation declined"
@@ -514,7 +515,7 @@ export async function removeUserFromCompany(userId: string) {
         })
 
         revalidatePath("/associations")
-        
+
         return {
             success: true,
             message: "User removed from company"
@@ -555,10 +556,10 @@ export async function removeUserFromProject(projectId: string, userId: string) {
             include: { ownedCompany: true }
         })
 
-        const canRemove = 
+        const canRemove =
             project.userId === session.user.id || // Project owner
-            (currentUser?.role === Role.COMPANY_OWNER && 
-             currentUser.ownedCompany?.id === project.user.ownedCompany?.id) // Same company Owner
+            (currentUser?.role === Role.COMPANY_OWNER &&
+                currentUser.ownedCompany?.id === project.user.ownedCompany?.id) // Same company Owner
 
         if (!canRemove) {
             throw new Error("You don't have permission to remove users from this project")
@@ -574,7 +575,7 @@ export async function removeUserFromProject(projectId: string, userId: string) {
 
         revalidatePath("/associations")
         revalidatePath(`/projects/${project.slug}`)
-        
+
         return {
             success: true,
             message: "User removed from project"

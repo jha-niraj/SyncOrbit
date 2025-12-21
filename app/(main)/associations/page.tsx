@@ -1,7 +1,7 @@
 import { auth } from "@/auth"
 import { redirect } from "next/navigation"
-import { 
-    getUserAssociations, getPendingInvitations 
+import {
+    getUserAssociations, getPendingInvitations
 } from "@/actions/(productmanager)/associations.action"
 import AssociationsPageClient from "./_components/AssociationsPageClient"
 import { Metadata } from "next"
@@ -17,6 +17,8 @@ export const metadata: Metadata = {
     },
 }
 
+import { UserAssociations, PendingInvitation } from "@/types/associations"
+
 export default async function AssociationsPage() {
     const session = await auth()
 
@@ -31,8 +33,8 @@ export default async function AssociationsPage() {
 
     return (
         <AssociationsPageClient
-            initialAssociations={associationsResult.success ? (associationsResult.data as any) : null}
-            initialInvitations={invitationsResult.success ? (invitationsResult.invitations as any[]) : []}
+            initialAssociations={associationsResult.success ? (associationsResult.data as UserAssociations) : null}
+            initialInvitations={invitationsResult.success ? (invitationsResult.invitations as PendingInvitation[]) : []}
         />
     )
 }

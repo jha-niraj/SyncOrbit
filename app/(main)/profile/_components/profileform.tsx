@@ -11,6 +11,7 @@ import { Loader2, Upload, X } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Card, CardContent } from "@/components/ui/card"
 import { useUser } from "@/store/useUser"
+import { Role } from "@prisma/client"
 
 interface ProfileFormProps {
     user: {
@@ -37,7 +38,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
         image: user.image || ""
     })
 
-    const isDeveloper = ['DEVELOPER', 'PRODUCTMANAGER'].includes(user.role)
+    const isDeveloper = [Role.COMPANY_OWNER, Role.TEAM_HEAD, Role.TEAM_MEMBER].includes(user.role as Role)
 
     const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0]
