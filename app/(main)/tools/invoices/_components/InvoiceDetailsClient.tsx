@@ -25,14 +25,6 @@ interface CurrentUser {
     email: string | null
 }
 
-interface Message {
-    role?: string
-    content: string
-    senderId?: string
-    sender?: { name: string | null | undefined }
-    createdAt?: Date
-}
-
 interface InvoiceDetailsClientProps {
     invoice: ToolsInvoice
     currentUser: CurrentUser
@@ -69,6 +61,7 @@ export function InvoiceDetailsClient({ invoice, currentUser }: InvoiceDetailsCli
                 toast.error("Failed to send message")
             }
         } catch (error) {
+            console.log("Error while sending message: " + error);
             toast.error("An error occurred")
         } finally {
             setIsLoading(false)
@@ -89,6 +82,7 @@ export function InvoiceDetailsClient({ invoice, currentUser }: InvoiceDetailsCli
                 toast.success("Document uploaded and synchronized")
             }
         } catch (error) {
+            console.log("Error while uploading invoice: " + error);
             toast.error("Upload failure")
         } finally {
             setIsLoading(false)

@@ -11,6 +11,11 @@ const updateProfileSchema = z.object({
 	image: z.string().url().optional(),
 	bio: z.string().max(500).optional(),
 	skills: z.string().max(200).optional(),
+	address: z.string().max(500).optional(),
+	city: z.string().max(100).optional(),
+	state: z.string().max(100).optional(),
+	country: z.string().max(100).optional(),
+	pincode: z.string().max(20).optional(),
 });
 
 const changePasswordSchema = z.object({
@@ -26,26 +31,26 @@ export type UpdateProfileInput = z.infer<typeof updateProfileSchema>;
 export type ChangePasswordInput = z.infer<typeof changePasswordSchema>;
 
 interface CloudinaryUploadResult {
-    secure_url: string;
-    // Add other properties if needed
+	secure_url: string;
+	// Add other properties if needed
 }
 
 async function uploadToCloudinary(file: File): Promise<CloudinaryUploadResult> {
-    const arrayBuffer = await file.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
+	const arrayBuffer = await file.arrayBuffer();
+	const buffer = Buffer.from(arrayBuffer);
 
-    return new Promise<CloudinaryUploadResult>((resolve, reject) => {
-        cloudinary.uploader.upload_stream(
-            {
-                folder: 'profile-images',
-                resource_type: 'auto'
-            },
-            (error, result) => {
-                if (error) reject(error);
-                else resolve(result as CloudinaryUploadResult);
-            }
-        ).end(buffer);
-    });
+	return new Promise<CloudinaryUploadResult>((resolve, reject) => {
+		cloudinary.uploader.upload_stream(
+			{
+				folder: 'profile-images',
+				resource_type: 'auto'
+			},
+			(error, result) => {
+				if (error) reject(error);
+				else resolve(result as CloudinaryUploadResult);
+			}
+		).end(buffer);
+	});
 }
 
 export async function updateProfile(data: UpdateProfileInput) {
@@ -88,7 +93,7 @@ export async function uploadProfileImage(formData: FormData) {
 		}
 
 		const imageFile = formData.get('image') as File;
-		
+
 		if (!imageFile) {
 			return { success: false, error: "No image file provided" };
 		}
@@ -102,9 +107,9 @@ export async function uploadProfileImage(formData: FormData) {
 		const maxSize = 5 * 1024 * 1024; // 5MB in bytes
 		if (imageFile.size > maxSize) {
 			const sizeMB = (imageFile.size / (1024 * 1024)).toFixed(2);
-			return { 
-				success: false, 
-				error: `Image size (${sizeMB}MB) exceeds the 5MB limit. Please choose a smaller image.` 
+			return {
+				success: false,
+				error: `Image size (${sizeMB}MB) exceeds the 5MB limit. Please choose a smaller image.`
 			};
 		}
 
@@ -192,14 +197,14 @@ export async function deleteAccount(confirmationText: string) {
 			// Delete related data first (due to foreign key constraints)
 			await tx.feedback.deleteMany({ where: { userId: session.user.id } });
 			await tx.message.deleteMany({ where: { userId: session.user.id } });
-			await tx.task.updateMany({ 
+			await tx.task.updateMany({
 				where: { assignedDeveloperId: session.user.id },
 				data: { assignedDeveloperId: null }
 			});
 			await tx.project.deleteMany({ where: { userId: session.user.id } });
 			await tx.session.deleteMany({ where: { userId: session.user.id } });
 			await tx.account.deleteMany({ where: { userId: session.user.id } });
-			
+
 			// Finally delete the user
 			await tx.user.delete({ where: { id: session.user.id } });
 		});

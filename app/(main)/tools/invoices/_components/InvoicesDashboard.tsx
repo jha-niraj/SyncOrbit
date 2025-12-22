@@ -26,25 +26,25 @@ export function InvoicesDashboard({ invoices }: InvoicesDashboardProps) {
 
     const stats = [
         {
-            label: "TOTAL_VOLUME",
+            label: "Total Volume",
             value: `$${invoices.reduce((acc, inv) => acc + inv.amount, 0).toLocaleString()}`,
             icon: <CreditCard className="h-4 w-4" />,
             description: "Cumulative billing"
         },
         {
-            label: "PAID_STATION",
+            label: "Paid Station",
             value: invoices.filter(inv => inv.status === "PAID").length,
             icon: <CheckCircle2 className="h-4 w-4" />,
             description: "Completed transactions"
         },
         {
-            label: "PENDING_OPS",
+            label: "Pending Ops",
             value: invoices.filter(inv => inv.status === "SENT").length,
             icon: <Clock className="h-4 w-4" />,
             description: "Awaiting client action"
         },
         {
-            label: "OVERDUE_ALERTS",
+            label: "Overdue Alerts",
             value: invoices.filter(inv => inv.status === "OVERDUE").length,
             icon: <AlertCircle className="h-4 w-4 text-red-500" />,
             description: "Past due threshold"
@@ -53,7 +53,7 @@ export function InvoicesDashboard({ invoices }: InvoicesDashboardProps) {
 
     const filteredInvoices = invoices.filter(inv =>
         inv.invoiceNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        inv.client.name.toLowerCase().includes(searchQuery.toLowerCase())
+        inv.client.name?.toLowerCase().includes(searchQuery.toLowerCase())
     )
 
     return (
@@ -142,11 +142,11 @@ export function InvoicesDashboard({ invoices }: InvoicesDashboardProps) {
                                             <td className="p-4">
                                                 <div className="flex items-center gap-3">
                                                     <div className="h-8 w-8 rounded-full bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center font-bold text-md">
-                                                        {inv.client.name[0]}
+                                                        {inv.client.name?.[0] || 'C'}
                                                     </div>
                                                     <div className="flex flex-col">
-                                                        <span className="text-md font-bold tracking-tight">{inv.client.name}</span>
-                                                        <span className="text-[10px] text-neutral-400">{inv.client.email}</span>
+                                                        <span className="text-md font-bold tracking-tight">{inv.client.name || 'Unknown'}</span>
+                                                        <span className="text-[10px] text-neutral-400">{inv.client.email || 'N/A'}</span>
                                                     </div>
                                                 </div>
                                             </td>

@@ -50,6 +50,9 @@ export interface Client {
     email: string | null
     address?: string | null
     city?: string | null
+    state?: string | null
+    country?: string | null
+    pincode?: string | null
 }
 
 export interface Company {
@@ -58,6 +61,9 @@ export interface Company {
     email?: string
     address?: string | null
     city?: string | null
+    state?: string | null
+    country?: string | null
+    pincode?: string | null
     logo?: string | null
 }
 

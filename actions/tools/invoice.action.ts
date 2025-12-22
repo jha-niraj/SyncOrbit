@@ -41,6 +41,11 @@ export async function getInvoicePreloadData() {
                 id: true,
                 name: true,
                 email: true,
+                address: true,
+                city: true,
+                state: true,
+                country: true,
+                pincode: true
             }
         });
 

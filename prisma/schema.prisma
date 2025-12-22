@@ -159,6 +159,13 @@ model User {
     updatedAt         DateTime  @updatedAt
     totalSpent        Float     @default(0)
 
+    // Location fields for invoices and payments
+    address String? @db.Text
+    city    String?
+    state   String?
+    country String?
+    pincode String?
+
     // Dodo Payments customer ID
     dodoCustomerId String? @unique
 
@@ -235,6 +242,10 @@ model Company {
     description String? @db.Text
     website     String?
     address     String? @db.Text
+    city        String?
+    state       String?
+    country     String?
+    pincode     String?
 
     // Owner relationship (replaces productManager)
     ownerId String @unique

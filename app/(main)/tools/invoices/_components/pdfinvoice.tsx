@@ -1,9 +1,9 @@
 import { Receipt } from "lucide-react"
 import { Card } from "@/components/ui/card"
-import type { InvoiceData } from "@/types/index"
+import type { InvoiceFormData } from "@/types/index"
 import Image from "next/image"
 
-export function PDFInvoice({ data }: { data: InvoiceData }) {
+export function PDFInvoice({ data }: { data: InvoiceFormData }) {
     const calculateSubtotal = () => {
         return data.items.reduce((sum, item) => sum + item.quantity * item.price, 0)
     }

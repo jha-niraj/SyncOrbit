@@ -12,8 +12,8 @@ export default async function NewInvoicePage() {
     return (
         <section className="w-full py-8">
             <MainPageInvoice
-                initialCompany={preloadData.success ? preloadData.company : null}
-                initialClients={preloadData.success ? preloadData.clients : []}
+                initialCompany={preloadData.success ? (preloadData.company ?? null) : null}
+                initialClients={preloadData.success && preloadData.clients ? preloadData.clients : []}
             />
         </section>
     )

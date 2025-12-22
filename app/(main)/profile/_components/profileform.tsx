@@ -22,6 +22,11 @@ interface ProfileFormProps {
         skills: string | null
         image: string | null
         role: string
+        address: string | null
+        city: string | null
+        state: string | null
+        country: string | null
+        pincode: string | null
     }
 }
 
@@ -35,7 +40,12 @@ export function ProfileForm({ user }: ProfileFormProps) {
         name: user.name || "",
         bio: user.bio || "",
         skills: user.skills || "",
-        image: user.image || ""
+        image: user.image || "",
+        address: user.address || "",
+        city: user.city || "",
+        state: user.state || "",
+        country: user.country || "",
+        pincode: user.pincode || ""
     })
 
     const isDeveloper = user.role === Role.COMPANY_OWNER || user.role === Role.TEAM_HEAD || user.role === Role.TEAM_MEMBER
@@ -78,8 +88,27 @@ export function ProfileForm({ user }: ProfileFormProps) {
         try {
             // Prepare data based on user role
             const dataToUpdate = isDeveloper
-                ? { name: formData.name, bio: formData.bio, skills: formData.skills, image: formData.image }
-                : { name: formData.name, bio: formData.bio, image: formData.image }
+                ? {
+                    name: formData.name,
+                    bio: formData.bio,
+                    skills: formData.skills,
+                    image: formData.image,
+                    address: formData.address,
+                    city: formData.city,
+                    state: formData.state,
+                    country: formData.country,
+                    pincode: formData.pincode
+                }
+                : {
+                    name: formData.name,
+                    bio: formData.bio,
+                    image: formData.image,
+                    address: formData.address,
+                    city: formData.city,
+                    state: formData.state,
+                    country: formData.country,
+                    pincode: formData.pincode
+                }
 
             const result = await updateProfile(dataToUpdate)
 
@@ -220,6 +249,77 @@ export function ProfileForm({ user }: ProfileFormProps) {
                     </div>
                 )
             }
+
+            {/* Location Information Section */}
+            <div className="space-y-4 pt-4 border-t">
+                <div className="space-y-2">
+                    <h3 className="text-lg font-semibold">Location Information</h3>
+                    <p className="text-sm text-muted-foreground">
+                        This information is used for invoices and payment processing
+                    </p>
+                </div>
+
+                <div className="space-y-2">
+                    <Label htmlFor="address">Address</Label>
+                    <Textarea
+                        id="address"
+                        name="address"
+                        value={formData.address}
+                        onChange={handleChange}
+                        placeholder="Enter your street address"
+                        rows={2}
+                    />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                        <Label htmlFor="city">City</Label>
+                        <Input
+                            id="city"
+                            name="city"
+                            value={formData.city}
+                            onChange={handleChange}
+                            placeholder="Enter your city"
+                        />
+                    </div>
+
+                    <div className="space-y-2">
+                        <Label htmlFor="state">State/Province</Label>
+                        <Input
+                            id="state"
+                            name="state"
+                            value={formData.state}
+                            onChange={handleChange}
+                            placeholder="Enter your state or province"
+                        />
+                    </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                        <Label htmlFor="country">Country</Label>
+                        <Input
+                            id="country"
+                            name="country"
+                            value={formData.country}
+                            onChange={handleChange}
+                            placeholder="Enter your country"
+                        />
+                    </div>
+
+                    <div className="space-y-2">
+                        <Label htmlFor="pincode">Postal/ZIP Code</Label>
+                        <Input
+                            id="pincode"
+                            name="pincode"
+                            value={formData.pincode}
+                            onChange={handleChange}
+                            placeholder="Enter your postal code"
+                        />
+                    </div>
+                </div>
+            </div>
+
             <Button type="submit" disabled={isLoading || imageUploading} className="w-full">
                 {
                     isLoading ? (

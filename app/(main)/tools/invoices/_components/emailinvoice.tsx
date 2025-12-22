@@ -5,14 +5,14 @@ import { Card } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import SignaturePad from "react-signature-canvas"
-import type { InvoiceData, InvoiceItem, TaxItem } from "@/types/index"
+import type { InvoiceFormData, InvoiceItem, InvoiceTax } from "@/types/index"
 import Image from "next/image"
 import { toast } from "sonner"
 
 export function EmailInvoice({
 	data,
 	onDataChange,
-}: { data: InvoiceData; onDataChange: (data: Partial<InvoiceData>) => void }) {
+}: { data: InvoiceFormData; onDataChange: (data: Partial<InvoiceFormData>) => void }) {
 	const [clientSignature, setClientSignature] = useState<string | null>(null)
 	const [companySignature, setCompanySignature] = useState<string | null>(null)
 	const clientSignaturePadRef = useRef<SignaturePad>(null)
@@ -47,7 +47,7 @@ export function EmailInvoice({
 		onDataChange({ taxes: newTaxes })
 	}
 
-	const updateTax = (index: number, field: keyof TaxItem, value: string | number) => {
+	const updateTax = (index: number, field: keyof InvoiceTax, value: string | number) => {
 		const newTaxes = [...data.taxes]
 		newTaxes[index] = { ...newTaxes[index], [field]: value }
 		onDataChange({ taxes: newTaxes })
