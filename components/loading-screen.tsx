@@ -23,9 +23,8 @@ const LoadingScreen = ({ routeName }: LoadingScreenProps) => {
                         ease: "easeInOut",
                     }}
                 >
-                    {/* Outer pulsating ring */}
                     <motion.div
-                        className="absolute inset-0 rounded-full border-2 border-orange-500/30 dark:border-orange-500/20"
+                        className="absolute inset-0 rounded-full"
                         animate={{
                             scale: [1, 1.2, 1],
                             opacity: [0.5, 0, 0.5],
@@ -36,7 +35,6 @@ const LoadingScreen = ({ routeName }: LoadingScreenProps) => {
                             ease: "easeInOut",
                         }}
                     />
-
                     <Image
                         src="/mainiconwhite.png"
                         alt="SyncOrbit Logo"
@@ -45,7 +43,6 @@ const LoadingScreen = ({ routeName }: LoadingScreenProps) => {
                         priority
                     />
                 </motion.div>
-
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}

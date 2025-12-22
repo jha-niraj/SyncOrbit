@@ -112,3 +112,28 @@ export async function getDocuments() {
         return { success: false, error: "Failed to fetch documents" };
     }
 }
+export async function getDocumentById(id: string) {
+    try {
+        const session = await auth();
+        if (!session?.user?.id) return { success: false, error: "Authentication required" };
+
+        const document = await prisma.document.findUnique({
+            where: { id },
+            include: { uploader: { select: { name: true } } }
+        });
+
+        if (!document) return { success: false, error: "Document not found" };
+
+        const user = await prisma.user.findUnique({
+            where: { id: session.user.id },
+            select: { ownedCompany: { select: { id: true } }, companyId: true }
+        });
+
+        const companyId = user?.ownedCompany?.id || user?.companyId;
+        if (document.companyId !== companyId) return { success: false, error: "Access denied" };
+
+        return { success: true, document };
+    } catch (error) {
+        return { success: false, error: "Failed to fetch document" };
+    }
+}

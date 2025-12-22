@@ -2,18 +2,18 @@
 
 import { useState, useRef, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { Bot, Send, X, Minimize2, Maximize2, Sparkles, Wand2 } from "lucide-react"
+import { Bot, Send, X, Sparkles, Wand2, Terminal, Cpu, Zap, Command as CommandIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { chatWithAI } from "@/actions/tools/ai.action"
 import { cn } from "@/lib/utils"
+import { useSidebar } from "@/components/navigation/sidebarprovider"
 
 export function AIChat() {
-    const [isOpen, setIsOpen] = useState(false)
+    const { isAISidebarOpen, setIsAISidebarOpen, setIsCollapsed } = useSidebar()
     const [messages, setMessages] = useState<{ role: "user" | "assistant"; content: string }[]>([
-        { role: "assistant", content: "Hello! I'm your AI assistant. How can I help you today?" }
+        { role: "assistant", content: "SYSTEM_INITIALIZED: Orbital Intelligence online. How can I assist your operations today?" }
     ])
     const [input, setInput] = useState("")
     const [isLoading, setIsLoading] = useState(false)
@@ -21,9 +21,9 @@ export function AIChat() {
     const scrollRef = useRef<HTMLDivElement>(null)
 
     const tools = [
-        { name: "Analyze Document", icon: <Bot className="h-4 w-4" />, command: "/analyze" },
-        { name: "Create Invoice", icon: <Wand2 className="h-4 w-4" />, command: "/invoice" },
-        { name: "Generate Report", icon: <Sparkles className="h-4 w-4" />, command: "/report" },
+        { name: "ANALYZE_DOC", icon: <Terminal className="h-4 w-4" />, command: "/analyze" },
+        { name: "GEN_INVOICE", icon: <Wand2 className="h-4 w-4" />, command: "/invoice" },
+        { name: "GEN_REPORT", icon: <Sparkles className="h-4 w-4" />, command: "/report" },
     ]
 
     useEffect(() => {
@@ -46,10 +46,10 @@ export function AIChat() {
             if (result.success && result.message?.content) {
                 setMessages(prev => [...prev, { role: "assistant", content: result.message!.content! }])
             } else {
-                setMessages(prev => [...prev, { role: "assistant", content: "Sorry, I encountered an error. Please try again." }])
+                setMessages(prev => [...prev, { role: "assistant", content: "ERROR_CODE_0x1: Failed to process request." }])
             }
         } catch (error) {
-            setMessages(prev => [...prev, { role: "assistant", content: "I'm having trouble connecting to the AI service." }])
+            setMessages(prev => [...prev, { role: "assistant", content: "ERROR_CODE_0x2: Connection interrupted." }])
         } finally {
             setIsLoading(false)
         }
@@ -70,126 +70,177 @@ export function AIChat() {
         setShowSlashMenu(false)
     }
 
+    const toggleAI = () => {
+        const newState = !isAISidebarOpen
+        setIsAISidebarOpen(newState)
+        if (newState) {
+            setIsCollapsed(true)
+        }
+    }
+
     return (
-        <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end">
-            <AnimatePresence>
-                {isOpen && (
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.9, y: 20 }}
-                        animate={{ opacity: 1, scale: 1, y: 0 }}
-                        exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                        className="mb-4"
-                    >
-                        <Card className="w-[400px] h-[550px] flex flex-col shadow-2xl border-primary/10 overflow-hidden bg-white/90 backdrop-blur-md">
-                            <div className="p-4 bg-primary text-primary-foreground flex justify-between items-center">
+        <>
+            <div className="fixed bottom-6 right-6 z-[60]">
+                <Button
+                    onClick={toggleAI}
+                    className={cn(
+                        "h-14 w-14 rounded-full shadow-[0_0_20px_rgba(0,0,0,0.1)] transition-all duration-500 group overflow-hidden",
+                        isAISidebarOpen
+                            ? "bg-black text-white hover:bg-neutral-900 border border-neutral-800"
+                            : "bg-white text-black hover:bg-neutral-50 border border-neutral-200"
+                    )}
+                >
+                    <div className="relative flex items-center justify-center w-full h-full">
+                        <AnimatePresence mode="wait">
+                            {
+                            isAISidebarOpen ? (
+                                <motion.div
+                                    key="close"
+                                    initial={{ opacity: 0, rotate: -90 }}
+                                    animate={{ opacity: 1, rotate: 0 }}
+                                    exit={{ opacity: 0, rotate: 90 }}
+                                >
+                                    <X className="h-6 w-6" />
+                                </motion.div>
+                            ) : (
+                                <motion.div
+                                    key="bot"
+                                    initial={{ opacity: 0, scale: 0.5 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    exit={{ opacity: 0, scale: 1.5 }}
+                                    className="flex flex-col items-center"
+                                >
+                                    <Cpu className="h-6 w-6" />
+                                    <span className="text-[8px] mt-0.5 font-mono font-bold tracking-tighter">ORBITAL</span>
+                                </motion.div>
+                            )
+                            }
+                        </AnimatePresence>
+
+                        {/* Subtle pulse effect when closed */}
+                        {!isAISidebarOpen && (
+                            <div className="absolute inset-0 rounded-full border border-black/20 animate-ping opacity-20" />
+                        )}
+                    </div>
+                </Button>
+            </div>
+
+            {/* AI Sidebar */}
+            <aside
+                className={cn(
+                    "fixed top-0 right-0 h-screen w-[400px] bg-white dark:bg-neutral-950 border-l border-neutral-200 dark:border-neutral-800 z-[55] transition-transform duration-500 ease-in-out flex flex-col shadow-2xl",
+                    isAISidebarOpen ? "translate-x-0" : "translate-x-full"
+                )}
+            >
+                {/* Header */}
+                <div className="p-4 border-b border-neutral-200 dark:border-neutral-800 flex flex-col gap-1">
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                            <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+                            <span className="text-[10px] font-mono tracking-widest text-neutral-400 uppercase">System Status: Active</span>
+                        </div>
+                        <Terminal className="h-4 w-4 text-neutral-400" />
+                    </div>
+                    <h2 className="text-xl font-black tracking-tighter flex items-center gap-2">
+                        ORBITAL_INTELLIGENCE
+                        <Zap className="h-4 w-4 fill-black dark:fill-white" />
+                    </h2>
+                </div>
+
+                {/* Messages Area */}
+                <ScrollArea className="flex-1 p-6" viewportRef={scrollRef}>
+                    <div className="space-y-6">
+                        {messages.map((m, i) => (
+                            <div key={i} className={cn(
+                                "flex flex-col gap-2",
+                                m.role === "user" ? "items-end" : "items-start"
+                            )}>
                                 <div className="flex items-center gap-2">
-                                    <div className="bg-white/20 p-2 rounded-lg">
-                                        <Bot className="h-5 w-5" />
-                                    </div>
-                                    <div>
-                                        <h3 className="font-bold leading-none">SyncOrbit AI</h3>
-                                        <span className="text-[10px] opacity-70">Knowledgeable & Helpful</span>
-                                    </div>
+                                    <span className="text-[9px] font-mono text-neutral-400 uppercase tracking-widest">
+                                        {m.role === "user" ? "OPERATOR_LOCAL" : "SYSTEM_CORE"}
+                                    </span>
                                 </div>
-                                <div className="flex items-center gap-1">
-                                    <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-white/20" onClick={() => setIsOpen(false)}>
-                                        <Minimize2 className="h-4 w-4" />
-                                    </Button>
+                                <div className={cn(
+                                    "px-4 py-3 text-sm max-w-[90%] leading-relaxed",
+                                    m.role === "user"
+                                        ? "bg-neutral-900 dark:bg-white text-white dark:text-black rounded-2xl rounded-tr-none font-medium"
+                                        : "bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 rounded-2xl rounded-tl-none border border-neutral-200 dark:border-neutral-800"
+                                )}>
+                                    {m.content}
                                 </div>
                             </div>
+                        ))}
+                        {isLoading && (
+                            <div className="flex items-center gap-3 text-neutral-400">
+                                <Cpu className="h-4 w-4 animate-spin" />
+                                <span className="text-[10px] font-mono tracking-widest animate-pulse uppercase">Processing_Data...</span>
+                            </div>
+                        )}
+                    </div>
+                </ScrollArea>
 
-                            <ScrollArea className="flex-1 p-4" viewportRef={scrollRef}>
-                                <div className="space-y-4">
-                                    {messages.map((m, i) => (
-                                        <div key={i} className={cn(
-                                            "flex flex-col max-w-[80%]",
-                                            m.role === "user" ? "ml-auto items-end" : "items-start"
-                                        )}>
-                                            <div className={cn(
-                                                "p-3 rounded-2xl text-sm",
-                                                m.role === "user"
-                                                    ? "bg-primary text-primary-foreground rounded-tr-none"
-                                                    : "bg-muted rounded-tl-none"
-                                            )}>
-                                                {m.content}
-                                            </div>
-                                        </div>
-                                    ))}
-                                    {isLoading && (
-                                        <div className="flex items-center gap-2 text-muted-foreground animate-pulse ml-2">
-                                            <Bot className="h-4 w-4" />
-                                            <span className="text-xs">Thinking...</span>
-                                        </div>
-                                    )}
+                {/* Input Area */}
+                <div className="p-6 border-t border-neutral-200 dark:border-neutral-800 bg-neutral-50/50 dark:bg-neutral-900/50 backdrop-blur-sm relative">
+                    {/* Slash Menu */}
+                    <AnimatePresence>
+                        {showSlashMenu && (
+                            <motion.div
+                                initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                                animate={{ opacity: 1, y: 0, scale: 1 }}
+                                exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                                className="absolute bottom-full left-6 right-6 mb-2 bg-white dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 rounded-xl shadow-2xl overflow-hidden z-20"
+                            >
+                                <div className="p-2 border-b border-neutral-100 dark:border-neutral-900 bg-neutral-50 dark:bg-neutral-900">
+                                    <span className="text-[9px] font-mono font-bold text-neutral-400 tracking-widest uppercase px-2">System Commands</span>
                                 </div>
-                            </ScrollArea>
-
-                            {showSlashMenu && (
-                                <motion.div
-                                    initial={{ opacity: 0, y: 20 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    className="absolute bottom-[72px] left-4 right-4 bg-white border rounded-xl shadow-lg p-2 z-10"
-                                >
-                                    <p className="text-[10px] uppercase font-bold text-muted-foreground px-2 mb-1">Quick Tools</p>
+                                <div className="p-1">
                                     {tools.map((tool) => (
                                         <button
                                             key={tool.command}
                                             onClick={() => applyCommand(tool.command)}
-                                            className="w-full flex items-center gap-3 px-3 py-2 hover:bg-muted rounded-lg text-sm transition-colors text-left"
+                                            className="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-neutral-100 dark:hover:bg-neutral-900 rounded-lg text-sm transition-all group text-left"
                                         >
-                                            <div className="bg-primary/5 p-1.5 rounded-md text-primary">
+                                            <div className="bg-neutral-100 dark:bg-neutral-800 p-2 rounded-md group-hover:bg-black group-hover:text-white transition-colors">
                                                 {tool.icon}
                                             </div>
-                                            <span>{tool.name}</span>
-                                            <span className="ml-auto text-[10px] text-muted-foreground bg-muted px-1.5 py-0.5 rounded uppercase">{tool.command}</span>
+                                            <div className="flex flex-col">
+                                                <span className="font-bold text-xs tracking-tight">{tool.name}</span>
+                                                <span className="text-[10px] text-neutral-400 font-mono italic">{tool.command}</span>
+                                            </div>
                                         </button>
                                     ))}
-                                </motion.div>
-                            )}
-
-                            <div className="p-4 border-t bg-white">
-                                <div className="flex gap-2 relative">
-                                    <Input
-                                        placeholder="Type '/' for tools..."
-                                        value={input}
-                                        onChange={handleInputChange}
-                                        onKeyDown={(e) => e.key === "Enter" && handleSend()}
-                                        className="bg-muted/50 border-none focus-visible:ring-primary"
-                                    />
-                                    <Button size="icon" onClick={handleSend} disabled={isLoading || !input.trim()}>
-                                        <Send className="h-4 w-4" />
-                                    </Button>
                                 </div>
-                                <p className="text-[10px] text-muted-foreground mt-2 text-center italic">
-                                    AI may provide inaccurate info. Verify important details.
-                                </p>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+
+                    <div className="flex gap-2 relative">
+                        <div className="relative flex-1">
+                            <Input
+                                placeholder="EXECUTE_COMMAND..."
+                                value={input}
+                                onChange={handleInputChange}
+                                onKeyDown={(e) => {
+                                    if (e.key === "Enter") handleSend()
+                                    if (e.key === "Escape") setShowSlashMenu(false)
+                                }}
+                                className="h-12 bg-white dark:bg-black border-neutral-200 dark:border-neutral-800 focus-visible:ring-black dark:focus-visible:ring-white rounded-xl pl-4 pr-10 font-mono text-xs tracking-tight"
+                            />
+                            <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1.5 opacity-30">
+                                <span className="text-[8px] font-mono border border-neutral-400 rounded px-1">ENTER</span>
                             </div>
-                        </Card>
-                    </motion.div>
-                )}
-            </AnimatePresence>
-
-            <Button
-                size="icon"
-                className={cn(
-                    "h-14 w-14 rounded-full shadow-2xl transition-all duration-300",
-                    isOpen ? "rotate-90 scale-0" : "scale-100"
-                )}
-                onClick={() => setIsOpen(true)}
-            >
-                <Bot className="h-7 w-7" />
-            </Button>
-
-            {isOpen && (
-                <Button
-                    size="icon"
-                    variant="outline"
-                    className="h-14 w-14 rounded-full shadow-2xl bg-white hover:bg-muted"
-                    onClick={() => setIsOpen(false)}
-                >
-                    <X className="h-7 w-7" />
-                </Button>
-            )}
-        </div>
+                        </div>
+                        <Button
+                            size="icon"
+                            className="h-12 w-12 rounded-xl bg-black dark:bg-white text-white dark:text-black hover:opacity-90 transition-opacity"
+                            onClick={handleSend}
+                            disabled={isLoading || !input.trim()}
+                        >
+                            <Send className="h-4 w-4" />
+                        </Button>
+                    </div>
+                </div>
+            </aside>
+        </>
     )
 }

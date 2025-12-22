@@ -1,15 +1,18 @@
-import MainPageInvoice from "./_components/mainpage";
-import { getInvoicePreloadData } from "@/actions/tools/invoice.action";
+import { getInvoices } from "@/actions/tools/invoice.action";
+import { InvoicesDashboard } from "./_components/InvoicesDashboard";
+import { redirect } from "next/navigation";
+import { auth } from "@/auth";
 
-export default async function NexInvoice() {
-    const preloadData = await getInvoicePreloadData();
+export default async function InvoicesPage() {
+    const session = await auth();
+    if (!session?.user) redirect("/signin");
+
+    const invoicesResult = await getInvoices();
+    const invoices = invoicesResult.success ? invoicesResult.invoices : [];
 
     return (
-        <section className="w-full flex items-center justify-center">
-            <MainPageInvoice
-                initialCompany={preloadData.success ? preloadData.company : null}
-                initialClients={preloadData.success ? preloadData.clients : []}
-            />
-        </section>
+        <div className="py-8 w-full max-w-[1400px] mx-auto">
+            <InvoicesDashboard invoices={invoices} />
+        </div>
     )
 }

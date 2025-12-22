@@ -2,7 +2,8 @@ import { Role } from "@prisma/client"
 import {
     Home, Briefcase, Users, Building2, BarChart3, Settings, UserPlus, Crown, Calendar,
     MessageSquare, FileText, Layers, Target, TrendingUp, DollarSign, Eye,
-    Award, Wrench, Receipt, FolderOpen, ClipboardList, CheckSquare, Clock
+    Award, Wrench, Receipt, FolderOpen, ClipboardList, CheckSquare, Clock,
+    CircleDollarSign
 } from "lucide-react"
 
 export interface NavigationItem {
@@ -136,6 +137,12 @@ export const roleNavigations: RoleNavigation[] = [
                         name: "Documents",
                         icon: FolderOpen,
                         description: "Company documents"
+                    },  
+                    {
+                        path: "tools/financials",
+                        name: "Financials",
+                        icon: CircleDollarSign,
+                        description: "Company Financials"
                     }
                 ]
             },

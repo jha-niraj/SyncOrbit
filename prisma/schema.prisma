@@ -220,9 +220,11 @@ model User {
     payments      Payment[]
 
     // Tools relations
-    clientInvoices    Invoice[]  @relation("ClientInvoices")
+    clientInvoices    Invoice[]        @relation("ClientInvoices")
     uploadedDocuments Document[]
     createdReports    Report[]
+    invoiceMessages   InvoiceMessage[] @relation("InvoiceMessageSender")
+    expenses          Expense[]        @relation("ExpenseCreator")
 }
 
 model Company {
@@ -232,6 +234,7 @@ model Company {
     logo        String? // Company logo URL
     description String? @db.Text
     website     String?
+    address     String? @db.Text
 
     // Owner relationship (replaces productManager)
     ownerId String @unique
@@ -252,12 +255,46 @@ model Company {
     updatedAt DateTime @updatedAt
 
     // Tools relations
-    invoices       Invoice[]
-    documents      Document[]
-    knowledgeBases KnowledgeBase[] @relation("CompanyKnowledgeBase")
-    reports        Report[]
+    invoices          Invoice[]
+    documents         Document[]
+    knowledgeBases    KnowledgeBase[]   @relation("CompanyKnowledgeBase")
+    reports           Report[]
+    expenses          Expense[]
+    expenseCategories ExpenseCategory[]
 
     @@map("companies")
+}
+
+model Expense {
+    id          String   @id @default(cuid())
+    description String
+    amount      Float
+    currency    Currency @default(USD)
+    date        DateTime @default(now())
+    category    String // SALARY, MAINTENANCE, DEVELOPMENT, etc.
+
+    companyId String
+    company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+    creatorId String
+    creator   User   @relation("ExpenseCreator", fields: [creatorId], references: [id])
+
+    receiptUrl String? // Optional link to document
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@index([companyId])
+    @@index([category])
+}
+
+model ExpenseCategory {
+    id        String  @id @default(cuid())
+    name      String
+    companyId String
+    company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+    @@unique([companyId, name])
 }
 
 model Team {
@@ -823,7 +860,6 @@ model Payment {
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 
-
     @@index([userId])
     @@index([subscriptionId])
     @@index([status])
@@ -860,12 +896,26 @@ model Invoice {
     items  Json // Array of items { description, quantity, price }
     pdfUrl String? // Cloudinary link
 
-    notes     String?  @db.Text
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+    notes     String?          @db.Text
+    messages  InvoiceMessage[]
+    createdAt DateTime         @default(now())
+    updatedAt DateTime         @updatedAt
 
     @@index([companyId])
     @@index([clientId])
+}
+
+model InvoiceMessage {
+    id        String   @id @default(cuid())
+    content   String   @db.Text
+    invoiceId String
+    invoice   Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+    senderId  String
+    sender    User     @relation("InvoiceMessageSender", fields: [senderId], references: [id])
+    createdAt DateTime @default(now())
+
+    @@index([invoiceId])
+    @@index([senderId])
 }
 
 // Document Management & Knowledge Base
@@ -873,6 +923,7 @@ model Document {
     id          String  @id @default(cuid())
     title       String
     description String? @db.Text
+    category    String  @default("GENERAL") // FINANCIAL, INVOICE, REPORT, GENERAL
     fileUrl     String // Cloudinary/storage URL
     fileType    String // pdf, docx, etc.
     size        Int? // in bytes
@@ -891,6 +942,7 @@ model Document {
 
     @@index([companyId])
     @@index([uploaderId])
+    @@index([category])
 }
 
 model KnowledgeBase {

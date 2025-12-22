@@ -18,7 +18,7 @@ function LayoutContent({ children }: LayoutProps) {
 	const { data: session, status } = useSession()
 	const router = useRouter()
 	const pathname = usePathname()
-	const { isCollapsed } = useSidebar()
+	const { isCollapsed, isAISidebarOpen } = useSidebar()
 
 	// Handle loading state
 	if (status === 'loading') {
@@ -43,11 +43,12 @@ function LayoutContent({ children }: LayoutProps) {
 	}
 
 	return (
-		<div className="flex h-screen bg-neutral-50 dark:bg-black">
+		<div className="flex h-screen bg-neutral-50 dark:bg-black overflow-hidden relative">
 			<Sidebar />
 			<div className={cn(
-				"flex-1 flex flex-col transition-all duration-300",
-				isCollapsed ? "lg:ml-[90px]" : "lg:ml-64"
+				"flex-1 flex flex-col transition-all duration-500 ease-in-out",
+				isCollapsed ? "lg:ml-[90px]" : "lg:ml-64",
+				isAISidebarOpen ? "lg:mr-[400px]" : "lg:mr-0"
 			)}>
 				<main className="flex-1 overflow-auto px-6">
 					<div className="h-full">

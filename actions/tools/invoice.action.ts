@@ -138,3 +138,102 @@ export async function createInvoice(formData: FormData) {
         return { success: false, error: "Failed to create invoice" };
     }
 }
+
+export async function getInvoices() {
+    try {
+        const session = await auth();
+        if (!session?.user?.id) return { success: false, error: "Unauthorized" };
+
+        const user = await prisma.user.findUnique({
+            where: { id: session.user.id },
+            include: { ownedCompany: true, company: true }
+        });
+
+        const companyId = user?.ownedCompany?.id || user?.companyId;
+
+        // If it's a client, they might not have a companyId set in the same way 
+        // but they are associated with invoices via clientId.
+
+        const invoices = await prisma.invoice.findMany({
+            where: {
+                OR: [
+                    companyId ? { companyId: companyId } : {},
+                    { clientId: session.user.id }
+                ].filter(condition => Object.keys(condition).length > 0)
+            },
+            include: {
+                client: { select: { name: true, email: true, image: true } },
+                company: { select: { name: true, logo: true } }
+            },
+            orderBy: { createdAt: 'desc' }
+        });
+
+        return { success: true, invoices };
+    } catch (error) {
+        console.error("Error fetching invoices:", error);
+        return { success: false, error: "Failed to fetch invoices" };
+    }
+}
+
+export async function getInvoiceById(id: string) {
+    try {
+        const session = await auth();
+        if (!session?.user?.id) return { success: false, error: "Unauthorized" };
+
+        const invoice = await prisma.invoice.findUnique({
+            where: { id },
+            include: {
+                client: { select: { id: true, name: true, email: true, image: true } },
+                company: { select: { id: true, name: true, logo: true, address: true } },
+                messages: {
+                    include: {
+                        sender: { select: { id: true, name: true, image: true, role: true } }
+                    },
+                    orderBy: { createdAt: 'asc' }
+                }
+            }
+        });
+
+        if (!invoice) return { success: false, error: "Invoice not found" };
+
+        // Check permission: user must be either the client or from the company
+        const user = await prisma.user.findUnique({
+            where: { id: session.user.id },
+            select: { ownedCompany: { select: { id: true } }, companyId: true }
+        });
+        const companyId = user?.ownedCompany?.id || user?.companyId;
+
+        if (invoice.clientId !== session.user.id && invoice.companyId !== companyId) {
+            return { success: false, error: "Access denied" };
+        }
+
+        return { success: true, invoice };
+    } catch (error) {
+        console.error("Error fetching invoice:", error);
+        return { success: false, error: "Failed to fetch invoice" };
+    }
+}
+
+export async function sendInvoiceMessage(invoiceId: string, content: string) {
+    try {
+        const session = await auth();
+        if (!session?.user?.id) return { success: false, error: "Unauthorized" };
+
+        const message = await prisma.invoiceMessage.create({
+            data: {
+                content,
+                invoiceId,
+                senderId: session.user.id
+            },
+            include: {
+                sender: { select: { id: true, name: true, image: true, role: true } }
+            }
+        });
+
+        revalidatePath(`/tools/invoices/${invoiceId}`);
+        return { success: true, message };
+    } catch (error) {
+        console.error("Error sending message:", error);
+        return { success: false, error: "Failed to send message" };
+    }
+}

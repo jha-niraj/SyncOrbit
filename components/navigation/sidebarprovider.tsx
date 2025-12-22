@@ -7,12 +7,15 @@ export type UserRole = 'COMPANY_OWNER' | 'TEAM_HEAD' | 'TEAM_MEMBER' | 'CLIENT' 
 export interface SidebarContextType {
     isCollapsed: boolean
     setIsCollapsed: (value: boolean) => void
+    isAISidebarOpen: boolean
+    setIsAISidebarOpen: (value: boolean) => void
 }
 
 const SidebarContext = createContext<SidebarContextType | undefined>(undefined)
 
 export function SidebarProvider({ children }: { children: ReactNode }) {
     const [isCollapsed, setIsCollapsed] = useState(false)
+    const [isAISidebarOpen, setIsAISidebarOpen] = useState(false)
 
     // Load saved collapsed state from localStorage
     useEffect(() => {
@@ -35,7 +38,9 @@ export function SidebarProvider({ children }: { children: ReactNode }) {
     return (
         <SidebarContext.Provider value={{
             isCollapsed,
-            setIsCollapsed: handleSetIsCollapsed
+            setIsCollapsed: handleSetIsCollapsed,
+            isAISidebarOpen,
+            setIsAISidebarOpen
         }}>
             {children}
         </SidebarContext.Provider>
