@@ -11,9 +11,10 @@ import {
 import { FileText, Download, ExternalLink, Calendar, User } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { format } from "date-fns"
+import type { Document } from "@/types"
 
 interface DocumentListProps {
-    initialDocuments: any[]
+    initialDocuments: Document[]
 }
 
 export function DocumentList({ initialDocuments }: DocumentListProps) {
@@ -51,7 +52,7 @@ export function DocumentList({ initialDocuments }: DocumentListProps) {
                                 </div>
                                 <div>
                                     <p className="font-medium leading-none mb-1">{doc.title}</p>
-                                    <p className="text-xs text-muted-foreground">{doc.fileType.split('/')[1]?.toUpperCase() || 'FILE'} • {(doc.size / 1024 / 1024).toFixed(2)} MB</p>
+                                    <p className="text-xs text-muted-foreground">{doc.fileType.split('/')[1]?.toUpperCase() || 'FILE'} • {((doc.size ?? 0) / 1024 / 1024).toFixed(2)} MB</p>
                                 </div>
                             </div>
                         </TableCell>

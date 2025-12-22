@@ -1,22 +1,19 @@
 "use client"
 
 import { useState, useRef, useEffect } from "react"
-import { motion } from "framer-motion"
 import {
-    FileText, Send, Terminal, Bot, Zap, Cpu,
-    Download, ExternalLink, ArrowLeft, Maximize2
+    FileText, Send, Zap, Cpu, Download, ArrowLeft, Maximize2
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Badge } from "@/components/ui/badge"
 import { chatWithAI } from "@/actions/tools/ai.action"
 import { cn } from "@/lib/utils"
-import { format } from "date-fns"
 import Link from "next/link"
+import type { Document } from "@/types"
 
 interface DocumentDetailClientProps {
-    document: any
+    document: Document
 }
 
 export function DocumentDetailClient({ document: doc }: DocumentDetailClientProps) {
@@ -50,6 +47,7 @@ export function DocumentDetailClient({ document: doc }: DocumentDetailClientProp
                 setMessages(prev => [...prev, { role: "assistant", content: result.message!.content! }])
             }
         } catch (error) {
+            console.log("Error occurred while submitting expense data: " + error);
             setMessages(prev => [...prev, { role: "assistant", content: "ERROR_CODE_0x9: Neural link failure." }])
         } finally {
             setIsLoading(false)
@@ -108,7 +106,7 @@ export function DocumentDetailClient({ document: doc }: DocumentDetailClientProp
                                 <FileText className="h-16 w-16 opacity-10" />
                                 <div className="space-y-2">
                                     <p className="font-black tracking-tighter text-xl text-neutral-400">Preview_Unavailable</p>
-                                    <p className="text-md text-neutral-500 font-medium max-w-xs">{doc.title} does not support direct visual stream. Use "Get Source" to audit.</p>
+                                    <p className="text-md text-neutral-500 font-medium max-w-xs">{doc.title} does not support direct visual stream. Use &quot;Get Source&quot; to audit.</p>
                                 </div>
                                 <Button className="mt-4 bg-black dark:bg-white text-white dark:text-black rounded-xl font-black text-xs tracking-widest px-8 h-12" asChild>
                                     <a href={doc.fileUrl} target="_blank" rel="noopener noreferrer">Download For Audit</a>

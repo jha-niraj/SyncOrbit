@@ -16,7 +16,6 @@ import {
     generateFinancialSummary, createReport 
 } from "@/actions/tools/report.action"
 import { toast } from "sonner"
-import { motion, AnimatePresence } from "framer-motion"
 import { cn } from "@/lib/utils"
 
 export default function NewReportPage() {

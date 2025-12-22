@@ -2,25 +2,24 @@ import { getExpenseById } from "@/actions/tools/financial.action";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import {
-    ArrowLeft, CreditCard, Calendar, User,
-    DollarSign, Tag, Clock, ShieldCheck
+    ArrowLeft, Clock, ShieldCheck
 } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
-import { cn } from "@/lib/utils";
 
 export default async function TransactionDetailPage({
     params
 }: {
-    params: { id: string }
+    params: Promise<{ id: string }>
 }) {
     const session = await auth();
     if (!session?.user) redirect("/signin");
 
-    const result = await getExpenseById(params.id);
+    const { id } = await params;
+    const result = await getExpenseById(id);
     if (!result.success || !result.expense) {
         return (
             <div className="flex flex-col items-center justify-center py-20">
@@ -80,10 +79,10 @@ export default async function TransactionDetailPage({
                                     <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest block">Authorized_Entity</span>
                                     <div className="flex items-center gap-3">
                                         <div className="h-10 w-10 rounded-full bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center font-black">
-                                            {expense.creator.name[0]}
+                                            {expense.creator.name?.[0] || 'U'}
                                         </div>
                                         <div>
-                                            <p className="font-bold text-sm">{expense.creator.name}</p>
+                                            <p className="font-bold text-sm">{expense.creator.name || 'Unknown'}</p>
                                             <p className="text-[10px] text-neutral-500 uppercase tracking-tight">{expense.creator.email}</p>
                                         </div>
                                     </div>
@@ -108,7 +107,7 @@ export default async function TransactionDetailPage({
                                     System_Audit_Note
                                 </h3>
                                 <p className="text-md text-neutral-600 dark:text-neutral-400 leading-relaxed italic">
-                                    This transaction has been recorded in the company's fiscal ledger and is pending final reconciliation in the quarterly report. No further action is required at this time.
+                                    This transaction has been recorded in the company&apos;s fiscal ledger and is pending final reconciliation in the quarterly report. No further action is required at this time.
                                 </p>
                             </div>
                         </CardContent>

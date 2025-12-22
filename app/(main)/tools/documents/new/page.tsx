@@ -32,6 +32,7 @@ export default function NewDocumentPage() {
                 toast.error("AI generation failed")
             }
         } catch (error) {
+            console.log("Error occurred while creating new document: " + error);
             toast.error("Something went wrong")
         } finally {
             setIsGenerating(false)
@@ -63,6 +64,7 @@ export default function NewDocumentPage() {
                 toast.error(result.error || "Failed to save document")
             }
         } catch (error) {
+            console.log("Error occurred while saving the document: " + error);
             toast.error("An error occurred")
         } finally {
             setLoading(false)
@@ -109,7 +111,7 @@ export default function NewDocumentPage() {
                         <CardContent className="space-y-4">
                             <p className="text-sm text-muted-foreground">
                                 Tell the AI what you want to write or improve.
-                                (e.g., "Draft a project proposal for a new website", "Write a summary of these notes")
+                                (e.g., &quot;Draft a project proposal for a new website&quot;, &quot;Write a summary of these notes&quot;)
                             </p>
                             <Textarea
                                 placeholder="Describe what you need..."

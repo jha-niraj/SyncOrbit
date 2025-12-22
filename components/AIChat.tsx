@@ -2,7 +2,9 @@
 
 import { useState, useRef, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { Bot, Send, X, Sparkles, Wand2, Terminal, Cpu, Zap, Command as CommandIcon } from "lucide-react"
+import {
+    Send, X, Sparkles, Wand2, Terminal, Cpu, Zap
+} from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
@@ -49,6 +51,7 @@ export function AIChat() {
                 setMessages(prev => [...prev, { role: "assistant", content: "ERROR_CODE_0x1: Failed to process request." }])
             }
         } catch (error) {
+            console.log("Error occurred while submitting expense data: " + error);
             setMessages(prev => [...prev, { role: "assistant", content: "ERROR_CODE_0x2: Connection interrupted." }])
         } finally {
             setIsLoading(false)
@@ -93,27 +96,27 @@ export function AIChat() {
                     <div className="relative flex items-center justify-center w-full h-full">
                         <AnimatePresence mode="wait">
                             {
-                            isAISidebarOpen ? (
-                                <motion.div
-                                    key="close"
-                                    initial={{ opacity: 0, rotate: -90 }}
-                                    animate={{ opacity: 1, rotate: 0 }}
-                                    exit={{ opacity: 0, rotate: 90 }}
-                                >
-                                    <X className="h-6 w-6" />
-                                </motion.div>
-                            ) : (
-                                <motion.div
-                                    key="bot"
-                                    initial={{ opacity: 0, scale: 0.5 }}
-                                    animate={{ opacity: 1, scale: 1 }}
-                                    exit={{ opacity: 0, scale: 1.5 }}
-                                    className="flex flex-col items-center"
-                                >
-                                    <Cpu className="h-6 w-6" />
-                                    <span className="text-[8px] mt-0.5 font-mono font-bold tracking-tighter">ORBITAL</span>
-                                </motion.div>
-                            )
+                                isAISidebarOpen ? (
+                                    <motion.div
+                                        key="close"
+                                        initial={{ opacity: 0, rotate: -90 }}
+                                        animate={{ opacity: 1, rotate: 0 }}
+                                        exit={{ opacity: 0, rotate: 90 }}
+                                    >
+                                        <X className="h-6 w-6" />
+                                    </motion.div>
+                                ) : (
+                                    <motion.div
+                                        key="bot"
+                                        initial={{ opacity: 0, scale: 0.5 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        exit={{ opacity: 0, scale: 1.5 }}
+                                        className="flex flex-col items-center"
+                                    >
+                                        <Cpu className="h-6 w-6" />
+                                        <span className="text-[8px] mt-0.5 font-mono font-bold tracking-tighter">ORBITAL</span>
+                                    </motion.div>
+                                )
                             }
                         </AnimatePresence>
 

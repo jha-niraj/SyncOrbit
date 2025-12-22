@@ -12,7 +12,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { Plus, Upload, FileText, Loader2 } from "lucide-react"
+import { Plus, Upload, Loader2 } from "lucide-react"
 import { uploadDocument } from "@/actions/tools/document.action"
 import { toast } from "sonner"
 import { extractTextFromResume } from "@/lib/documents/textextractor"

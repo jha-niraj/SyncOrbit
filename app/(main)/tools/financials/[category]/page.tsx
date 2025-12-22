@@ -9,12 +9,13 @@ import { Button } from "@/components/ui/button";
 export default async function FinancialCategoryPage({
     params
 }: {
-    params: { category: string }
+    params: Promise<{ category: string }>
 }) {
     const session = await auth();
     if (!session?.user) redirect("/signin");
 
-    const category = params.category.toUpperCase();
+    const { category: categoryParam } = await params;
+    const category = categoryParam.toUpperCase();
     const result = await getExpensesByCategory(category);
     const expenses = (result.success && result.expenses) ? result.expenses : [];
 

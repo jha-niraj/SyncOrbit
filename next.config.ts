@@ -4,6 +4,9 @@ const nextConfig: NextConfig = {
 	images: {
 		unoptimized: true
 	},
+	typescript: {
+		ignoreBuildErrors: false,
+	},
 	experimental: {
 		serverActions: {
 			bodySizeLimit: '5mb'

@@ -1,11 +1,11 @@
 "use client"
 
 import { useState } from "react"
-import { motion, AnimatePresence } from "framer-motion"
+import { motion } from "framer-motion"
 import {
-    FileText, Plus, Search, Filter,
+    FileText, Search,
     BarChart3, CreditCard, Receipt, FileStack,
-    ArrowUpRight, Download, MoreVertical, Terminal, Zap
+    ArrowUpRight, Download, MoreVertical, Terminal
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -16,9 +16,10 @@ import Link from "next/link"
 import { cn } from "@/lib/utils"
 import { format } from "date-fns"
 import { UploadDocument } from "./UploadDocument"
+import type { Document } from "@/types"
 
 interface DocumentsLandingProps {
-    documents: any[]
+    documents: Document[]
 }
 
 export function DocumentsLanding({ documents }: DocumentsLandingProps) {
@@ -37,7 +38,7 @@ export function DocumentsLanding({ documents }: DocumentsLandingProps) {
         { id: "GENERAL", label: "CORE_ASSETS", icon: <FileText className="h-4 w-4" /> },
     ]
 
-    const renderDocumentGrid = (categoryDocs: any[]) => (
+    const renderDocumentGrid = (categoryDocs: Document[]) => (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {categoryDocs.map((doc, i) => (
                 <motion.div

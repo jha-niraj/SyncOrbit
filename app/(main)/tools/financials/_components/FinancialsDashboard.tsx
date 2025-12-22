@@ -3,21 +3,22 @@
 import { useState } from "react"
 import { motion } from "framer-motion"
 import {
-    DollarSign, TrendingUp, TrendingDown, Clock,
-    Filter, Search, ArrowUpRight, Plus, Terminal,
-    Wallet, Briefcase, Activity
+    Clock, Search, Terminal, Wallet, Briefcase, Activity
 } from "lucide-react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+    Card, CardContent, CardHeader, CardTitle
+} from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { AddExpenseSheet } from "@/components/tools/AddExpenseSheet"
 import { cn } from "@/lib/utils"
 import { format } from "date-fns"
+import type { Expense, ExpenseCategory } from "@/types"
 
 interface FinancialsDashboardProps {
-    expenses: any[]
-    categories: any[]
+    expenses: Expense[]
+    categories: ExpenseCategory[]
     initialCategory?: string
 }
 

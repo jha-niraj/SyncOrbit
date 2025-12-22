@@ -3,11 +3,12 @@ import { DocumentDetailClient } from "../../_components/DocumentDetailClient";
 import { auth } from "@/auth";
 import { redirect, notFound } from "next/navigation";
 
-export default async function DocumentDetailPage({ params }: { params: { id: string } }) {
+export default async function DocumentDetailPage({ params }: { params: Promise<{ id: string }> }) {
     const session = await auth();
     if (!session?.user) redirect("/signin");
 
-    const result = await getDocumentById(params.id);
+    const { id } = await params;
+    const result = await getDocumentById(id);
 
     if (!result.success || !result.document) {
         if (result.error === "Access denied") redirect("/tools/documents");

@@ -73,6 +73,7 @@ export function AddExpenseSheet({ children }: { children?: React.ReactNode }) {
                 toast.error(result.error || "Failed to record expense")
             }
         } catch (error) {
+            console.log("Error occurred while submitting expense data: " + error);
             toast.error("An error occurred")
         } finally {
             setIsLoading(false)

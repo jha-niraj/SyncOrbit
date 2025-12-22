@@ -126,7 +126,7 @@ export function ReportsDashboard({ reports }: ReportsDashboardProps) {
                                     </div>
                                     <div>
                                         <p className="font-bold text-md">{report.title}</p>
-                                        <p className="text-[10px] text-neutral-400 uppercase tracking-widest">{report.type} // {format(new Date(report.createdAt), 'yyyy.MM.dd')}</p>
+                                        <p className="text-[10px] text-neutral-400 uppercase tracking-widest">{report.type} {/* */} {format(new Date(report.createdAt), 'yyyy.MM.dd')}</p>
                                     </div>
                                 </div>
                                 <Button size="icon" variant="ghost" asChild>

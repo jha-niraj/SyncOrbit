@@ -15,9 +15,10 @@ import { Badge } from "@/components/ui/badge"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
 import { format } from "date-fns"
+import type { ToolsInvoice } from "@/types"
 
 interface InvoicesDashboardProps {
-    invoices: any[]
+    invoices: ToolsInvoice[]
 }
 
 export function InvoicesDashboard({ invoices }: InvoicesDashboardProps) {

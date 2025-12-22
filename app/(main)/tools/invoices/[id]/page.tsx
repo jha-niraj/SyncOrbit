@@ -3,11 +3,12 @@ import { InvoiceDetailsClient } from "../_components/InvoiceDetailsClient";
 import { auth } from "@/auth";
 import { redirect, notFound } from "next/navigation";
 
-export default async function InvoiceDetailPage({ params }: { params: { id: string } }) {
+export default async function InvoiceDetailPage({ params }: { params: Promise<{ id: string }> }) {
     const session = await auth();
     if (!session?.user) redirect("/signin");
 
-    const result = await getInvoiceById(params.id);
+    const { id } = await params;
+    const result = await getInvoiceById(id);
 
     if (!result.success || !result.invoice) {
         if (result.error === "Access denied") {

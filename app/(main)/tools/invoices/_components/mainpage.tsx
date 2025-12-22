@@ -4,6 +4,8 @@ import { useState } from "react"
 import { InvoiceForm } from "./invoiceform";
 import { createInvoice } from "@/actions/tools/invoice.action";
 import { toast } from "sonner";
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
 
 export interface InvoiceData {
     invoiceid: string;
@@ -107,12 +109,12 @@ export default function MainPageInvoice({ initialCompany, initialClients }: Main
 
     return (
         <div className="min-h-screen w-full bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200">
-            <InvoiceNavbar
+            {/* <InvoiceNavbar
                 onFormatChange={setFormat}
                 onCurrencyChange={setCurrency}
                 currentFormat={format}
                 currentCurrency={currency}
-            />
+            /> */}
             <div className="p-8">
                 <InvoiceForm
                     data={invoiceData}

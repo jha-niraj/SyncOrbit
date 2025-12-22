@@ -3,8 +3,8 @@
 import { useState, useRef, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import {
-    FileText, Send, Clock, ChevronDown, ChevronUp,
-    Download, ExternalLink, User, Bot, Terminal, Zap, Cpu
+    FileText, Send, ChevronDown, ChevronUp, Plus,
+    Download, ExternalLink, Bot, Terminal, Zap
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -16,9 +16,25 @@ import { cn } from "@/lib/utils"
 import { format } from "date-fns"
 import { toast } from "sonner"
 
+import type { ToolsInvoice, InvoiceItem } from "@/types"
+
+interface CurrentUser {
+    id: string
+    name: string | null
+    email: string
+}
+
+interface Message {
+    role?: string
+    content: string
+    senderId?: string
+    sender?: { name: string | null }
+    createdAt?: Date
+}
+
 interface InvoiceDetailsClientProps {
-    invoice: any
-    currentUser: any
+    invoice: ToolsInvoice
+    currentUser: CurrentUser
 }
 
 export function InvoiceDetailsClient({ invoice, currentUser }: InvoiceDetailsClientProps) {
@@ -26,7 +42,7 @@ export function InvoiceDetailsClient({ invoice, currentUser }: InvoiceDetailsCli
     const [input, setInput] = useState("")
     const [isLoading, setIsLoading] = useState(false)
     const [isInvoiceFolded, setIsInvoiceFolded] = useState(true)
-    const scrollRef = useRef<HTMLDivElement>(null)
+    const scrollRef = useRef<HTMLDivElement>(null!)
 
     useEffect(() => {
         if (scrollRef.current) {
@@ -44,7 +60,7 @@ export function InvoiceDetailsClient({ invoice, currentUser }: InvoiceDetailsCli
         try {
             const result = await sendInvoiceMessage(invoice.id, content)
             if (result.success) {
-                setMessages((prev: any) => [...prev, result.message])
+                setMessages((prev: { role: string; content: string }[]) => [...prev, result.message])
             } else {
                 toast.error("Failed to send message")
             }
@@ -65,7 +81,7 @@ export function InvoiceDetailsClient({ invoice, currentUser }: InvoiceDetailsCli
         try {
             const result = await sendInvoiceMessage(invoice.id, `Uploaded document: ${file.name} (Signed)`)
             if (result.success) {
-                setMessages((prev: any) => [...prev, result.message])
+                setMessages((prev: { role: string; content: string }[]) => [...prev, result.message])
                 toast.success("Document uploaded and synchronized")
             }
         } catch (error) {
@@ -173,7 +189,7 @@ export function InvoiceDetailsClient({ invoice, currentUser }: InvoiceDetailsCli
                                             </tr>
                                         </thead>
                                         <tbody className="font-medium tracking-tight">
-                                            {invoice.items.map((item: any, i: number) => (
+                                            {invoice.items.map((item: InvoiceItem, i: number) => (
                                                 <tr key={i} className="border-t border-neutral-100 dark:border-neutral-900">
                                                     <td className="py-4">{item.description}</td>
                                                     <td className="py-4 text-center">{item.quantity}</td>
@@ -262,7 +278,7 @@ export function InvoiceDetailsClient({ invoice, currentUser }: InvoiceDetailsCli
                                     <p className="text-[10px] font-mono text-neutral-400">{format(new Date(invoice.createdAt), 'yyyy-MM-dd HH:mm:ss')}</p>
                                 </div>
 
-                                {messages.filter((m: any) => m.content.includes("signed") || m.content.includes("document")).map((m: any, i: number) => (
+                                {messages.filter((m: Message) => m.content.includes("signed") || m.content.includes("document")).map((m: Message, i: number) => (
                                     <div key={i} className="relative pl-10 space-y-1">
                                         <div className="absolute left-0 top-1 h-8 w-8 rounded-full bg-emerald-500 text-white flex items-center justify-center border-4 border-white dark:border-neutral-950">
                                             <FileText size={12} />
@@ -288,13 +304,13 @@ export function InvoiceDetailsClient({ invoice, currentUser }: InvoiceDetailsCli
                         {/* Chat Messages */}
                         <ScrollArea className="flex-1 p-6" viewportRef={scrollRef}>
                             <div className="space-y-6">
-                                {messages.map((m: any, i: number) => (
+                                {messages.map((m: Message, i: number) => (
                                     <div key={i} className={cn(
                                         "flex flex-col gap-1.5",
                                         m.senderId === currentUser.id ? "items-end" : "items-start"
                                     )}>
                                         <span className="text-[9px] font-mono font-bold text-neutral-400 uppercase tracking-widest px-1">
-                                            {m.sender.name} // {format(new Date(m.createdAt), 'HH:mm')}
+                                            {m.sender.name} {/* */} {format(new Date(m.createdAt), 'HH:mm')}
                                         </span>
                                         <div className={cn(
                                             "max-w-[90%] px-4 py-3 text-xs leading-relaxed",
