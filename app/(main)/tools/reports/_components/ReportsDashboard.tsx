@@ -12,9 +12,10 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import Link from "next/link"
 import { format } from "date-fns"
+import type { Report } from "@/types"
 
 interface ReportsDashboardProps {
-    reports: any[]
+    reports: Report[]
 }
 
 export function ReportsDashboard({ reports }: ReportsDashboardProps) {

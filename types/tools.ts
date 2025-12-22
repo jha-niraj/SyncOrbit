@@ -46,18 +46,18 @@ export interface InvoiceTax {
 
 export interface Client {
     id: string
-    name: string
-    email: string
-    address?: string
-    city?: string
+    name: string | null
+    email: string | null
+    address?: string | null
+    city?: string | null
 }
 
 export interface Company {
     id: string
     name: string
     email?: string
-    address?: string
-    city?: string
+    address?: string | null
+    city?: string | null
     logo?: string | null
 }
 
@@ -65,7 +65,7 @@ export interface InvoiceMessage {
     id: string
     content: string
     senderId: string
-    sender: User
+    sender: Partial<User>
     invoiceId: string
     createdAt: Date
 }
@@ -74,7 +74,7 @@ export interface Invoice {
     id: string
     invoiceNumber: string
     amount: number
-    status: 'DRAFT' | 'SENT' | 'PAID' | 'OVERDUE'
+    status: 'DRAFT' | 'SENT' | 'PAID' | 'OVERDUE' | 'CANCELLED'
     dueDate: Date
     issuedAt: Date
     pdfUrl?: string | null
@@ -82,7 +82,7 @@ export interface Invoice {
     client: Client
     companyId: string
     company: Company
-    items: InvoiceItem[]
+    items: InvoiceItem[] | unknown
     messages?: InvoiceMessage[]
     createdAt: Date
     updatedAt: Date

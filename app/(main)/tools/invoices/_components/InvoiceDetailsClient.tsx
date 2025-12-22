@@ -3,8 +3,8 @@
 import { useState, useRef, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import {
-    FileText, Send, ChevronDown, ChevronUp, Plus,
-    Download, ExternalLink, Bot, Terminal, Zap
+    FileText, Send, ChevronDown, ChevronUp, Plus, Download, ExternalLink,
+    Bot, Terminal, Zap
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -17,18 +17,19 @@ import { format } from "date-fns"
 import { toast } from "sonner"
 
 import type { ToolsInvoice, InvoiceItem } from "@/types"
+import Link from "next/link"
 
 interface CurrentUser {
     id: string
     name: string | null
-    email: string
+    email: string | null
 }
 
 interface Message {
     role?: string
     content: string
     senderId?: string
-    sender?: { name: string | null }
+    sender?: { name: string | null | undefined }
     createdAt?: Date
 }
 
@@ -43,6 +44,9 @@ export function InvoiceDetailsClient({ invoice, currentUser }: InvoiceDetailsCli
     const [isLoading, setIsLoading] = useState(false)
     const [isInvoiceFolded, setIsInvoiceFolded] = useState(true)
     const scrollRef = useRef<HTMLDivElement>(null!)
+
+    // Type guard for items
+    const items = Array.isArray(invoice.items) ? invoice.items as InvoiceItem[] : []
 
     useEffect(() => {
         if (scrollRef.current) {
@@ -59,8 +63,8 @@ export function InvoiceDetailsClient({ invoice, currentUser }: InvoiceDetailsCli
 
         try {
             const result = await sendInvoiceMessage(invoice.id, content)
-            if (result.success) {
-                setMessages((prev: { role: string; content: string }[]) => [...prev, result.message])
+            if (result.success && result.message) {
+                setMessages(prev => [...prev, result.message!])
             } else {
                 toast.error("Failed to send message")
             }
@@ -80,8 +84,8 @@ export function InvoiceDetailsClient({ invoice, currentUser }: InvoiceDetailsCli
         setIsLoading(true)
         try {
             const result = await sendInvoiceMessage(invoice.id, `Uploaded document: ${file.name} (Signed)`)
-            if (result.success) {
-                setMessages((prev: { role: string; content: string }[]) => [...prev, result.message])
+            if (result.success && result.message) {
+                setMessages(prev => [...prev, result.message!])
                 toast.success("Document uploaded and synchronized")
             }
         } catch (error) {
@@ -100,7 +104,6 @@ export function InvoiceDetailsClient({ invoice, currentUser }: InvoiceDetailsCli
                 onChange={handleFileUpload}
                 accept=".pdf,.doc,.docx"
             />
-            {/* Top Stats/Header */}
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
                     <div className="h-12 w-12 rounded-xl bg-black dark:bg-white text-white dark:text-black flex items-center justify-center font-black">
@@ -121,16 +124,14 @@ export function InvoiceDetailsClient({ invoice, currentUser }: InvoiceDetailsCli
                 <div className="flex gap-2">
                     <Button variant="outline" className="h-10 rounded-xl px-4 border-neutral-200 dark:border-neutral-800 font-bold text-xs gap-2">
                         <Download className="h-4 w-4" />
-                        GET_PDF
+                        Get PDF
                     </Button>
                     <Button className="h-10 rounded-xl px-4 bg-black dark:bg-white text-white dark:text-black font-bold text-xs gap-2">
                         <Zap className="h-4 w-4" />
-                        EXECUTE_PAYMENT
+                        Execute Payment
                     </Button>
                 </div>
             </div>
-
-            {/* Foldable Invoice Preview */}
             <div className="border border-neutral-200 dark:border-neutral-800 rounded-2xl overflow-hidden bg-white dark:bg-neutral-950 shadow-sm">
                 <button
                     onClick={() => setIsInvoiceFolded(!isInvoiceFolded)}
@@ -143,96 +144,97 @@ export function InvoiceDetailsClient({ invoice, currentUser }: InvoiceDetailsCli
                     {isInvoiceFolded ? <ChevronDown className="h-4 w-4" /> : <ChevronUp className="h-4 w-4" />}
                 </button>
                 <AnimatePresence>
-                    {!isInvoiceFolded && (
-                        <motion.div
-                            initial={{ height: 0 }}
-                            animate={{ height: "auto" }}
-                            exit={{ height: 0 }}
-                            className="overflow-hidden bg-neutral-50/50 dark:bg-neutral-900/50 border-t border-neutral-200 dark:border-neutral-800"
-                        >
-                            <div className="p-8 space-y-8">
-                                <div className="flex justify-between">
+                    {
+                        !isInvoiceFolded && (
+                            <motion.div
+                                initial={{ height: 0 }}
+                                animate={{ height: "auto" }}
+                                exit={{ height: 0 }}
+                                className="overflow-hidden bg-neutral-50/50 dark:bg-neutral-900/50 border-t border-neutral-200 dark:border-neutral-800"
+                            >
+                                <div className="p-8 space-y-8">
+                                    <div className="flex justify-between">
+                                        <div className="space-y-4">
+                                            <div>
+                                                <p className="text-[10px] font-mono font-bold text-neutral-400 uppercase tracking-widest">Origin</p>
+                                                <p className="text-sm font-black">{invoice.company.name}</p>
+                                                <p className="text-xs text-neutral-500">{invoice.company.address}</p>
+                                            </div>
+                                            <div>
+                                                <p className="text-[10px] font-mono font-bold text-neutral-400 uppercase tracking-widest">Destination</p>
+                                                <p className="text-sm font-black">{invoice.client.name}</p>
+                                                <p className="text-xs text-neutral-500">{invoice.client.email}</p>
+                                            </div>
+                                        </div>
+                                        <div className="text-right space-y-4">
+                                            <div>
+                                                <p className="text-[10px] font-mono font-bold text-neutral-400 uppercase tracking-widest">Issue_Date</p>
+                                                <p className="text-sm font-bold">{format(new Date(invoice.issuedAt), 'yyyy.MM.dd')}</p>
+                                            </div>
+                                            <div>
+                                                <p className="text-[10px] font-mono font-bold text-neutral-400 uppercase tracking-widest">Due_Threshold</p>
+                                                <p className="text-sm font-bold">{format(new Date(invoice.dueDate), 'yyyy.MM.dd')}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <Separator className="bg-neutral-200 dark:bg-neutral-800" />
+
                                     <div className="space-y-4">
-                                        <div>
-                                            <p className="text-[10px] font-mono font-bold text-neutral-400 uppercase tracking-widest">Origin</p>
-                                            <p className="text-sm font-black">{invoice.company.name}</p>
-                                            <p className="text-xs text-neutral-500">{invoice.company.address}</p>
-                                        </div>
-                                        <div>
-                                            <p className="text-[10px] font-mono font-bold text-neutral-400 uppercase tracking-widest">Destination</p>
-                                            <p className="text-sm font-black">{invoice.client.name}</p>
-                                            <p className="text-xs text-neutral-500">{invoice.client.email}</p>
-                                        </div>
-                                    </div>
-                                    <div className="text-right space-y-4">
-                                        <div>
-                                            <p className="text-[10px] font-mono font-bold text-neutral-400 uppercase tracking-widest">Issue_Date</p>
-                                            <p className="text-sm font-bold">{format(new Date(invoice.issuedAt), 'yyyy.MM.dd')}</p>
-                                        </div>
-                                        <div>
-                                            <p className="text-[10px] font-mono font-bold text-neutral-400 uppercase tracking-widest">Due_Threshold</p>
-                                            <p className="text-sm font-bold">{format(new Date(invoice.dueDate), 'yyyy.MM.dd')}</p>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <Separator className="bg-neutral-200 dark:bg-neutral-800" />
-
-                                <div className="space-y-4">
-                                    <table className="w-full text-left text-sm">
-                                        <thead>
-                                            <tr className="text-[10px] font-mono font-bold text-neutral-400 uppercase tracking-widest">
-                                                <th className="pb-4">Description</th>
-                                                <th className="pb-4 text-center">Qty</th>
-                                                <th className="pb-4 text-right">Unit_Price</th>
-                                                <th className="pb-4 text-right">Total</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody className="font-medium tracking-tight">
-                                            {invoice.items.map((item: InvoiceItem, i: number) => (
-                                                <tr key={i} className="border-t border-neutral-100 dark:border-neutral-900">
-                                                    <td className="py-4">{item.description}</td>
-                                                    <td className="py-4 text-center">{item.quantity}</td>
-                                                    <td className="py-4 text-right">${item.price.toLocaleString()}</td>
-                                                    <td className="py-4 text-right font-bold">${(item.quantity * item.price).toLocaleString()}</td>
+                                        <table className="w-full text-left text-sm">
+                                            <thead>
+                                                <tr className="text-[10px] font-mono font-bold text-neutral-400 uppercase tracking-widest">
+                                                    <th className="pb-4">Description</th>
+                                                    <th className="pb-4 text-center">Qty</th>
+                                                    <th className="pb-4 text-right">Unit_Price</th>
+                                                    <th className="pb-4 text-right">Total</th>
                                                 </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
-                                </div>
-
-                                <div className="flex justify-end pt-4">
-                                    <div className="w-64 space-y-2">
-                                        <div className="flex justify-between text-xs font-mono">
-                                            <span className="text-neutral-500 uppercase">Subtotal_Alloc</span>
-                                            <span className="font-bold">${invoice.amount.toLocaleString()}</span>
-                                        </div>
-                                        <div className="flex justify-between text-lg font-black italic uppercase">
-                                            <span>Net_Total</span>
-                                            <span>${invoice.amount.toLocaleString()}</span>
+                                            </thead>
+                                            <tbody className="font-medium tracking-tight">
+                                                {
+                                                    items.map((item: InvoiceItem, i: number) => (
+                                                        <tr key={i} className="border-t border-neutral-100 dark:border-neutral-900">
+                                                            <td className="py-4">{item.description}</td>
+                                                            <td className="py-4 text-center">{item.quantity}</td>
+                                                            <td className="py-4 text-right">${item.price.toLocaleString()}</td>
+                                                            <td className="py-4 text-right font-bold">${(item.quantity * item.price).toLocaleString()}</td>
+                                                        </tr>
+                                                    ))
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div className="flex justify-end pt-4">
+                                        <div className="w-64 space-y-2">
+                                            <div className="flex justify-between text-xs font-mono">
+                                                <span className="text-neutral-500 uppercase">Subtotal_Alloc</span>
+                                                <span className="font-bold">${invoice.amount.toLocaleString()}</span>
+                                            </div>
+                                            <div className="flex justify-between text-lg font-black italic uppercase">
+                                                <span>Net_Total</span>
+                                                <span>${invoice.amount.toLocaleString()}</span>
+                                            </div>
                                         </div>
                                     </div>
+                                    {
+                                        invoice.pdfUrl && (
+                                            <div className="pt-6">
+                                                <Button variant="outline" className="w-full h-12 rounded-xl border-dashed border-neutral-300 dark:border-neutral-700 hover:bg-white dark:hover:bg-black transition-all group" asChild>
+                                                    <Link href={invoice.pdfUrl} target="_blank" rel="noopener noreferrer">
+                                                        <ExternalLink className="mr-2 h-4 w-4 group-hover:scale-110 transition-transform" />
+                                                        Open Official Document Viewwer
+                                                    </Link>
+                                                </Button>
+                                            </div>
+                                        )
+                                    }
                                 </div>
-
-                                {invoice.pdfUrl && (
-                                    <div className="pt-6">
-                                        <Button variant="outline" className="w-full h-12 rounded-xl border-dashed border-neutral-300 dark:border-neutral-700 hover:bg-white dark:hover:bg-black transition-all group" asChild>
-                                            <a href={invoice.pdfUrl} target="_blank" rel="noopener noreferrer">
-                                                <ExternalLink className="mr-2 h-4 w-4 group-hover:scale-110 transition-transform" />
-                                                OPEN_OFFICIAL_DOCUMENT_VIEWER
-                                            </a>
-                                        </Button>
-                                    </div>
-                                )}
-                            </div>
-                        </motion.div>
-                    )}
+                            </motion.div>
+                        )
+                    }
                 </AnimatePresence>
             </div>
-
-            {/* Main Content: 2/3 and 1/3 */}
             <div className="flex-1 flex gap-6 overflow-hidden">
-                {/* Left Side: Document History (2/3) */}
                 <div className="w-2/3 flex flex-col gap-4 overflow-hidden">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
@@ -243,7 +245,6 @@ export function InvoiceDetailsClient({ invoice, currentUser }: InvoiceDetailsCli
                             Update_Manifest
                         </Button>
                     </div>
-
                     <div className="flex-1 border border-neutral-200 dark:border-neutral-800 rounded-2xl bg-white dark:bg-neutral-950 overflow-hidden flex flex-col p-6">
                         <div className="mb-6 flex gap-2">
                             <Button
@@ -259,7 +260,6 @@ export function InvoiceDetailsClient({ invoice, currentUser }: InvoiceDetailsCli
                             <div className="space-y-8 relative">
                                 <div className="absolute left-[15px] top-2 bottom-2 w-px bg-neutral-200 dark:bg-neutral-800 border-dashed" />
 
-                                {/* Event Items */}
                                 <div className="relative pl-10 space-y-1">
                                     <div className="absolute left-0 top-1 h-8 w-8 rounded-full bg-black dark:bg-white text-white dark:text-black flex items-center justify-center border-4 border-white dark:border-neutral-950">
                                         <CheckCircle2 size={12} />
@@ -268,7 +268,6 @@ export function InvoiceDetailsClient({ invoice, currentUser }: InvoiceDetailsCli
                                     <p className="text-sm font-bold tracking-tight">Invoice generated and system synchronized.</p>
                                     <p className="text-[10px] font-mono text-neutral-400">{format(new Date(invoice.createdAt), 'yyyy-MM-dd HH:mm:ss')}</p>
                                 </div>
-
                                 <div className="relative pl-10 space-y-1">
                                     <div className="absolute left-0 top-1 h-8 w-8 rounded-full bg-blue-500 text-white flex items-center justify-center border-4 border-white dark:border-neutral-950">
                                         <Send size={12} />
@@ -277,55 +276,52 @@ export function InvoiceDetailsClient({ invoice, currentUser }: InvoiceDetailsCli
                                     <p className="text-sm font-bold tracking-tight">Email transmission success to {invoice.client.email}.</p>
                                     <p className="text-[10px] font-mono text-neutral-400">{format(new Date(invoice.createdAt), 'yyyy-MM-dd HH:mm:ss')}</p>
                                 </div>
-
-                                {messages.filter((m: Message) => m.content.includes("signed") || m.content.includes("document")).map((m: Message, i: number) => (
-                                    <div key={i} className="relative pl-10 space-y-1">
-                                        <div className="absolute left-0 top-1 h-8 w-8 rounded-full bg-emerald-500 text-white flex items-center justify-center border-4 border-white dark:border-neutral-950">
-                                            <FileText size={12} />
+                                {
+                                    messages.filter(m => m.content.includes("signed") || m.content.includes("document")).map((m, i: number) => (
+                                        <div key={i} className="relative pl-10 space-y-1">
+                                            <div className="absolute left-0 top-1 h-8 w-8 rounded-full bg-emerald-500 text-white flex items-center justify-center border-4 border-white dark:border-neutral-950">
+                                                <FileText size={12} />
+                                            </div>
+                                            <p className="text-[10px] font-mono font-bold text-neutral-400 uppercase tracking-widest">DOC_RECEIVED</p>
+                                            <p className="text-sm font-bold tracking-tight">New document uploaded by {m.sender.name}.</p>
+                                            <p className="text-[10px] font-mono text-neutral-400">{format(new Date(m.createdAt), 'yyyy-MM-dd HH:mm:ss')}</p>
                                         </div>
-                                        <p className="text-[10px] font-mono font-bold text-neutral-400 uppercase tracking-widest">DOC_RECEIVED</p>
-                                        <p className="text-sm font-bold tracking-tight">New document uploaded by {m.sender.name}.</p>
-                                        <p className="text-[10px] font-mono text-neutral-400">{format(new Date(m.createdAt), 'yyyy-MM-dd HH:mm:ss')}</p>
-                                    </div>
-                                ))}
+                                    ))
+                                }
                             </div>
                         </ScrollArea>
                     </div>
                 </div>
-
-                {/* Right Side: Chat (1/3) */}
                 <div className="w-1/3 flex flex-col gap-4 overflow-hidden">
                     <div className="flex items-center gap-2">
                         <Bot className="h-4 w-4 text-neutral-400" />
                         <h3 className="text-xs font-mono font-bold text-neutral-400 uppercase tracking-[0.2em]">Communication_Channel</h3>
                     </div>
-
                     <div className="flex-1 border border-neutral-200 dark:border-neutral-800 rounded-2xl bg-white dark:bg-neutral-950 overflow-hidden flex flex-col">
-                        {/* Chat Messages */}
                         <ScrollArea className="flex-1 p-6" viewportRef={scrollRef}>
                             <div className="space-y-6">
-                                {messages.map((m: Message, i: number) => (
-                                    <div key={i} className={cn(
-                                        "flex flex-col gap-1.5",
-                                        m.senderId === currentUser.id ? "items-end" : "items-start"
-                                    )}>
-                                        <span className="text-[9px] font-mono font-bold text-neutral-400 uppercase tracking-widest px-1">
-                                            {m.sender.name} {/* */} {format(new Date(m.createdAt), 'HH:mm')}
-                                        </span>
-                                        <div className={cn(
-                                            "max-w-[90%] px-4 py-3 text-xs leading-relaxed",
-                                            m.senderId === currentUser.id
-                                                ? "bg-black dark:bg-white text-white dark:text-black rounded-2xl rounded-tr-none font-bold"
-                                                : "bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 rounded-2xl rounded-tl-none border border-neutral-200 dark:border-neutral-800"
+                                {
+                                    messages.map((m, i: number) => (
+                                        <div key={i} className={cn(
+                                            "flex flex-col gap-1.5",
+                                            m.senderId === currentUser.id ? "items-end" : "items-start"
                                         )}>
-                                            {m.content}
+                                            <span className="text-[9px] font-mono font-bold text-neutral-400 uppercase tracking-widest px-1">
+                                                {m.sender.name} {/* */} {format(new Date(m.createdAt), 'HH:mm')}
+                                            </span>
+                                            <div className={cn(
+                                                "max-w-[90%] px-4 py-3 text-xs leading-relaxed",
+                                                m.senderId === currentUser.id
+                                                    ? "bg-black dark:bg-white text-white dark:text-black rounded-2xl rounded-tr-none font-bold"
+                                                    : "bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 rounded-2xl rounded-tl-none border border-neutral-200 dark:border-neutral-800"
+                                            )}>
+                                                {m.content}
+                                            </div>
                                         </div>
-                                    </div>
-                                ))}
+                                    ))
+                                }
                             </div>
                         </ScrollArea>
-
-                        {/* Chat Input */}
                         <div className="p-4 bg-neutral-50/50 dark:bg-neutral-900/50 border-t border-neutral-200 dark:border-neutral-800">
                             <div className="flex gap-2">
                                 <Input

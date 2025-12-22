@@ -185,9 +185,9 @@ export function FinancialsDashboard({ expenses, categories, initialCategory = "A
                                             <td className="p-4">
                                                 <div className="flex items-center gap-2">
                                                     <div className="h-6 w-6 rounded-full bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center text-[8px] font-bold">
-                                                        {exp.creator.name[0]}
+                                                        {exp.creator?.name?.[0] || 'U'}
                                                     </div>
-                                                    <span className="font-bold text-[10px] tracking-tight">{exp.creator.name}</span>
+                                                    <span className="font-bold text-[10px] tracking-tight">{exp.creator?.name || 'Unknown'}</span>
                                                 </div>
                                             </td>
                                         </tr>

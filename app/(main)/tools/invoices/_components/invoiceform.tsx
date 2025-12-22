@@ -20,14 +20,16 @@ export interface TaxItem {
     percentage: number
 }
 
+import type { InvoiceFormData, Client } from "@/types"
+
 interface InvoiceFormProps {
-    data: any
-    onDataChange: (data: Partial<any>) => void
+    data: InvoiceFormData
+    onDataChange: (data: Partial<InvoiceFormData>) => void
     onSubmit: () => void
     format: "pdf" | "email"
     currency: string
     isLoading: boolean
-    clients: any[]
+    clients: Client[]
 }
 
 export function InvoiceForm({ data, onDataChange, onSubmit, format, currency, isLoading, clients }: InvoiceFormProps) {
@@ -49,7 +51,7 @@ export function InvoiceForm({ data, onDataChange, onSubmit, format, currency, is
     }
 
     const removeItem = (index: number) => {
-        const newItems = data.items.filter((_: any, i: number) => i !== index)
+        const newItems = data.items.filter((_: InvoiceItem, i: number) => i !== index)
         onDataChange({ items: newItems })
     }
 
@@ -65,7 +67,7 @@ export function InvoiceForm({ data, onDataChange, onSubmit, format, currency, is
     }
 
     const removeTax = (index: number) => {
-        const newTaxes = data.taxes.filter((_: any, i: number) => i !== index)
+        const newTaxes = data.taxes.filter((_: TaxItem, i: number) => i !== index)
         onDataChange({ taxes: newTaxes })
     }
 

@@ -7,13 +7,13 @@ import {
 } from "lucide-react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { 
-    Card, CardContent, CardHeader, CardTitle, CardDescription 
+import {
+    Card, CardContent, CardHeader, CardTitle, CardDescription
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { 
-    generateFinancialSummary, createReport 
+import {
+    generateFinancialSummary, createReport
 } from "@/actions/tools/report.action"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
@@ -23,7 +23,7 @@ export default function NewReportPage() {
     const [isLoading, setIsLoading] = useState(false)
     const [title, setTitle] = useState("")
     const [selectedType, setSelectedType] = useState<string | null>(null)
-    const [step, setStep] = useState(1)
+    // const [step, setStep] = useState(1)
 
     const reportTypes = [
         {
@@ -54,11 +54,11 @@ export default function NewReportPage() {
 
         setIsLoading(true)
         try {
-            let data: any = {}
+            let data: Record<string, unknown> = {}
             if (selectedType === "FINANCIAL") {
                 const res = await generateFinancialSummary()
                 if (res.success) {
-                    data = res.summary
+                    data = res.summary as Record<string, unknown>
                 } else {
                     throw new Error(res.error)
                 }
@@ -78,7 +78,8 @@ export default function NewReportPage() {
             } else {
                 toast.error(result.error || "Failed to create report")
             }
-        } catch (error: any) {
+        } catch (err) {
+            const error = err as Error;
             toast.error(error.message || "An error occurred")
         } finally {
             setIsLoading(false)

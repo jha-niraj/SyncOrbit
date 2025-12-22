@@ -27,14 +27,18 @@ export interface InvoiceData {
     companySignature: string | null;
 }
 
+import type { Company, Client } from "@/types"
+
 interface MainPageInvoiceProps {
-    initialCompany: any;
-    initialClients: any[];
+    initialCompany: Company | null;
+    initialClients: Client[];
 }
 
 export default function MainPageInvoice({ initialCompany, initialClients }: MainPageInvoiceProps) {
-    const [format, setFormat] = useState<"pdf" | "email">("pdf")
-    const [currency, setCurrency] = useState<string>("USD")
+    // const [format, setFormat] = useState<"pdf" | "email">("pdf")
+    // const [currency, setCurrency] = useState<string>("USD")
+    const format = "pdf";
+    const currency = "USD";
     const [invoiceData, setInvoiceData] = useState<InvoiceData>({
         invoiceid: `INV-${Date.now().toString().slice(-6)}`,
         logo: initialCompany?.logo || null,
