@@ -122,3 +122,56 @@ export async function createExpenseCategory(name: string) {
         return { success: false, error: "Failed to create category" };
     }
 }
+
+export async function getExpensesByCategory(category: string) {
+    try {
+        const session = await auth();
+        if (!session?.user?.id) return { success: false, error: "Unauthorized" };
+
+        const user = await prisma.user.findUnique({
+            where: { id: session.user.id },
+            select: { ownedCompany: { select: { id: true } }, companyId: true }
+        });
+
+        const companyId = user?.ownedCompany?.id || user?.companyId;
+        if (!companyId) return { success: false, error: "Company not found" };
+
+        const expenses = await prisma.expense.findMany({
+            where: { companyId, category: category.toUpperCase() },
+            orderBy: { date: 'desc' },
+            include: { creator: { select: { name: true } } }
+        });
+
+        return { success: true, expenses };
+    } catch (error) {
+        console.error("Error fetching expenses by category:", error);
+        return { success: false, error: "Failed to fetch expenses" };
+    }
+}
+
+export async function getExpenseById(id: string) {
+    try {
+        const session = await auth();
+        if (!session?.user?.id) return { success: false, error: "Unauthorized" };
+
+        const expense = await prisma.expense.findUnique({
+            where: { id },
+            include: { creator: { select: { name: true, image: true, email: true } } }
+        });
+
+        if (!expense) return { success: false, error: "Expense not found" };
+
+        const user = await prisma.user.findUnique({
+            where: { id: session.user.id },
+            select: { ownedCompany: { select: { id: true } }, companyId: true }
+        });
+
+        const companyId = user?.ownedCompany?.id || user?.companyId;
+        if (expense.companyId !== companyId) return { success: false, error: "Access denied" };
+
+        return { success: true, expense };
+    } catch (error) {
+        console.error("Error fetching expense by id:", error);
+        return { success: false, error: "Failed to fetch expense" };
+    }
+}

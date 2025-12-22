@@ -1,4 +1,6 @@
-import { getExpenses, getExpenseCategories } from "@/actions/tools/financial.action";
+import { 
+    getExpenses, getExpenseCategories 
+} from "@/actions/tools/financial.action";
 import { FinancialsDashboard } from "./_components/FinancialsDashboard";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";

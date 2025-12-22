@@ -25,7 +25,7 @@ export function DocumentDetailClient({ document: doc }: DocumentDetailClientProp
     ])
     const [input, setInput] = useState("")
     const [isLoading, setIsLoading] = useState(false)
-    const scrollRef = useRef<HTMLDivElement>(null)
+    const scrollRef = useRef<HTMLDivElement>(null!)
 
     useEffect(() => {
         if (scrollRef.current) {
@@ -68,16 +68,16 @@ export function DocumentDetailClient({ document: doc }: DocumentDetailClientProp
                     </Button>
                     <div>
                         <div className="flex items-center gap-2">
-                            <span className="text-[10px] font-mono font-bold text-neutral-400 uppercase tracking-widest">Archive_Path: {doc.category}</span>
+                            <span className="text-[10px] font-bold text-neutral-400 tracking-widest">Archive_Path: {doc.category}</span>
                         </div>
-                        <h1 className="text-3xl font-black tracking-tighter uppercase italic">{doc.title}</h1>
+                        <h1 className="text-3xl font-black tracking-tighter">{doc.title}</h1>
                     </div>
                 </div>
                 <div className="flex gap-2">
-                    <Button variant="outline" className="h-11 rounded-xl border-neutral-200 dark:border-neutral-800 font-bold text-xs uppercase tracking-widest gap-2" asChild>
+                    <Button variant="outline" className="h-11 rounded-xl border-neutral-200 dark:border-neutral-800 font-bold text-xs tracking-widest gap-2" asChild>
                         <a href={doc.fileUrl} target="_blank" rel="noopener noreferrer">
                             <Download className="h-4 w-4" />
-                            GET_SOURCE
+                            Get Source
                         </a>
                     </Button>
                 </div>
@@ -89,7 +89,7 @@ export function DocumentDetailClient({ document: doc }: DocumentDetailClientProp
                     <div className="flex items-center justify-between px-2">
                         <div className="flex items-center gap-2">
                             <div className="h-2 w-2 rounded-full bg-blue-500" />
-                            <span className="text-[10px] font-mono font-bold text-neutral-400 uppercase tracking-widest">Visual_Monitor</span>
+                            <span className="text-[10px] font-bold text-neutral-400 tracking-widest">Visual_Monitor</span>
                         </div>
                         <Button variant="ghost" className="h-8 w-8 rounded-full p-0">
                             <Maximize2 className="h-4 w-4" />
@@ -107,11 +107,11 @@ export function DocumentDetailClient({ document: doc }: DocumentDetailClientProp
                             <div className="w-full h-full flex flex-col items-center justify-center gap-4 p-12 text-center">
                                 <FileText className="h-16 w-16 opacity-10" />
                                 <div className="space-y-2">
-                                    <p className="font-black italic uppercase tracking-tighter text-xl text-neutral-400">Preview_Unavailable</p>
-                                    <p className="text-xs text-neutral-500 font-medium max-w-xs">{doc.title} does not support direct visual stream. Use "GET_SOURCE" to audit.</p>
+                                    <p className="font-black tracking-tighter text-xl text-neutral-400">Preview_Unavailable</p>
+                                    <p className="text-md text-neutral-500 font-medium max-w-xs">{doc.title} does not support direct visual stream. Use "Get Source" to audit.</p>
                                 </div>
-                                <Button className="mt-4 bg-black dark:bg-white text-white dark:text-black rounded-xl font-black text-xs uppercase tracking-widest px-8 h-12" asChild>
-                                    <a href={doc.fileUrl} target="_blank" rel="noopener noreferrer">Download_For_Audit</a>
+                                <Button className="mt-4 bg-black dark:bg-white text-white dark:text-black rounded-xl font-black text-xs tracking-widest px-8 h-12" asChild>
+                                    <a href={doc.fileUrl} target="_blank" rel="noopener noreferrer">Download For Audit</a>
                                 </Button>
                             </div>
                         )}
@@ -122,14 +122,14 @@ export function DocumentDetailClient({ document: doc }: DocumentDetailClientProp
                 <div className="w-1/3 flex flex-col gap-4 overflow-hidden">
                     <div className="flex items-center gap-2 px-2">
                         <Cpu className="h-4 w-4 text-emerald-500" />
-                        <span className="text-[10px] font-mono font-bold text-neutral-400 uppercase tracking-widest">Neural_Processor_V4</span>
+                        <span className="text-[10px] font-bold text-neutral-400 tracking-widest">Neural_Processor_V4</span>
                     </div>
 
                     <div className="flex-1 border border-neutral-200 dark:border-neutral-800 rounded-3xl bg-white dark:bg-neutral-950 overflow-hidden flex flex-col shadow-xl">
                         {/* Status Bar */}
                         <div className="px-4 py-2 border-b border-neutral-100 dark:border-neutral-900 bg-neutral-50 dark:bg-neutral-900 flex items-center gap-2">
                             <div className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                            <span className="text-[8px] font-mono font-bold text-neutral-400 uppercase tracking-[0.2em]">Context_Synched: Ready</span>
+                            <span className="text-[8px] font-bold text-neutral-400 tracking-[0.2em]">Context_Synched: Ready</span>
                         </div>
 
                         {/* Messages */}
@@ -140,11 +140,11 @@ export function DocumentDetailClient({ document: doc }: DocumentDetailClientProp
                                         "flex flex-col gap-2",
                                         m.role === "user" ? "items-end" : "items-start"
                                     )}>
-                                        <span className="text-[8px] font-mono font-bold text-neutral-400 uppercase tracking-widest px-1">
+                                        <span className="text-[8px] font-bold text-neutral-400 tracking-widest px-1">
                                             {m.role === "user" ? "SYSTEM_AUDITOR" : "ORBITAL_CORE"}
                                         </span>
                                         <div className={cn(
-                                            "max-w-[95%] px-4 py-3 text-xs leading-relaxed",
+                                            "max-w-[95%] px-4 py-3 text-md leading-relaxed",
                                             m.role === "user"
                                                 ? "bg-black dark:bg-white text-white dark:text-black rounded-2xl rounded-tr-none font-bold"
                                                 : "bg-neutral-50 dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 rounded-2xl rounded-tl-none border border-neutral-200 dark:border-neutral-800"
@@ -156,7 +156,7 @@ export function DocumentDetailClient({ document: doc }: DocumentDetailClientProp
                                 {isLoading && (
                                     <div className="flex items-center gap-3 text-neutral-400 animate-pulse">
                                         <Zap className="h-3 w-3 fill-emerald-500" />
-                                        <span className="text-[8px] font-mono uppercase tracking-[0.2em]">Processing_Data_Stream...</span>
+                                        <span className="text-[8px] tracking-[0.2em]">Processing_Data_Stream...</span>
                                     </div>
                                 )}
                             </div>
@@ -170,7 +170,7 @@ export function DocumentDetailClient({ document: doc }: DocumentDetailClientProp
                                     value={input}
                                     onChange={(e) => setInput(e.target.value)}
                                     onKeyDown={(e) => e.key === "Enter" && handleSend()}
-                                    className="h-12 bg-neutral-50 dark:bg-neutral-900 border-none rounded-xl font-mono text-[10px] tracking-tight focus-visible:ring-black dark:focus-visible:ring-white"
+                                    className="h-12 bg-neutral-50 dark:bg-neutral-900 border-none rounded-xl text-md tracking-tight focus-visible:ring-black dark:focus-visible:ring-white"
                                 />
                                 <Button
                                     size="icon"

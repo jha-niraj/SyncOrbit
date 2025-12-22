@@ -15,10 +15,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Plus, Upload, FileText, Loader2 } from "lucide-react"
 import { uploadDocument } from "@/actions/tools/document.action"
 import { toast } from "sonner"
-import * as pdfjsLib from 'pdfjs-dist';
-
-// Configure PDF.js worker
-pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.worker.min.mjs`;
+import { extractTextFromResume } from "@/lib/documents/textextractor"
 
 export function UploadDocument() {
     const [open, setOpen] = useState(false)
@@ -27,26 +24,6 @@ export function UploadDocument() {
     const [title, setTitle] = useState("")
     const [description, setDescription] = useState("")
 
-    const extractTextFromPDF = async (file: File): Promise<string> => {
-        try {
-            const arrayBuffer = await file.arrayBuffer();
-            const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-            let fullText = "";
-
-            for (let i = 1; i <= pdf.numPages; i++) {
-                const page = await pdf.getPage(i);
-                const textContent = await page.getTextContent();
-                const pageText = textContent.items.map((item: any) => item.str).join(" ");
-                fullText += pageText + "\n";
-            }
-
-            return fullText;
-        } catch (error) {
-            console.error("Error extracting text:", error);
-            return "";
-        }
-    }
-
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         if (!file) return;
@@ -54,8 +31,24 @@ export function UploadDocument() {
         setLoading(true);
         try {
             let extractedText = "";
-            if (file.type === "application/pdf") {
-                extractedText = await extractTextFromPDF(file);
+
+            // Use local text extractor for PDF, DOC, and DOCX files
+            if (
+                file.type === "application/pdf" ||
+                file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ||
+                file.type === "application/msword" ||
+                file.name.toLowerCase().endsWith('.pdf') ||
+                file.name.toLowerCase().endsWith('.docx') ||
+                file.name.toLowerCase().endsWith('.doc')
+            ) {
+                const result = await extractTextFromResume(file);
+                if (result.success && result.text) {
+                    extractedText = result.text;
+                } else {
+                    toast.error(result.error || "Failed to extract text from file");
+                    setLoading(false);
+                    return;
+                }
             } else if (file.type === "text/plain") {
                 extractedText = await file.text();
             }
@@ -99,11 +92,11 @@ export function UploadDocument() {
                 </DialogHeader>
                 <form onSubmit={handleSubmit} className="space-y-4 pt-4">
                     <div className="space-y-2">
-                        <Label htmlFor="file">File (PDF or TXT)</Label>
+                        <Label htmlFor="file">File (PDF, DOC, DOCX, or TXT)</Label>
                         <Input
                             id="file"
                             type="file"
-                            accept=".pdf,.txt"
+                            accept=".pdf,.txt,.doc,.docx"
                             onChange={(e) => setFile(e.target.files?.[0] || null)}
                             required
                         />
