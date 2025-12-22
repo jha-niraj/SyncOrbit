@@ -167,10 +167,10 @@ export interface ReportData {
 export interface Report {
     id: string
     title: string
-    type: ReportType
-    reportData: ReportData
-    generatedById: string
-    generatedBy?: User
+    type: string
+    data: ReportData | unknown
+    creatorId: string
+    creator?: Partial<User>
     companyId: string
     createdAt: Date
     updatedAt: Date

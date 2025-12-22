@@ -8,7 +8,7 @@ export default async function InvoicesPage() {
     if (!session?.user) redirect("/signin");
 
     const invoicesResult = await getInvoices();
-    const invoices = invoicesResult.success ? invoicesResult.invoices : [];
+    const invoices = (invoicesResult.success && invoicesResult.invoices) ? invoicesResult.invoices : [];
 
     return (
         <div className="py-8 w-full max-w-[1400px] mx-auto">

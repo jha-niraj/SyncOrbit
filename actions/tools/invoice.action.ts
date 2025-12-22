@@ -167,8 +167,8 @@ export async function getInvoices() {
                 ].filter(condition => Object.keys(condition).length > 0)
             },
             include: {
-                client: { select: { name: true, email: true, image: true } },
-                company: { select: { name: true, logo: true } }
+                client: { select: { id: true, name: true, email: true, image: true } },
+                company: { select: { id: true, name: true, logo: true } }
             },
             orderBy: { createdAt: 'desc' }
         });
