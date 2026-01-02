@@ -29,10 +29,37 @@ export async function getLeadDashboardData() {
                 }
             },
             include: {
-                tasks: true,
+                tasks: {
+                    include: {
+                        assignedDeveloper: true,
+                        assignedTeam: true,
+                        project: true,
+                        subtasks: true,
+                        _count: true
+                    }
+                },
                 user: true,
+                assignedTeams: {
+                    include: {
+                        team: {
+                            include: {
+                                head: true
+                            }
+                        }
+                    }
+                },
+                members: {
+                    include: {
+                        user: true
+                    }
+                },
                 _count: {
-                    select: { tasks: true, members: true, messages: true }
+                    select: {
+                        tasks: true,
+                        messages: true,
+                        feedbacks: true,
+                        members: true
+                    }
                 }
             }
         })

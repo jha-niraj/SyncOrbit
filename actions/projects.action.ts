@@ -693,6 +693,7 @@ export async function getProjectBySlug(slug: string) {
                             select: {
                                 id: true,
                                 name: true,
+                                email: true,
                                 image: true
                             }
                         },
@@ -704,7 +705,19 @@ export async function getProjectBySlug(slug: string) {
                                 color: true
                             }
                         },
-                        subtasks: true
+                        subtasks: true,
+                        project: {
+                            select: {
+                                id: true,
+                                title: true,
+                                slug: true
+                            }
+                        },
+                        _count: {
+                            select: {
+                                subtasks: true
+                            }
+                        }
                     }
                 },
                 members: {
@@ -758,7 +771,8 @@ export async function getProjectBySlug(slug: string) {
                     select: {
                         tasks: true,
                         feedbacks: true,
-                        messages: true
+                        messages: true,
+                        members: true
                     }
                 }
             }

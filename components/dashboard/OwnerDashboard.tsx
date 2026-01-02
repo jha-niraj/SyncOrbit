@@ -12,7 +12,7 @@ import {
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { OwnerDashboardData, ActivityItem } from "@/types/dashboard"
-import { Project } from "@/types/project"
+import { ProjectWithRelations } from "@/types/project"
 
 interface OwnerDashboardProps {
     data: OwnerDashboardData | null
@@ -80,7 +80,7 @@ export default function OwnerDashboard({ data }: OwnerDashboardProps) {
                     <CardContent className="px-6 pb-6 p-0">
                         <div className="space-y-4">
                             {
-                                projects.slice(0, 5).map((project: Project, i: number) => (
+                                projects.slice(0, 5).map((project: ProjectWithRelations, i: number) => (
                                     <div key={i} className="flex items-center justify-between p-4 rounded-xl hover:bg-neutral-50 dark:hover:bg-neutral-800/50 transition-colors border border-transparent hover:border-neutral-100 dark:hover:border-neutral-800">
                                         <div className="flex items-center gap-4">
                                             <div className="w-10 h-10 rounded-lg bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center font-bold text-neutral-500">

@@ -8,7 +8,7 @@ import {
     Users, Briefcase, CheckSquare, BarChart2, Zap
 } from "lucide-react"
 import { LeadDashboardData } from "@/types/dashboard"
-import { Project } from "@/types/project"
+import { ProjectWithRelations } from "@/types/project"
 
 interface LeadDashboardProps {
     data: LeadDashboardData | null
@@ -98,7 +98,7 @@ export default function LeadDashboard({ data }: LeadDashboardProps) {
                     </CardHeader>
                     <CardContent>
                         <div className="space-y-4">
-                            {projects.map((project: Project, i: number) => (
+                            {projects.map((project: ProjectWithRelations, i: number) => (
                                 <div key={i} className="group p-4 rounded-xl border border-neutral-100 dark:border-neutral-800 hover:border-blue-500/30 transition-all bg-white dark:bg-neutral-950/30">
                                     <div className="flex justify-between items-start mb-4">
                                         <div className="flex items-center gap-3">

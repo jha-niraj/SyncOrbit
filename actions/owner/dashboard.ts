@@ -37,11 +37,36 @@ export async function getOwnerDashboardData() {
                 companyId: user.companyId
             },
             include: {
-                tasks: true,
+                tasks: {
+                    include: {
+                        assignedDeveloper: true,
+                        assignedTeam: true,
+                        project: true,
+                        subtasks: true,
+                        _count: true
+                    }
+                },
                 user: true,
                 assignedTeams: {
                     include: {
-                        team: true
+                        team: {
+                            include: {
+                                head: true
+                            }
+                        }
+                    }
+                },
+                members: {
+                    include: {
+                        user: true
+                    }
+                },
+                _count: {
+                    select: {
+                        tasks: true,
+                        messages: true,
+                        feedbacks: true,
+                        members: true
                     }
                 }
             },

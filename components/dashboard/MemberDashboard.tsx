@@ -1,16 +1,17 @@
 "use client"
 
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import {
+    Card, CardContent, CardHeader, CardTitle, CardDescription
+} from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import {
-    CheckCircle2, Clock, ListTodo, Target,
-    MessageSquare, Calendar, Star,
-    ArrowRight
+    CheckCircle2, Clock, ListTodo, Target, MessageSquare, Calendar,
+    Star, ArrowRight
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { MemberDashboardData } from "@/types/dashboard"
-import { ProjectTask } from "@/types/project"
+import { TaskWithRelations } from "@/types/task"
 
 interface MemberDashboardProps {
     data: MemberDashboardData | null
@@ -92,7 +93,7 @@ export default function MemberDashboard({ data }: MemberDashboardProps) {
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-neutral-100 dark:divide-neutral-800">
-                                    {assignedTasks && assignedTasks.length > 0 ? assignedTasks.map((task: ProjectTask, i: number) => (
+                                    {assignedTasks && assignedTasks.length > 0 ? assignedTasks.map((task: TaskWithRelations, i: number) => (
                                         <tr key={i} className="hover:bg-neutral-50 dark:hover:bg-neutral-800/20 transition-colors">
                                             <td className="px-6 py-4">
                                                 <div className="flex items-center gap-3">

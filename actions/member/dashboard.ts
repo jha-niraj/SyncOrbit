@@ -16,7 +16,11 @@ export async function getMemberDashboardData() {
                 assignedDeveloperId: session.user.id
             },
             include: {
-                project: true
+                project: true,
+                assignedDeveloper: true,
+                assignedTeam: true,
+                subtasks: true,
+                _count: true
             },
             orderBy: { createdAt: 'desc' }
         })
@@ -30,10 +34,37 @@ export async function getMemberDashboardData() {
                 ]
             },
             include: {
+                tasks: {
+                    include: {
+                        assignedDeveloper: true,
+                        assignedTeam: true,
+                        project: true,
+                        subtasks: true,
+                        _count: true
+                    }
+                },
                 user: true,
-                tasks: true,
+                assignedTeams: {
+                    include: {
+                        team: {
+                            include: {
+                                head: true
+                            }
+                        }
+                    }
+                },
+                members: {
+                    include: {
+                        user: true
+                    }
+                },
                 _count: {
-                    select: { tasks: true, messages: true, members: true }
+                    select: {
+                        tasks: true,
+                        messages: true,
+                        feedbacks: true,
+                        members: true
+                    }
                 }
             }
         })

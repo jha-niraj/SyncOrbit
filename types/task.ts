@@ -39,7 +39,7 @@ export interface Task {
     assignedTeamId?: string | null
     assignedDeveloperId?: string | null
     projectId: string
-    createdById: string
+    createdById: string | null
     createdAt: Date
     updatedAt: Date
 }
@@ -51,7 +51,7 @@ export interface TaskWithRelations extends Task {
     project: TaskProject
     _count?: {
         subtasks: number
-        comments: number
-        attachments: number
+        comments?: number
+        attachments?: number
     }
 }
