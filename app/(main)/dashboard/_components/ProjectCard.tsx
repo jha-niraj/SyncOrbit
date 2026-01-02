@@ -8,10 +8,10 @@ import { Status, TaskStatus } from "@prisma/client";
 import { Calendar, DollarSign, Users, ArrowRight, Target, Clock, CheckCircle } from "lucide-react";
 import Link from "next/link";
 
-import { Project } from "@/types/project";
+import { ProjectWithRelations } from "@/types/project";
 
 interface ProjectCardProps {
-	project: Project;
+	project: ProjectWithRelations;
 }
 
 export function ProjectCard({ project }: ProjectCardProps) {

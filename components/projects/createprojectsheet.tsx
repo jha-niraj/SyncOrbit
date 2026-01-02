@@ -15,8 +15,9 @@ import {
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import {
-    CalendarIcon, Plus, Loader2, Users, Eye, EyeOff, Building2, DollarSign, X, Code,
-    Megaphone, ShoppingCart, Palette, Briefcase, Settings, CheckCircle
+    CalendarIcon, Plus, Loader2, Users, Eye, EyeOff, Building2, DollarSign, 
+    X, Code, Megaphone, ShoppingCart, Palette, Briefcase, Settings, 
+    CheckCircle
 } from "lucide-react"
 import {
     Avatar, AvatarFallback, AvatarImage
@@ -209,7 +210,7 @@ export function CreateProjectSheet({ trigger, onSuccess, open: controlledOpen, o
     return (
         <Sheet open={open} onOpenChange={setOpen}>
             {trigger && <SheetTrigger asChild>{trigger}</SheetTrigger>}
-            <SheetContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto">
+            <SheetContent className="sm:max-w-[700px] overflow-y-auto">
                 <SheetHeader>
                     <SheetTitle className="flex items-center gap-2">
                         <Building2 className="w-5 h-5" />

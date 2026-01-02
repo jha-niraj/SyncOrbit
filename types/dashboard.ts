@@ -1,4 +1,5 @@
-import { Project, ProjectTask } from "./project"
+import { Project, ProjectWithRelations } from "./project"
+import { TaskWithRelations } from "./task"
 
 export interface ActivityItem {
     id: string
@@ -21,7 +22,7 @@ export interface Invoice {
 
 // Owner Dashboard
 export interface OwnerDashboardData {
-    projects: Project[]
+    projects: ProjectWithRelations[]
     stats: {
         totalProjects: number
         activeProjects: number
@@ -34,7 +35,7 @@ export interface OwnerDashboardData {
 
 // Lead Dashboard
 export interface LeadDashboardData {
-    projects: Project[]
+    projects: ProjectWithRelations[]
     stats: {
         activeProjects: number
         teamSize: number
@@ -45,8 +46,8 @@ export interface LeadDashboardData {
 
 // Member Dashboard
 export interface MemberDashboardData {
-    assignedTasks: ProjectTask[]
-    projects: Project[]
+    assignedTasks: TaskWithRelations[]
+    projects: ProjectWithRelations[]
     stats: {
         myTasks: number
         myInProgress: number
@@ -57,7 +58,7 @@ export interface MemberDashboardData {
 
 // Client Dashboard
 export interface ClientDashboardData {
-    projects: Project[]
+    projects: ProjectWithRelations[]
     invoices: Invoice[]
     stats: {
         activeProjects: number

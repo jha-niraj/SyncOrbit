@@ -14,7 +14,9 @@ const createTaskSchema = z.object({
     assignedTeamId: z.string().min(1, "Team assignment is required"),
     assignedDeveloperId: z.string().optional(),
     priority: z.enum(["LOW", "MEDIUM", "HIGH", "URGENT"]).default("MEDIUM"),
-    duration: z.number().min(0).max(1000).optional()
+    duration: z.number().min(0).max(1000).optional(),
+    startDate: z.date().optional(),
+    dueDate: z.date().optional()
 })
 
 const updateTaskSchema = z.object({
@@ -25,7 +27,9 @@ const updateTaskSchema = z.object({
     assignedTeamId: z.string().optional(),
     assignedDeveloperId: z.string().optional(),
     priority: z.enum(["LOW", "MEDIUM", "HIGH", "URGENT"]).optional(),
-    duration: z.number().min(0).max(1000).optional()
+    duration: z.number().min(0).max(1000).optional(),
+    startDate: z.date().optional(),
+    dueDate: z.date().optional()
 })
 
 // Helper function to check if user can assign tasks to a specific team
@@ -114,7 +118,7 @@ async function canAssignToMember(userId: string, developerId: string, teamId: st
 
     // Check if developer is a member of the target team
     const isMemberOfTeam = developer.teamMemberships.some(membership => membership.teamId === teamId)
-    
+
     if (!isMemberOfTeam) {
         return { canAssign: false, error: "Developer is not a member of the target team" }
     }
@@ -134,11 +138,11 @@ export async function createTask(data: z.infer<typeof createTaskSchema>) {
 
         // Check permissions to assign to the specified team
         const { canAssign, user, targetTeam, error: teamError } = await canAssignToTeam(
-            session.user.id, 
-            validatedData.assignedTeamId, 
+            session.user.id,
+            validatedData.assignedTeamId,
             validatedData.projectId
         )
-        
+
         if (!canAssign) {
             return { success: false, error: teamError || "Cannot assign to team" }
         }
@@ -165,6 +169,8 @@ export async function createTask(data: z.infer<typeof createTaskSchema>) {
                 assignedDeveloperId: validatedData.assignedDeveloperId || null,
                 priority: validatedData.priority,
                 duration: validatedData.duration || null,
+                startDate: validatedData.startDate || null,
+                dueDate: validatedData.dueDate || null,
                 createdById: session.user.id,
                 status: TaskStatus.YET_TO_START
             },
@@ -208,20 +214,19 @@ export async function createTask(data: z.infer<typeof createTaskSchema>) {
         return {
             success: true,
             task,
-            message: `Task "${validatedData.title}" assigned to ${targetTeam?.displayName}${
-                validatedData.assignedDeveloperId ? ` (${task.assignedDeveloper?.name})` : ''
-            }`
+            message: `Task "${validatedData.title}" assigned to ${targetTeam?.displayName}${validatedData.assignedDeveloperId ? ` (${task.assignedDeveloper?.name})` : ''
+                }`
         }
     } catch (error) {
         console.error("Create task error:", error)
-        
+
         if (error instanceof z.ZodError) {
             return {
                 success: false,
                 error: error.errors[0]?.message || "Invalid input data"
             }
         }
-        
+
         return {
             success: false,
             error: error instanceof Error ? error.message : "Failed to create task"
@@ -283,7 +288,7 @@ export async function updateTask(data: z.infer<typeof updateTaskSchema>) {
             const userTeamIds = user.ledTeams.map(t => t.id)
             const isAssignedTeamLed = existingTask.assignedTeamId ? userTeamIds.includes(existingTask.assignedTeamId) : false
             const isProjectTeamLed = existingTask.project.assignedTeams.some(pt => userTeamIds.includes(pt.teamId))
-            
+
             canEdit = isAssignedTeamLed || isProjectTeamLed
         } else if (user.role === Role.TEAM_MEMBER) {
             // Team members can only edit tasks assigned to them
@@ -315,11 +320,11 @@ export async function updateTask(data: z.infer<typeof updateTaskSchema>) {
         // If reassigning to a specific developer, validate that too
         if (validatedData.assignedDeveloperId) {
             const teamId = validatedData.assignedTeamId || existingTask.assignedTeamId
-            
+
             if (!teamId) {
                 return { success: false, error: "Cannot assign developer without a team" }
             }
-            
+
             const { canAssign: canAssignMember, error: memberError } = await canAssignToMember(
                 session.user.id,
                 validatedData.assignedDeveloperId,
@@ -340,6 +345,8 @@ export async function updateTask(data: z.infer<typeof updateTaskSchema>) {
         if (validatedData.assignedDeveloperId !== undefined) updateData.assignedDeveloperId = validatedData.assignedDeveloperId
         if (validatedData.priority !== undefined) updateData.priority = validatedData.priority
         if (validatedData.duration !== undefined) updateData.duration = validatedData.duration
+        if (validatedData.startDate !== undefined) updateData.startDate = validatedData.startDate
+        if (validatedData.dueDate !== undefined) updateData.dueDate = validatedData.dueDate
 
         const task = await prisma.task.update({
             where: { id: validatedData.taskId },
@@ -381,14 +388,14 @@ export async function updateTask(data: z.infer<typeof updateTaskSchema>) {
         }
     } catch (error) {
         console.error("Update task error:", error)
-        
+
         if (error instanceof z.ZodError) {
             return {
                 success: false,
                 error: error.errors[0]?.message || "Invalid input data"
             }
         }
-        
+
         return {
             success: false,
             error: error instanceof Error ? error.message : "Failed to update task"
@@ -463,14 +470,14 @@ export async function getAssignmentOptions(projectId: string) {
         if (user.role === Role.TEAM_HEAD) {
             // Team heads can only assign tasks to teams they lead or teams in projects their teams are involved in
             const userTeamIds = user.ledTeams.map(t => t.id)
-            availableTeams = availableTeams.filter(team => 
-                userTeamIds.includes(team.id) || 
+            availableTeams = availableTeams.filter(team =>
+                userTeamIds.includes(team.id) ||
                 project.assignedTeams.some(pt => userTeamIds.includes(pt.teamId))
             )
         }
 
         // Get all members from available teams
-        const members = availableTeams.flatMap(team => 
+        const members = availableTeams.flatMap(team =>
             team.members.map(member => ({
                 ...member.user,
                 teamId: team.id,
@@ -550,11 +557,11 @@ export async function getUserTasks(filters?: {
         if (filters?.projectId) {
             whereClause.projectId = filters.projectId
         }
-        
+
         if (filters?.teamId) {
             whereClause.assignedTeamId = filters.teamId
         }
-        
+
         if (filters?.status) {
             whereClause.status = filters.status
         }

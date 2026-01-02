@@ -98,7 +98,6 @@ export default async function TeamDetailsPage({ params }: TeamDetailsPageProps) 
                         </div>
                     </div>
                 </div>
-
                 {
                     team.description && (
                         <p className="text-lg text-muted-foreground max-w-3xl">

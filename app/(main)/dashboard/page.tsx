@@ -43,11 +43,6 @@ export default async function DashboardPage() {
 			const data = await getClientDashboardData()
 			return <ClientDashboard data={data} />
 		}
-		case Role.ADMIN: {
-			// Admin could have their own but for now let's show Owner view or a simple summary
-			const data = await getOwnerDashboardData()
-			return <OwnerDashboard data={data} />
-		}
 		default:
 			redirect("/signin")
 	}

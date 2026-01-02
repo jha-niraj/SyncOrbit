@@ -36,7 +36,7 @@ enum Permission {
     CREATE_PROJECTS
     EDIT_PROJECTS
     DELETE_PROJECTS
-    
+
     CREATE_TASKS
     EDIT_TASKS
     DELETE_TASKS
@@ -309,8 +309,8 @@ model Team {
     headId String? @unique
     head   User?   @relation("TeamHead", fields: [headId], references: [id])
 
-    members TeamMember[]
-    roles TeamRole[]
+    members          TeamMember[]
+    roles            TeamRole[]
     assignedProjects ProjectTeam[]
 
     tasks Task[] @relation("TeamTasks")
@@ -482,6 +482,8 @@ model Task {
     duration    Int?
     status      TaskStatus @default(YET_TO_START)
     priority    Priority   @default(MEDIUM)
+    startDate   DateTime?
+    dueDate     DateTime?
 
     projectId String
     project   Project @relation(fields: [projectId], references: [id])
@@ -670,10 +672,10 @@ model Notification {
     actionUrl   String?
     metadata    Json?
 
-    senderId String?
-    sender   User?   @relation("NotificationSender", fields: [senderId], references: [id])
+    senderId   String?
+    sender     User?   @relation("NotificationSender", fields: [senderId], references: [id])
     receiverId String
-    receiver   User   @relation("NotificationReceiver", fields: [receiverId], references: [id], onDelete: Cascade)
+    receiver   User    @relation("NotificationReceiver", fields: [receiverId], references: [id], onDelete: Cascade)
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
@@ -787,8 +789,8 @@ model Payment {
 
     billingEmail String?
     billingName  String?
-    description String?
-    metadata    Json?
+    description  String?
+    metadata     Json?
 
     paidAt     DateTime?
     failedAt   DateTime?

@@ -11,14 +11,14 @@ import { CompletedProjects } from "./CompletedProjects"
 import { ActivityFeed } from "@/components/activity-feed"
 import { Status } from "@prisma/client"
 
-import { Project } from "@/types/project"
+import { ProjectWithRelations } from "@/types/project"
 import { DashboardMetrics } from "@/lib/utils/dashboardStats"
 
 interface InternalClientData {
     user: {
         name: string | null
     }
-    projects: Project[]
+    projects: ProjectWithRelations[]
 }
 
 interface ClientDashboardProps {
@@ -27,10 +27,11 @@ interface ClientDashboardProps {
 }
 
 export function ClientDashboard({ data, dashboardMetrics }: ClientDashboardProps) {
-    const inProgressProjects = data.projects.filter((p: Project) => p.status === Status.IN_PROGRESS)
-    const completedProjects = data.projects.filter((p: Project) => p.status === Status.COMPLETED)
+    const inProgressProjects = data.projects.filter((p: ProjectWithRelations) => p.status === Status.IN_PROGRESS)
+    const completedProjects = data.projects.filter((p: ProjectWithRelations) => p.status === Status.COMPLETED)
 
     if (data.projects.length === 0) {
+        // ... (this part is unchanged)
         return (
             <div className="min-h-screen bg-gradient-to-bl dark:from-black dark:via-gray-900 dark:to-black flex items-center justify-center">
                 <div className="max-w-2xl mx-auto p-8 text-center">
@@ -119,7 +120,7 @@ export function ClientDashboard({ data, dashboardMetrics }: ClientDashboardProps
                                 inProgressProjects.length > 0 ? (
                                     <div className="grid gap-6">
                                         {
-                                            data.projects.map((project: Project) => (
+                                            inProgressProjects.map((project: ProjectWithRelations) => (
                                                 <ProjectCard key={project.id} project={project} />
                                             ))
                                         }
